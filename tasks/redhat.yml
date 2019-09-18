@@ -1,0 +1,14 @@
+---
+- name: Ensure Elastic repository key is available
+  rpm_key:
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+- name: Ensure Elasticsearch yum repository is configured
+  yum_repository:
+    name: elastic-{{ logstash_release }}.x
+    description: Elastic Release {{ logstash_release }}.x
+    file: elastic-release
+    baseurl: https://artifacts.elastic.co/packages/{{ logstash_release }}.x/yum
+    gpgcheck: yes
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+

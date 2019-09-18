@@ -1,0 +1,4 @@
+{% for item in logstash_pipelines %}
+- pipeline.id: {{ logstash_pipelines[item].name }}
+  path.config: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}/*.conf"
+{% endfor %}

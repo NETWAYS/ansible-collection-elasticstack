@@ -1,0 +1,29 @@
+---
+- import_tasks: redhat.yml
+  when: ansible_os_family|lower == 'redhat'
+- name: Ensure Java is installed
+  package:
+    name: java
+  when: logstash_manage_java | bool
+# Do not place both installations in one task. Java must be installed *before* yum is called to install Logstash
+- name: Ensure Logstash is installed
+  package:
+    name: logstash
+- name: Configure Logstash
+  template:
+    src: logstash.yml.j2
+    dest: /etc/logstash/logstash.yml
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ logstash_config_backup }}"
+  notify:
+    - Restart Logstash
+- name: Configure Logstash pipelines
+  template:
+    src: pipelines.yml.j2
+    dest: /etc/logstash/pipelines.yml
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ logstash_config_backup }}"

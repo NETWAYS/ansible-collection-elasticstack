@@ -1,2 +1,9 @@
 ---
 # defaults file for logstash
+logstash_release: 7
+logstash_manage_java: true
+logstash_config_autoreload: true
+logstash_config_backup: no
+logstash_pipelines:
+  main:
+    name: main

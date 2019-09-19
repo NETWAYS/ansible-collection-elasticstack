@@ -1,38 +1,46 @@
-Role Name
+Ansible Role: Logstash
 =========
 
-A brief description of the role goes here.
+This role installs and configures [Logstash](https://www.elastic.co/products/logstash) on Linux systems.
+
+It can optionally configure two types of Logstash pipelines:
+* Pipeline configuration managed in an external git repository
+* A default pipeline which will read from different Redis keys and write into Elasticsearch
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+This role has no Requirements.
+
+If you want to use the default pipeline (or other pipelines communicating via Redis) you might want to install Redis first (e.g. by using an [Ansible Role for Redis](https://galaxy.ansible.com/geerlingguy/redis)
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+This role is still in development. Please refer to `defaults/main.yml` for the current set of available variables.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+This role has no dependencies. As mentioned above you might want to use another role to install Redis
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+This is a simple sample playbook which first uses an Ansible role to install Redis and afterwards install and configure Logstash.
 
-    - hosts: servers
+    - hosts: logstash
       roles:
-         - { role: username.rolename, x: 42 }
+        - geerlingguy.redis
+        - logstash
+
 
 License
 -------
 
-BSD
+GPLv3+
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This role was created in 2019 by [Netways](https://www.netways.de/).

@@ -2,8 +2,24 @@
 # defaults file for logstash
 logstash_release: 7
 logstash_manage_java: true
-logstash_config_autoreload: true
 logstash_config_backup: no
+logstash_manage_yaml: true
+
+# config items in yaml file #
+
+logstash_config_autoreload: true
+## logstash_config_autoreload_interval: 3s
+logstash_config_path_data: /var/lib/logstash
+logstash_config_path_logs: /var/log/logstash
+## logstash_http_host: "127.0.0.1"
+## logstash_http_port: 9600-9700
+
+# pipeline configuration #
+logstash_manage_pipelines: true
 logstash_pipelines:
-  main:
-    name: main
+  shipper:
+    name: shipper
+    source: https://github.com/widhalmt/shipper-logstash-pipeline.git
+    outputkey: shipper-out
+logstash_elasticsearch_output: true
+logstash_elasticsearch: 127.0.0.1

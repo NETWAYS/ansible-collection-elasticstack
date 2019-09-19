@@ -2,3 +2,7 @@
 - pipeline.id: {{ logstash_pipelines[item].name }}
   path.config: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}/*.conf"
 {% endfor %}
+{% if logstash_elasticsearch_output | bool %}
+- pipeline.id: ansible-forwarder
+  path.config: "/etc/logstash/conf.d/ansible-forwarder/*.conf"
+{% endif %}

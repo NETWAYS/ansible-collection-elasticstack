@@ -1,0 +1,5 @@
+---
+- name: Ensure Java is installed
+  package:
+    name: default-jre-headless
+  when: logstash_manage_java | bool

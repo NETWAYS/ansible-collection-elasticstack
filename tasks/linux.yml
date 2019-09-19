@@ -1,11 +1,8 @@
 ---
 - import_tasks: redhat.yml
   when: ansible_os_family|lower == 'redhat'
-- name: Ensure Java is installed
-  package:
-    name: java
-  when: logstash_manage_java | bool
-# Do not place both installations in one task. Java must be installed *before* yum is called to install Logstash
+- import_tasks: debian.yml
+  when: ansible_os_family|lower == 'debian'
 - name: Ensure Logstash is installed
   package:
     name: logstash

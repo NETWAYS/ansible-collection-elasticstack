@@ -30,6 +30,7 @@
   git:
     repo: "{{ logstash_pipelines[item].source }}"
     dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
+    version: master
   with_items: "{{ logstash_pipelines }}"
   when: logstash_manage_pipelines | bool
   notify:

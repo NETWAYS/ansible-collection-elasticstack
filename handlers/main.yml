@@ -8,4 +8,4 @@
   service:
     name: logstash
     state: restarted
-  when: not logstash_config_autoreload 
+  when: not logstash_config_autoreload

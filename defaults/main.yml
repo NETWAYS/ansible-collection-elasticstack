@@ -1,0 +1,11 @@
+---
+# defaults file for elasticsearch
+elastic_release: 7
+elasticsearch_ml_enabled: true
+elasticsearch_config_backup: false
+elasticsearch_manage_yaml: true
+elasticsearch_monitoring_enabled: true
+elasticsearch_security: true
+elastic_ca_pass: PleaseChangeMe
+elastic_cert_pass: PleaseChangeMeIndividually
+elasticsearch_bootstrap_pw: PleaseChangeMe

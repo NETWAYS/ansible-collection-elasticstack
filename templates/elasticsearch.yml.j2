@@ -1,0 +1,23 @@
+node.name: "{{ ansible_hostname }}"
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+network.host: ["_local_","_site_"]
+discovery.seed_hosts: [ {% for host in groups['elasticsearch_test']  %}
+"{{ host }}"{% if not loop.last %},{% endif %}
+{% endfor %} ]
+cluster.initial_master_nodes: [ {% for host in groups['elasticsearch_test']  %}
+"{{ host }}"{% if not loop.last %},{% endif %}
+{% endfor %} ]
+{% if elastic_temperature is defined %}
+node.attr.temp: "{{ elastic_temperature }}"
+{% endif %}
+xpack.ml.enabled: {{ elasticsearch_ml_enabled }}
+xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}
+{% if elasticsearch_security | bool %}
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+#xpack.security.transport.ssl.verification_mode: certificate 
+xpack.security.transport.ssl.verification_mode: none 
+xpack.security.transport.ssl.keystore.path: certs/{{ ansible_hostname }}.p12 
+xpack.security.transport.ssl.truststore.path: certs/{{ ansible_hostname }}.p12 
+{% endif %}

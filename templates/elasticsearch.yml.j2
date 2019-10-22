@@ -3,7 +3,7 @@ path.data: /var/lib/elasticsearch
 path.logs: /var/log/elasticsearch
 network.host: ["_local_","_site_"]
 discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
-"{{ host }}"{% if not loop.last %},{% endif %}
+"{{ hostvars[host].ansible_default_ipv4.address }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
 "{{ host }}"{% if not loop.last %},{% endif %}

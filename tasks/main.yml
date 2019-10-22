@@ -1,0 +1,6 @@
+---
+# tasks file for beats
+- import_tasks: security.yml
+  when: elasticsearch_http_security | bool
+- import_tasks: filebeat.yml
+  when: beats_filebeat | bool

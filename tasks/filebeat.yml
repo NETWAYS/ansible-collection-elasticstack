@@ -1,0 +1,26 @@
+---
+- name: Install Filebeat
+  package:
+    name: filebeat
+- name: Configure Filebeat
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+    owner: root
+    group: root
+    mode: 0644
+    #backup: "{{ kibana_config_backup }}"
+  notify:
+    - Restart Filebeat
+- name: Enable modules
+  shell: "filebeat modules enable {{ item }}"
+  args:
+    creates: "/etc/filebeat/modules.d/{{ item }}.yml"
+  with_items: "{{ filebeat_modules }}"
+- name: Enable Ingest Pipelines
+  shell: "filebeat setup --pipelines --modules {{ item }} && touch /etc/filebeat/{{ item }}_pipeline_created"
+  args:
+    creates: "/etc/filebeat/{{ item }}_pipeline_created"
+  notify:
+    - Restart Filebeat
+  with_items: "{{ filebeat_modules }}"

@@ -1,0 +1,5 @@
+---
+# defaults file for beats
+beats_filebeat: true
+filebeat_modules:
+  - system

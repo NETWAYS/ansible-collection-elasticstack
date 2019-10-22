@@ -1,0 +1,31 @@
+---
+- name: generate encryption key
+  shell: openssl rand -base64 36 > /etc/kibana/encryption_key
+  changed_when: false
+  args:
+    creates: /etc/kibana/encryption_key
+- name: fetch encryption key
+  shell: cat /etc/kibana/encryption_key
+  changed_when: false
+  register: kibana_encryption_key
+- name: create certificate directory
+  file:
+    path: /etc/kibana/certs
+    state: directory
+    owner: root
+    group: kibana
+    mode: 0750
+- name: Fetch certificate from ca host to master
+  fetch: src=/usr/share/elasticsearch/{{ ansible_hostname }}.p12 dest=/tmp/ flat=yes
+  delegate_to: "{{ elasticsearch_ca }}"
+- name: Copy the certificate to actual node 
+  copy: src=/tmp/{{ ansible_hostname }}.p12 dest=/etc/kibana/certs
+- name: fetch Kibana password
+  shell: grep "PASSWORD kibana" /usr/share/elasticsearch/initial_passwords | awk {' print $4 '}
+  register: kibana_password
+  changed_when: false
+  delegate_to: "{{ elasticsearch_ca }}"
+- name: extract CA certificate
+  shell: openssl pkcs12 -in /etc/kibana/certs/{{ ansible_hostname }}.p12 -cacerts -nokeys -out /etc/kibana/certs/ca.crt
+  args:
+    creates: /etc/kibana/certs/ca.crt

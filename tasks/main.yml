@@ -1,0 +1,21 @@
+---
+# tasks file for kibana
+- name: install Kibana
+  package:
+    name: kibana
+- import_tasks: security.yml
+  when: elasticsearch_http_security | bool
+- name: Configure Kibana
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ kibana_config_backup }}"
+  notify:
+    - Restart Kibana
+- name: start Kibana
+  service:
+    name: kibana
+    state: started

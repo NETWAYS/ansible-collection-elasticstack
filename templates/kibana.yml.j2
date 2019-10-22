@@ -1,0 +1,11 @@
+server.host: "0.0.0.0"
+{% if elasticsearch_http_security | bool %}
+elasticsearch.username: "kibana"
+elasticsearch.password: "{{ kibana_password.stdout }}"
+#server.ssl.enabled: true
+#server.ssl.certificate: /etc/kibana/certs/9stuvmon05.live.local.crt
+#server.ssl.key: /etc/kibana/certs/9stuvmon05.live.local.key
+elasticsearch.ssl.certificateAuthorities:  "/etc/kibana/certs/ca.crt"
+elasticsearch.ssl.verificationMode: certificate
+xpack.security.encryptionKey: "{{ kibana_encryption_key.stdout }}"
+{% endif %}

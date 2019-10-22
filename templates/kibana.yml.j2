@@ -1,5 +1,6 @@
 server.host: "0.0.0.0"
 {% if elasticsearch_http_security | bool %}
+elasticsearch.hosts: ["https://localhost:9200"]
 elasticsearch.username: "kibana"
 elasticsearch.password: "{{ kibana_password.stdout }}"
 #server.ssl.enabled: true

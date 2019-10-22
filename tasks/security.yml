@@ -26,6 +26,6 @@
   changed_when: false
   delegate_to: "{{ elasticsearch_ca }}"
 - name: extract CA certificate
-  shell: openssl pkcs12 -in /etc/kibana/certs/{{ ansible_hostname }}.p12 -cacerts -nokeys -out /etc/kibana/certs/ca.crt
+  shell: echo "" | openssl pkcs12 -in /etc/kibana/certs/{{ ansible_hostname }}.p12 -cacerts -nokeys -out /etc/kibana/certs/ca.crt -password stdin
   args:
     creates: /etc/kibana/certs/ca.crt

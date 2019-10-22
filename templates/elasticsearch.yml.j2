@@ -2,10 +2,10 @@ node.name: "{{ ansible_hostname }}"
 path.data: /var/lib/elasticsearch
 path.logs: /var/log/elasticsearch
 network.host: ["_local_","_site_"]
-discovery.seed_hosts: [ {% for host in groups['elasticsearch_test']  %}
+discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
 "{{ host }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
-cluster.initial_master_nodes: [ {% for host in groups['elasticsearch_test']  %}
+cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
 "{{ host }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
 {% if elastic_temperature is defined %}

@@ -54,6 +54,7 @@
 - name: Check for passwords being set
   stat:
     path: "/usr/share/elasticsearch/initial_passwords"
+  delegate_to: "{{ elasticsearch_ca }}"
   register: elasticsearch_passwords_file
 - name: Check for cluster status with bootstrap password
   shell: curl -ks https://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty | grep status | cut -d\" -f4

@@ -9,6 +9,7 @@
 - name: configure ca
   shell: /usr/share/elasticsearch/bin/elasticsearch-certutil ca --pass {{ elastic_ca_pass }} --out /usr/share/elasticsearch/elastic-stack-ca.p12 --silent
   delegate_to: "{{ elasticsearch_ca }}"
+  run_once: true
   args:
     creates: /usr/share/elasticsearch/elastic-stack-ca.p12
     # - name: create instances file
@@ -50,10 +51,26 @@
   service:
     name: elasticsearch
     state: started
-- name: Check for cluster status
-  shell: curl -s http://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty | grep status | cut -d\" -f4
+- name: Check for passwords being set
+  stat:
+    path: "/usr/share/elasticsearch/initial_passwords"
+  register: elasticsearch_passwords_file
+- name: Check for cluster status with bootstrap password
+  shell: curl -ks https://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty | grep status | cut -d\" -f4
   register: es_cluster_status
   changed_when: false
+  when: elasticsearch_passwords_file.stat.exists == False
+- name: fetch Elastic password
+  shell: grep "PASSWORD elastic" /usr/share/elasticsearch/initial_passwords | awk {' print $4 '}
+  register: elastic_password
+  changed_when: false
+  delegate_to: "{{ elasticsearch_ca }}"
+  when: elasticsearch_passwords_file.stat.exists
+- name: Check for cluster status with elastic password
+  shell: curl -ks https://elastic:{{ elastic_password.stdout }}@localhost:9200/_cluster/health?pretty | grep status | cut -d\" -f4
+  register: es_cluster_status
+  changed_when: false
+  when: elasticsearch_passwords_file.stat.exists
 - name: Fail if cluster is not ready yet
   fail:
     msg: "Elasticsearch cluster is not ready, yet. Please rerun again later."
@@ -62,6 +79,7 @@
 - name: Create initial passwords
   shell: /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b > /usr/share/elasticsearch/initial_passwords
   delegate_to: "{{ elasticsearch_ca }}"
+  run_once: true
   args:
     creates: /usr/share/elasticsearch/initial_passwords
     

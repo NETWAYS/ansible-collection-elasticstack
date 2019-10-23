@@ -58,24 +58,29 @@
   register: elasticsearch_passwords_file
 - name: Check for cluster status with bootstrap password
   shell: curl -ks https://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty | grep status | cut -d\" -f4
-  register: es_cluster_status
+  register: es_cluster_status_bootstrap
   changed_when: false
   when: elasticsearch_passwords_file.stat.exists == False
+  #- name: debug es status 1
+  #  debug:
+  #    var: es_cluster_status_bootstrap
 - name: fetch Elastic password
   shell: grep "PASSWORD elastic" /usr/share/elasticsearch/initial_passwords | awk {' print $4 '}
   register: elastic_password
   changed_when: false
   delegate_to: "{{ elasticsearch_ca }}"
-  when: elasticsearch_passwords_file.stat.exists
+  #when: elasticsearch_passwords_file.stat.exists
 - name: Check for cluster status with elastic password
   shell: curl -ks https://elastic:{{ elastic_password.stdout }}@localhost:9200/_cluster/health?pretty | grep status | cut -d\" -f4
   register: es_cluster_status
   changed_when: false
-  when: elasticsearch_passwords_file.stat.exists
+  #- name: debug es status 2
+  #  debug:
+  #    var: es_cluster_status
 - name: Fail if cluster is not ready yet
   fail:
     msg: "Elasticsearch cluster is not ready, yet. Please rerun again later."
-  when: es_cluster_status.stdout != "green"
+  when: es_cluster_status.stdout != "green" and es_cluster_status_bootstrap.stdout != "green"
 # ToDo: create file in secure directory
 - name: Create initial passwords
   shell: /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b > /usr/share/elasticsearch/initial_passwords

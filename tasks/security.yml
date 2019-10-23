@@ -54,12 +54,15 @@
   shell: curl -s http://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty | grep status | cut -d\" -f4
   register: es_cluster_status
   changed_when: false
+- name: Fail if cluster is not ready yet
+  fail:
+    msg: "Elasticsearch cluster is not ready, yet. Please rerun again later."
+  when: es_cluster_status.stdout != "green"
 # ToDo: create file in secure directory
 - name: Create initial passwords
   shell: /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b > /usr/share/elasticsearch/initial_passwords
   delegate_to: "{{ elasticsearch_ca }}"
   args:
     creates: /usr/share/elasticsearch/initial_passwords
-  when: es_cluster_status.stdout == "green"
     
 

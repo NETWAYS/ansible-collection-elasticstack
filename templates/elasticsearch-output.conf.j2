@@ -1,6 +1,14 @@
 output {
   elasticsearch {
     hosts => [ "{{ logstash_elasticsearch }}"]
+{% if elastic_stack_full_stack | bool and logstash_security | bool %}
+    keystore => "/etc/logstash/certs/cert.p12"
+    keystore_password => ""
+    cacert => "/etc/logstash/certs/ca.crt"
+    ssl => true
+    user => {{ logstash_user }}
+    password => {{ logstash_password }}
+{% endif %}
   }
 }
 

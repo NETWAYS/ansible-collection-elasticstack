@@ -23,3 +23,12 @@ logstash_pipelines:
     outputkey: shipper-out
 logstash_elasticsearch_output: true
 logstash_elasticsearch: 127.0.0.1
+
+# logstash security
+logstash_security: false
+#logstash_user: logstash_system
+#logstash_password: password
+
+# elastic full stack configuration
+elastic_stack_full_stack: false
+#elastic_search_ca: /etc/elasticsearch/certs/elasticsearch.ca

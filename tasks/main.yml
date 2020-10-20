@@ -5,6 +5,8 @@
     name: kibana
 - import_tasks: security.yml
   when: elasticsearch_http_security | bool
+  tags:
+    - security
 - name: Configure Kibana
   template:
     src: kibana.yml.j2

@@ -35,6 +35,12 @@
     #  delegate_to: "{{  elasticsearch_ca }}"
     #- name: place certificate
     #  shell: echo "{{ elasticcert.stdout }}" > /etc/elasticsearch/{{ ansible_hostname }}.p12
+- name: extract CA certificate
+  shell: "openssl pkcs12 -in /usr/share/elasticsearch/{{ ansible_hostname }}.p12 -cacerts -nokeys -out /usr/share/elasticsearch/ca.crt -password {{ elastic_ca_pass }}"
+  delegate_to: "{{ elasticsearch_ca }}"
+  run_once: true
+  args:
+    creates: /usr/share/elasticsearch/ca.crt
 - name: Fetch certificate from ca host to master
   fetch: src=/usr/share/elasticsearch/{{ ansible_hostname }}.p12 dest=/tmp/ flat=yes
   delegate_to: "{{ elasticsearch_ca }}"
@@ -88,5 +94,3 @@
   run_once: true
   args:
     creates: /usr/share/elasticsearch/initial_passwords
-    
-

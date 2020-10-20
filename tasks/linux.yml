@@ -26,6 +26,7 @@
   when: elasticsearch_manage_yaml | bool
 - import_tasks: security.yml
   when: elasticsearch_security | bool
+  tags: security
 - name: Start Elasticsearch
   service:
     name: elasticsearch

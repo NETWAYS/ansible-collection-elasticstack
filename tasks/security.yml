@@ -1,4 +1,8 @@
 ---
+- name: create keystore
+  command: /usr/share/elasticsearch/bin/elasticsearch-keystore create
+  args:
+    creates: /etc/elasticsearch/elasticsearch.keystore
 - name: check for bootstrap password
   shell: /usr/share/elasticsearch/bin/elasticsearch-keystore list
   changed_when: false

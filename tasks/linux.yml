@@ -74,3 +74,5 @@
   when: logstash_manage_pipelines | bool
 - import_tasks: full_stack_security.yml
   when: elastic_stack_full_stack | bool and logstash_security | bool
+  tags:
+    - security

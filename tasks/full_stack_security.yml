@@ -1,15 +1,8 @@
 ---
-- name: create individual certificates
-  command: >
-    /usr/share/elasticsearch/bin/elasticsearch-certutil cert ca /usr/share/elasticsearch/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name
-    {{ ansible_hostname }} --ip {{ ansible_default_ipv4.address }} --dns {{ inventory_hostname }},{{ ansible_fqdn }} --pass ""
-    --out /usr/share/elasticsearch/{{ ansible_hostname }}.p12
-  delegate_to: "{{ elasticsearch_ca }}"
-  args:
-    creates: /usr/share/elasticsearch/{{ ansible_hostname }}.p12
 - name: Fetch certificate from ca host to master
-  fetch: src=/usr/share/elasticsearch/{{ ansible_hostname }}.p12 dest=/tmp/ flat=yes
+  fetch: src={{ elastic_ca_dir }}/{{ ansible_hostname }}.p12 dest=/tmp/ flat=yes
   delegate_to: "{{ elasticsearch_ca }}"
+
 - name: Create certificate directory
   file:
     state: directory
@@ -17,12 +10,14 @@
     owner: root
     group: logstash
     mode: 0750
+
 - name: Copy the certificate to actual node
   copy: src=/tmp/{{ ansible_hostname }}.p12 dest=/etc/logstash/certs/cert.p12
   notify:
     - Restart Logstash
+
 - name: Fetch ca certificate from ca host to master
-  fetch: src=/usr/share/elasticsearch/ca.crt dest=/tmp/ flat=yes
+  fetch: src={{ elastic_ca_dir }}/ca.crt dest=/tmp/ flat=yes
   delegate_to: "{{ elasticsearch_ca }}"
 - name: Copy the ca certificate to actual node
   copy:

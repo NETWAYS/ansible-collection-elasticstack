@@ -1,53 +1,76 @@
 ---
+- name: Check if all variables we need are set
+  fail:
+    msg: "You need to set elasticsearch_ca to use this feature"
+  when: elasticsearch_ca is undefined
+  tags:
+    - certificates
+
+- name: create directory for Elasticsearch CA
+  file:
+    path: "{{ elastic_ca_dir }}"
+    owner: root
+    group: root
+    mode: 0700
+    state: directory
+  tags:
+    - certificates
+
 - name: create keystore
   command: /usr/share/elasticsearch/bin/elasticsearch-keystore create
   args:
     creates: /etc/elasticsearch/elasticsearch.keystore
+
 - name: check for bootstrap password
   shell: /usr/share/elasticsearch/bin/elasticsearch-keystore list
   changed_when: false
   register: es_keystore
+
 - name: set bootstrap password
   shell: echo "{{ elasticsearch_bootstrap_pw }}" | /usr/share/elasticsearch/bin/elasticsearch-keystore add -x 'bootstrap.password'
   when: "'bootstrap.password' not in es_keystore.stdout_lines"
-- name: configure ca
-  shell: /usr/share/elasticsearch/bin/elasticsearch-certutil ca --pass {{ elastic_ca_pass }} --out /usr/share/elasticsearch/elastic-stack-ca.p12 --silent
-  delegate_to: "{{ elasticsearch_ca }}"
-  run_once: true
-  args:
-    creates: /usr/share/elasticsearch/elastic-stack-ca.p12
-    # - name: create instances file
-    #   template:
-    #     src: instances.j2
-    #     dest: /usr/share/elasticsearch/instances
-    #     owner: root
-    #     group: root
-    #     mode: 0600
-    #   delegate_to: "{{ elasticsearch_ca }}"
-    # - name: generate individual certificate
-    #   shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert ca /usr/share/elasticsearch/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} 
-    # 
-- name: create individual certificates
-  #shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert ca /usr/share/elasticsearch/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name {{ ansible_hostname }} --ip {{ ansible_default_ipv4.address }} --pass {{ elastic_cert_pass }} --out /usr/share/elasticsearch/{{ ansible_hostname }}.p12
-  shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert ca /usr/share/elasticsearch/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name {{ ansible_hostname }} --ip {{ ansible_default_ipv4.address }} --pass "" --out /usr/share/elasticsearch/{{ ansible_hostname }}.p12
-  delegate_to: "{{ elasticsearch_ca }}"
-  args:
-    creates: /usr/share/elasticsearch/{{ ansible_hostname }}.p12
-    #- name: fetch certificates to local machine
-    #  shell: cat /usr/share/elasticsearch/{{ ansible_hostname }}.p12
-    #  register: elasticcert
-    #  delegate_to: "{{  elasticsearch_ca }}"
-    #- name: place certificate
-    #  shell: echo "{{ elasticcert.stdout }}" > /etc/elasticsearch/{{ ansible_hostname }}.p12
-- name: extract CA certificate
-  shell: "openssl pkcs12 -in /usr/share/elasticsearch/{{ ansible_hostname }}.p12 -cacerts -nokeys -out /usr/share/elasticsearch/ca.crt -password pass:"
-  delegate_to: "{{ elasticsearch_ca }}"
-  run_once: true
-  args:
-    creates: /usr/share/elasticsearch/ca.crt
+
+- name: create ca and certificates
+  block:
+    - name: configure ca
+      shell: /usr/share/elasticsearch/bin/elasticsearch-certutil ca --pass {{ elastic_ca_pass }} --out {{ elastic_ca_dir }}/elastic-stack-ca.p12 --silent
+      args:
+        creates: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
+
+    - name: create individual certificates
+      shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name {{ hostvars[item].ansible_hostname }} --ip {{ hostvars[item].ansible_default_ipv4.address }} --pass "" --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
+      loop: "{{ groups['elasticsearch'] }}"
+      args:
+        creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
+
+    - name: create individual certificates for Logstash
+      shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name {{ hostvars[item].ansible_hostname }} --ip {{ hostvars[item].ansible_default_ipv4.address }} --pass "" --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
+      loop: "{{ groups['logstash'] }}"
+      when: '"logstash" in groups and groups["logstash"]'
+      args:
+        creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
+
+    - name: create individual certificates for Kibana
+      shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name {{ hostvars[item].ansible_hostname }} --ip {{ hostvars[item].ansible_default_ipv4.address }} --dns {{ hostvars[item].ansible_hostname }},{{ hostvars[item].ansible_fqdn }} --pass "" --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
+      loop: "{{ groups['kibana'] }}"
+      when: '"kibana" in groups and groups["kibana"]'
+      args:
+        creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
+
+    - name: extract CA certificate
+      shell: "openssl pkcs12 -in {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12 -cacerts -nokeys -out {{ elastic_ca_dir }}/ca.crt -password pass:"
+      args:
+        creates: "{{ elastic_ca_dir }}/ca.crt"
+  when: inventory_hostname == elasticsearch_ca
+  tags:
+    - certificates
+
 - name: Fetch certificate from ca host to master
-  fetch: src=/usr/share/elasticsearch/{{ ansible_hostname }}.p12 dest=/tmp/ flat=yes
+  fetch: src={{ elastic_ca_dir }}/{{ ansible_hostname }}.p12 dest=/tmp/ flat=yes
   delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - certificates
+
 - name: Create certificate directory
   file:
     state: directory
@@ -55,46 +78,71 @@
     owner: root
     group: elasticsearch
     mode: 0750
+  tags:
+    - certificates
+
 - name: Copy the certificate to actual node
   copy: src=/tmp/{{ ansible_hostname }}.p12 dest=/etc/elasticsearch/certs
+  notify:
+    - Restart Elasticsearch
+  tags:
+    - certificates
+
 - name: Start Elasticsearch
   service:
     name: elasticsearch
     state: started
+
+- name: Wait for Elasticsearch to start
+  wait_for:
+    host: localhost
+    port: 9200
+
 - name: Check for passwords being set
   stat:
-    path: "/usr/share/elasticsearch/initial_passwords"
+    path: "{{ elastic_initial_passwords }}"
   delegate_to: "{{ elasticsearch_ca }}"
   register: elasticsearch_passwords_file
+
 - name: Check for cluster status with bootstrap password
   shell: curl -ks https://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty | grep status | cut -d\" -f4
   register: es_cluster_status_bootstrap
   changed_when: false
   when: elasticsearch_passwords_file.stat.exists == False
-  #- name: debug es status 1
-  #  debug:
-  #    var: es_cluster_status_bootstrap
+
 - name: fetch Elastic password
-  shell: grep "PASSWORD elastic" /usr/share/elasticsearch/initial_passwords | awk {' print $4 '}
+  shell: grep "PASSWORD elastic" {{ elastic_initial_passwords }} | awk {' print $4 '}
   register: elastic_password
   changed_when: false
   delegate_to: "{{ elasticsearch_ca }}"
   #when: elasticsearch_passwords_file.stat.exists
+
 - name: Check for cluster status with elastic password
   shell: curl -ks https://elastic:{{ elastic_password.stdout }}@localhost:9200/_cluster/health?pretty | grep status | cut -d\" -f4
   register: es_cluster_status
   changed_when: false
-  #- name: debug es status 2
-  #  debug:
-  #    var: es_cluster_status
+  when: elasticsearch_passwords_file.stat.exists == True
+
+#- debug:
+#    msg: "Stdout: {{ es_cluster_status.stdout }}" 
+#- debug:
+#    msg: "bootstrap stdout {{ es_cluster_status_bootstrap.stdout }}"
+
 - name: Fail if cluster is not ready yet
   fail:
-    msg: "Elasticsearch cluster is not ready, yet. Please rerun again later."
-  when: es_cluster_status.stdout != "green" and es_cluster_status_bootstrap.stdout != "green"
+    msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status.stdout }} , yet. Please rerun again later."
+  when: es_cluster_status.stdout is defined and es_cluster_status.stdout != "green"
+
+- name: Fail if cluster is not ready yet (bootstrap password)
+  fail:
+    msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status_bootstrap.stdout }}), yet. Please rerun again later."
+  when: es_cluster_status_bootstrap.stdout is defined and es_cluster_status_bootstrap.stdout != "green"
 # ToDo: create file in secure directory
+
 - name: Create initial passwords
-  shell: /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b > /usr/share/elasticsearch/initial_passwords
-  delegate_to: "{{ elasticsearch_ca }}"
-  run_once: true
+  shell: /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b > {{ elastic_initial_passwords }}
+  when: inventory_hostname == elasticsearch_ca
   args:
-    creates: /usr/share/elasticsearch/initial_passwords
+    creates: "{{ elastic_initial_passwords }}"
+
+# Maybe make sure that Elasticsearch is using the right protocol http(s) to connect, even in newly setup clusters

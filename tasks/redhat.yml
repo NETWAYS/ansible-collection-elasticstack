@@ -12,3 +12,7 @@
     gpgcheck: yes
     gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
+- name: Install openssl if security is activated
+  yum:
+    name: openssl
+  when: elasticsearch_security | bool

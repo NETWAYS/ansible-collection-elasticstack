@@ -1,7 +1,9 @@
-Role Name
+ELASTICSEARCH
 =========
 
-A brief description of the role goes here.
+This role installs Elasticsearch on your hosts. Optionally it can configure Elastics Security components, too.
+
+If you use the role to set up security you can use its CA to create certificates for Logstash and Kibana, too.
 
 Requirements
 ------------
@@ -11,7 +13,7 @@ Any pre-requisites that may not be covered by Ansible itself or the role should 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+* *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication.
 
 Dependencies
 ------------

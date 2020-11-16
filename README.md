@@ -10,7 +10,9 @@ It can optionally configure two types of Logstash pipelines:
 Requirements
 ------------
 
-This role has no Requirements.
+This role has per default no Requirements.
+
+If you want to use the default pipeline configuration you need to have `git` available.
 
 If you want to use the default pipeline (or other pipelines communicating via Redis) you might want to install Redis first (e.g. by using an [Ansible Role for Redis](https://galaxy.ansible.com/geerlingguy/redis)
 

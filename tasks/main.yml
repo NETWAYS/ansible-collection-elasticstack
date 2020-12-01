@@ -17,6 +17,7 @@
     backup: "{{ kibana_config_backup }}"
   notify:
     - Restart Kibana
+  when: kibana_manage_yaml | bool
 - name: start Kibana
   service:
     name: kibana

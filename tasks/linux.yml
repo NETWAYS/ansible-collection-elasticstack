@@ -1,11 +1,14 @@
 ---
 - import_tasks: redhat.yml
   when: ansible_os_family|lower == 'redhat'
+
 - import_tasks: debian.yml
   when: ansible_os_family|lower == 'debian'
+
 - name: Ensure Logstash is installed
   package:
     name: logstash
+
 - name: Configure Logstash
   template:
     src: logstash.yml.j2
@@ -17,6 +20,7 @@
   notify:
     - Restart Logstash
   when: logstash_manage_yaml | bool
+
 - name: Create Logstash pipeline directories
   file:
     path: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
@@ -26,6 +30,7 @@
     mode: 0755
   with_items: "{{ logstash_pipelines }}"
   when: logstash_manage_pipelines | bool
+
 - name: Check out pipeline configuration
   git:
     repo: "{{ logstash_pipelines[item].source }}"
@@ -35,6 +40,7 @@
   when: logstash_manage_pipelines | bool
   notify:
     - Restart Logstash noauto
+
 - name: Create directory for default Elasticsearch output pipeline
   file:
     path: "/etc/logstash/conf.d/ansible-forwarder"
@@ -43,6 +49,7 @@
     group: root
     mode: 0755
   when: logstash_elasticsearch_output | bool
+
 - name: Create default Elasticsearch output pipeline inputs
   template:
     src: redis-input.conf.j2
@@ -53,6 +60,7 @@
   when: logstash_elasticsearch_output | bool
   notify:
     - Restart Logstash noauto
+
 - name: Create default Elasticsearch output pipeline output
   template:
     src: elasticsearch-output.conf.j2
@@ -63,6 +71,7 @@
   when: logstash_elasticsearch_output | bool
   notify:
     - Restart Logstash noauto
+
 - name: Configure Logstash pipelines
   template:
     src: pipelines.yml.j2
@@ -72,7 +81,15 @@
     mode: 0644
     backup: "{{ logstash_config_backup }}"
   when: logstash_manage_pipelines | bool
+
 - import_tasks: full_stack_security.yml
   when: elastic_stack_full_stack | bool and logstash_security | bool
   tags:
     - security
+
+- name: Start Logstash
+  service:
+    name: logstash
+    state: started
+    enabled: yes
+  when: logstash_enable | bool

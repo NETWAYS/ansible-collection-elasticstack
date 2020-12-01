@@ -5,7 +5,13 @@
   hosts: all
   vars:
     logstash_enable: true
+    logstash_security: true
+    elastic_stack_full_stack: true
+    elasticsearch_ca: ansible-role-logstash_full_stack
   tasks:
+    - name: "Include Elasticsearch role"
+      include_role:
+        name: elasticsearch
     - name: "Include Redis"
       include_role:
         name: geerlingguy.redis

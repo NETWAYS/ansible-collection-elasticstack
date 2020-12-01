@@ -19,7 +19,39 @@ If you want to use the default pipeline (or other pipelines communicating via Re
 Role Variables
 --------------
 
-This role is still in development. Please refer to `defaults/main.yml` for the current set of available variables.
+* *logstash_enable*: Start and enable Logstash service (default: `true`)
+* *logstash_release*: Major release of Logstash to install (default: `7`)
+* *logstash_manage_java*: Make sure Java is installed (default: `true`)
+* *logstash_config_backup*: Keep backups of all changed configuration (defualt: `no`)
+* *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)
+
+If `logstash.yml` is managed, the following settings apply.
+
+* *logstash_config_autoreload*: Enable autoreload of Logstash configuration (default: `true`)
+* *logstash_config_path_data*: Logstash data directory (default: `/var/lib/logstash`)
+* *logstash_config_path_logs*: Logstash log directory (default: `/var/log/logstash`)
+
+Aside from `logstash.yml` we can manage Logstashs pipelines.
+
+* *logstash_manage_pipelines*: Manage pipelines at all (default: `true`)
+* *logstash_pipelines*: List of pipelines with URL to repo
+  default:
+  ```
+  shipper:
+    name: shipper
+    source: https://github.com/widhalmt/shipper-logstash-pipeline.git
+    outputkey: shipper-out # the Redis key the pipeline should write to
+  ```
+
+* *logstash_elasticsearch_output*: Enable default pipeline to Elasticsearch (default: `true`)
+* *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: `127.0.0.1`)
+* *logstash_security*: Enable X-Security (default: `false`)
+
+The following variables only apply if you use this role together with our Elasticsearch and Kibana roles.
+
+* *elastic_stack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
+* *elastic_ca_dir*: Directory where the CA and certificates lie on the main Elasticsearch host (default: `/opt/es-ca`)
+* *elastic_initial_passwords*: File where initial passwords are stored on the main Elasticsearch host (default: `/usr/share/elasticsearch/initial_passwords`)
 
 Dependencies
 ------------

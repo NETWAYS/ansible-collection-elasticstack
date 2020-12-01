@@ -3,6 +3,7 @@
   rpm_key:
     key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
     state: present
+
 - name: Ensure Elasticsearch yum repository is configured (RedHat)
   yum_repository:
     name: elastic-{{ logstash_release }}.x
@@ -11,6 +12,7 @@
     baseurl: https://artifacts.elastic.co/packages/{{ logstash_release }}.x/yum
     gpgcheck: yes
     gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
 - name: Ensure Java is installed (RedHat)
   package:
     name: java

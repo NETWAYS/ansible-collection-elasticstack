@@ -4,8 +4,10 @@
   service:
     name: logstash
     state: restarted
+  when: logstash_enable | bool
+
 - name: Restart Logstash noauto
   service:
     name: logstash
     state: restarted
-  when: not logstash_config_autoreload
+  when: not logstash_config_autoreload and logstash_enable | bool

@@ -4,7 +4,10 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: ansible-role-logstash_run_logstash
+  - name: ansible-role-logstash_full_stack
+    groups:
+      - elasticsearch
+      - logstash
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:

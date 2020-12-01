@@ -1,0 +1,11 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Check if Logstash configuration does what it should
+  hosts: all
+  tasks:
+  - name: Run syntax check
+    command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
+  - name: Check for open port 5044/tcp
+    wait_for:
+      port: 5044

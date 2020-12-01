@@ -21,7 +21,6 @@ Role Variables
 
 * *logstash_enable*: Start and enable Logstash service (default: `true`)
 * *logstash_release*: Major release of Logstash to install (default: `7`)
-* *logstash_manage_java*: Make sure Java is installed (default: `true`)
 * *logstash_config_backup*: Keep backups of all changed configuration (defualt: `no`)
 * *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)
 

@@ -12,10 +12,3 @@
     baseurl: https://artifacts.elastic.co/packages/{{ logstash_release }}.x/yum
     gpgcheck: yes
     gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-
-- name: Ensure Java is installed (RedHat)
-  package:
-    name: java
-  when: logstash_manage_java | bool
-# Do not place Java and Logtsash installations in one task. Java must be installed *before* yum is called to install Logstash
-

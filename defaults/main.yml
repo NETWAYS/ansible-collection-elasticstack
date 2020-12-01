@@ -2,7 +2,6 @@
 # defaults file for logstash
 logstash_enable: true
 logstash_release: 7
-logstash_manage_java: true
 logstash_config_backup: no
 logstash_manage_yaml: true
 

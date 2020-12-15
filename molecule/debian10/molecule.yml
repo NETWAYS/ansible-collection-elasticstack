@@ -4,11 +4,11 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: elasticsearch_centos7_default
+  - name: elasticsearch_debian10_default
     groups:
       - elasticsearch
-    image: "geerlingguy/docker-centos7-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    image: "geerlingguy/docker-debian10-ansible:latest"
+    #command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     privileged: true

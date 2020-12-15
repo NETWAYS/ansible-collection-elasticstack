@@ -133,15 +133,23 @@
 #- debug:
 #    msg: "bootstrap stdout {{ es_cluster_status_bootstrap.stdout }}"
 
+- name: Check for open port 9200/tcp
+  wait_for:
+    port: 9200
+
 - name: Fail if cluster is not ready yet
   fail:
     msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status.stdout }} , yet. Please rerun again later."
   when: es_cluster_status.stdout is defined and es_cluster_status.stdout != "green"
+  tags:
+    - notest
 
 - name: Fail if cluster is not ready yet (bootstrap password)
   fail:
     msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status_bootstrap.stdout }}), yet. Please rerun again later."
   when: es_cluster_status_bootstrap.stdout is defined and es_cluster_status_bootstrap.stdout != "green"
+  tags:
+    - notest
 # ToDo: create file in secure directory
 
 - name: Create initial passwords

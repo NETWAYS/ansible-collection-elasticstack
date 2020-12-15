@@ -6,8 +6,8 @@ output {
     keystore_password => ""
     cacert => "/etc/logstash/certs/ca.crt"
     ssl => true
-    user => {{ logstash_user }}
-    password => {{ logstash_password }}
+    user => "{{ logstash_user }}"
+    password => "{{ logstash_password }}"
 {% endif %}
   }
 }

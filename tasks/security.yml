@@ -38,13 +38,13 @@
         creates: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
 
     - name: create individual certificates
-      shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name {{ hostvars[item].ansible_hostname }} --ip {{ hostvars[item].ansible_default_ipv4.address }} --pass "" --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
+      shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name {{ hostvars[item].ansible_hostname }} --ip {{ hostvars[item].ansible_default_ipv4.address }} --dns {{ hostvars[item].ansible_hostname }},{{ hostvars[item].ansible_fqdn }} --pass "" --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
       loop: "{{ groups['elasticsearch'] }}"
       args:
         creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
 
     - name: create individual certificates for Logstash
-      shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name {{ hostvars[item].ansible_hostname }} --ip {{ hostvars[item].ansible_default_ipv4.address }} --pass "" --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
+      shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name {{ hostvars[item].ansible_hostname }} --ip {{ hostvars[item].ansible_default_ipv4.address }} --dns {{ hostvars[item].ansible_hostname }},{{ hostvars[item].ansible_fqdn }} --pass "" --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
       loop: "{{ groups['logstash'] }}"
       when: '"logstash" in groups and groups["logstash"]'
       args:

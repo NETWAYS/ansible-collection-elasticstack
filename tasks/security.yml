@@ -10,7 +10,7 @@
   file:
     path: "{{ elastic_ca_dir }}"
     owner: root
-    group: root
+    group: elasticsearch
     mode: 0700
     state: directory
   tags:
@@ -82,7 +82,12 @@
     - certificates
 
 - name: Copy the certificate to actual node
-  copy: src=/tmp/{{ ansible_hostname }}.p12 dest=/etc/elasticsearch/certs
+  copy: 
+    src: "/tmp/{{ ansible_hostname }}.p12"
+    dest: "/etc/elasticsearch/certs"
+    owner: root
+    group: elasticsearch
+    mode: 0640
   notify:
     - Restart Elasticsearch
   tags:

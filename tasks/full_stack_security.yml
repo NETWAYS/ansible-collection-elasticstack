@@ -23,7 +23,12 @@
     - certificates
 
 - name: Copy the certificate to actual node
-  copy: src=/tmp/{{ ansible_hostname }}.p12 dest=/etc/logstash/certs/cert.p12
+  copy: 
+    src: "/tmp/{{ ansible_hostname }}.p12"
+    dest: "/etc/logstash/certs/cert.p12"
+    owner: root
+    group: logstash
+    mode: 0640
   notify:
     - Restart Logstash
   tags:

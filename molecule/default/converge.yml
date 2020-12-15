@@ -1,10 +1,19 @@
 ---
 # The workaround for arbitrarily named role directory is important because the git repo has one name and the role within it another
 # Found at: https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
-- name: Converge
-  hosts: all
+- name: Converge CentOS 7
+  hosts: elasticsearch_centos7_default
   vars:
-    elasticsearch_ca: ansible-role-elasticsearch_default
+    elasticsearch_ca: elasticsearch_centos7_default
+  tasks:
+    - name: "Include Elasticsearch"
+      include_role:
+        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+
+- name: Converge Debian 10
+  hosts: elasticsearch_debian10_default
+  vars:
+    elasticsearch_ca: elasticsearch_debian10_default
   tasks:
     - name: "Include Elasticsearch"
       include_role:

@@ -5,3 +5,7 @@
     - name: Install git
       package:
         name: git
+    - name: Install gpg
+      package:
+        name: gpg
+      when: ansible_os_family == "Debian"

@@ -23,7 +23,12 @@
   tags:
     - certificates
 - name: Copy the certificate to actual node 
-  copy: src=/tmp/{{ ansible_hostname }}.p12 dest=/etc/kibana/certs
+  copy:
+    src: "/tmp/{{ ansible_hostname }}.p12"
+    dest: "/etc/kibana/certs"
+    owner: root
+    group: kibana
+    mode: 0640
   tags:
     - certificates
 - name: fetch Kibana password

@@ -18,7 +18,10 @@
   tags:
     - certificates
 - name: Fetch certificate from ca host to master
-  fetch: src={{ elastic_ca_dir }}/{{ ansible_hostname }}.p12 dest=/tmp/ flat=yes
+  fetch: 
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+    dest: "/tmp/"
+    flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
@@ -42,3 +45,9 @@
     creates: /etc/kibana/certs/ca.crt
   tags:
     - certificates
+- name: Set permissions of CA certificate
+  file:
+    path: "/etc/kibana/certs/ca.crt"
+    owner: root
+    group: kibana
+    mode: 0640

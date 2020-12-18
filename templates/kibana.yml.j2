@@ -1,9 +1,11 @@
 server.host: "0.0.0.0"
 {% if elasticsearch_http_security is defined and elasticsearch_http_security | bool %}
-elasticsearch.hosts: ["https://localhost:9200"]
+elasticsearch.hosts: [{% for host in kibana_elasticsearch_hosts %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
 elasticsearch.username: "kibana"
 elasticsearch.password: "{{ kibana_password.stdout }}"
 elasticsearch.ssl.certificateAuthorities:  "/etc/kibana/certs/ca.crt"
-elasticsearch.ssl.verificationMode: certificate
+{% if kibana_elasticsearch_hosts[0] == "localhost" %}#elasticsearch.ssl.verificationMode: certificate{% endif %}
 xpack.security.encryptionKey: "{{ kibana_encryption_key.stdout }}"
+{% else %}
+elasticsearch.hosts: [{% for host in kibana_elasticsearch_hosts %}"http://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}

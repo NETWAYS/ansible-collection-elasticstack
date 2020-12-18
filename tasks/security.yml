@@ -5,7 +5,7 @@
   args:
     creates: /etc/kibana/encryption_key
 - name: fetch encryption key
-  shell: cat /etc/kibana/encryption_key
+  command: cat /etc/kibana/encryption_key
   changed_when: false
   register: kibana_encryption_key
 - name: create certificate directory
@@ -18,14 +18,14 @@
   tags:
     - certificates
 - name: Fetch certificate from ca host to master
-  fetch: 
+  fetch:
     src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
     dest: "/tmp/"
     flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
-- name: Copy the certificate to actual node 
+- name: Copy the certificate to actual node
   copy:
     src: "/tmp/{{ ansible_hostname }}.p12"
     dest: "/etc/kibana/certs"
@@ -35,12 +35,18 @@
   tags:
     - certificates
 - name: fetch Kibana password
-  shell: grep "PASSWORD kibana " /usr/share/elasticsearch/initial_passwords | awk {' print $4 '}
+  shell: |
+    set -o pipefail
+    grep "PASSWORD kibana " /usr/share/elasticsearch/initial_passwords |
+    awk {' print $4 '}
   register: kibana_password
   changed_when: false
   delegate_to: "{{ elasticsearch_ca }}"
 - name: extract CA certificate
-  shell: echo "" | openssl pkcs12 -in /etc/kibana/certs/{{ ansible_hostname }}.p12 -cacerts -nokeys -out /etc/kibana/certs/ca.crt -password stdin
+  shell: |
+    set -o pipefail
+    echo "" |
+    openssl pkcs12 -in /etc/kibana/certs/{{ ansible_hostname }}.p12 -cacerts -nokeys -out /etc/kibana/certs/ca.crt -password stdin
   args:
     creates: /etc/kibana/certs/ca.crt
   tags:

@@ -2,4 +2,7 @@
 # defaults file for kibana
 kibana_config_backup: true
 kibana_manage_yaml: true
+kibana_elasticsearch_hosts:
+  - localhost
 elastic_ca_dir: /opt/es-ca
+

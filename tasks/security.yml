@@ -22,7 +22,7 @@
     creates: /etc/elasticsearch/elasticsearch.keystore
 
 - name: check for bootstrap password
-  shell: /usr/share/elasticsearch/bin/elasticsearch-keystore list
+  command: /usr/share/elasticsearch/bin/elasticsearch-keystore list
   changed_when: false
   register: es_keystore
 
@@ -150,12 +150,21 @@
   when: es_cluster_status_bootstrap.stdout is defined and es_cluster_status_bootstrap.stdout != "green"
   tags:
     - notest
-# ToDo: create file in secure directory
 
 - name: Create initial passwords
   shell: /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b > {{ elastic_initial_passwords }}
   when: inventory_hostname == elasticsearch_ca
   args:
     creates: "{{ elastic_initial_passwords }}"
+
+# It would be better to create and set the permissions before generating the passwords. But this would
+# break the logic that relies on the file being absent when no passwords are set
+- name: Set permissions on passwords file
+  file:
+    path: "{{ elastic_initial_passwords }}"
+    owner: root
+    group: root
+    mode: 0600
+  when: inventory_hostname == elasticsearch_ca
 
 # Maybe make sure that Elasticsearch is using the right protocol http(s) to connect, even in newly setup clusters

@@ -1,0 +1,4 @@
+---
+- name: elasticsearch
+  src: https://github.com/widhalmt/ansible-role-elasticsearch.git
+  scm: git

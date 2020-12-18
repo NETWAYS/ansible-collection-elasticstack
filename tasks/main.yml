@@ -4,7 +4,7 @@
   package:
     name: kibana
 - import_tasks: security.yml
-  when: elasticsearch_http_security | bool
+  when: elasticsearch_http_security is defined and elasticsearch_http_security | bool
   tags:
     - security
 - name: Configure Kibana

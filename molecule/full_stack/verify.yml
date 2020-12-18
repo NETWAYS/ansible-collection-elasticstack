@@ -1,0 +1,27 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  tasks:
+  - name: Check for Kibana port
+    wait_for:
+      port: 5601
+  - name: fetch Elastic password
+    shell: grep "PASSWORD elastic " /usr/share/elasticsearch/initial_passwords | awk {' print $4 '}
+    register: elastic_password
+    changed_when: false
+  - name: Connect to Kibana
+    command: "curl --cacert /etc/kibana/certs/ca.crt -u elastic:{{ elastic_password.stdout }} http://{{ ansible_hostname }}:5601/api/status"
+    register: curl_out
+    failed_when: "'Green' not in curl_out.stdout"
+  # The following might be nicer but doesn't work
+  #- name: Connect to Kibana
+  #  uri:
+  #    url: http://ansible-role-kibana_full_stack:5601/api/status
+  #    user: elastic
+  #    password: "{{ elastic_password.stdout }}"
+  #    return_content: yes
+  #  register: kibana_status
+  #  #failed_when: "'"title": "Green"' not in kibana_status.content"
+  #  failed_when: "'Green' not in kibana_status.content"

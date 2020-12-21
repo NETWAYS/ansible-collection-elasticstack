@@ -9,3 +9,10 @@
       package:
         name: gpg
       when: ansible_os_family == "Debian"
+    - name: Install procps
+      package:
+        name: procps
+      when: ansible_os_family == "Debian"
+    - name: Install curl
+      package:
+        name: curl

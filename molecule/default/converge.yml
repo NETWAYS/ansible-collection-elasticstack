@@ -4,7 +4,7 @@
 - name: Converge
   hosts: all
   vars:
-    elasticsearch_ca: elasticsearch_centos7_default
+    elasticsearch_ca: elasticsearch_default
   tasks:
     - name: "Include Elasticsearch"
       include_role:

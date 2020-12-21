@@ -4,7 +4,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: ansible-role-logstash_full_stack
+  - name: logstash-full-stack
     groups:
       - elasticsearch
       - logstash

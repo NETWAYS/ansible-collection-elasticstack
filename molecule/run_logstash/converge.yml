@@ -6,6 +6,9 @@
   vars:
     logstash_enable: true
   tasks:
+    - name: "Include Elastics repos role"
+      include_role:
+        name: elastic-repos
     - name: "Include Redis"
       include_role:
         name: geerlingguy.redis

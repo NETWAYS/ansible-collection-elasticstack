@@ -5,8 +5,11 @@
     - name: Install git
       package:
         name: git
-    - name: Install gpg
+    - name: Install packages for Debian
       package:
-        name: gpg
+        name:
+          - gpg
+          - procps
+          - curl
       when: ansible_os_family == "Debian"
 

@@ -10,7 +10,7 @@ It can optionally configure two types of Logstash pipelines:
 Requirements
 ------------
 
-This role has per default no Requirements.
+You need to have the Elastic Repos configured on you system. You can use our [role](https://github.com/widhalmt/ansible-role-elastic-repos) for that but you don't have to.
 
 If you want to use the default pipeline configuration you need to have `git` available.
 
@@ -20,7 +20,6 @@ Role Variables
 --------------
 
 * *logstash_enable*: Start and enable Logstash service (default: `true`)
-* *logstash_release*: Major release of Logstash to install (default: `7`)
 * *logstash_config_backup*: Keep backups of all changed configuration (defualt: `no`)
 * *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)
 

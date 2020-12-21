@@ -1,6 +1,8 @@
 Role Name
 =========
 
+[![CI](https://github.com/widhalmt/ansible-role-elastic-repos/workflows/CI/badge.svg?event=push)](https://github.com/widhalmt/ansible-role-elastic-repos/actions?query=workflow%3ACI)
+
 A brief description of the role goes here.
 
 Requirements

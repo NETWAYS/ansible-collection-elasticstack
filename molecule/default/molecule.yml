@@ -4,15 +4,8 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: elastic-repos_centos7_default
+  - name: elastic-repos-default
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
-    pre_build_image: true
-  - name: elastic-repos_debian10_default
-    image: "geerlingguy/docker-debian10-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro

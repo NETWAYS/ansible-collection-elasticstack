@@ -6,6 +6,9 @@
   vars:
     elasticsearch_ca: elasticsearch_default
   tasks:
+    - name: "Include Elastics repos role"
+      include_role:
+        name: elastic-repos
     - name: "Include Elasticsearch"
       include_role:
         name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"

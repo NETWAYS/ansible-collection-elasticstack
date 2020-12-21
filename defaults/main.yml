@@ -1,6 +1,5 @@
 ---
 # defaults file for elasticsearch
-elastic_release: 7
 elastic_ca_dir: /opt/es-ca
 elasticsearch_ml_enabled: true
 elasticsearch_config_backup: false

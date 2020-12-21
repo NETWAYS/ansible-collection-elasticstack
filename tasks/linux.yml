@@ -1,9 +1,14 @@
 ---
-- import_tasks: redhat.yml
-  when: ansible_os_family|lower == 'redhat'
-- import_tasks: debian.yml
-  when: ansible_os_family|lower == 'debian'
+- name: Install openssl if security is activated
+  package:
+    name: openssl
+  when: elasticsearch_security | bool
+
 # the following should be done by the rpm but failed with 7.4
+- name: Install openssl if security is activated
+  package:
+    name: openssl
+  when: elasticsearch_security | bool
 
 - name: set ulimits for Elasticsearch
   pam_limits:

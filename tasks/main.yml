@@ -3,7 +3,7 @@
 - name: install Kibana
   package:
     name: kibana
-- import_tasks: security.yml
+- import_tasks: kibana-security.yml
   when: elasticsearch_http_security is defined and elasticsearch_http_security | bool
   tags:
     - security
@@ -22,3 +22,8 @@
   service:
     name: kibana
     state: started
+# the following is useful when running tests or extra tasks that need to have Kibana running
+- name: Wait for Kibana to start
+  wait_for:
+    host: localhost
+    port: 5601

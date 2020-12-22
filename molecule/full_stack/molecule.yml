@@ -4,7 +4,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: ansible-role-kibana_full_stack
+  - name: kibana-full-stack
     groups:
       - elasticsearch
       - kibana

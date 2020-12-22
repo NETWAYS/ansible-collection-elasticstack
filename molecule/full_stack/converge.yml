@@ -5,9 +5,12 @@
   hosts: all
   vars:
     elastic_stack_full_stack: true
-    elasticsearch_ca: ansible-role-kibana_full_stack
+    elasticsearch_ca: kibana-full-stack
     elasticsearch_http_security: true
   tasks:
+    - name: "Include Elastic Repos"
+      include_role:
+        name: "elastic-repos"
     - name: "Include Elasticsearch role"
       include_role:
         name: elasticsearch

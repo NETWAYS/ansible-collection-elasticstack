@@ -23,7 +23,7 @@
     - certificates
 
 - name: Copy the certificate to actual node
-  copy: 
+  copy:
     src: "/tmp/{{ ansible_hostname }}.p12"
     dest: "/etc/logstash/certs/cert.p12"
     owner: root
@@ -73,14 +73,17 @@
   run_once: true
 
 - name: fetch Elastic password
-  shell: grep "PASSWORD elastic" {{ elastic_initial_passwords }} | awk {' print $4 '}
+  shell: >
+    grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
+    awk {' print $4 '}
   register: elastic_password_logstash
   changed_when: false
   delegate_to: "{{ elasticsearch_ca }}"
 
 - name: Check for logstash_writer role
   shell: >
-    curl --cacert /etc/logstash/certs/ca.crt -u elastic:{{ elastic_password_logstash.stdout }}
+    curl --cacert /etc/logstash/certs/ca.crt
+    -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_security/role/logstash_writer
     | grep "enabled"
   delegate_to: "{{ elasticsearch_ca }}"
@@ -92,7 +95,8 @@
 - name: Put logstash_writer role into Elasticsearch
   command: >
     curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
-    --cacert /etc/logstash/certs/ca.crt -u elastic:{{ elastic_password_logstash.stdout }}
+    --cacert /etc/logstash/certs/ca.crt
+    -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_xpack/security/role/logstash_writer
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true
@@ -100,7 +104,8 @@
 
 - name: Check for logstash_writer user
   shell: >
-    curl --cacert /etc/logstash/certs/ca.crt -u elastic:{{ elastic_password_logstash.stdout }}
+    curl --cacert /etc/logstash/certs/ca.crt
+    -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_security/user/{{ logstash_user }}
     | grep "enabled"
   delegate_to: "{{ elasticsearch_ca }}"
@@ -112,7 +117,8 @@
 - name: Put logstash_writer user into Elasticsearch
   command: >
     curl -T /root/logstash_writer_user --header 'Content-Type: application/json'
-    --cacert /etc/logstash/certs/ca.crt -u elastic:{{ elastic_password_logstash.stdout }}
+    --cacert /etc/logstash/certs/ca.crt
+    -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_xpack/security/user/{{ logstash_user }}
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true

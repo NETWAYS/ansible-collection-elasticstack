@@ -16,6 +16,8 @@ You need to have the Elastic Repos configured on you system. You can use our [ro
 
 If you want to use the default pipeline configuration you need to have `git` available.
 
+You need to have `curl` installed. We are using `curl` instead of the `uri` module because we got better results. Feel free to file a pull request if you find a working solution. (And please remove this line with it)
+
 If you want to use the default pipeline (or other pipelines communicating via Redis) you might want to install Redis first (e.g. by using an [Ansible Role for Redis](https://galaxy.ansible.com/geerlingguy/redis)
 
 Role Variables

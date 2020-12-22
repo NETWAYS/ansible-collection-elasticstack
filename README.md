@@ -1,6 +1,8 @@
 Ansible Role: Logstash
 =========
 
+[![CI](https://github.com/NETWAYS/ansible-role-logstash/workflows/Molecule%20Test/badge.svg?event=push)](https://github.com/NETWAYS/ansible-role-logstash/workflows/Molecule%20Test/badge.svg)
+
 This role installs and configures [Logstash](https://www.elastic.co/products/logstash) on Linux systems.
 
 It can optionally configure two types of Logstash pipelines:

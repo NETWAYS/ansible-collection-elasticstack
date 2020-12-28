@@ -31,13 +31,9 @@ galaxy_info:
   - name: CentOS
     versions:
     - 7
-  #   - 25
-  # - name: SomePlatform
-  #   versions:
-  #   - all
-  #   - 1.0
-  #   - 7
-  #   - 99.99
+  - name: Debian
+    versions:
+    - 10
 
   galaxy_tags: []
     # List tags for your role here, one per line. A tag is a keyword that describes

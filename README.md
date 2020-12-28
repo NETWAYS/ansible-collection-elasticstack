@@ -1,43 +1,47 @@
-Role Name
+Ansible Role: Kibana
 =========
 
 [![Molecule Tests](https://github.com/widhalmt/ansible-role-kibana/workflows/Molecule%20Test/badge.svg?event=push)](https://github.com/widhalmt/ansible-role-kibana/workflows/Molecule%20Test/badge.svg)
 
-
-A brief description of the role goes here.
+This roles installs and configures Kibana.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+You need to have the Elastic Repos configured on you system. You can use our [role](https://github.com/widhalmt/ansible-role-elastic-repos) for that but you don't have to.
 
 Role Variables
 --------------
 
 * *kibana_elasticsearch_hosts*: A list of DNS resolvable hostnames of Elasticsearch hosts to connect your Kibana instance to. (default: `- localhost`)
+* *kibana_manage_yaml*: Change Kibanas main configuration file (default: `true`)
+* *kibana_config_backup*: Keep backups if we change any configuration file (default: `true`)
+* *elastic_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 
 If you don't change `kibana_elasticsearch_hosts`, certificate verification will skip hostname checks
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+There's no real dependency but you might want to use this role together with our other Elastic Stack related roles:
+
+* [Elasticsearch](https://github.com/widhalmt/ansible-role-elasticsearch)
+* [Logstash](https://github.com/NETWAYS/ansible-role-logstash)
+* [Elastic Repositories](https://github.com/widhalmt/ansible-role-elastic-repos)
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
+    - hosts: kibana
       roles:
-         - { role: username.rolename, x: 42 }
+         - kibana
 
 License
 -------
 
-BSD
+GPLv3+
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This role was created in 2019 by [Netways](https://www.netways.de/).

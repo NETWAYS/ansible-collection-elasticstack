@@ -23,7 +23,7 @@
     group: root
     mode: 0755
   with_items: "{{ logstash_pipelines }}"
-  when: logstash_manage_pipelines | bool
+  when: logstash_manage_pipelines | bool and logstash_pipelines is defined
 
 - name: Check out pipeline configuration
   git:
@@ -31,40 +31,92 @@
     dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
     version: master
   with_items: "{{ logstash_pipelines }}"
-  when: logstash_manage_pipelines | bool
+  when: logstash_manage_pipelines | bool and logstash_pipelines is defined
   notify:
     - Restart Logstash noauto
 
-- name: Create directory for default Elasticsearch output pipeline
-  file:
-    path: "/etc/logstash/conf.d/ansible-forwarder"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
+- name: Create default Elasticsearch output pipeline
+  block:
+    - name: Create directory for default Elasticsearch output pipeline
+      file:
+        path: "/etc/logstash/conf.d/ansible-forwarder"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Create default Elasticsearch output pipeline inputs
+      template:
+        src: redis-input.conf.j2
+        dest: "/etc/logstash/conf.d/ansible-forwarder/input.conf"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - Restart Logstash noauto
+
+    - name: Create default Elasticsearch output pipeline output
+      template:
+        src: elasticsearch-output.conf.j2
+        dest: "/etc/logstash/conf.d/ansible-forwarder/output.conf"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - Restart Logstash noauto
   when: logstash_elasticsearch_output | bool
 
-- name: Create default Elasticsearch output pipeline inputs
-  template:
-    src: redis-input.conf.j2
-    dest: "/etc/logstash/conf.d/ansible-forwarder/input.conf"
-    owner: root
-    group: root
-    mode: 0644
-  when: logstash_elasticsearch_output | bool
-  notify:
-    - Restart Logstash noauto
+- name: Create default Beats input pipeline
+  block:
+    - name: Create directory for default beats input pipeline
+      file:
+        path: "/etc/logstash/conf.d/ansible-input"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
 
-- name: Create default Elasticsearch output pipeline output
-  template:
-    src: elasticsearch-output.conf.j2
-    dest: "/etc/logstash/conf.d/ansible-forwarder/output.conf"
-    owner: root
-    group: root
-    mode: 0644
-  when: logstash_elasticsearch_output | bool
-  notify:
-    - Restart Logstash noauto
+    - name: Create default Beats input pipeline inputs
+      template:
+        src: redis-output.conf.j2
+        dest: "/etc/logstash/conf.d/ansible-input/input.conf"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - Restart Logstash noauto
+
+    - name: Create default Beats input pipeline output
+      template:
+        src: beats-input.conf.j2
+        dest: "/etc/logstash/conf.d/ansible-input/output.conf"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - Restart Logstash noauto
+  when: logstash_beats_input | bool
+
+- name: Create default connector pipeline
+  block:
+    - name: Create directory for default connector pipeline
+      file:
+        path: "/etc/logstash/conf.d/ansible-connector"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Create default connector pipeline inputs
+      template:
+        src: default-connector.conf.j2
+        dest: "/etc/logstash/conf.d/ansible-connector/connector.conf"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - Restart Logstash noauto
+  when: logstash_connector | bool
 
 - name: Configure Logstash pipelines
   template:

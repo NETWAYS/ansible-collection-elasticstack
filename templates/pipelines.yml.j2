@@ -1,8 +1,18 @@
+{% if logstash_pipelines is defined %}
 {% for item in logstash_pipelines %}
 - pipeline.id: {{ logstash_pipelines[item].name }}
   path.config: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}/*.conf"
 {% endfor %}
+{% endif %}
 {% if logstash_elasticsearch_output | bool %}
 - pipeline.id: ansible-forwarder
   path.config: "/etc/logstash/conf.d/ansible-forwarder/*.conf"
+{% endif %}
+{% if logstash_beats_input | bool %}
+- pipeline.id: ansible-input
+  path.config: "/etc/logstash/conf.d/ansible-input/*.conf"
+{% endif %}
+{% if logstash_connector | bool %}
+- pipeline.id: ansible-connector
+  path.config: "/etc/logstash/conf.d/ansible-connector/*.conf"
 {% endif %}

@@ -1,3 +1,4 @@
+{% if logstash_pipelines is defined %}
 {% for item in logstash_pipelines %}
 {% if logstash_pipelines[item].outputkey is defined %}
 input {
@@ -9,3 +10,12 @@ input {
 }
 {% endif %}
 {% endfor %}
+{% else %}
+input {
+  redis {
+    host => "localhost"
+    data_type => "list"
+    key => "forwarder"
+  }
+}
+{% endif %}

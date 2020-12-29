@@ -37,15 +37,9 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 
 * *logstash_manage_pipelines*: Manage pipelines at all (default: `true`)
 * *logstash_pipelines*: List of pipelines with URL to repo
-  default:
-  ```
-  shipper:
-    name: shipper
-    source: https://github.com/widhalmt/shipper-logstash-pipeline.git
-    outputkey: shipper-out # the Redis key the pipeline should write to
-  ```
-
 * *logstash_elasticsearch_output*: Enable default pipeline to Elasticsearch (default: `true`)
+* *logstash_beats_input*: Enable default pipeline with `beats` input (default: `true`)
+* *logstash_connector*: Enable default to connect input and output (default: `true`)
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: `127.0.0.1`)
 * *logstash_security*: Enable X-Security (default: `false`)
 

@@ -30,7 +30,7 @@
 
 - import_tasks: security.yml
   when: elasticsearch_security | bool
-  tags: 
+  tags:
     - security
 
 - name: Start Elasticsearch

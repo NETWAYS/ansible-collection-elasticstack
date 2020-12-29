@@ -13,7 +13,7 @@ Any pre-requisites that may not be covered by Ansible itself or the role should 
 Role Variables
 --------------
 
-* *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication.
+* *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
 
 Dependencies
 ------------

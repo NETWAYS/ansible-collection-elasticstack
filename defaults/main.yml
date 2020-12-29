@@ -1,13 +1,19 @@
 ---
 # defaults file for elasticsearch
-elastic_ca_dir: /opt/es-ca
 elasticsearch_ml_enabled: true
 elasticsearch_config_backup: false
 elasticsearch_manage_yaml: true
 elasticsearch_monitoring_enabled: true
 elasticsearch_security: true
-elastic_ca_pass: PleaseChangeMe
-elastic_cert_pass: PleaseChangeMeIndividually
 elasticsearch_bootstrap_pw: PleaseChangeMe
 elasticsearch_http_security: true
+
+# The following variables are to be used when activating security
+# They follow a different naming scheme to show that they are global
+# to our set of Elastic Stack related Ansible roles
+
+# elasticsearch_ca: First host in the `elasticsearch` group
+elastic_ca_dir: /opt/es-ca
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+elastic_ca_pass: PleaseChangeMe
+elastic_cert_pass: PleaseChangeMeIndividually

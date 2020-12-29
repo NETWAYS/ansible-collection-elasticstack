@@ -17,6 +17,9 @@ Role Variables
 * *kibana_manage_yaml*: Change Kibanas main configuration file (default: `true`)
 * *kibana_config_backup*: Keep backups if we change any configuration file (default: `true`)
 * *elastic_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
+* *kibana_tls*: Whether to offer `https` for clients or not (default: `false`)
+* *kibana_tls_cert*: Path to the certificate Kibana should show to its clients (default: `/etc/kibana/certs/cert.pem`)
+* *kibana_tls_key*: Path to the key Kibana should use when communicating with clients (default: `/etc/kibana/certs/key.pem`)
 
 If you don't change `kibana_elasticsearch_hosts`, certificate verification will skip hostname checks
 

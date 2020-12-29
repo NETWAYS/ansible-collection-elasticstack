@@ -148,14 +148,14 @@
 - name: Fail if cluster is not ready yet
   fail:
     msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status.stdout }} , yet. Please rerun again later."
-  when: es_cluster_status.stdout is defined and es_cluster_status.stdout != "green"
+  when: es_cluster_status.stdout is defined and es_cluster_status.stdout != "green" and groups['elasticsearch'] | length > 1
   tags:
     - notest
 
 - name: Fail if cluster is not ready yet (bootstrap password)
   fail:
     msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status_bootstrap.stdout }}), yet. Please rerun again later."
-  when: es_cluster_status_bootstrap.stdout is defined and es_cluster_status_bootstrap.stdout != "green"
+  when: es_cluster_status_bootstrap.stdout is defined and es_cluster_status_bootstrap.stdout != "green" and groups['elasticsearch'] | length > 1
   tags:
     - notest
 

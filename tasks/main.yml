@@ -28,7 +28,7 @@
     - Restart Elasticsearch
   when: elasticsearch_manage_yaml | bool
 
-- import_tasks: security.yml
+- import_tasks: elasticsearch-security.yml
   when: elasticsearch_security | bool
   tags:
     - security

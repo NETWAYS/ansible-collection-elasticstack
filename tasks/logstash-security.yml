@@ -1,13 +1,30 @@
 ---
-- name: Check if all variables we need are set
-  fail:
-    msg: "You need to set elasticsearch_ca to use this feature"
+- name: Set elasticsearch_ca variable if not already done by user
+  set_fact:
+    elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
   when: elasticsearch_ca is undefined
   tags:
     - certificates
 
+- name: create individual certificates for Logstash
+  command: >
+    /usr/share/elasticsearch/bin/elasticsearch-certutil cert
+    --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
+    --ca-pass {{ elastic_ca_pass }}
+    --name {{ ansible_hostname }}
+    --ip {{ ansible_default_ipv4.address }}
+    --dns {{ ansible_hostname }},{{ ansible_fqdn }}
+    --pass ""
+    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
+  delegate_to: "{{ elasticsearch_ca }}"
+  args:
+    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+
 - name: Fetch certificate from ca host to master
-  fetch: src={{ elastic_ca_dir }}/{{ ansible_hostname }}.p12 dest=/tmp/ flat=yes
+  fetch:
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+    dest: "/tmp/{{ ansible_hostname }}.p12"
+    flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
@@ -35,7 +52,10 @@
     - certificates
 
 - name: Fetch ca certificate from ca host to master
-  fetch: src={{ elastic_ca_dir }}/ca.crt dest=/tmp/ flat=yes
+  fetch:
+    src: "{{ elastic_ca_dir }}/ca.crt"
+    dest: /tmp/ca.crt
+    flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates

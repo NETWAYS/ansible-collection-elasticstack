@@ -12,7 +12,7 @@ It can optionally configure two types of Logstash pipelines:
 Requirements
 ------------
 
-You need to have the Elastic Repos configured on you system. You can use our [role](https://github.com/widhalmt/ansible-role-elastic-repos) for that but you don't have to.
+You need to have the Elastic Repos configured on your system. You can use our [role](https://github.com/widhalmt/ansible-role-elastic-repos) for that but you don't have to.
 
 If you want to use the default pipeline configuration you need to have `git` available.
 

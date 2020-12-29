@@ -9,17 +9,23 @@
     logstash_enable: true
     logstash_security: true
     elastic_stack_full_stack: true
-    elasticsearch_ca: logstash-full-stack
   tasks:
     - name: "Include Elastics repos role"
       include_role:
         name: elastic-repos
+- name: Elasticsearch
+  hosts: elasticsearch
+  tasks:
     - name: "Include Elasticsearch role"
       include_role:
         name: elasticsearch
-    - name: "Include Redis"
-      include_role:
-        name: geerlingguy.redis
+- name: Logstash
+  hosts: logstash
+  tasks:
+    # temporarily disabled because role is unavailable
+    #- name: "Include Redis"
+    #  include_role:
+    #    name: geerlingguy.redis
     - name: "Include Logstash"
       include_role:
         name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"

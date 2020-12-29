@@ -76,7 +76,7 @@
     backup: "{{ logstash_config_backup }}"
   when: logstash_manage_pipelines | bool
 
-- import_tasks: full_stack_security.yml
+- import_tasks: logstash-security.yml
   when: elastic_stack_full_stack | bool and logstash_security | bool
   tags:
     - security

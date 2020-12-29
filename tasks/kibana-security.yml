@@ -1,13 +1,30 @@
 ---
-- name: generate encryption key
-  shell: openssl rand -base64 36 > /etc/kibana/encryption_key
-  changed_when: false
-  args:
-    creates: /etc/kibana/encryption_key
-- name: fetch encryption key
-  command: cat /etc/kibana/encryption_key
-  changed_when: false
-  register: kibana_encryption_key
+- name: Block for key generation
+  block:
+  - name: generate encryption key
+    shell: openssl rand -base64 36 > /etc/kibana/encryption_key
+    changed_when: false
+    args:
+      creates: /etc/kibana/encryption_key
+
+  - name: fetch encryption key
+    command: cat /etc/kibana/encryption_key
+    changed_when: false
+    register: kibana_encryption_key
+
+  - name: generate saved objects encryption key
+    shell: openssl rand -base64 36 > /etc/kibana/savedobjects_encryption_key
+    changed_when: false
+    args:
+      creates: /etc/kibana/savedobjects_encryption_key
+
+  - name: fetch saved objects encryption key
+    command: cat /etc/kibana/savedobjects_encryption_key
+    changed_when: false
+    register: kibana_savedobjects_encryption_key
+  delegate_to: "{{ elasticsearch_ca }}"
+  run_once: true
+
 - name: create certificate directory
   file:
     path: /etc/kibana/certs
@@ -19,7 +36,15 @@
     - certificates
 
 - name: create individual certificates for Kibana
-  command: /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12 --ca-pass {{ elastic_ca_pass }} --name {{ ansible_hostname }} --ip {{ ansible_default_ipv4.address }} --dns {{ ansible_hostname }},{{ ansible_fqdn }} --pass "" --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
+  command: >
+    /usr/share/elasticsearch/bin/elasticsearch-certutil cert
+    --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
+    --ca-pass {{ elastic_ca_pass }}
+    --name {{ ansible_hostname }}
+    --ip {{ ansible_default_ipv4.address }}
+    --dns {{ ansible_hostname }},{{ ansible_fqdn }}
+    --pass ""
+    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
   delegate_to: "{{ elasticsearch_ca }}"
   args:
     creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"

@@ -7,6 +7,7 @@ elasticsearch.ssl.certificateAuthorities:  "/etc/kibana/certs/ca.crt"
 {% if "localhost" in kibana_elasticsearch_hosts %}elasticsearch.ssl.verificationMode: certificate
 {% endif %}
 xpack.security.encryptionKey: "{{ kibana_encryption_key.stdout }}"
+xpack.encryptedSavedObjects.encryptionKey: "{{ kibana_savedobjects_encryption_key.stdout }}"
 {% else %}
 elasticsearch.hosts: [{% for host in kibana_elasticsearch_hosts %}"http://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}

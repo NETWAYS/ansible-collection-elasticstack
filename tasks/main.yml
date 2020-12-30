@@ -1,5 +1,16 @@
 ---
 # tasks file for kibana
+- name: Set Elasticsearch hosts if used with other roles
+  set_fact:
+    kibana_elasticsearch_hosts: "{{ groups['elasticsearch'] }}"
+  when: kibana_elasticsearch_hosts is undefined and groups['elasticsearch'] is defined
+
+- name: Set Elasticsearch hosts to localhost if no other information is available
+  set_fact:
+    kibana_elasticsearch_hosts:
+      - localhost
+  when: kibana_elasticsearch_hosts is undefined and groups['elasticsearch'] is undefined
+
 - name: install Kibana
   package:
     name: kibana

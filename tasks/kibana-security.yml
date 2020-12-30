@@ -1,27 +1,39 @@
 ---
+
+- name: Make sure openssl is installed
+  package:
+    name: openssl
+
+- name: Set elasticsearch_ca variable if not already done by user
+  set_fact:
+    elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
+  when: elasticsearch_ca is undefined
+  tags:
+    - certificates
+
 - name: Block for key generation
   block:
-  - name: generate encryption key
-    shell: openssl rand -base64 36 > /etc/kibana/encryption_key
-    changed_when: false
-    args:
-      creates: /etc/kibana/encryption_key
+    - name: generate encryption key
+      shell: openssl rand -base64 36 > {{ elastic_ca_dir }}/encryption_key
+      changed_when: false
+      args:
+        creates: "{{ elastic_ca_dir }}/encryption_key"
 
-  - name: fetch encryption key
-    command: cat /etc/kibana/encryption_key
-    changed_when: false
-    register: kibana_encryption_key
+    - name: fetch encryption key
+      command: cat {{ elastic_ca_dir }}/encryption_key
+      changed_when: false
+      register: kibana_encryption_key
 
-  - name: generate saved objects encryption key
-    shell: openssl rand -base64 36 > /etc/kibana/savedobjects_encryption_key
-    changed_when: false
-    args:
-      creates: /etc/kibana/savedobjects_encryption_key
+    - name: generate saved objects encryption key
+      shell: openssl rand -base64 36 > {{ elastic_ca_dir }}/savedobjects_encryption_key
+      changed_when: false
+      args:
+        creates: "{{ elastic_ca_dir }}/savedobjects_encryption_key"
 
-  - name: fetch saved objects encryption key
-    command: cat /etc/kibana/savedobjects_encryption_key
-    changed_when: false
-    register: kibana_savedobjects_encryption_key
+    - name: fetch saved objects encryption key
+      command: cat {{ elastic_ca_dir }}/savedobjects_encryption_key
+      changed_when: false
+      register: kibana_savedobjects_encryption_key
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true
 

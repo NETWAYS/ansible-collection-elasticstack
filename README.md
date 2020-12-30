@@ -40,7 +40,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_elasticsearch_output*: Enable default pipeline to Elasticsearch (default: `true`)
 * *logstash_beats_input*: Enable default pipeline with `beats` input (default: `true`)
 * *logstash_connector*: Enable default to connect input and output (default: `true`)
-* *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: `127.0.0.1`)
+* *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (default: `false`)
 
 The following variables only apply if you use this role together with our Elasticsearch and Kibana roles.

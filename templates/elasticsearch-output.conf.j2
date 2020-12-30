@@ -1,6 +1,6 @@
 output {
   elasticsearch {
-    hosts => [ "{{ logstash_elasticsearch }}"]
+    hosts => [ {% for host in logstash_elasticsearch %}"{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
 {% if elastic_stack_full_stack | bool and logstash_security | bool %}
     keystore => "/etc/logstash/certs/cert.p12"
     keystore_password => ""

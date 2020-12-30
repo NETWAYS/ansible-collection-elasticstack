@@ -4,18 +4,11 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: logstash-full-logstash
-    groups:
-      - logstash
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
-    pre_build_image: true
-  - name: logstash-full-elasticsearch
+  - name: logstash-full
     groups:
       - elasticsearch
+      - logstash
+      - filebeat
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:

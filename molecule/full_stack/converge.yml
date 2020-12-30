@@ -13,19 +13,31 @@
     - name: "Include Elastics repos role"
       include_role:
         name: elastic-repos
-- name: Elasticsearch
-  hosts: elasticsearch
-  tasks:
+    - name: Install rsyslog
+      package:
+        name: rsyslog
+    - name: Start rsyslog
+      service:
+        name: rsyslog
+        state: started
+    - name: "Include Filebeat"
+      include_role:
+        name: filebeat
     - name: "Include Elasticsearch role"
       include_role:
         name: elasticsearch
-- name: Logstash
-  hosts: logstash
-  tasks:
-    # temporarily disabled because role is unavailable
-    #- name: "Include Redis"
-    #  include_role:
-    #    name: geerlingguy.redis
+    - name: "Include Redis"
+      include_role:
+        name: geerlingguy.redis
     - name: "Include Logstash"
       include_role:
         name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+    - name: Configure rsyslog
+      lineinfile:
+        line: "*.* @@localhost:514"
+        path: /etc/rsyslog.conf
+    - name: Restart rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+      changed_when: false

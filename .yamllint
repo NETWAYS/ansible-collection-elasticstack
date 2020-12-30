@@ -1,5 +1,2 @@
 ---
-extends: default
-
-rules:
-  truthy: disable
+extends: relaxed

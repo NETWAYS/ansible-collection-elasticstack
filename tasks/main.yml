@@ -1,4 +1,17 @@
 ---
+
+- name: Set Elasticsearch hosts if used with other roles
+  set_fact:
+    logstash_elasticsearch: "{{ groups['elasticsearch'] }}"
+  when: logstash_elasticsearch is undefined and groups['elasticsearch'] is defined
+
+- name: Set Elasticsearch hosts to localhost if no other information is available
+  set_fact:
+    logstash_elasticsearch:
+      - localhost
+  when: logstash_elasticsearch is undefined and groups['elasticsearch'] is undefined
+
+
 - name: Ensure Logstash is installed
   package:
     name: logstash

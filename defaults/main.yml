@@ -23,7 +23,6 @@ logstash_manage_pipelines: true
 logstash_elasticsearch_output: true
 logstash_beats_input: true
 logstash_connector: true
-logstash_elasticsearch: 127.0.0.1
 
 # logstash security
 logstash_security: false
@@ -34,3 +33,4 @@ logstash_password: password
 elastic_stack_full_stack: false
 elastic_ca_dir: /opt/es-ca
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+elastic_ca_pass: PleaseChangeMe

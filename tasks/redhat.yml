@@ -3,7 +3,7 @@
   rpm_key:
     key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
     state: present
-- name: Ensure Elasticsearch yum repository is configured (RedHat)
+- name: Ensure Elastic Stack yum repository is configured (RedHat)
   yum_repository:
     name: elastic-{{ elastic_release }}.x
     description: Elastic Release {{ elastic_release }}.x
@@ -11,3 +11,13 @@
     baseurl: https://artifacts.elastic.co/packages/{{ elastic_release }}.x/yum
     gpgcheck: yes
     gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+  when: elastic_variant == "elastic"
+- name: Ensure Elastic Stack OSS yum repository is configured (RedHat)
+  yum_repository:
+    name: elastic-oss-{{ elastic_release }}.x
+    description: Elastic OSS Release {{ elastic_release }}.x
+    file: elastic-oss-release
+    baseurl: https://artifacts.elastic.co/packages/oss-{{ elastic_release }}.x/yum
+    gpgcheck: yes
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+  when: elastic_variant == "oss"

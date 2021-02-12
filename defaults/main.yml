@@ -1,3 +1,4 @@
 ---
 # defaults file for elastic-repos
 elastic_release: 7
+elastic_variant: elastic

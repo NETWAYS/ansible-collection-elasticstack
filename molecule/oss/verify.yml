@@ -6,4 +6,4 @@
   tasks:
   - name: Install Kibana
     package:
-      name: kibana
+      name: kibana-oss

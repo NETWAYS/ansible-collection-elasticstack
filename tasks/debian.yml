@@ -1,10 +1,17 @@
 ---
-- name: Ensure Elasticsearch key is available (Debian)
+- name: Ensure Elastic Stack key is available (Debian)
   apt_key:
     url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
     state: present
 
-- name: Ensure Elasticsearch apt repository is configured (Debian)
+- name: Ensure Elastic Stack apt repository is configured (Debian)
   apt_repository:
     repo: deb https://artifacts.elastic.co/packages/{{ elastic_release }}.x/apt stable main
     state: present
+  when: elastic_variant == "elastic"
+
+- name: Ensure Elastic Stack OSS apt repository is configured (Debian)
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/oss-{{ elastic_release }}.x/apt stable main
+    state: present
+  when: elastic_variant == "oss"

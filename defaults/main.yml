@@ -17,3 +17,8 @@ elastic_ca_dir: /opt/es-ca
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elastic_ca_pass: PleaseChangeMe
 elastic_cert_pass: PleaseChangeMeIndividually
+
+# "global" variables for all roles
+
+elastic_release: 7
+elastic_variant: elastic

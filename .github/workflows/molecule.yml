@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      # max-parallel: 4
+      #max-parallel: 3
       matrix:
         distro: [centos7, debian10]
-        scenario: [default,cluster]
+        scenario: [default, cluster, cluster-oss]
 
     steps:
       - name: Check out code

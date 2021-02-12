@@ -15,6 +15,12 @@
 - name: Ensure Elasticsearch is installed
   package:
     name: elasticsearch
+  when: elastic_variant == "elastic"
+
+- name: Ensure Elasticsearch OSS is installed
+  package:
+    name: elasticsearch-oss
+  when: elastic_variant == "oss"
 
 - name: Configure Elasticsearch
   template:
@@ -29,7 +35,9 @@
   when: elasticsearch_manage_yaml | bool
 
 - import_tasks: elasticsearch-security.yml
-  when: elasticsearch_security | bool
+  when:
+    - elasticsearch_security | bool
+    - elastic_variant == "elastic"
   tags:
     - security
 
@@ -42,4 +50,6 @@
 - name: Show hint about passwords
   debug:
     msg: "Remember, your temporary passwords can be found on {{ elasticsearch_ca }} in {{ elastic_initial_passwords }}"
-  when: elasticsearch_security | bool
+  when:
+    - elasticsearch_security | bool
+    - elastic_variant == "elastic"

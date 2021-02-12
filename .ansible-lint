@@ -1,4 +1,5 @@
 skip_list:
-  - '204'
-  - '303'
-  - '306'
+  - 'command-instead-of-module'
+  - 'risky-shell-pipe'
+  - 'role-name'
+  - 'line-length'

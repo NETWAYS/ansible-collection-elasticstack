@@ -11,6 +11,7 @@ cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
 {% if elastic_temperature is defined %}
 node.attr.temp: "{{ elastic_temperature }}"
 {% endif %}
+{% if elastic_variant == "elastic" %}
 xpack.ml.enabled: {{ elasticsearch_ml_enabled }}
 xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}
 {% if elasticsearch_security | bool %}
@@ -24,5 +25,6 @@ xpack.security.transport.ssl.truststore.path: certs/{{ ansible_hostname }}.p12
 xpack.security.http.ssl.enabled: true
 xpack.security.http.ssl.keystore.path: certs/{{ ansible_hostname }}.p12
 xpack.security.http.ssl.truststore.path: certs/{{ ansible_hostname }}.p12
+{% endif %}
 {% endif %}
 {% endif %}

@@ -1,0 +1,37 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Check if Logstash configuration does what it should
+  hosts: all
+  tasks:
+  - name: Give some time for tools to connect
+    wait_for:
+      timeout: 120
+  - name: Run syntax check
+    command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
+    when: "'logstash' in group_names"
+  - name: Check for open port 5044/tcp
+    wait_for:
+      port: 5044
+    when: "'logstash' in group_names"
+  - name: Query for Logstasch indices
+    shell: >
+      curl -s http://localhost:9200/_cat/indices |
+      grep logstash |
+      awk {' print $7 '} |
+      sort -n |
+      tail -1
+    register: logstash_count
+    when: "'elasticsearch' in group_names"
+  - name: Show full output
+    debug:
+      var: logstash_count
+    when: "'elasticsearch' in group_names"
+  - name: Fail when logstash is empty
+    fail:
+      msg: "Logstash Index is empty"
+    when: "'elasticsearch' in group_names and logstash_count.stdout == 0"
+  - name: Show number of received events
+    debug:
+      msg: "Elasticsearch received {{ logstash_count.stdout }} events so far"
+    when: "'elasticsearch' in group_names"

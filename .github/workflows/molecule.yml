@@ -16,7 +16,7 @@ jobs:
       # max-parallel: 4
       matrix:
         distro: [centos7, debian10]
-        scenario: [default, run_logstash, full_stack]
+        scenario: [default, run_logstash, full_stack, full_stack-oss]
 
     steps:
       - name: Check out code

@@ -9,6 +9,8 @@ It can optionally configure two types of Logstash pipelines:
 * Pipeline configuration managed in an external git repository
 * A default pipeline which will read from different Redis keys and write into Elasticsearch
 
+It will work with the standard Elastic Stack packages and Elastics OSS variant.
+
 Requirements
 ------------
 
@@ -42,6 +44,11 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_connector*: Enable default to connect input and output (default: `true`)
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (default: `false`)
+
+These variables are identical over all our elastic related roles, hence the different naming scheme.
+
+*elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
+*elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
 
 The following variables only apply if you use this role together with our Elasticsearch and Kibana roles.
 

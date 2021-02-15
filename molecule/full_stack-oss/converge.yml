@@ -1,0 +1,51 @@
+---
+# The workaround for arbitrarily named role directory is important because the
+# git repo has one name and the role within it another
+# Found at:
+# https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+#
+# Currently security is not implemented with OSS. We leave the variable set
+# to check for handling of misconfiguration (and be prepared for upcoming
+# implementations)
+# But we need to deactivate security in Elasticsearch to not lock out
+# Logstash
+- name: Converge
+  hosts: all
+  vars:
+    logstash_enable: true
+    logstash_security: true
+    elasticsearch_security: false
+    elastic_stack_full_stack: true
+    elastic_variant: oss
+  tasks:
+    - name: "Include Elastics repos role"
+      include_role:
+        name: elastic-repos
+    - name: Install rsyslog
+      package:
+        name: rsyslog
+    - name: Start rsyslog
+      service:
+        name: rsyslog
+        state: started
+    - name: "Include Filebeat"
+      include_role:
+        name: filebeat
+    - name: "Include Elasticsearch role"
+      include_role:
+        name: elasticsearch
+    - name: "Include Redis"
+      include_role:
+        name: geerlingguy.redis
+    - name: "Include Logstash"
+      include_role:
+        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+    - name: Configure rsyslog
+      lineinfile:
+        line: "*.* @@localhost:514"
+        path: /etc/rsyslog.conf
+    - name: Restart rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+      changed_when: false

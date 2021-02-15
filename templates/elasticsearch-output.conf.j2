@@ -1,7 +1,7 @@
 output {
   elasticsearch {
     hosts => [ {% for host in logstash_elasticsearch %}"{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
-{% if elastic_stack_full_stack | bool and logstash_security | bool %}
+{% if elastic_stack_full_stack | bool and logstash_security | bool and elastic_variant == "elastic" %}
     keystore => "/etc/logstash/certs/cert.p12"
     keystore_password => ""
     cacert => "/etc/logstash/certs/ca.crt"

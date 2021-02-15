@@ -3,18 +3,28 @@
 - name: Set Elasticsearch hosts if used with other roles
   set_fact:
     logstash_elasticsearch: "{{ groups['elasticsearch'] }}"
-  when: logstash_elasticsearch is undefined and groups['elasticsearch'] is defined
+  when:
+    - logstash_elasticsearch is undefined
+    - groups['elasticsearch'] is defined
 
-- name: Set Elasticsearch hosts to localhost if no other information is available
+- name: Set Elasticsearch hosts to localhost if no other information available
   set_fact:
     logstash_elasticsearch:
       - localhost
-  when: logstash_elasticsearch is undefined and groups['elasticsearch'] is undefined
+  when:
+    - logstash_elasticsearch is undefined
+    - groups['elasticsearch'] is undefined
 
 
 - name: Ensure Logstash is installed
   package:
     name: logstash
+  when: elastic_variant == "elastic"
+
+- name: Ensure Logstash OSS is installed
+  package:
+    name: logstash-oss
+  when: elastic_variant == "oss"
 
 - name: Configure Logstash
   template:
@@ -142,7 +152,10 @@
   when: logstash_manage_pipelines | bool
 
 - import_tasks: logstash-security.yml
-  when: elastic_stack_full_stack | bool and logstash_security | bool
+  when:
+    - elastic_stack_full_stack | bool
+    - logstash_security | bool
+    - elastic_variant == "elastic"
   tags:
     - security
 

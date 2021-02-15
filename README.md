@@ -26,6 +26,12 @@ Role Variables
 * *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elastic_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
 
+These variables are identical over all our elastic related roles, hence the different naming scheme.
+
+*elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
+*elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+
+
 If you don't change `kibana_elasticsearch_hosts`, certificate verification will skip hostname checks
 
 Dependencies

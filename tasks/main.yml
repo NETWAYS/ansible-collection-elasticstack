@@ -14,8 +14,18 @@
 - name: install Kibana
   package:
     name: kibana
+  when: elastic_variant == "elastic"
+
+- name: install Kibana OSS
+  package:
+    name: kibana-oss
+  when: elastic_variant == "oss"
+
 - import_tasks: kibana-security.yml
-  when: elasticsearch_http_security is defined and elasticsearch_http_security | bool
+  when:
+    - elasticsearch_http_security is defined
+    - elasticsearch_http_security | bool
+    - elastic_variant == "elastic"
   tags:
     - security
 - name: Configure Kibana

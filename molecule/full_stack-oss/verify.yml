@@ -1,0 +1,37 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  tasks:
+  - name: Give some time for all services to connect
+    wait_for:
+      timeout: 120
+  - name: Kibana checks
+    block:
+    - name: fetch kibana.yml
+      command: cat /etc/kibana/kibana.yml
+      register: kibanayml
+    - name: Show kibana.yml
+      debug:
+        var: kibanayml.stdout_lines
+    - name: Check for Kibana port
+      wait_for:
+        port: 5601
+    - name: Connect to Elasticsearch
+      command: "curl -s http://{{ groups['elasticsearch'][0] }}:9200/_cat/indices"
+    - name: Connect to Kibana
+      command: "curl -s http://{{ ansible_hostname }}:5601/api/status"
+      register: curl_out
+      failed_when: "'Green' not in curl_out.stdout"
+    when: "'kibana' in group_names"
+  # The following might be nicer but doesn't work
+  #- name: Connect to Kibana
+  #  uri:
+  #    url: http://ansible-role-kibana_full_stack:5601/api/status
+  #    user: elastic
+  #    password: "{{ elastic_password.stdout }}"
+  #    return_content: yes
+  #  register: kibana_status
+  #  #failed_when: "'"title": "Green"' not in kibana_status.content"
+  #  failed_when: "'Green' not in kibana_status.content"

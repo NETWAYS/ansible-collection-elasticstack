@@ -1,5 +1,5 @@
 server.host: "0.0.0.0"
-{% if elasticsearch_http_security is defined and elasticsearch_http_security | bool %}
+{% if elasticsearch_http_security is defined and elasticsearch_http_security | bool  and elastic_variant == "elastic" %}
 elasticsearch.hosts: [{% for host in kibana_elasticsearch_hosts %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
 elasticsearch.username: "kibana"
 elasticsearch.password: "{{ kibana_password.stdout }}"

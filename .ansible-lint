@@ -1,3 +1,4 @@
 skip_list:
-  - '204'
-  - '306'
+  - 'risky-shell-pipe'
+  - 'role-name'
+  - 'line-length'

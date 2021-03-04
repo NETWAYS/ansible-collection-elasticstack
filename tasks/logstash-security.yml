@@ -102,7 +102,7 @@
 
 - name: Check for logstash_writer role
   shell: >
-    curl --cacert /etc/logstash/certs/ca.crt
+    curl --cacert {{ elastic_ca_dir }}/ca.crt
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_security/role/logstash_writer
     | grep "enabled"
@@ -115,7 +115,7 @@
 - name: Put logstash_writer role into Elasticsearch
   command: >
     curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
-    --cacert /etc/logstash/certs/ca.crt
+    --cacert {{ elastic_ca_dir }}/ca.crt
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_xpack/security/role/logstash_writer
   delegate_to: "{{ elasticsearch_ca }}"
@@ -124,7 +124,7 @@
 
 - name: Check for logstash_writer user
   shell: >
-    curl --cacert /etc/logstash/certs/ca.crt
+    curl --cacert {{ elastic_ca_dir }}/ca.crt
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_security/user/{{ logstash_user }}
     | grep "enabled"
@@ -137,7 +137,7 @@
 - name: Put logstash_writer user into Elasticsearch
   command: >
     curl -T /root/logstash_writer_user --header 'Content-Type: application/json'
-    --cacert /etc/logstash/certs/ca.crt
+    --cacert {{ elastic_ca_dir }}/ca.crt
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_xpack/security/user/{{ logstash_user }}
   delegate_to: "{{ elasticsearch_ca }}"

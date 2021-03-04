@@ -1,0 +1,68 @@
+---
+- name: create certificate directory
+  file:
+    path: /etc/beats/certs
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: create individual certificates for Beats
+  command: >
+    /usr/share/elasticsearch/bin/elasticsearch-certutil cert
+    --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
+    --ca-pass {{ elastic_ca_pass }}
+    --name {{ ansible_hostname }}
+    --ip {{ ansible_default_ipv4.address }}
+    --dns {{ ansible_hostname }},{{ ansible_fqdn }}
+    --pass ""
+    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
+  delegate_to: "{{ elasticsearch_ca }}"
+  args:
+    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+
+- name: Fetch certificate from ca host to master
+  fetch:
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+    dest: "/tmp/{{ ansible_hostname }}.p12"
+    flat: yes
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - certificates
+
+- name: Copy the certificate to actual node
+  copy:
+    src: "/tmp/{{ ansible_hostname }}.p12"
+    dest: "/etc/beats/certs/cert.p12"
+    owner: root
+    group: root
+    mode: 0640
+  tags:
+    - certificates
+
+- name: Fetch ca certificate from ca host to master
+  fetch:
+    src: "{{ elastic_ca_dir }}/ca.crt"
+    dest: /tmp/ca.crt
+    flat: yes
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - certificates
+
+- name: Copy the ca certificate to actual node
+  copy:
+    src: /tmp/ca.crt
+    dest: /etc/beats/certs
+    owner: root
+    group: root
+    mode: 0640
+  tags:
+    - certificates
+
+- name: fetch Beats password
+  shell: >
+    grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
+    awk {' print $4 '}
+  register: beats_writer_password
+  changed_when: false
+  delegate_to: "{{ elasticsearch_ca }}"

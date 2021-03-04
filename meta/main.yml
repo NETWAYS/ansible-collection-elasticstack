@@ -1,6 +1,7 @@
 ---
 galaxy_info:
-  author: Thomas Widhalm
+  role_name: logstash
+  author: netways
   description: Logstash for Linux
   company: "Netways GmbH"
   license: license (GPL-3.0-or-later)

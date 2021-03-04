@@ -22,7 +22,8 @@
     when: "'elasticsearch' in group_names"
   - name: Query for Logstasch indices
     shell: >
-      curl -ks -uelastic:{{ elastic_pass.stdout }} https://localhost:9200/_cat/indices |
+      curl -ks -uelastic:{{ elastic_pass.stdout }}
+      https://localhost:9200/_cat/indices |
       grep logstash |
       awk {' print $7 '} |
       sort -n |

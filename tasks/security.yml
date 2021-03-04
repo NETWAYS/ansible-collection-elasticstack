@@ -7,17 +7,28 @@
     group: root
     mode: 0700
 - name: Fetch certificate from ca host to master
-  fetch: src=/usr/share/elasticsearch/{{ ansible_hostname }}.p12 dest=/tmp/ flat=yes
+  fetch:
+    src: /usr/share/elasticsearch/{{ ansible_hostname }}.p12
+    dest: /tmp/ flat=yes
   delegate_to: "{{ elasticsearch_ca }}"
 - name: Copy the certificate to actual node
-  copy: src=/tmp/{{ ansible_hostname }}.p12 dest=/etc/beats/certs
+  copy:
+    src: /tmp/{{ ansible_hostname }}.p12
+    dest: /etc/beats/certs
+    owner: root
+    group: root
+    mode: 0700
 - name: extract CA certificate
-  shell: echo "" | openssl pkcs12 -in /etc/kibana/certs/{{ ansible_hostname }}.p12 -cacerts -nokeys -out /etc/beats/certs/ca.crt -password stdin
+  shell: >
+    echo "" |
+    openssl pkcs12 -in /etc/kibana/certs/{{ ansible_hostname }}.p12
+    -cacerts -nokeys -out /etc/beats/certs/ca.crt -password stdin
   args:
     creates: /etc/beats/certs/ca.crt
 - name: fetch Beats password
-  shell: grep "PASSWORD elastic" /usr/share/elasticsearch/initial_passwords | awk {' print $4 '}
+  shell: >
+    grep "PASSWORD elastic" /usr/share/elasticsearch/initial_passwords |
+    awk {' print $4 '}
   register: beats_writer_password
   changed_when: false
   delegate_to: "{{ elasticsearch_ca }}"
-

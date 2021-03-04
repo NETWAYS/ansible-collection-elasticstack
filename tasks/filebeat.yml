@@ -13,14 +13,18 @@
   notify:
     - Restart Filebeat
 - name: Enable modules
-  shell: "filebeat modules enable {{ item }}"
+  command: "filebeat modules enable {{ item }}"
   args:
     creates: "/etc/filebeat/modules.d/{{ item }}.yml"
   with_items: "{{ filebeat_modules }}"
+  when: filebeat_modules is defined
 - name: Enable Ingest Pipelines
-  shell: "filebeat setup --pipelines --modules {{ item }} && touch /etc/filebeat/{{ item }}_pipeline_created"
+  command: >
+    "filebeat setup --pipelines --modules {{ item }} &&
+    touch /etc/filebeat/{{ item }}_pipeline_created"
   args:
     creates: "/etc/filebeat/{{ item }}_pipeline_created"
   notify:
     - Restart Filebeat
   with_items: "{{ filebeat_modules }}"
+  when: filebeat_modules is defined

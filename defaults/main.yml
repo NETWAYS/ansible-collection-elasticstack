@@ -1,5 +1,6 @@
 ---
 # defaults file for beats
 beats_filebeat: true
-filebeat_modules:
-  - system
+#filebeat_modules:
+#  - system
+elasticsearch_http_security: false

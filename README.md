@@ -1,6 +1,8 @@
 Role Name
 =========
 
+[![CI](https://github.com/widhalmt/ansible-role-beats/workflows/Molecule%20Test/badge.svg?event=push)](https://github.com/widhalmt/ansible-role-beats/workflows/Molecule%20Test/badge.svg)
+
 A brief description of the role goes here.
 
 Requirements

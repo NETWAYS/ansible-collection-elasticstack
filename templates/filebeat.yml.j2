@@ -1,8 +1,30 @@
 filebeat.inputs:
+
+{% if filebeat_log_input | bool %}
+{% for input in filebeat_log_inputs %}
 - type: log
-  enabled: false
+  enabled: true
   paths:
-    - /var/log/*.log
+{% for path in filebeat_log_inputs[input].paths %}
+    - {{ path }}
+{% endfor %}
+
+{% endfor %}
+{% endif %}
+{% if filebeat_syslog_tcp | bool %}
+- type: tcp
+  enabled: true
+  max_message_size: 10MiB
+  host: "0.0.0.0:514"
+
+{% endif %}
+{% if filebeat_syslog_udp | bool %}
+- type: udp
+  enabled: true
+  max_message_size: 10MiB
+  host: "0.0.0.0:514"
+
+{% endif %}
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
   reload.enabled: false

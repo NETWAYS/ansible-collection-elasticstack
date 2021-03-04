@@ -2,9 +2,9 @@
 galaxy_info:
   role_name: beats
   author: widhalmt
-  description: Logstash for Linux
+  description: Beats for Linux
   company: "Netways GmbH"
-  license: license (GPL-3.0-or-later)
+  license: GPL-3.0-or-later
   min_ansible_version: 2.4
   platforms:
     - name: EL

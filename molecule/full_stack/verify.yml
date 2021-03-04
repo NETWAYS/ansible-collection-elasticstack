@@ -42,3 +42,6 @@
     debug:
       msg: "Elasticsearch received {{ logstash_count.stdout }} events so far"
     when: "'elasticsearch' in group_names"
+  - name: Wait for syslog port to open
+    wait_for:
+      port: 514

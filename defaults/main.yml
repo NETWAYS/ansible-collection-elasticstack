@@ -4,6 +4,18 @@ beats_filebeat: true
 beats_output: logstash
 beats_target_hosts: localhost
 
+filebeat_syslog_udp: false
+filebeat_syslog_udp_port: 514
+filebeat_syslog_tcp: false
+filebeat_syslog_tcp_port: 514
+filebeat_log_input: true
+filebeat_log_inputs:
+  messages:
+    name: messages
+    paths:
+      - /var/log/messages
+
+
 #filebeat_modules:
 #  - system
 

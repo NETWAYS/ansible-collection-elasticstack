@@ -2,6 +2,10 @@
 - name: Prepare
   hosts: all
   tasks:
+    - name: Refresh apt cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
     - name: Install git
       package:
         name: git
@@ -9,6 +13,7 @@
       package:
         name:
           - gpg
+          - gpg-agent
           - procps
           - curl
       when: ansible_os_family == "Debian"

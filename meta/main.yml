@@ -9,8 +9,15 @@ galaxy_info:
   platforms:
     - name: EL
       version:
-        - 6
         - 7
+        - 8
+    - name: Debian
+      version:
+        - 10
+    - name: Ubuntu
+      version:
+        - bionic
+        - focal
   galaxy_tags:
     - elk
     - logstash

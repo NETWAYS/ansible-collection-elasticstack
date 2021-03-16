@@ -5,7 +5,7 @@
 - name: elasticsearch
   src: https://github.com/widhalmt/ansible-role-elasticsearch.git
   scm: git
-- name: filebeat
-  src: https://github.com/widhalmt/ansible-role-filebeat.git
+- name: beats
+  src: https://github.com/widhalmt/ansible-role-beats.git
   scm: git
 - src: geerlingguy.redis

@@ -17,6 +17,8 @@
     elasticsearch_security: false
     elastic_stack_full_stack: true
     elastic_variant: oss
+    filebeat_syslog_udp: true
+    filebeat_syslog_tcp: true
   tasks:
     - name: "Include Elastics repos role"
       include_role:
@@ -28,12 +30,12 @@
       service:
         name: rsyslog
         state: started
-    - name: "Include Filebeat"
-      include_role:
-        name: filebeat
     - name: "Include Elasticsearch role"
       include_role:
         name: elasticsearch
+    - name: "Include Beats"
+      include_role:
+        name: beats
     - name: "Include Redis"
       include_role:
         name: geerlingguy.redis

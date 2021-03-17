@@ -1,8 +1,9 @@
 galaxy_info:
   author: Thomas Widhalm
   description: Elasticsearch Ansible role
+  role_name: elasticsearch
   company: Netways GmbH
-
+  namespace: netways
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
   # issue_tracker_url: http://example.com/issue/tracker

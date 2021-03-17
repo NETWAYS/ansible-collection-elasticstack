@@ -15,7 +15,7 @@ Role Variables
 
 * *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
 
-These variables are identical over all our elastic related roles, hence the different naming scheme.
+These variables are identical over all our elastic related roles, hence the different naming schemes.
 
 *elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
 *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)

@@ -15,8 +15,8 @@ Debian and Ubuntu hosts need to have `apt-transport-https` installed to deal wit
 Role Variables
 --------------
 
-*elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
-*elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+* *elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
+* *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
 
 Dependencies
 ------------

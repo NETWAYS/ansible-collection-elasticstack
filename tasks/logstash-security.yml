@@ -19,6 +19,8 @@
   delegate_to: "{{ elasticsearch_ca }}"
   args:
     creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+  tags:
+    - certificates
 
 - name: Fetch certificate from ca host to master
   fetch:
@@ -26,6 +28,7 @@
     dest: "/tmp/{{ ansible_hostname }}.p12"
     flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
+  changes_when: false
   tags:
     - certificates
 
@@ -57,6 +60,7 @@
     dest: /tmp/ca.crt
     flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
+  changes_when: false
   tags:
     - certificates
 

@@ -67,6 +67,15 @@
   tags:
     - certificates
 
+- name: Fetch ca certificate from ca host to master
+  fetch:
+    src: "{{ elastic_ca_dir }}/ca.crt"
+    dest: /tmp/ca.crt
+    flat: yes
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - certificates
+
 - name: Fetch certificate from ca host to master
   fetch:
     src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
@@ -83,6 +92,18 @@
     owner: root
     group: elasticsearch
     mode: 0750
+  tags:
+    - certificates
+
+- name: Copy the ca certificate to actual node
+  copy:
+    src: /tmp/ca.crt
+    dest: "/etc/elasticsearch/certs"
+    owner: root
+    group: elasticsearch
+    mode: 0640
+  notify:
+    - Restart Elasticsearch
   tags:
     - certificates
 

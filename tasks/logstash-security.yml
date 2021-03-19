@@ -28,7 +28,6 @@
     dest: "/tmp/{{ ansible_hostname }}.p12"
     flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
-  changes_when: false
   tags:
     - certificates
 
@@ -60,7 +59,6 @@
     dest: /tmp/ca.crt
     flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
-  changes_when: false
   tags:
     - certificates
 

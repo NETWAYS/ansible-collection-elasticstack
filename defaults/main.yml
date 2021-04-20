@@ -2,7 +2,8 @@
 # defaults file for beats
 beats_filebeat: true
 beats_output: logstash
-beats_target_hosts: localhost
+beats_target_hosts:
+  - localhost
 
 filebeat_syslog_udp: false
 filebeat_syslog_udp_port: 514

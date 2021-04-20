@@ -32,6 +32,8 @@ Default of `filebeat_log_inputs`
 
 * *beats_output*: Set to `logstash` or `elasticsearch`. (default: `logstash`)
 * *beats_target_hosts*: Only use when this role is used standalone. When used in combination with our other roles, the target hosts will be determined automatically. Use a YAML list. (default: `- localhost`)
+* *beats_elasticsearch_output_port*: Port of Elasticsearch to send events to (Default: `9200`)
+* *beats_logstash_output_port*: Port of Logstash to send events to (Default: `5400`)
 
 The following variables only apply if you use this role together with our other Elastic Stack roles.
 

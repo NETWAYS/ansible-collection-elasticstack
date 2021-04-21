@@ -33,6 +33,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -x 'bootstrap.password'
   when: "'bootstrap.password' not in es_keystore.stdout_lines"
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: create ca and certificates
   block:
@@ -106,6 +107,7 @@
     - Restart Elasticsearch
   tags:
     - certificates
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Copy the certificate to actual node
   copy:
@@ -118,6 +120,7 @@
     - Restart Elasticsearch
   tags:
     - certificates
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Start Elasticsearch
   service:
@@ -160,6 +163,7 @@
     cut -d\" -f4
   register: es_cluster_status
   changed_when: false
+  ignore_errors: "{{ ansible_check_mode }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
 - name: Check for open port 9200/tcp

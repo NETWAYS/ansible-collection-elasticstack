@@ -4,6 +4,11 @@ beats_filebeat: true
 beats_output: logstash
 beats_target_hosts:
   - localhost
+beats_logstash_output_port: 5044
+beats_elasticsearch_output_port: 9200
+beats_logging: file
+beats_logpath: /var/log/beats
+beats_loglevel: info
 
 filebeat_syslog_udp: false
 filebeat_syslog_udp_port: 514
@@ -15,8 +20,6 @@ filebeat_log_inputs:
     name: messages
     paths:
       - /var/log/messages
-beats_logstash_output_port: 5044
-beats_elasticsearch_output_port: 9200
 
 
 #filebeat_modules:

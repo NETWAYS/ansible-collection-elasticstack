@@ -60,6 +60,17 @@ output.logstash:
   hosts: [ {% for host in beats_target_hosts %}"{{ host }}:{{ beats_logstash_output_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}
 {% endif %}
+
+{% if beats_logging == "file" %}
+logging.level: {{ beats_loglevel }}
+logging.to_files: true
+logging.files:
+  path: {{ beats_logpath }}/filebeat.log
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+{% endif %}
+
 processors:
   - add_host_metadata: ~
   - add_cloud_metadata: ~

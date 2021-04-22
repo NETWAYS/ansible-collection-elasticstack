@@ -6,6 +6,15 @@
   tags:
     - certificates
 
+- name: Create directory for logging if file logging is activated
+  file:
+    path: "{{ beats_logpath }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+  when: beats_logging == "file"
+
 - import_tasks: beats-security.yml
   when: elasticsearch_http_security | bool
 

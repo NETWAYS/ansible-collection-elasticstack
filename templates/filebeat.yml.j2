@@ -59,6 +59,14 @@ output.logstash:
 {% else %}
   hosts: [ {% for host in beats_target_hosts %}"{{ host }}:{{ beats_logstash_output_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}
+{% if beats_tls | bool %}
+  ssl.enabled: true
+  ssl.certificate_authorities: ["{{ beats_tls_cacert }}"]
+  ssl.verification_mode: full
+  ssl.key: {{ beats_tls_key }}
+  ssl.key_passphrase: {{ beats_tls_key_passphrase }}
+  ssl.certificate: {{ beats_tls_cert }}
+{% endif %}
 {% endif %}
 
 {% if beats_logging == "file" %}

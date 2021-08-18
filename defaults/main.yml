@@ -10,6 +10,16 @@ beats_logging: file
 beats_logpath: /var/log/beats
 beats_loglevel: info
 
+# Use TLS without Elastic X-Pack #
+
+beats_tls: false
+beats_tls_key: /opt/ca/{{ ansible_hostname }}.key
+beats_tls_cert: /opt/ca/{{ ansible_hostname }}.crt
+beats_tls_cacert: /opt/ca/ca.crt
+beats_tls_key_passphrase: ChangeMe
+
+# Filebeat specific #
+
 filebeat_syslog_udp: false
 filebeat_syslog_udp_port: 514
 filebeat_syslog_tcp: false

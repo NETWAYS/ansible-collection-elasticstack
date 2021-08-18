@@ -45,6 +45,15 @@ The following variables only apply if you use this role together with our other 
 * *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elastic_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
 
+If you want to use this role with your own TLS certificates, use these variables.
+
+* *beats_tls*: Enable TLS without X-Pack (default: `false`)
+* *beats_tls_key*: Path to the keyfiles (default: `/opt/ca/{{ ansible_hostname }}.key`)
+* *beats_tls_cert*: Path to the certificate (default: `/opt/ca/{{ ansible_hostname }}.crt`)
+* *beats_tls_key_passphrase*: Passphrase of the keyfile (default: `ChangeMe`)
+* *beats_tls_cacert*: Path to the CA.crt (default: `/opt/ca/ca.crt`)
+
+
 Dependencies
 ------------
 

@@ -4,7 +4,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: beats-full
+  - name: beats_full_${MOLECULE_DISTRO:-centos7}
     groups:
       - elasticsearch
       - logstash

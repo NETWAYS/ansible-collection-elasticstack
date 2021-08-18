@@ -4,7 +4,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: beats_default
+  - name: beats_default_${MOLECULE_DISTRO:-centos7}
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:

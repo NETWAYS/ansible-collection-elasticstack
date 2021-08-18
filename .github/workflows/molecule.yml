@@ -16,7 +16,9 @@ jobs:
       # max-parallel: 4
       matrix:
         distro: [centos7, debian10]
-        scenario: [default, full_stack]
+        scenario: [default]
+# disabling full stack until Elasticsearch issues are fixed
+        #scenario: [default, full_stack]
 
     steps:
       - name: Check out code

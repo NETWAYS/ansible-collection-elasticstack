@@ -13,8 +13,8 @@ beats_loglevel: info
 # Use TLS without Elastic X-Pack #
 
 beats_tls: false
-beats_tls_key: /opt/ca/{{ ansible_hostname }}.key
-beats_tls_cert: /opt/ca/{{ ansible_hostname }}.crt
+beats_tls_key: /opt/ca/{{ inventory_hostname }}.key
+beats_tls_cert: /opt/ca/{{ inventory_hostname }}.crt
 beats_tls_cacert: /opt/ca/ca.crt
 beats_tls_key_passphrase: ChangeMe
 

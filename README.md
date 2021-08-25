@@ -15,6 +15,7 @@ You need to have Filebeat available in your software repositories. We provide a 
 Role Variables
 --------------
 
+* *filebeat_enable*: Automatically start Filebeat (Default: `true`)
 * *filebeat_syslog_udp*: Use UDP Syslog input (Default: `false`)
 * *filebeat_syslog_udp_port*: Port of UDP Syslog input (Default: `514`)
 * *filebeat_syslog_tcp*: Use TCP Syslog input (Default: `false`)

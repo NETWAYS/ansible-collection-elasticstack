@@ -30,6 +30,7 @@ filebeat_log_inputs:
     name: messages
     paths:
       - /var/log/messages
+filebeat_enable: true
 
 
 #filebeat_modules:

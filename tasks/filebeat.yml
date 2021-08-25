@@ -30,3 +30,10 @@
     - Restart Filebeat
   with_items: "{{ filebeat_modules }}"
   when: filebeat_modules is defined
+
+- name: Start Filebeat
+  service:
+    name: filebeat
+    state: started
+    enabled: true
+  when: filebeat_enable | bool

@@ -15,7 +15,7 @@ jobs:
     strategy:
       # max-parallel: 4
       matrix:
-        distro: [centos7, debian10]
+        distro: [centos7, debian10, rockylinux8]
         scenario: [default]
 # disabling full stack until Elasticsearch issues are fixed
         #scenario: [default, full_stack]

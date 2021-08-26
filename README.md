@@ -49,10 +49,11 @@ The following variables only apply if you use this role together with our other 
 If you want to use this role with your own TLS certificates, use these variables.
 
 * *beats_tls*: Enable TLS without X-Pack (default: `false`)
-* *beats_tls_key*: Path to the keyfiles (default: `/opt/ca/{{ ansible_hostname }}.key`)
-* *beats_tls_cert*: Path to the certificate (default: `/opt/ca/{{ ansible_hostname }}.crt`)
+* *beats_ca_dir*: Path to custom CA certificates and keys (default: `/opt/ca`)
+* *beats_tls_key*: Path to the keyfiles (default: `{{ beats_ca_dir }}/{{ ansible_hostname }}.key`)
+* *beats_tls_cert*: Path to the certificate (default: `{{ beats_ca_dir }}/{{ ansible_hostname }}.crt`)
 * *beats_tls_key_passphrase*: Passphrase of the keyfile (default: `ChangeMe`)
-* *beats_tls_cacert*: Path to the CA.crt (default: `/opt/ca/ca.crt`)
+* *beats_tls_cacert*: Path to the CA.crt (default: `{{ beats_ca_dir }}/ca.crt`)
 
 
 Dependencies

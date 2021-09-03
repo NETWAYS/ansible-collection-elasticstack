@@ -31,7 +31,7 @@ filebeat.config.modules:
 setup.template.settings:
   index.number_of_shards: 1
 setup.kibana:
-{% if beats_output == "elasticseach" %}
+{% if filebeat_output == "elasticseach" %}
 output.elasticsearch:
 {% if elasticsearch_http_security | bool %}
 {% if elastic_stack_full_stack | bool %}
@@ -52,7 +52,7 @@ output.elasticsearch:
 {% endif %}
 {% endif %}
 {% endif %}
-{% if beats_output == "logstash" %}
+{% if filebeat_output == "logstash" %}
 output.logstash:
 {% if elastic_stack_full_stack | bool %}
   hosts: [ {% for host in groups['logstash'] %}"{{ host }}:{{ beats_logstash_output_port }}"{% if not loop.last %},{% endif %}{% endfor %}]

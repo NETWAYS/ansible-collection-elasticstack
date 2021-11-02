@@ -1,5 +1,6 @@
 ---
 # defaults file for logstash
+logstash_package: logstash
 logstash_enable: true
 logstash_config_backup: no
 logstash_manage_yaml: true

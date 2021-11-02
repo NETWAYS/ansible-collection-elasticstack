@@ -25,6 +25,7 @@ If you want to use the default pipeline (or other pipelines communicating via Re
 Role Variables
 --------------
 
+* *logstash_package*: Name of the Logstash package. You can use it do install a specific version (default: ogstash`)
 * *logstash_enable*: Start and enable Logstash service (default: `true`)
 * *logstash_config_backup*: Keep backups of all changed configuration (defualt: `no`)
 * *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)

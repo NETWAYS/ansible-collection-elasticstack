@@ -15,16 +15,17 @@
     - logstash_elasticsearch is undefined
     - groups['elasticsearch'] is undefined
 
-
 - name: Ensure Logstash is installed
   package:
-    name: "{{ logstash_package }}"
-  when: elastic_variant == "elastic"
+    name: "logstash{{ logstash_version }}"
+  when:
+    - elastic_variant == "elastic"
 
 - name: Ensure Logstash OSS is installed
   package:
-    name: logstash-oss
-  when: elastic_variant == "oss"
+    name: "logstash-oss{{ logstash_version }}"
+  when:
+    - elastic_variant == "oss"
 
 - name: Configure Logstash
   template:

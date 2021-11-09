@@ -16,6 +16,9 @@ logstash_config_path_logs: /var/log/logstash
 
 # pipeline configuration #
 logstash_manage_pipelines: true
+
+# this will deactivate all pipeline management
+logstash_no_pipelines: false
 # logstash_pipelines:
 #   shipper:
 #     name: shipper

@@ -39,25 +39,28 @@
     - Restart Logstash
   when: logstash_manage_yaml | bool
 
-- name: Create Logstash pipeline directories
-  file:
-    path: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  with_items: "{{ logstash_pipelines }}"
-  when: logstash_manage_pipelines | bool and logstash_pipelines is defined
+- name: Fetch pipelines from git repositories
+  block:
+    - name: Create Logstash pipeline directories
+      file:
+        path: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+      with_items: "{{ logstash_pipelines }}"
 
-- name: Check out pipeline configuration
-  git:
-    repo: "{{ logstash_pipelines[item].source }}"
-    dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
-    version: master
-  with_items: "{{ logstash_pipelines }}"
-  when: logstash_manage_pipelines | bool and logstash_pipelines is defined
-  notify:
-    - Restart Logstash noauto
+    - name: Check out pipeline configuration
+      git:
+        repo: "{{ logstash_pipelines[item].source }}"
+        dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
+        version: master
+      with_items: "{{ logstash_pipelines }}"
+      notify:
+        - Restart Logstash noauto
+  when:
+    - logstash_pipelines is defined
+    - not logstash_no_pipelines | bool
 
 - name: Create default Elasticsearch output pipeline
   block:
@@ -88,7 +91,9 @@
         mode: 0644
       notify:
         - Restart Logstash noauto
-  when: logstash_elasticsearch_output | bool
+  when:
+    - logstash_elasticsearch_output | bool
+    - not logstash_no_pipelines | bool
 
 - name: Create default Beats input pipeline
   block:
@@ -119,7 +124,9 @@
         mode: 0644
       notify:
         - Restart Logstash noauto
-  when: logstash_beats_input | bool
+  when:
+    - logstash_beats_input | bool
+    - not logstash_no_pipelines | bool
 
 - name: Create default connector pipeline
   block:
@@ -140,7 +147,9 @@
         mode: 0644
       notify:
         - Restart Logstash noauto
-  when: logstash_connector | bool
+  when:
+    - logstash_connector | bool
+    - not logstash_no_pipelines | bool
 
 - name: Configure Logstash pipelines
   template:
@@ -150,7 +159,9 @@
     group: root
     mode: 0644
     backup: "{{ logstash_config_backup }}"
-  when: logstash_manage_pipelines | bool
+  when:
+    - logstash_manage_pipelines | bool
+    - not logstash_no_pipelines | bool
 
 - import_tasks: logstash-security.yml
   when:

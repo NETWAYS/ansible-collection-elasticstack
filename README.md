@@ -38,7 +38,8 @@ If `logstash.yml` is managed, the following settings apply.
 
 Aside from `logstash.yml` we can manage Logstashs pipelines.
 
-* *logstash_manage_pipelines*: Manage pipelines at all (default: `true`)
+* *logstash_manage_pipelines*: Manage `pipelines.yml` (default: `true`)
+* *logstash_no_pipelines*: Don't manage pipelines at all (default: `false`)
 * *logstash_pipelines*: List of pipelines with URL to repo
 * *logstash_elasticsearch_output*: Enable default pipeline to Elasticsearch (default: `true`)
 * *logstash_beats_input*: Enable default pipeline with `beats` input (default: `true`)

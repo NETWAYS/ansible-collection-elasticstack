@@ -9,7 +9,7 @@
     dest: /etc/filebeat/filebeat.yml
     owner: root
     group: root
-    mode: 0644
+    mode: 0640
   notify:
     - Restart Filebeat
 

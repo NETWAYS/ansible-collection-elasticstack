@@ -1,4 +1,4 @@
 ansible
 ansible-lint
 molecule
-molecule-docker<1.0.0
+molecule-docker

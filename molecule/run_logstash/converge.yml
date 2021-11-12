@@ -8,6 +8,9 @@
   hosts: all
   vars:
     logstash_enable: true
+    logstash_plugins:
+      - logstash-filter-cidr
+      - logstash-output-icinga
   tasks:
     - name: "Include Elastics repos role"
       include_role:

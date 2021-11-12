@@ -171,6 +171,13 @@
   tags:
     - security
 
+- name: Install Logstash plugins
+  logstash_plugin:
+    state: present
+    name: "{{ item }}"
+  with_items: "{{ logstash_plugins }}"
+  when: logstash_plugins is defined
+
 - name: Start Logstash
   service:
     name: logstash

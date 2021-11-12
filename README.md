@@ -29,6 +29,7 @@ Role Variables
 * *logstash_enable*: Start and enable Logstash service (default: `true`)
 * *logstash_config_backup*: Keep backups of all changed configuration (default: `no`)
 * *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)
+* *logstash_plugins*: List of plugins to install (default: none)
 
 If `logstash.yml` is managed, the following settings apply.
 

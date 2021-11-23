@@ -11,6 +11,7 @@
     logstash_plugins:
       - logstash-filter-cidr
       - logstash-output-icinga
+    logstash_global_ecs: "v1"
   tasks:
     - name: "Include Elastics repos role"
       include_role:

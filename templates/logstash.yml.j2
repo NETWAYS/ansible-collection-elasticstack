@@ -10,3 +10,6 @@ http.host: {{ logstash_http_host }}
 http.port: {{ logstash_http_port }}
 {% endif %}
 {% endif %}
+{% if logstash_global_ecs is defined %}
+pipeline.ecs_compatibility: {{ logstash_global_ecs }}
+{% endif %}

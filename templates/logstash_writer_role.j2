@@ -2,7 +2,11 @@
   "cluster": ["manage_index_templates", "monitor", "manage_ilm"], 
   "indices": [
     {
+{% if logstash_global_ecs is defined and logstash_global_ecs != "disabled" %}
+      "names": [ "ecs-logstash*", "logstash*" ],
+{% else %}
       "names": [ "logstash*" ], 
+{% endif %}
       "privileges": ["write","create","delete","create_index","manage","manage_ilm"]  
     }
   ]

@@ -33,6 +33,8 @@ logstash_security: false
 logstash_user: logstash_writer
 logstash_password: password
 
+logstash_legacy_monitoring: true
+
 # elastic full stack configuration
 elastic_stack_full_stack: false
 elastic_ca_dir: /opt/es-ca

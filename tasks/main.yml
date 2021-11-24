@@ -27,6 +27,14 @@
   when:
     - elastic_variant == "oss"
 
+- import_tasks: logstash-security.yml
+  when:
+    - elastic_stack_full_stack | bool
+    - logstash_security | bool
+    - elastic_variant == "elastic"
+  tags:
+    - security
+
 - name: Configure Logstash
   template:
     src: logstash.yml.j2
@@ -162,14 +170,6 @@
   when:
     - logstash_manage_pipelines | bool
     - not logstash_no_pipelines | bool
-
-- import_tasks: logstash-security.yml
-  when:
-    - elastic_stack_full_stack | bool
-    - logstash_security | bool
-    - elastic_variant == "elastic"
-  tags:
-    - security
 
 - name: Install Logstash plugins
   logstash_plugin:

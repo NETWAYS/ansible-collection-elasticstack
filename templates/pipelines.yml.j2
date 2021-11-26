@@ -13,6 +13,8 @@
   path.config: "/etc/logstash/conf.d/ansible-input/*.conf"
 {% endif %}
 {% if logstash_connector | bool %}
-- pipeline.id: ansible-connector
-  path.config: "/etc/logstash/conf.d/ansible-connector/*.conf"
+{% for item in logstash_connector_pipelines %}
+- pipeline.id: ansible-{{ item.name }}-connector
+  path.config: "/etc/logstash/conf.d/ansible-{{ item.name }}-connector/*.conf"
+{% endfor %}
 {% endif %}

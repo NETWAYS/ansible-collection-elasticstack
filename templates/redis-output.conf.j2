@@ -3,5 +3,6 @@ output {
     host => "localhost"
     data_type => "list"
     key => "input"
+{% if logstash_beats_input_congestion is defined %}    congestion_threshold => {{ logstash_beats_input_congestion }}{% endif %}
   }
 }

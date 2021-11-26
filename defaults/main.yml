@@ -23,7 +23,6 @@ logstash_no_pipelines: false
 #   shipper:
 #     name: shipper
 #     source: https://github.com/widhalmt/shipper-logstash-pipeline.git
-#     outputkey: shipper-out
 logstash_elasticsearch_output: true
 logstash_beats_input: true
 logstash_connector: true
@@ -32,6 +31,18 @@ logstash_connector: true
 logstash_security: false
 logstash_user: logstash_writer
 logstash_password: password
+
+# connector pipelines
+# see docs/connector-pipelines.md for details
+logstash_connector_pipelines:
+  - name: default
+    exclusive: false
+    input:
+      - name: default
+        key: input
+    output:
+      - name: default
+        key: forwarder
 
 logstash_legacy_monitoring: true
 

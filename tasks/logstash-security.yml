@@ -5,6 +5,8 @@
   when: elasticsearch_ca is undefined
   tags:
     - certificates
+    - configuration
+    - logstash_configuration
 
 - name: create individual certificates for Logstash
   command: >
@@ -101,6 +103,9 @@
   register: elastic_password_logstash
   changed_when: false
   delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - configuration
+    - logstash_configuration
 
 - name: Check for logstash_writer role
   shell: >

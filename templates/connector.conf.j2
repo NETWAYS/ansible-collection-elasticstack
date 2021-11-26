@@ -1,0 +1,33 @@
+input {
+{% for input in item.input %}
+
+# {{ input.name }} connector
+  redis {
+    host => "localhost"
+    data_type => "list"
+    key => "{{ input.key }}"
+  }
+{% endfor %}
+
+}
+
+output {
+{% for output in item.output %}
+
+# {{ output.name }} connector
+{% if output.condition is defined or item.exclusive | bool %}
+{% if not loop.first and item.exclusive | bool %}else {% endif %}{% if (not loop.last and item.exclusive | bool) or not item.exclusive %}if {% endif %}{% if output.condition is defined %}{{ output.condition }} {% endif %}{
+{% endif %}
+  redis {
+    host => "localhost"
+    data_type => "list"
+    key => "{{ output.key }}"
+    {% if output.congestion is defined %}congestion_threshold => {{ output.congestion }}{% endif %}
+
+  }
+{% if output.condition is defined or item.exclusive | bool %}
+}
+{% endif %}
+{% endfor %}
+
+}

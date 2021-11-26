@@ -41,11 +41,13 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 
 * *logstash_manage_pipelines*: Manage `pipelines.yml` (default: `true`)
 * *logstash_no_pipelines*: Don't manage pipelines at all (default: `false`)
-* *logstash_pipelines*: List of pipelines with URL to repo
+* *logstash_pipelines*: List of pipelines with optional URL to repo (see docs/pipelines.md for details)
 * *logstash_global_ecs*: Set ECS compatibilty mode (default: none. Possible values: `disabled` or `v1`)
 * *logstash_elasticsearch_output*: Enable default pipeline to Elasticsearch (default: `true`)
 * *logstash_beats_input*: Enable default pipeline with `beats` input (default: `true`)
-* *logstash_connector*: Enable default to connect input and output (default: `true`)
+* *logstash_beats_input_congestion*: Optional congestion threshold for the beats input pipeline
+* *logstash_connector*: Create pipelines to connect git managed pipelines. (default: `true`)
+* *logstash_connector_pipelines*: Definition of connector pipelines. See docs/connector-pipelines.md for details
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (default: `false`)
 * *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elastic_stack_full_stack` is not set. (default: `true`)

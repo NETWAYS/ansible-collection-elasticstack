@@ -8,6 +8,19 @@ filebeat.inputs:
 {% for path in filebeat_log_inputs[input].paths %}
     - {{ path }}
 {% endfor %}
+{% if beats_fields is defined or filebeat_log_inputs[input].fields is defined %}
+  fields:
+{% if beats_fields is defined %}
+{% for field in beats_fields %}
+    {{ field }}
+{% endfor %}
+{% endif %}
+{% if filebeat_log_inputs[input].fields is defined %}
+{% for field in filebeat_log_inputs[input].fields %}
+    {{ field }}
+{% endfor %}
+{% endif %}
+{% endif %}
 
 {% endfor %}
 {% endif %}
@@ -16,6 +29,12 @@ filebeat.inputs:
   enabled: true
   max_message_size: 10MiB
   host: "0.0.0.0:514"
+{% if beats_fields is defined %}
+  fields:
+{% for field in beats_fields %}
+    {{ field }}
+{% endfor %}
+{% endif %}
 
 {% endif %}
 {% if filebeat_syslog_udp | bool %}
@@ -23,6 +42,12 @@ filebeat.inputs:
   enabled: true
   max_message_size: 10MiB
   host: "0.0.0.0:514"
+{% if beats_fields is defined %}
+  fields:
+{% for field in beats_fields %}
+    {{ field }}
+{% endfor %}
+{% endif %}
 
 {% endif %}
 filebeat.config.modules:

@@ -12,6 +12,10 @@
     mode: 0640
   notify:
     - Restart Filebeat
+  tags:
+    - configuration
+    - filebeat_configuration
+    - beats_configuration
 
 - name: Enable modules
   command: "filebeat modules enable {{ item }}"
@@ -19,6 +23,10 @@
     creates: "/etc/filebeat/modules.d/{{ item }}.yml"
   with_items: "{{ filebeat_modules }}"
   when: filebeat_modules is defined
+  tags:
+    - configuration
+    - filebeat_configuration
+    - beats_configuration
 
 - name: Enable Ingest Pipelines
   command: >

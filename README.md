@@ -31,7 +31,23 @@ Default of `filebeat_log_inputs`
     paths:
       - /var/log/messages
 ```
-You can optionally add `fields` to every input as well.
+You can optionally add `fields` to every input as well. You can also add a `multiline` section with options (`type`, `pattern`, `negate` and `match` so far)
+
+Here's a longer example for an input:
+```
+filebeat_log_inputs:
+  messages:
+    name: messages
+    paths:
+      - /var/log/messages
+      - /var/log/secure
+      - /var/log/httpd/*access_log*
+    multiline:
+      type: pattern
+      pattern: '^[[:space:]]+(at|\.{3})[[:space:]]+\b|^Caused by:'
+      negate: false
+      match: after
+```
 
 * *beats_target_hosts*: Only use when this role is used standalone. When used in combination with our other roles, the target hosts will be determined automatically. Use a YAML list. (default: `- localhost`)
 * *beats_elasticsearch_output_port*: Port of Elasticsearch to send events to (Default: `9200`)

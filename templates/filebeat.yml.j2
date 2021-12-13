@@ -24,16 +24,16 @@ filebeat.inputs:
 {% if filebeat_log_inputs[input].multiline is defined %}
   multiline:
 {% if filebeat_log_inputs[input].multiline.type is defined %}
-    pattern: {{ filebeat_log_inputs[input].multiline.type }}
+    type: {{ filebeat_log_inputs[input].multiline.type }}
 {% endif %}
 {% if filebeat_log_inputs[input].multiline.pattern is defined %}
-    pattern: {{ filebeat_log_inputs[input].multiline.pattern }}
+    pattern: '{{ filebeat_log_inputs[input].multiline.pattern }}'
 {% endif %}
 {% if filebeat_log_inputs[input].multiline.negate is defined %}
-    pattern: {{ filebeat_log_inputs[input].multiline.negate }}
+    negate: {{ filebeat_log_inputs[input].multiline.negate }}
 {% endif %}
 {% if filebeat_log_inputs[input].multiline.match is defined %}
-    pattern: {{ filebeat_log_inputs[input].multiline.match }}
+    match: {{ filebeat_log_inputs[input].multiline.match }}
 {% endif %}
 {% endif %}
 

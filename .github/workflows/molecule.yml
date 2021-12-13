@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      # max-parallel: 4
+      max-parallel: 4
       matrix:
         distro: [centos7, debian10, rockylinux8]
-        scenario: [default]
+        scenario: [default, peculiar]
 # disabling full stack until Elasticsearch issues are fixed
         #scenario: [default, full_stack]
 

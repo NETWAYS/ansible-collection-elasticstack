@@ -22,6 +22,7 @@ Role Variables
 * *filebeat_syslog_tcp*: Use TCP Syslog input (Default: `false`)
 * *filebeat_syslog_tcp_port*: Port of TCP Syslog input (Default: `514`)
 * *filebeat_log_input*: Enable Logfile reading (Default: `true`)
+* *filebeat_mysql_slowlog_input*: Enable MySQL/MariaDB slow query log collection incl. multiline (Default: `false`)
 * *filebeat_log_inputs*: Logfiles to read (Default: see below)
 
 Default of `filebeat_log_inputs`

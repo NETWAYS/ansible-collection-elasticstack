@@ -33,6 +33,7 @@ filebeat_log_inputs:
       - /var/log/messages
 filebeat_enable: true
 
+filebeat_mysql_slowlog_input: false
 
 #filebeat_modules:
 #  - system

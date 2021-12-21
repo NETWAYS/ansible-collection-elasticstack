@@ -16,6 +16,7 @@
           pattern: '^[[:space:]]+(at|\.{3})[[:space:]]+\b|^Caused by:'
           negate: false
           match: after
+    filebeat_mysql_slowlog_input: true
   tasks:
     - name: "Include Elastics repos role"
       include_role:

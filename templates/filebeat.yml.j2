@@ -39,6 +39,19 @@ filebeat.inputs:
 
 {% endfor %}
 {% endif %}
+{% if filebeat_mysql_slowlog_input | bool %}
+- type: log
+  enabled: true
+  paths:
+    - /var/lib/mysql/*-slow.log
+  multiline.pattern: '^\#[[:space:]]Time'
+  multiline.negate: true
+  multiline.match: after
+  fields:
+    mysql:
+      logtype: slowquery
+  fields_under_root: true
+{% endif %}
 {% if filebeat_syslog_tcp | bool %}
 - type: tcp
   enabled: true

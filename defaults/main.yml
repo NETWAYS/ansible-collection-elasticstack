@@ -38,6 +38,7 @@ filebeat_enable: true
 #  - system
 
 elastic_stack_full_stack: false
+elastic_variant: elastic
 elasticsearch_http_security: false
 
 elastic_ca_dir: /opt/es-ca

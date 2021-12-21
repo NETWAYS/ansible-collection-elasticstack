@@ -60,6 +60,7 @@ filebeat_log_inputs:
 The following variables only apply if you use this role together with our other Elastic Stack roles.
 
 * *elastic_stack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
+* *elastic_variant*: Define which variant of elastic stack to use. (default: `elastic`)
 * *elastic_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 * *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elastic_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)

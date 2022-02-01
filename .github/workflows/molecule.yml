@@ -15,8 +15,8 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        distro: [centos7, centos8, debian10, ubuntu2004, ubuntu1804]
-        scenario: [default, run_logstash, full_stack-oss, specific_version]
+        distro: [centos7, rockylinux8, debian10, ubuntu2004, ubuntu1804]
+        scenario: [default, run_logstash, specific_version]
         #scenario: [default, run_logstash, full_stack, full_stack-oss]
 
     steps:

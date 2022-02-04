@@ -12,6 +12,21 @@
       - logstash-filter-cidr
       - logstash-output-icinga
     logstash_global_ecs: "v1"
+    logstash_pipelines:
+      syslog:
+        name: syslog
+        source: https://github.com/widhalmt/syslog-logstash-pipeline.git
+        input: syslog
+        output: syslog
+    logstash_connector_pipelines:
+      - name: forwarder-distribute
+        exclusive: false
+        input:
+          - name: syslog
+            key: netways-syslog-output
+        output:
+          - name: forwarder
+            key: forwarder
   tasks:
     - name: "Include Elastics repos role"
       include_role:

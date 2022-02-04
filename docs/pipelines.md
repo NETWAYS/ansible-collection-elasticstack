@@ -13,6 +13,17 @@ logstash_pipelines:
     source: https://github.com/widhalmt/syslog-logstash-pipeline.git
 ```
 
+Optionally you can add options `input` and `output` to every entry. This will add basic `redis` input/output and using the value as `key`.
+
+```
+logstash_pipelines:
+  syslog:
+    name: syslog
+    source: https://github.com/widhalmt/syslog-logstash-pipeline.git
+    input: syslog_in
+    output: syslog_out
+```
+
 ## Custom pipelines ##
 
 If you have other ways of putting pipeline code into the correct directories, you can just skip the `source` option.

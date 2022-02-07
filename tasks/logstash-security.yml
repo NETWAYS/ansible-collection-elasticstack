@@ -51,9 +51,31 @@
     group: logstash
     mode: 0640
   notify:
+    - Reconvert keystore
+    - Reset permissions on keystore
     - Restart Logstash
   tags:
     - certificates
+
+- name: Convert keystore
+  shell: >
+    openssl pkcs12
+    -in "/etc/logstash/certs/cert.p12"
+    -password pass:""
+    -nodes |
+    openssl pkcs12
+    -export
+    -password pass:""
+    -out "/etc/logstash/certs/keystore.pfx"
+  args:
+    creates: "/etc/logstash/certs/keystore.pfx"
+
+- name: Set permissions on keystore
+  file:
+    path: /etc/logstash/certs/keystore.pfx
+    owner: root
+    group: logstash
+    mode: 0660
 
 - name: Fetch ca certificate from ca host to master
   fetch:

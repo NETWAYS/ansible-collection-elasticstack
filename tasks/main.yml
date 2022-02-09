@@ -71,7 +71,7 @@
       git:
         repo: "{{ logstash_pipelines[item].source }}"
         dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
-        version: master
+        version: "{{ logstash_pipelines[item].version |default('main') }}"
       with_items: "{{ logstash_pipelines }}"
       when: logstash_pipelines[item].source is defined
       notify:

@@ -24,6 +24,8 @@ logstash_pipelines:
     output: syslog_out
 ```
 
+You can add a `version` attribute to your pipeline. It defaults to `main`. You can use every string, [Ansibles git](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html) module accepts.
+
 ## Custom pipelines ##
 
 If you have other ways of putting pipeline code into the correct directories, you can just skip the `source` option.

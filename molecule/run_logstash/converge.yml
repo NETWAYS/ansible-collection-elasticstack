@@ -16,6 +16,7 @@
       syslog:
         name: syslog
         source: https://github.com/widhalmt/syslog-logstash-pipeline.git
+        version: master
         input: syslog
         output: syslog
     logstash_connector_pipelines:

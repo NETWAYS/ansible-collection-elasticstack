@@ -17,6 +17,8 @@
           negate: false
           match: after
     filebeat_mysql_slowlog_input: true
+    beats_metricbeat: true
+    metricbeat_output: logstash
   tasks:
     - name: "Include Elastics repos role"
       include_role:

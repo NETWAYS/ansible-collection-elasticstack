@@ -84,7 +84,7 @@ filebeat.config.modules:
 setup.template.settings:
   index.number_of_shards: 1
 setup.kibana:
-{% if filebeat_output == "elasticseach" %}
+{% if filebeat_output == "elasticsearch" %}
 output.elasticsearch:
 {% if elasticsearch_http_security | bool %}
 {% if elastic_stack_full_stack | bool %}

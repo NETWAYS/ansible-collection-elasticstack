@@ -6,3 +6,9 @@
     name: filebeat
     state: restarted
   when: filebeat_enable | bool
+
+- name: Restart Metricbeat
+  service:
+    name: metricbeat
+    state: restarted
+  when: metricbeat_enable | bool

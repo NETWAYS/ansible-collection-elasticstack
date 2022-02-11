@@ -1,0 +1,38 @@
+---
+- name: Install Auditbeat
+  package:
+    name: auditbeat
+
+- name: Configure Auditbeat
+  template:
+    src: auditbeat.yml.j2
+    dest: /etc/auditbeat/auditbeat.yml
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - Restart Auditbeat
+  tags:
+    - configuration
+    - auditbeat_configuration
+    - beats_configuration
+
+- name: Setup Auditbeat in Elasticsearch
+  command: >
+    /bin/auditbeat setup --pipelines --index-management &&
+    /bin/auditbeat version > /etc/auditbeat/pipeline_created
+  run_once: true
+  args:
+    creates: "/etc/auditbeat/pipeline_created"
+  notify:
+    - Restart Auditbeat
+  when:
+    - auditbeat_setup | bool
+    - auditbeat_output == "elasticsearch"
+
+- name: Start Auditbeat
+  service:
+    name: auditbeat
+    state: started
+    enabled: true
+  when: auditbeat_enable | bool

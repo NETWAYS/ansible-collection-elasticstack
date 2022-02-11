@@ -1,0 +1,82 @@
+auditbeat.modules:
+- module: auditd
+  audit_rule_files: [ '${path.config}/audit.rules.d/*.conf' ]
+  audit_rules: |
+- module: file_integrity
+  paths:
+  - /bin
+  - /usr/bin
+  - /sbin
+  - /usr/sbin
+  - /etc
+  recursive: true
+- module: system
+  datasets:
+    - package # Installed, updated, and removed packages
+  period: 2m # The frequency at which the datasets check for changes
+- module: system
+  datasets:
+    - host    # General host information, e.g. uptime, IPs
+    - login   # User logins, logouts, and system boots.
+    - process # Started and stopped processes
+    - socket  # Opened and closed sockets
+    - user    # User information
+  state.period: 12h
+  user.detect_password_changes: true
+  login.wtmp_file_pattern: /var/log/wtmp*
+  login.btmp_file_pattern: /var/log/btmp*
+
+setup.template.settings:
+  index.number_of_shards: 1
+setup.kibana:
+{% if auditbeat_output == "elasticsearch" %}
+output.elasticsearch:
+{% if elasticsearch_http_security | bool %}
+{% if elastic_stack_full_stack | bool %}
+  hosts: [ {% for host in groups['elasticsearch'] %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
+{% else %}
+  hosts: [ {% for host in beats_target_hosts %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
+{% endif %}
+  username: "elastic"
+  password: "{{ beats_writer_password.stdout }}"
+  ssl.enabled: true
+  ssl.verification_mode: none
+  ssl.certificate_authorities: ["/etc/beats/certs/ca.crt"]
+{% else %}
+{% if elastic_stack_full_stack | bool %}
+  hosts: [ {% for host in groups['elasticsearch'] %}"http://{{ host }}:{{ beats_elasticsearch_output_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+{% else %}
+  hosts: [ {% for host in beats_target_hosts %}"http://{{ host }}:{{ beats_elasticsearch_output_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+{% endif %}
+{% endif %}
+{% endif %}
+{% if auditbeat_output == "logstash" %}
+output.logstash:
+{% if elastic_stack_full_stack | bool %}
+  hosts: [ {% for host in groups['logstash'] %}"{{ host }}:{{ beats_logstash_output_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+{% else %}
+  hosts: [ {% for host in beats_target_hosts %}"{{ host }}:{{ beats_logstash_output_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+{% endif %}
+{% if beats_tls | bool %}
+  ssl.enabled: true
+  ssl.certificate_authorities: ["{{ beats_tls_cacert }}"]
+  ssl.verification_mode: full
+  ssl.key: {{ beats_tls_key }}
+  ssl.key_passphrase: {{ beats_tls_key_passphrase }}
+  ssl.certificate: {{ beats_tls_cert }}
+{% endif %}
+{% endif %}
+
+{% if beats_logging == "file" %}
+logging.level: {{ beats_loglevel }}
+logging.to_files: true
+logging.files:
+  path: {{ beats_logpath }}/auditbeat.log
+  name: auditbeat
+  keepfiles: 7
+  permissions: 0644
+{% endif %}
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~

@@ -30,8 +30,8 @@
 
 - name: Enable Ingest Pipelines
   command: >
-    filebeat setup --pipelines --modules {{ item }} &&
-    touch /etc/filebeat/{{ item }}_pipeline_created
+    /bin/filebeat setup --pipelines --modules {{ item }} &&
+    /bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
   args:
     creates: "/etc/filebeat/{{ item }}_pipeline_created"
   notify:

@@ -1,6 +1,7 @@
 ---
 # defaults file for beats
 beats_filebeat: true
+beats_auditbeat: false
 beats_metricbeat: false
 filebeat_output: logstash
 beats_target_hosts:
@@ -42,7 +43,9 @@ filebeat_mysql_slowlog_input: false
 #filebeat_modules:
 #  - system
 
-# metricbeat specific
+auditbeat_setup: true
+auditbeat_enable: true
+auditbeat_output: elasticsearch
 
 metricbeat_enable: true
 metricbeat_output: elasticsearch

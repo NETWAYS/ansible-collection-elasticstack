@@ -17,6 +17,11 @@
           negate: false
           match: after
     filebeat_mysql_slowlog_input: true
+    filebeat_journald_inputs:
+      everything:
+        id: service-vault
+        include_matches:
+          - _SYSTEMD_UNIT=vault.service
     beats_metricbeat: true
     metricbeat_output: logstash
   tasks:

@@ -33,6 +33,10 @@ filebeat_log_inputs:
     paths:
       - /var/log/messages
 filebeat_enable: true
+filebeat_journald: false
+filebeat_journald_inputs:
+  everything:
+    id: everything
 
 filebeat_mysql_slowlog_input: false
 #filebeat_modules:

@@ -49,6 +49,14 @@ filebeat_log_inputs:
       negate: false
       match: after
 ```
+* *filebeat_journald*: Enable collection of JournalD logs (default: `false`) - available since Filebeat 7.16
+* *filebeat_journald_inputs*: List of journald inputs. Use for different filters on events. You can add a list of `include_matches` entries for filtering.
+Default of `filebeat_journald_inputs:
+```
+filebeat_journald_inputs:
+  everything:
+    id: everything
+```
 
 * *metricbeat_enable*: Start Metricbeat automatically (Default: `true`)
 * *metricbeat_output*: Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)

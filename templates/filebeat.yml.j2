@@ -78,6 +78,19 @@ filebeat.inputs:
 {% endif %}
 
 {% endif %}
+{% if filebeat_journald | bool %}
+{% for journald in filebeat_journald_inputs %}
+- type: journald
+  id: {{ filebeat_journald_inputs[journald].id }}
+{% if filebeat_journald_inputs[journald].include_matches is defined %}
+  include_matches:
+{% for include_match in filebeat_journald_inputs[journald].include_matches %}
+    - {{ filebeat_journald_inputs[journald].include_matches[include_match] }}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
   reload.enabled: false

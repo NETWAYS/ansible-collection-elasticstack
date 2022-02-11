@@ -15,8 +15,10 @@ Debian and Ubuntu hosts need to have `apt-transport-https` installed to deal wit
 Role Variables
 --------------
 
-* *elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
-* *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+* *elastic_release*: Major release version of Elastic stack to configure. (default: `7`). `7` and `8` are supported.
+* *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`).
+
+Please note that no `oss` versions are available for Elastic Stack later than `7`. This role will fail if you try to install them.
 
 Dependencies
 ------------
@@ -25,8 +27,6 @@ None.
 
 Example Playbook
 ----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
     ---
     - hosts: localhost

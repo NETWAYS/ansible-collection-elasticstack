@@ -58,16 +58,19 @@ filebeat_journald_inputs:
   everything:
     id: everything
 ```
+* *filebeat_loadbalance*: Enable loadbalancing for Filebeats Logstash output (default: `true`)
 
 * *beats_auditbeat*: Install and manage filebeat (Default: `false`)
 * *auditbeat_output*: Output for Auditbeat Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
 * *auditbeat_enable*: Automatically start Auditbeat (Default: `true`)
 * *auditbeat_setup*: Run Auditbeat Setup (Default: `true`) (Only works with Elasticsearch output)
+* *auditbeat_loadbalance*: Enable loadbalancing for Auditbeats Logstash output (default: `true`)
 
 * *beats_metricbeat*: Enable installation and management of Metricbeat (Default: `false`)
 * *metricbeat_enable*: Start Metricbeat automatically (Default: `true`)
 * *metricbeat_output*: Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
 * *metricbeat_modules*: List of modules to enable. (Default: `- system`)
+* *metricbeat_loadbalance*: Enable loadbalancing for Metricbeats Logstash output (default: `true`)
 
 * *beats_target_hosts*: Only use when this role is used standalone. When used in combination with our other roles, the target hosts will be determined automatically. Use a YAML list. (default: `- localhost`)
 * *beats_elasticsearch_output_port*: Port of Elasticsearch to send events to (Default: `9200`)

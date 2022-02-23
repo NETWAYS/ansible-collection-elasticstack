@@ -34,6 +34,7 @@ output.logstash:
 {% else %}
   hosts: [ {% for host in beats_target_hosts %}"{{ host }}:{{ beats_logstash_output_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}
+  loadbalance: {{ metricbeat_loadbalance }}
 {% if beats_tls | bool %}
   ssl.enabled: true
   ssl.certificate_authorities: ["{{ beats_tls_cacert }}"]

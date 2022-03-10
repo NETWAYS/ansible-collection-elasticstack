@@ -16,15 +16,16 @@
     --ip {{ ansible_default_ipv4.address }}
     --dns {{ ansible_hostname }},{{ ansible_fqdn }}
     --pass ""
-    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
+    --pem
+    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.crt
   delegate_to: "{{ elasticsearch_ca }}"
   args:
-    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.crt"
 
 - name: Fetch certificate from ca host to master
   fetch:
-    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
-    dest: "/tmp/{{ ansible_hostname }}.p12"
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.crt"
+    dest: "/tmp/{{ ansible_hostname }}.crt"
     flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
@@ -32,8 +33,8 @@
 
 - name: Copy the certificate to actual node
   copy:
-    src: "/tmp/{{ ansible_hostname }}.p12"
-    dest: "/etc/beats/certs/cert.p12"
+    src: "/tmp/{{ ansible_hostname }}.crt"
+    dest: "/etc/beats/certs/{{ inventory_hostname }}.crt"
     owner: root
     group: root
     mode: 0640

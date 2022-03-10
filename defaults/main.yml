@@ -14,7 +14,6 @@ beats_loglevel: info
 
 # Use TLS without Elastic X-Pack #
 
-beats_ca_dir: "/opt/ca"
 beats_tls_key: "{{ beats_ca_dir }}/{{ inventory_hostname }}.key"
 beats_tls_cert: "{{ beats_ca_dir }}/{{ inventory_hostname }}.crt"
 beats_tls_cacert: "{{ beats_ca_dir }}/ca.crt"

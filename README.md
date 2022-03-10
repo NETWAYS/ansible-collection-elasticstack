@@ -91,7 +91,7 @@ The following variables only apply if you use this role together with our other 
 
 If you want to use this role with your own TLS certificates, use these variables.
 
-* *beats_ca_dir*: Path to custom CA certificates and keys (default: `/opt/ca`)
+* *beats_ca_dir*: Path to custom CA certificates and keys (default: none - if not set will be filled with different values depending on which Stack variant is used)
 * *beats_tls_key*: Path to the keyfiles (default: `{{ beats_ca_dir }}/{{ ansible_hostname }}.key`)
 * *beats_tls_cert*: Path to the certificate (default: `{{ beats_ca_dir }}/{{ ansible_hostname }}.crt`)
 * *beats_tls_key_passphrase*: Passphrase of the keyfile (default: `ChangeMe`)

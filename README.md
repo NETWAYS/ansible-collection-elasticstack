@@ -72,6 +72,7 @@ filebeat_journald_inputs:
 * *metricbeat_modules*: List of modules to enable. (Default: `- system`)
 * *metricbeat_loadbalance*: Enable loadbalancing for Metricbeats Logstash output (default: `true`)
 
+* *beats_security*: Activate TLS for connections to targets. Can either be use with our other roles and `elastic_stack_full_stack` to automatically create certificates or `beats_tls*` variables for custom certificates. (default: `false`)
 * *beats_target_hosts*: Only use when this role is used standalone. When used in combination with our other roles, the target hosts will be determined automatically. Use a YAML list. (default: `- localhost`)
 * *beats_elasticsearch_output_port*: Port of Elasticsearch to send events to (Default: `9200`)
 * *beats_logstash_output_port*: Port of Logstash to send events to (Default: `5400`)
@@ -90,7 +91,6 @@ The following variables only apply if you use this role together with our other 
 
 If you want to use this role with your own TLS certificates, use these variables.
 
-* *beats_tls*: Enable TLS without X-Pack (default: `false`)
 * *beats_ca_dir*: Path to custom CA certificates and keys (default: `/opt/ca`)
 * *beats_tls_key*: Path to the keyfiles (default: `{{ beats_ca_dir }}/{{ ansible_hostname }}.key`)
 * *beats_tls_cert*: Path to the certificate (default: `{{ beats_ca_dir }}/{{ ansible_hostname }}.crt`)

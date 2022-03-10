@@ -1,8 +1,18 @@
 ---
+
+- name: Enable security if enabled for whole stack
+  set_fact:
+    beats_security: true
+  when:
+    - elastic_stack_full_stack | bool
+    - elastic_security | bool
+
 - name: Set elasticsearch_ca variable if not already done by user
   set_fact:
     elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
-  when: elasticsearch_http_security | bool and elasticsearch_ca is undefined
+  when:
+    - beats_security | bool
+    - elasticsearch_ca is undefined
   tags:
     - certificates
 
@@ -16,7 +26,10 @@
   when: beats_logging == "file"
 
 - import_tasks: beats-security.yml
-  when: elasticsearch_http_security | bool
+  when:
+    - beats_security | bool
+    - elastic_stack_full_stack | bool
+    - elastic_variant == "elastic"
 
 - import_tasks: filebeat.yml
   when: beats_filebeat | bool

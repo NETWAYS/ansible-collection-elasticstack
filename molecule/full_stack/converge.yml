@@ -7,9 +7,7 @@
   hosts: all
   vars:
     logstash_enable: true
-    logstash_security: true
     elastic_stack_full_stack: true
-    elasticsearch_http_security: true
     filebeat_syslog_udp: true
     filebeat_syslog_tcp: true
     beats_fields:

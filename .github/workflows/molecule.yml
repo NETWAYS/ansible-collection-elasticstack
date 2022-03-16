@@ -20,6 +20,7 @@ jobs:
 # disabling full stack until Elasticsearch issues are fixed
         #scenario: [default, full_stack]
 
+
     steps:
       - name: Check out code
         uses: actions/checkout@v2

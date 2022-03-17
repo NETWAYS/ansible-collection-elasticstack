@@ -1,28 +1,31 @@
 ---
 
-- name: Enable security if enabled for whole stack
-  set_fact:
-    beats_security: true
-  when:
-    - elastic_stack_full_stack | bool
+- name: Prepare for whole stack roles if used
+  block:
+
+  - name: Enable security if enabled for whole stack
+    set_fact:
+      beats_security: true
+    when:
     - elastic_security | bool
 
-- name: Set elasticsearch_ca variable if not already done by user
-  set_fact:
-    elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
-  when:
+  - name: Set elasticsearch_ca variable if not already done by user
+    set_fact:
+      elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
+    when:
     - beats_security | bool
     - elasticsearch_ca is undefined
-  tags:
+    tags:
     - certificates
 
-- name: Set beats_ca_dir if whole stack is used
-  set_fact:
-    beats_ca_dir: "/etc/beats/certs"
-  when:
-    - elastic_stack_full_stack | bool
+  - name: Set beats_ca_dir if whole stack is used
+    set_fact:
+      beats_ca_dir: "/etc/beats/certs"
+    when:
     - elastic_security | bool
     - beats_ca_dir is undefined
+  when:
+  - elastic_stack_full_stack | bool
 
 # We need it for templating even when security is disabled
 # This default corresponds with the default in Elastic-
@@ -32,7 +35,7 @@
   set_fact:
     beats_ca_dir: "/opt/ca"
   when:
-    - beats_ca_dir is undefined
+  - beats_ca_dir is undefined
 
 - name: Create directory for logging if file logging is activated
   file:
@@ -45,9 +48,9 @@
 
 - import_tasks: beats-security.yml
   when:
-    - beats_security | bool
-    - elastic_stack_full_stack | bool
-    - elastic_variant == "elastic"
+  - beats_security | bool
+  - elastic_stack_full_stack | bool
+  - elastic_variant == "elastic"
 
 - import_tasks: filebeat.yml
   when: beats_filebeat | bool

@@ -2,21 +2,14 @@
 - name: Prepare
   hosts: all
   tasks:
-    - name: Install git
-      package:
-        name: git
     - name: Install packages needed for Debian
-      package:
+      apt:
         name:
           - gpg
           - curl
           - procps
+        update_cache: yes
       when: ansible_os_family == "Debian"
-## Replace Host address in hosts file. Can't use lineinfile because hosts file is locked in Docker
-#    - name: "Fix hosts file"
-#      shell: |
-#        cp /etc/hosts /etc/hosts2 &&
-#        cat /etc/hosts2 |
-#        sed 's/127.0.1.1/{{ ansible_default_ipv4.address }}/g'
-#        > /etc/hosts
-#      when: ansible_os_family == "Debian"
+    - name: Install git
+      package:
+        name: git

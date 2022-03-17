@@ -7,7 +7,6 @@
   hosts: all
   vars:
     elastic_stack_full_stack: true
-    elasticsearch_http_security: true
   tasks:
     - name: "Include Elastic Repos"
       include_role:

@@ -20,19 +20,19 @@ Role Variables
 * *kibana_tls_cert*: Path to the certificate Kibana should show to its clients (default: `/etc/kibana/certs/cert.pem`)
 * *kibana_tls_key*: Path to the key Kibana should use when communicating with clients (default: `/etc/kibana/certs/key.pem`)
 
+* *kibana_security*: Activate TLS and authentication when connecting to Elasticsearch. **Note**: Only works when `elastic_stack_full_stack` is enabled. (default: `true`)
+
+These variables are identical over all our elastic related roles, hence the different naming scheme.
+
 * *elastic_stack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
 * *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
 * *elastic_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 * *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elastic_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
+* *elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
+* *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
 
-These variables are identical over all our elastic related roles, hence the different naming scheme.
-
-*elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
-*elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
-
-
-If you don't change `kibana_elasticsearch_hosts`, certificate verification will skip hostname checks
+If you use `localhost` in `kibana_elasticsearch_hosts` , certificate verification will skip hostname checks
 
 Dependencies
 ------------

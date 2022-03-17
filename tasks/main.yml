@@ -27,6 +27,14 @@
   when:
   - elastic_stack_full_stack | bool
 
+  - name: Set common password for common certificates
+    set_fact:
+      beats_tls_key_passphrase: "{{ elastic_cert_pass }}"
+    when: elastic_cert_pass is defined
+
+  when:
+  - elastic_stack_full_stack | bool
+
 # We need it for templating even when security is disabled
 # This default corresponds with the default in Elastic-
 # independent "CA" Role

@@ -46,6 +46,7 @@
     name: elasticsearch
     state: started
     enabled: yes
+  when: elasticsearch_enable | bool
 
 - name: Show hint about passwords
   debug:

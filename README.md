@@ -13,6 +13,7 @@ Any pre-requisites that may not be covered by Ansible itself or the role should 
 Role Variables
 --------------
 
+* *elasticsearch_enable*: Start and enable Elasticsearch (default: `true`)
 * *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
 
 These variables are identical over all our elastic related roles, hence the different naming schemes.

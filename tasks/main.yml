@@ -24,6 +24,12 @@
     when:
     - elastic_security | bool
     - beats_ca_dir is undefined
+
+  - name: Set common password for common certificates
+    set_fact:
+      beats_tls_key_passphrase: "{{ elastic_cert_pass }}"
+    when: elastic_cert_pass is defined
+
   when:
   - elastic_stack_full_stack | bool
 

@@ -24,8 +24,6 @@
     when:
     - elastic_security | bool
     - beats_ca_dir is undefined
-  when:
-  - elastic_stack_full_stack | bool
 
   - name: Set common password for common certificates
     set_fact:

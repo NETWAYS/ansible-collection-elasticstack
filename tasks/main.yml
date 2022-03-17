@@ -1,4 +1,11 @@
 ---
+
+- name: Set common password for common certificates
+  set_fact:
+    elasticsearch_tls_key_passphrase: "{{ elastic_cert_pass }}"
+  when:
+  - elastic_cert_pass is defined
+
 - name: Install openssl if security is activated
   package:
     name: openssl

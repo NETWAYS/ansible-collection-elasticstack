@@ -54,14 +54,14 @@
         --name {{ hostvars[item].ansible_hostname }}
         --ip {{ hostvars[item].ansible_default_ipv4.address }}
         --dns {{ hostvars[item].ansible_hostname }},{{ hostvars[item].ansible_fqdn }}
-        --pass ""
+        --pass {{ elasticsearch_tls_key_passphrase }}
         --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
       loop: "{{ groups['elasticsearch'] }}"
       args:
         creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
 
     - name: extract CA certificate
-      command: "openssl pkcs12 -in {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12 -cacerts -nokeys -out {{ elastic_ca_dir }}/ca.crt -password pass:"
+      command: "openssl pkcs12 -in {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12 -cacerts -nokeys -out {{ elastic_ca_dir }}/ca.crt -password pass:{{ elasticsearch_tls_key_passphrase }}"
       args:
         creates: "{{ elastic_ca_dir }}/ca.crt"
   when: inventory_hostname == elasticsearch_ca

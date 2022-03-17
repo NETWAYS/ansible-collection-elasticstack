@@ -4,3 +4,4 @@ skip_list:
   - 'role-name'
   - 'line-length'
   - 'fqcn-builtins'
+  - yaml  # Violations reported by yamllint.

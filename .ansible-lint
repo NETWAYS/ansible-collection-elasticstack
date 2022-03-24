@@ -2,3 +2,5 @@ skip_list:
   - 'risky-shell-pipe'
   - 'role-name'
   - 'line-length'
+  - yaml
+  - fqcn-builtins  # Use FQCN for builtin actions.

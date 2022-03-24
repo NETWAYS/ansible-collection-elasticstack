@@ -1,5 +1,6 @@
 galaxy_info:
-  author: Thomas Widhalm
+  role_name: kibana
+  author: netways
   description: Ansible role for Kibana
   company: Netways GmbH
 

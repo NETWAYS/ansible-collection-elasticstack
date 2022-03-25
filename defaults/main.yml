@@ -28,7 +28,6 @@ logstash_beats_input: true
 logstash_connector: true
 
 # logstash security
-logstash_security: false
 logstash_user: logstash_writer
 logstash_password: password
 

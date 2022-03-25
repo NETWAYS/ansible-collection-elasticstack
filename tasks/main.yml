@@ -21,6 +21,14 @@
     - configuration
     - logstash_configuration
 
+- name: Enable security as default when in full stack mode
+  set_fact:
+    logstash_security: true
+  when:
+    - logstash_security is undefined or elastic_security | bool
+    - elastic_stack_full_stack | bool
+    - elastic_variant == "elastic"
+
 - name: Ensure Logstash is installed
   package:
     name: "logstash{{ logstash_version }}"

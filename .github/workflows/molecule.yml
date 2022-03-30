@@ -9,15 +9,36 @@ on:
   pull_request:
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: 'bdpa.logstash'
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install yamllint ansible-lint
+
+      - name: Lint code.
+        run: |
+          yamllint .
+          ansible-lint .
+
+  molecule_default:
+    runs-on: ubuntu-latest
+    needs: lint
 
     strategy:
       max-parallel: 4
       matrix:
-        distro: [centos7, rockylinux8, debian10, ubuntu2004, ubuntu1804]
-        scenario: [default, run_logstash, specific_version]
-        #scenario: [default, run_logstash, full_stack, full_stack-oss]
+        distro: [centos7]
+        scenario: [default]
 
     steps:
       - name: Check out code
@@ -38,3 +59,38 @@ jobs:
           molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+
+  molecule_tests:
+    runs-on: ubuntu-latest
+    needs: molecule_default
+
+    strategy:
+      max-parallel: 4
+      matrix:
+        distro: [centos7, rockylinux8, debian10, ubuntu2004, ubuntu1804]
+        scenario: [run_logstash, specific_version]
+        #scenario: [run_logstash, full_stack, full_stack-oss]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Test with molecule
+        run: |
+          molecule test -s ${{ matrix.scenario }}
+        env:
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'

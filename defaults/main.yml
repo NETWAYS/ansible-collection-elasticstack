@@ -43,6 +43,10 @@ logstash_connector_pipelines:
       - name: default
         key: forwarder
 
+logstash_beats_tls: false
+logstash_tls_key_passphrase: ChangeMe
+logstash_certs_dir: /etc/logstash/certs
+
 logstash_legacy_monitoring: true
 
 # elastic full stack configuration

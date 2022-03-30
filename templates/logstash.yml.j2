@@ -18,7 +18,7 @@ xpack.monitoring.enabled: true
 xpack.monitoring.elasticsearch.hosts: [ {% for host in logstash_elasticsearch %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %} ]
 xpack.monitoring.elasticsearch.username: elastic
 xpack.monitoring.elasticsearch.password: {{ elastic_password_logstash.stdout }}
-xpack.monitoring.elasticsearch.ssl.certificate_authority: "/etc/logstash/certs/ca.crt"
+xpack.monitoring.elasticsearch.ssl.certificate_authority: "{{ logstash_certs_dir }}/ca.crt"
 xpack.monitoring.elasticsearch.sniffing: true
 xpack.monitoring.collection.pipeline.details.enabled: true
 {% endif %}

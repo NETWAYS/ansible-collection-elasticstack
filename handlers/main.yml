@@ -15,17 +15,17 @@
 - name: Reconvert keystore
   shell: >
     openssl pkcs12
-    -in "/etc/logstash/certs/cert.p12"
-    -password pass:""
+    -in "{{ logstash_certs_dir }}/{{ inventory_hostname }}.p12"
+    -password pass:"{{ logstash_tls_key_passphrase }}"
     -nodes |
     openssl pkcs12
     -export
-    -password pass:""
-    -out "/etc/logstash/certs/keystore.pfx"
+    -password pass:"{{ logstash_tls_key_passphrase }}"
+    -out "{{ logstash_certs_dir }}/keystore.pfx"
 
 - name: Reset permissions on keystore
   file:
-    path: /etc/logstash/certs/keystore.pfx
+    path: "{{ logstash_certs_dir }}/keystore.pfx"
     owner: root
     group: logstash
     mode: 0660

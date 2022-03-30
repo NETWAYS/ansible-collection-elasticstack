@@ -1,5 +1,15 @@
 input {
   beats {
     port => 5044
+{% if logstash_beats_tls | bool %}
+    ssl => true
+    ssl_certificate => "{{ logstash_certs_dir }}/{{ inventory_hostname }}-server.crt"
+    ssl_key => "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
+    ssl_verify_mode => force_peer
+    ssl_certificate_authorities => ["{{ logstash_certs_dir }}/ca.crt"]
+    ssl_peer_metadata => false
+    ssl_key_passphrase => "{{ logstash_tls_key_passphrase }}"
+{% endif %}
+
   }
 }

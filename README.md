@@ -30,6 +30,7 @@ Role Variables
 * *logstash_config_backup*: Keep backups of all changed configuration (default: `no`)
 * *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)
 * *logstash_plugins*: List of plugins to install (default: none)
+* *logstash_certs_dir*: Path to certificates. Will be used to build paths of several files. (Default: `/etc/logstash/certs`)
 
 If `logstash.yml` is managed, the following settings apply.
 
@@ -46,6 +47,8 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_elasticsearch_output*: Enable default pipeline to Elasticsearch (default: `true`)
 * *logstash_beats_input*: Enable default pipeline with `beats` input (default: `true`)
 * *logstash_beats_input_congestion*: Optional congestion threshold for the beats input pipeline
+* *logstash_beats_tls*: Activate TLS for the beats input pipeline (default: `false` but `true` with full stack setup)
+* *logstash_tls_key_passphrase*: Passphrase for Logstash certificates (default: `ChangeMe`)
 * *logstash_connector*: Create pipelines to connect git managed pipelines. (default: `true`)
 * *logstash_connector_pipelines*: Definition of connector pipelines. See docs/connector-pipelines.md for details
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)

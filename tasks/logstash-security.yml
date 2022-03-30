@@ -71,11 +71,11 @@
   shell: >
     openssl pkcs12
     -in "{{ logstash_certs_dir }}/{{ inventory_hostname }}.p12"
-    -password pass:"{{ logstash_tls_key_passphrase }}"
+    -passin pass:{{ logstash_tls_key_passphrase }}
     -nodes |
     openssl pkcs12
     -export
-    -password pass:"{{ logstash_tls_key_passphrase }}"
+    -passout pass:{{ logstash_tls_key_passphrase }}
     -out "{{ logstash_certs_dir }}/keystore.pfx"
   args:
     creates: "{{ logstash_certs_dir }}/keystore.pfx"

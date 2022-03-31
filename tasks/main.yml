@@ -1,4 +1,11 @@
 ---
+
+- name: Set common password for common certificates
+  set_fact:
+    kibana_tls_key_passphrase: "{{ elastic_cert_pass }}"
+  when:
+  - elastic_cert_pass is defined
+
 # tasks file for kibana
 - name: Set Elasticsearch hosts if used with other roles
   set_fact:

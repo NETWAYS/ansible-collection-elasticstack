@@ -58,7 +58,7 @@
     --name {{ ansible_hostname }}
     --ip {{ ansible_default_ipv4.address }}
     --dns {{ ansible_hostname }},{{ ansible_fqdn }}
-    --pass ""
+    --pass {{ kibana_tls_key_passphrase }}
     --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
   delegate_to: "{{ elasticsearch_ca }}"
   args:
@@ -72,6 +72,7 @@
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
+
 - name: Copy the certificate to actual node
   copy:
     src: "/tmp/{{ ansible_hostname }}.p12"
@@ -81,29 +82,32 @@
     mode: 0640
   tags:
     - certificates
+
 - name: fetch Kibana password
-  shell: |
+  shell: >
     grep "PASSWORD kibana " /usr/share/elasticsearch/initial_passwords |
     awk {' print $4 '}
   register: kibana_password
   changed_when: false
   delegate_to: "{{ elasticsearch_ca }}"
-- name: extract CA certificate
-  shell: |
-    echo "" |
-    openssl pkcs12
-    -in /etc/kibana/certs/{{ ansible_hostname }}.p12
-    -cacerts
-    -nokeys
-    -out /etc/kibana/certs/ca.crt
-    -password stdin
-  args:
-    creates: /etc/kibana/certs/ca.crt
+
+- name: Fetch ca certificate from ca host to master
+  fetch:
+    src: "{{ elastic_ca_dir }}/ca.crt"
+    dest: /tmp/ca.crt
+    flat: yes
+  delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
-- name: Set permissions of CA certificate
-  file:
-    path: "/etc/kibana/certs/ca.crt"
+
+- name: Copy the ca certificate to actual node
+  copy:
+    src: /tmp/ca.crt
+    dest: /etc/kibana/certs
     owner: root
     group: kibana
     mode: 0640
+  notify:
+    Restart Kibana
+  tags:
+    - certificates

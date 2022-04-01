@@ -1,7 +1,7 @@
 input {
   beats {
     port => 5044
-{% if logstash_beats_tls | bool %}
+{% if logstash_beats_tls is defined and logstash_beats_tls | bool %}
     ssl => true
     ssl_certificate => "{{ logstash_certs_dir }}/{{ inventory_hostname }}-server.crt"
     ssl_key => "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"

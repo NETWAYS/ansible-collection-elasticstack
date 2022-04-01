@@ -16,6 +16,7 @@
   - name: Activate TLS for Beats for full stack
     set_fact:
       logstash_beats_tls: true
+    when: logstash_beats_tls is undefined
 
   when:
     - elastic_stack_full_stack | bool

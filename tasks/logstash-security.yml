@@ -56,29 +56,14 @@
 - name: Copy the certificate to actual node
   copy:
     src: "/tmp/{{ ansible_hostname }}.p12"
-    dest: "{{ logstash_certs_dir }}/{{ inventory_hostname }}.p12"
+    dest: "{{ logstash_certs_dir }}/keystore.pfx"
     owner: root
     group: logstash
     mode: 0640
   notify:
-    - Reconvert keystore
-    - Reset permissions on keystore
     - Restart Logstash
   tags:
     - certificates
-
-- name: Convert keystore
-  shell: >
-    openssl pkcs12
-    -in "{{ logstash_certs_dir }}/{{ inventory_hostname }}.p12"
-    -passin pass:{{ logstash_tls_key_passphrase }}
-    -nodes |
-    openssl pkcs12
-    -export
-    -passout pass:{{ logstash_tls_key_passphrase }}
-    -out "{{ logstash_certs_dir }}/keystore.pfx"
-  args:
-    creates: "{{ logstash_certs_dir }}/keystore.pfx"
 
 - name: create individual PEM certificates for Logstash
   command: >
@@ -150,13 +135,6 @@
 - name: Set permissions on Logstash key
   file:
     path: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
-    owner: root
-    group: logstash
-    mode: 0660
-
-- name: Set permissions on keystore
-  file:
-    path: "{{ logstash_certs_dir }}/keystore.pfx"
     owner: root
     group: logstash
     mode: 0660

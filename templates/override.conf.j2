@@ -1,0 +1,7 @@
+[service]
+{% if logstash_deactivate_log_to_syslog | bool %}
+StandardOutput=null
+{% endif %}
+{% if logstash_deactivate_log_error_to_syslog | bool %}
+StandardError=null
+{% endif %}

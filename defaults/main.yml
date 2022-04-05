@@ -48,6 +48,9 @@ logstash_certs_dir: /etc/logstash/certs
 
 logstash_legacy_monitoring: true
 
+logstash_deactivate_log_to_syslog: true
+logstash_deactivate_log_error_to_syslog: true
+
 # elastic full stack configuration
 elastic_stack_full_stack: false
 elastic_ca_dir: /opt/es-ca

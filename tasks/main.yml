@@ -254,6 +254,32 @@
   with_items: "{{ logstash_plugins }}"
   when: logstash_plugins is defined
 
+- name: Manage logging to Syslog
+  block:
+
+  - name: Configure Logstash systemd file
+    file:
+      path: /etc/systemd/system/logstash.service.d
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: Create override for Logstash service
+    template:
+      dest: /etc/systemd/system/logstash.service.d/override.conf
+      src: override.conf.j2
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+    - Reload daemons
+    - Restart Logstash
+
+  when:
+  - ansible_service_mgr == "systemd"
+  - logstash_deactivate_log_to_syslog | bool or logstash_deactivate_log_error_to_syslog | bool
+
 - name: Start Logstash
   service:
     name: logstash

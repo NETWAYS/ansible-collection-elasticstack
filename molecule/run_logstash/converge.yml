@@ -8,6 +8,8 @@
   hosts: all
   vars:
     logstash_enable: true
+    logstash_deactivate_log_to_syslog: false
+    logstash_deactivate_log_error_to_syslog: false
     logstash_plugins:
       - logstash-filter-cidr
       - logstash-output-icinga

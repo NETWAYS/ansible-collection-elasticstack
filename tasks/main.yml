@@ -7,11 +7,11 @@
     set_fact:
       logstash_elasticsearch: "{{ groups['elasticsearch'] }}"
     when:
-      - logstash_elasticsearch is undefined
-      - groups['elasticsearch'] is defined
+    - logstash_elasticsearch is undefined
+    - groups['elasticsearch'] is defined
     tags:
-      - configuration
-      - logstash_configuration
+    - configuration
+    - logstash_configuration
 
   - name: Activate TLS for Beats for full stack
     set_fact:
@@ -19,46 +19,46 @@
     when: logstash_beats_tls is undefined
 
   when:
-    - elastic_stack_full_stack | bool
+  - elastic_stack_full_stack | bool
 
 - name: Set Elasticsearch hosts to localhost if no other information available
   set_fact:
     logstash_elasticsearch:
-      - localhost
+    - localhost
   when:
-    - logstash_elasticsearch is undefined
-    - groups['elasticsearch'] is undefined
+  - logstash_elasticsearch is undefined
+  - groups['elasticsearch'] is undefined
   tags:
-    - configuration
-    - logstash_configuration
+  - configuration
+  - logstash_configuration
 
 - name: Enable security as default when in full stack mode
   set_fact:
     logstash_security: true
   when:
-    - logstash_security is undefined or elastic_security | bool
-    - elastic_stack_full_stack | bool
-    - elastic_variant == "elastic"
+  - logstash_security is undefined or elastic_security | bool
+  - elastic_stack_full_stack | bool
+  - elastic_variant == "elastic"
 
 - name: Ensure Logstash is installed
   package:
     name: "logstash{{ logstash_version }}"
   when:
-    - elastic_variant == "elastic"
+  - elastic_variant == "elastic"
 
 - name: Ensure Logstash OSS is installed
   package:
     name: "logstash-oss{{ logstash_version }}"
   when:
-    - elastic_variant == "oss"
+  - elastic_variant == "oss"
 
 - import_tasks: logstash-security.yml
   when:
-    - elastic_stack_full_stack | bool
-    - logstash_security | bool
-    - elastic_variant == "elastic"
+  - elastic_stack_full_stack | bool
+  - logstash_security | bool
+  - elastic_variant == "elastic"
   tags:
-    - security
+  - security
 
 - name: Configure Logstash
   template:
@@ -69,168 +69,168 @@
     mode: 0644
     backup: "{{ logstash_config_backup }}"
   notify:
-    - Restart Logstash
+  - Restart Logstash
   when: logstash_manage_yaml | bool
   tags:
-    - configuration
-    - logstash_configuration
+  - configuration
+  - logstash_configuration
 
 - name: Fetch pipelines from git repositories
   block:
-    - name: Create Logstash pipeline directories
-      file:
-        path: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
-      with_items: "{{ logstash_pipelines }}"
+  - name: Create Logstash pipeline directories
+    file:
+      path: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+    with_items: "{{ logstash_pipelines }}"
 
-    - name: Check out pipeline configuration
-      git:
-        repo: "{{ logstash_pipelines[item].source }}"
-        dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
-        version: "{{ logstash_pipelines[item].version |default('main') }}"
-      with_items: "{{ logstash_pipelines }}"
-      when: logstash_pipelines[item].source is defined
-      notify:
-        - Restart Logstash noauto
+  - name: Check out pipeline configuration
+    git:
+      repo: "{{ logstash_pipelines[item].source }}"
+      dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
+      version: "{{ logstash_pipelines[item].version |default('main') }}"
+    with_items: "{{ logstash_pipelines }}"
+    when: logstash_pipelines[item].source is defined
+    notify:
+    - Restart Logstash noauto
 
-    - name: Create simple input
-      template:
-        src: simple-input.conf.j2
-        dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}\
-        /input.conf"
-        owner: root
-        group: root
-        mode: 0644
-      with_items: "{{ logstash_pipelines }}"
-      when: logstash_pipelines[item].input is defined
-      notify:
-        - Restart Logstash noauto
+  - name: Create simple input
+    template:
+      src: simple-input.conf.j2
+      dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}\
+      /input.conf"
+      owner: root
+      group: root
+      mode: 0644
+    with_items: "{{ logstash_pipelines }}"
+    when: logstash_pipelines[item].input is defined
+    notify:
+    - Restart Logstash noauto
 
-    - name: Create simple output
-      template:
-        src: simple-output.conf.j2
-        dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}\
-        /output.conf"
-        owner: root
-        group: root
-        mode: 0644
-      with_items: "{{ logstash_pipelines }}"
-      when: logstash_pipelines[item].output is defined
-      notify:
-        - Restart Logstash noauto
+  - name: Create simple output
+    template:
+      src: simple-output.conf.j2
+      dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}\
+      /output.conf"
+      owner: root
+      group: root
+      mode: 0644
+    with_items: "{{ logstash_pipelines }}"
+    when: logstash_pipelines[item].output is defined
+    notify:
+    - Restart Logstash noauto
 
   when:
-    - logstash_pipelines is defined
-    - not logstash_no_pipelines | bool
+  - logstash_pipelines is defined
+  - not logstash_no_pipelines | bool
   tags:
-    - configuration
-    - logstash_configuration
+  - configuration
+  - logstash_configuration
 
 - name: Create default Elasticsearch output pipeline
   block:
-    - name: Create directory for default Elasticsearch output pipeline
-      file:
-        path: "/etc/logstash/conf.d/ansible-forwarder"
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
+  - name: Create directory for default Elasticsearch output pipeline
+    file:
+      path: "/etc/logstash/conf.d/ansible-forwarder"
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
 
-    - name: Create default Elasticsearch output pipeline inputs
-      template:
-        src: redis-input.conf.j2
-        dest: "/etc/logstash/conf.d/ansible-forwarder/input.conf"
-        owner: root
-        group: root
-        mode: 0644
-      notify:
-        - Restart Logstash noauto
+  - name: Create default Elasticsearch output pipeline inputs
+    template:
+      src: redis-input.conf.j2
+      dest: "/etc/logstash/conf.d/ansible-forwarder/input.conf"
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+    - Restart Logstash noauto
 
-    - name: Create default Elasticsearch output pipeline output
-      template:
-        src: elasticsearch-output.conf.j2
-        dest: "/etc/logstash/conf.d/ansible-forwarder/output.conf"
-        owner: root
-        group: root
-        mode: 0644
-      notify:
-        - Restart Logstash noauto
+  - name: Create default Elasticsearch output pipeline output
+    template:
+      src: elasticsearch-output.conf.j2
+      dest: "/etc/logstash/conf.d/ansible-forwarder/output.conf"
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+    - Restart Logstash noauto
   when:
-    - logstash_elasticsearch_output | bool
-    - not logstash_no_pipelines | bool
+  - logstash_elasticsearch_output | bool
+  - not logstash_no_pipelines | bool
   tags:
-    - configuration
-    - logstash_configuration
+  - configuration
+  - logstash_configuration
 
 - name: Create default Beats input pipeline
   block:
-    - name: Create directory for default beats input pipeline
-      file:
-        path: "/etc/logstash/conf.d/ansible-input"
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
+  - name: Create directory for default beats input pipeline
+    file:
+      path: "/etc/logstash/conf.d/ansible-input"
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
 
-    - name: Create default Beats input pipeline inputs
-      template:
-        src: redis-output.conf.j2
-        dest: "/etc/logstash/conf.d/ansible-input/input.conf"
-        owner: root
-        group: root
-        mode: 0644
-      notify:
-        - Restart Logstash noauto
+  - name: Create default Beats input pipeline inputs
+    template:
+      src: redis-output.conf.j2
+      dest: "/etc/logstash/conf.d/ansible-input/input.conf"
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+    - Restart Logstash noauto
 
-    - name: Create default Beats input pipeline output
-      template:
-        src: beats-input.conf.j2
-        dest: "/etc/logstash/conf.d/ansible-input/output.conf"
-        owner: root
-        group: root
-        mode: 0644
-      notify:
-        - Restart Logstash noauto
+  - name: Create default Beats input pipeline output
+    template:
+      src: beats-input.conf.j2
+      dest: "/etc/logstash/conf.d/ansible-input/output.conf"
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+    - Restart Logstash noauto
   when:
-    - logstash_beats_input | bool
-    - not logstash_no_pipelines | bool
+  - logstash_beats_input | bool
+  - not logstash_no_pipelines | bool
   tags:
-    - configuration
-    - logstash_configuration
+  - configuration
+  - logstash_configuration
 
 - name: Create connector pipelines
   block:
-    - name: Create directory for connector pipelines
-      file:
-        path: "/etc/logstash/conf.d/ansible-{{ item.name }}-connector"
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
-      with_items:
-        "{{ logstash_connector_pipelines }}"
+  - name: Create directory for connector pipelines
+    file:
+      path: "/etc/logstash/conf.d/ansible-{{ item.name }}-connector"
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+    with_items:
+      "{{ logstash_connector_pipelines }}"
 
-    - name: Create connector pipelines
-      template:
-        src: connector.conf.j2
-        dest: "/etc/logstash/conf.d/ansible-{{ item.name }}-connector/pipe.conf"
-        owner: root
-        group: root
-        mode: 0644
-      with_items:
-        "{{ logstash_connector_pipelines }}"
-      notify:
-        - Restart Logstash noauto
+  - name: Create connector pipelines
+    template:
+      src: connector.conf.j2
+      dest: "/etc/logstash/conf.d/ansible-{{ item.name }}-connector/pipe.conf"
+      owner: root
+      group: root
+      mode: 0644
+    with_items:
+      "{{ logstash_connector_pipelines }}"
+    notify:
+    - Restart Logstash noauto
 
   when:
-    - logstash_connector | bool
-    - not logstash_no_pipelines | bool
+  - logstash_connector | bool
+  - not logstash_no_pipelines | bool
   tags:
-    - configuration
-    - logstash_configuration
+  - configuration
+  - logstash_configuration
 
 - name: Configure Logstash pipelines
   template:
@@ -241,11 +241,11 @@
     mode: 0644
     backup: "{{ logstash_config_backup }}"
   when:
-    - logstash_manage_pipelines | bool
-    - not logstash_no_pipelines | bool
+  - logstash_manage_pipelines | bool
+  - not logstash_no_pipelines | bool
   tags:
-    - configuration
-    - logstash_configuration
+  - configuration
+  - logstash_configuration
 
 - name: Install Logstash plugins
   logstash_plugin:
@@ -278,7 +278,8 @@
 
   when:
   - ansible_service_mgr == "systemd"
-  - logstash_deactivate_log_to_syslog | bool or logstash_deactivate_log_error_to_syslog | bool
+  - logstash_deactivate_log_to_syslog | bool
+    or logstash_deactivate_log_error_to_syslog | bool
 
 - name: Start Logstash
   service:

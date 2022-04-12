@@ -1,0 +1,5 @@
+---
+- name: elastic-repos
+  src: https://github.com/widhalmt/ansible-role-elastic-repos
+  scm: git
+- src: geerlingguy.redis

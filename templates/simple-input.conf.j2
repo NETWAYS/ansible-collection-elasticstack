@@ -1,7 +1,12 @@
 input {
+{% for input in item.input %}
+
+# {{ input.name }} input
   redis {
     host => "localhost"
     data_type => "list"
-    key => "{{ logstash_pipelines[item].input }}"
+    key => "{{ input.key }}"
   }
+{% endfor %}
+
 }

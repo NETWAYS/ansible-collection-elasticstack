@@ -8,23 +8,15 @@
   hosts: all
   vars:
     logstash_enable: true
-    logstash_deactivate_log_to_syslog: false
-    logstash_deactivate_log_error_to_syslog: false
-    logstash_plugins:
-      - logstash-filter-cidr
-      - logstash-output-icinga
-    logstash_global_ecs: "v1"
     logstash_pipelines:
       - name: syslog
         exclusive: false
         source: https://github.com/widhalmt/syslog-logstash-pipeline.git
+        version: bca66fd6f086a89a4b737103f5c339f66782c78e
+      - name: icinga
+        exclusive: false
+        source: https://github.com/Icinga/icinga-logstash-pipeline.git
         version: master
-        input:
-          - name: syslog
-            key: input
-        output:
-          - name: syslog
-            key: netways-syslog-output
     logstash_connector_pipelines:
       - name: forwarder-distribute
         exclusive: false

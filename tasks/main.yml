@@ -79,7 +79,7 @@
   block:
   - name: Create Logstash pipeline directories
     file:
-      path: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
+      path: "/etc/logstash/conf.d/{{ item.name }}"
       state: directory
       owner: root
       group: root
@@ -88,37 +88,37 @@
 
   - name: Check out pipeline configuration
     git:
-      repo: "{{ logstash_pipelines[item].source }}"
-      dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}"
-      version: "{{ logstash_pipelines[item].version |default('main') }}"
+      repo: "{{ item.source }}"
+      dest: "/etc/logstash/conf.d/{{ item.name }}"
+      version: "{{ item.version |default('main') }}"
     with_items: "{{ logstash_pipelines }}"
-    when: logstash_pipelines[item].source is defined
+    when: item.source is defined
     notify:
     - Restart Logstash noauto
 
   - name: Create simple input
     template:
       src: simple-input.conf.j2
-      dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}\
+      dest: "/etc/logstash/conf.d/{{ item.name }}\
       /input.conf"
       owner: root
       group: root
       mode: 0644
     with_items: "{{ logstash_pipelines }}"
-    when: logstash_pipelines[item].input is defined
+    when: item.input is defined
     notify:
     - Restart Logstash noauto
 
   - name: Create simple output
     template:
       src: simple-output.conf.j2
-      dest: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}\
+      dest: "/etc/logstash/conf.d/{{ item.name }}\
       /output.conf"
       owner: root
       group: root
       mode: 0644
     with_items: "{{ logstash_pipelines }}"
-    when: logstash_pipelines[item].output is defined
+    when: item.output is defined
     notify:
     - Restart Logstash noauto
 

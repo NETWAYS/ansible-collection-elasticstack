@@ -1,7 +1,7 @@
 {% if logstash_pipelines is defined %}
 {% for item in logstash_pipelines %}
-- pipeline.id: {{ logstash_pipelines[item].name }}
-  path.config: "/etc/logstash/conf.d/{{ logstash_pipelines[item].name }}/*.conf"
+- pipeline.id: {{ item.name }}
+  path.config: "/etc/logstash/conf.d/{{ item.name }}/*.conf"
 {% endfor %}
 {% endif %}
 {% if logstash_elasticsearch_output | bool %}

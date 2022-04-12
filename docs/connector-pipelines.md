@@ -1,6 +1,8 @@
 # Connector pipelines #
 
-This type of pipelines is special to this role. They are used to connect other pipelines so you don't have to mess with `input` and `output` configuration. This helps a lot with building reusable pipelines which can be shared between setups.
+You only need this feature when you don't have control over `input` and `output` configuration of pipelines you are using! This can be true for single or all your pipelines. You can mix and match just as you need.
+
+This type of pipelines is special to this role. They are used to connect other pipelines so you don't have to mess with `input` and `output` configuration. This helps a lot with building reusable pipelines which can be shared between setups. Another approach is to match `filter` configuration with your own `input` and `output`.
 
 The problem with sharing Logstash configuration was that you never know which events are processed which naming scheme is used and how pipelines interact. This role is up to mitigate these problems:
 

@@ -29,6 +29,7 @@ Role Variables
 * *logstash_enable*: Start and enable Logstash service (default: `true`)
 * *logstash_config_backup*: Keep backups of all changed configuration (default: `no`)
 * *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)
+* *logstash_manage_logging*: Manage log4j configuration (default: `false`)
 * *logstash_plugins*: List of plugins to install (default: none)
 * *logstash_certs_dir*: Path to certificates. Will be used to build paths of several files. (Default: `/etc/logstash/certs`)
 
@@ -54,10 +55,13 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
 * *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elastic_stack_full_stack` is not set. (default: `true`)
-* *logstash_deactivate_log_to_syslog*: Don't additionally log to syslog (default: `true`)
-* *logstash_deactivate_log_error_to_syslog*: Don't additionally log errors to syslog (default: `true`)
 
-Please note that the default of `logstash_deactivate_log*` variables will alter the systemd service on your host. If you don't want the Logstash role to "tamper" with your services configuration, please set both to `false`.
+The following variables configure Log4j for Logstash. All default to `true` as this is the default after the installation.
+
+* *logstash_logging_console*: Log to console - syslog when run via systemd
+* *logstash_logging_file*: Log to logfile
+* *logstash_logging_slow_console*: Log slowlog to console - syslog when run via systemd
+* *logstash_logging_slow_file*: Log slowlog to logfile
 
 The following variables are identical over all our elastic related roles, hence the different naming scheme.
 

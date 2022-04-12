@@ -10,6 +10,11 @@
     logstash_enable: true
     logstash_deactivate_log_to_syslog: false
     logstash_deactivate_log_error_to_syslog: false
+    logstash_manage_logging: true
+    logstash_logging_console: false
+    logstash_logging_file: false
+    logstash_logging_slow_console: false
+    logstash_logging_slow_file: false
     logstash_plugins:
       - logstash-filter-cidr
       - logstash-output-icinga

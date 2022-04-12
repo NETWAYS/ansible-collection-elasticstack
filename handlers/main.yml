@@ -11,7 +11,3 @@
     name: logstash
     state: restarted
   when: not logstash_config_autoreload and logstash_enable | bool
-
-- name: Reload daemons
-  systemd:
-    daemon_reload: true

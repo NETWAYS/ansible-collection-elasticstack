@@ -7,10 +7,12 @@
 {% endif %}
 
 {% if logstash_elasticsearch_output | bool or logstash_beats_input | bool %}
+
 ### Default Inputs and Outputs ###
 
 {% endif %}
 {% if logstash_beats_input | bool %}
+
 # Default beat input #
 # Autoconfigured Redis outputs: input
 
@@ -19,6 +21,7 @@
 
 {% endif %}
 {% if logstash_elasticsearch_output | bool %}
+
 # Default elasticsearch output #
 # Autoconfigured Redis input: forwarder
 
@@ -27,9 +30,13 @@
 
 {% endif %}
 {% if logstash_pipelines is defined %}
+
 ### Autoconfigured pipelines ###
 # See https://github.com/NETWAYS/ansible-role-logstash/blob/master/docs/pipelines.md
 # for details
+# Hint: They can be mixed up with manual code. When source or Redis is missing it's
+# likely that there is code from another source in place.
+
 {% for item in logstash_pipelines %}
 
 # Pipeline: {{ item.name }}
@@ -38,14 +45,17 @@
 # Version: {{ item.version |default('main') }}
 {% endif %}
 {% if item.input is defined %}
-# Autoconfigured Redis inputs:{% for input in item.input %} input.key{% endfor %}
+# Autoconfigured Redis inputs:{% for input in item.input %} {{ input.key }}{% endfor %}
+
 {% endif %}
 {% if item.output is defined %}
-# Autoconfigured Redis outputs:{% for input in item.output %} output.key{% endfor %}
+# Autoconfigured Redis outputs:{% for output in item.output %} {{ output.key }}{% endfor %}
+
 {% endif %}
 
 - pipeline.id: {{ item.name }}
   path.config: "/etc/logstash/conf.d/{{ item.name }}/*.conf"
+
 {% endfor %}
 {% endif %}
 {% if logstash_connector | bool %}
@@ -55,12 +65,15 @@
 # for details
 {% for item in logstash_connector_pipelines %}
 
+
 # Pipeline: {{ item.name }}
 {% if item.input is defined %}
-# Autoconfigured Redis inputs:{% for input in item.input %} input.key{% endfor %}
+# Autoconfigured Redis inputs:{% for input in item.input %} {{ input.key }}{% endfor %}
+
 {% endif %}
 {% if item.output is defined %}
-# Autoconfigured Redis outputs:{% for input in item.output %} output.key{% endfor %}
+# Autoconfigured Redis outputs:{% for output in item.output %} {{ output.key }}{% endfor %}
+
 {% endif %}
 
 - pipeline.id: ansible-{{ item.name }}-connector

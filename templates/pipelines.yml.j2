@@ -1,19 +1,68 @@
+---
+
+# Managed via Ansible role
+# https://github.com/NETWAYS/ansible-role-logstash
+{% if logstash_beats_input_congestion is defined %}
+# global congestion threshold: {{ logstash_beats_input_congestion }}
+{% endif %}
+
+{% if logstash_elasticsearch_output | bool or logstash_beats_input | bool %}
+### Default Inputs and Outputs ###
+
+{% endif %}
+{% if logstash_beats_input | bool %}
+# Default beat input #
+# Autoconfigured Redis outputs: input
+
+- pipeline.id: ansible-input
+  path.config: "/etc/logstash/conf.d/ansible-input/*.conf"
+
+{% endif %}
+{% if logstash_elasticsearch_output | bool %}
+# Default elasticsearch output #
+# Autoconfigured Redis input: forwarder
+
+- pipeline.id: ansible-forwarder
+  path.config: "/etc/logstash/conf.d/ansible-forwarder/*.conf"
+
+{% endif %}
 {% if logstash_pipelines is defined %}
+### Autoconfigured pipelines ###
+# See https://github.com/NETWAYS/ansible-role-logstash/blob/master/docs/pipelines.md
+# for details
 {% for item in logstash_pipelines %}
+
+# Pipeline: {{ item.name }}
+{% if item.source is defined %}
+# Filter code from {{ item.source }}
+# Version: {{ item.version |default('main') }}
+{% endif %}
+{% if item.input is defined %}
+# Autoconfigured Redis inputs:{% for input in item.input %} input.key{% endfor %}
+{% endif %}
+{% if item.output is defined %}
+# Autoconfigured Redis outputs:{% for input in item.output %} output.key{% endfor %}
+{% endif %}
+
 - pipeline.id: {{ item.name }}
   path.config: "/etc/logstash/conf.d/{{ item.name }}/*.conf"
 {% endfor %}
 {% endif %}
-{% if logstash_elasticsearch_output | bool %}
-- pipeline.id: ansible-forwarder
-  path.config: "/etc/logstash/conf.d/ansible-forwarder/*.conf"
-{% endif %}
-{% if logstash_beats_input | bool %}
-- pipeline.id: ansible-input
-  path.config: "/etc/logstash/conf.d/ansible-input/*.conf"
-{% endif %}
 {% if logstash_connector | bool %}
+
+### Autoconfigured connector pipelines ###
+# See https://github.com/NETWAYS/ansible-role-logstash/blob/master/docs/connector-pipelines.md
+# for details
 {% for item in logstash_connector_pipelines %}
+
+# Pipeline: {{ item.name }}
+{% if item.input is defined %}
+# Autoconfigured Redis inputs:{% for input in item.input %} input.key{% endfor %}
+{% endif %}
+{% if item.output is defined %}
+# Autoconfigured Redis outputs:{% for input in item.output %} output.key{% endfor %}
+{% endif %}
+
 - pipeline.id: ansible-{{ item.name }}-connector
   path.config: "/etc/logstash/conf.d/ansible-{{ item.name }}-connector/*.conf"
 {% endfor %}

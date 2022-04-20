@@ -9,6 +9,8 @@ It can optionally configure two types of Logstash pipelines:
 * Pipeline configuration managed in an external git repository
 * A default pipeline which will read from different Redis keys and write into Elasticsearch
 
+Details about configured pipelines will be written into `pipelines.yml` as comments. Same goes for logging configuration in `log4j.options`. 
+
 It will work with the standard Elastic Stack packages and Elastics OSS variant.
 
 Requirements

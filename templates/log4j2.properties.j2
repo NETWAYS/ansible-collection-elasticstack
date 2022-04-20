@@ -1,3 +1,16 @@
+# Managed by Ansible Role
+# https://github.com/NETWAYS/ansible-role-logstash
+#
+# Logging to logfile: {% if logstash_logging_file | bool %}true{% else %}false{% endif %}
+
+# Logging to console/syslog/journald: {% if logstash_logging_console | bool %}true{% else %}false{% endif %}
+
+# Slow Log to logfile: {% if logstash_logging_slow_file | bool %}true{% else %}false{% endif %}
+
+# Slow Log to console/syslog/journald: {% if logstash_logging_slow_console | bool %}true{% else %}false{% endif %}
+
+#
+
 status = error
 name = LogstashPropertiesConfig
 

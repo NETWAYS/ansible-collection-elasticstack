@@ -2,6 +2,26 @@
 - name: Install Filebeat
   package:
     name: filebeat
+  when: beats_filebeat_version is not defined
+
+- name: Install Filebeat specific version
+  package:
+    name: "filebeat{{ beats_filebeat_version }}"
+  notify:
+    - Restart Filebeat
+  when:
+    - beats_filebeat_version is defined
+    - beats_filebeat_version != "latest"
+
+- name: Install Filebeat latest version
+  package:
+    name: filebeat
+    state: latest
+  notify:
+    - Restart Filebeat
+  when:
+    - beats_filebeat_version is defined
+    - beats_filebeat_version == "latest"
 
 - name: Configure Filebeat
   template:

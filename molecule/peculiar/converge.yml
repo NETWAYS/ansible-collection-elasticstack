@@ -18,6 +18,7 @@
           match: after
     filebeat_mysql_slowlog_input: true
     beats_auditbeat: true
+    beats_auditbeat_version: latest
     auditbeat_output: logstash
     auditbeat_enable: false # can't run on GitHub because of permissions
     filebeat_journald_inputs:
@@ -28,9 +29,25 @@
     beats_metricbeat: true
     metricbeat_output: logstash
   tasks:
+    - name: Set Filebeat version on RedHat
+      set_fact:
+        beats_filebeat_version: "-7.16.1"
+      when: ansible_os_family == "RedHat"
+
+    - name: Set Filebeat version on Debian
+      set_fact:
+        beats_filebeat_version: "=7.16.1"
+      when: ansible_os_family == "Debian"
+
     - name: "Include Elastics repos role"
       include_role:
         name: elastic-repos
+
+    - name: Refresh apt cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
     - name: "Include Beats"
       include_role:
         name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"

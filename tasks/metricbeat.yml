@@ -2,6 +2,26 @@
 - name: Install Metricbeat
   package:
     name: metricbeat
+  when: beats_metricbeat_version is not defined
+
+- name: Install Metricbeat specific version
+  package:
+    name: "metricbeat{{ beats_metricbeat_version }}"
+  notify:
+    - Restart Metricbeat
+  when:
+    - beats_metricbeat_version is defined
+    - beats_metricbeat_version != "latest"
+
+- name: Install Metricbeat latest version
+  package:
+    name: metricbeat
+    state: latest
+  notify:
+    - Restart Metricbeat
+  when:
+    - beats_metricbeat_version is defined
+    - beats_metricbeat_version == "latest"
 
 - name: Configure Metricbeat
   template:

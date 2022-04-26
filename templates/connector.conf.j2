@@ -11,6 +11,16 @@ input {
 
 }
 
+{% if logstash_pipeline_identifier | bool %}
+filter {
+  mutate {
+    add_field => {
+      "{{ logstash_pipeline_identifier_field_name }}" => "{{ item.name }}"
+    }
+  }
+}
+
+{% endif %}
 output {
 {% for output in item.output %}
 

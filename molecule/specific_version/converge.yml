@@ -9,6 +9,7 @@
     logstash_manage_logging: true
     logstash_logging_console: false
     logstash_logging_slow_file: false
+    logstash_pipeline_identifier: false
   tasks:
 
   - name: Set Logstash version on RedHat

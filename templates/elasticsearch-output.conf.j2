@@ -1,3 +1,13 @@
+{% if logstash_pipeline_identifier | bool and logstash_pipeline_identifier_defaults | bool %}
+filter {
+  mutate {
+    add_field => {
+      "{{ logstash_pipeline_identifier_field_name }}" => "ansible-forwarder"
+    }
+  }
+}
+
+{% endif %}
 output {
   elasticsearch {
     hosts => [ {% for host in logstash_elasticsearch %}"{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]

@@ -54,6 +54,10 @@ logstash_logging_file: true
 logstash_logging_slow_console: true
 logstash_logging_slow_file: true
 
+logstash_pipeline_identifier: true
+logstash_pipeline_identifier_field_name: "[netways][pipeline]"
+logstash_pipeline_identifier_defaults: false
+
 # elastic full stack configuration
 elastic_stack_full_stack: false
 elastic_ca_dir: /opt/es-ca

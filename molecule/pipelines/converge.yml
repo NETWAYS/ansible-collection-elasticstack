@@ -26,6 +26,8 @@
         output:
           - name: forwarder
             key: forwarder
+    logstash_pipeline_identifier_field_name: "[mytest][pipelines]"
+    logstash_pipeline_identifier_defaults: true
   tasks:
     - name: "Include Elastics repos role"
       include_role:

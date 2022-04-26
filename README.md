@@ -65,6 +65,12 @@ The following variables configure Log4j for Logstash. All default to `true` as t
 * *logstash_logging_slow_console*: Log slowlog to console - syslog when run via systemd
 * *logstash_logging_slow_file*: Log slowlog to logfile
 
+The following variables configure extra fields in your events that help with identifying which pipelines have been passed or which pipeline is used how much.
+
+* *logstash_pipeline_identifier*: Activate this feature (default: `true`)
+* *logstash_pipeline_identifier_field_name*: Name of the field to add (default: `"[netways][pipeline]"`)
+* *logstash_pipeline_identifier_defaults*: Use identifiers in default pipelines, too (default: `false`) This could lead to the defaults dominating all statistics with virtually no value, but if you want to see, them, you can.
+
 The following variables are identical over all our elastic related roles, hence the different naming scheme.
 
 *elastic_release*: Major release version of Elastic stack to configure. (default: `7`)

@@ -32,3 +32,11 @@ xpack.security.http.ssl.truststore.password: {{ elasticsearch_tls_key_passphrase
 {% endif %}
 {% endif %}
 {% endif %}
+{% if elasticsearch_fs_repo is defined %}
+path:
+  repo:
+{% for path in elasticsearch_fs_repo %}
+    - {{ path }}
+
+{% endfor %}
+{% endif %}

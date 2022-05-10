@@ -15,6 +15,7 @@ Role Variables
 
 * *elasticsearch_enable*: Start and enable Elasticsearch (default: `true`)
 * *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
+*elasticsearch_fs_repo*: List of paths that should be registered as repository for snapshots (only filesystem supported so far). (default: none) Remember, that every node needs access to the same share under the same path.
 
 These variables are identical over all our elastic related roles, hence the different naming schemes.
 

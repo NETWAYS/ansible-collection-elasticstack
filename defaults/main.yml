@@ -11,6 +11,7 @@ beats_elasticsearch_output_port: 9200
 beats_logging: file
 beats_logpath: /var/log/beats
 beats_loglevel: info
+beats_manage_unzip: true
 
 # Use TLS without Elastic X-Pack #
 

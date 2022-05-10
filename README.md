@@ -83,6 +83,7 @@ filebeat_journald_inputs:
 * *beats_loglevel*: Level of logging (for all beats) (Default: `info`)
 * *beats_logpath*: If logging to file, where to put logfiles (Default: `/var/log/beats`)
 * *beats_fields*: Fields that are added to every input in the configuration
+* *beats_manage_unzip*: Install `unzip` via package manager (Default: `true`)
 
 The following variables only apply if you use this role together with our other Elastic Stack roles.
 

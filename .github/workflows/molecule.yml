@@ -69,7 +69,11 @@ jobs:
       matrix:
         #distro: [centos7, rockylinux8, debian10, ubuntu2004, ubuntu1804]
         distro: [centos7]
-        scenario: [run_logstash, full_stack, full_stack-oss, specific_version, pipelines]
+        scenario: [run_logstash,
+                   full_stack,
+                   full_stack-oss,
+                   specific_version,
+                   pipelines]
 
     steps:
       - name: Check out code

@@ -84,11 +84,11 @@
     mode: 0644
     backup: "{{ logstash_config_backup }}"
   notify:
-    - Restart Logstash
+  - Restart Logstash
   when: logstash_manage_logging | bool
   tags:
-    - configuration
-    - logstash_configuration
+  - configuration
+  - logstash_configuration
 
 - name: Fetch pipelines from git repositories
   block:

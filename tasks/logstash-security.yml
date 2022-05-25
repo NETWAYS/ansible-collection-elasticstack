@@ -25,19 +25,19 @@
     --ca-pass {{ elastic_ca_pass }}
     --name {{ ansible_hostname }}
     --ip {{ ansible_default_ipv4.address }}
-    --dns {{ ansible_hostname }},{{ ansible_fqdn }}
-    --pass "{{ logstash_tls_key_passphrase }}"
-    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
+    --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
+    --pass {{ logstash_tls_key_passphrase }}
+    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12
   delegate_to: "{{ elasticsearch_ca }}"
   args:
-    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
   tags:
     - certificates
 
 - name: Fetch certificate from ca host to master
   fetch:
-    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
-    dest: "/tmp/{{ ansible_hostname }}.p12"
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
+    dest: "/tmp/{{ ansible_hostname }}-ls.p12"
     flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
@@ -55,7 +55,7 @@
 
 - name: Copy the certificate to actual node
   copy:
-    src: "/tmp/{{ ansible_hostname }}.p12"
+    src: "/tmp/{{ ansible_hostname }}-ls.p12"
     dest: "{{ logstash_certs_dir }}/keystore.pfx"
     owner: root
     group: logstash
@@ -72,18 +72,18 @@
     --ca-pass {{ elastic_ca_pass }}
     --name {{ ansible_hostname }}
     --ip {{ ansible_default_ipv4.address }}
-    --dns {{ ansible_hostname }},{{ ansible_fqdn }}
+    --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
     --pass {{ logstash_tls_key_passphrase }}
     --pem
-    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.zip
+    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip
   delegate_to: "{{ elasticsearch_ca }}"
   args:
-    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.zip"
+    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
 
 - name: Fetch certificate from ca host to master
   fetch:
-    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.zip"
-    dest: "/tmp/{{ ansible_hostname }}.zip"
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+    dest: "/tmp/{{ ansible_hostname }}-ls.zip"
     flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
@@ -91,7 +91,7 @@
 
 - name: Copy the certificate to actual node
   unarchive:
-    src: "/tmp/{{ ansible_hostname }}.zip"
+    src: "/tmp/{{ ansible_hostname }}-ls.zip"
     dest: "{{ logstash_certs_dir }}/"
     owner: root
     group: logstash
@@ -135,6 +135,19 @@
     -passout pass:{{ logstash_tls_key_passphrase }}
   args:
     creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
+  when: logstash_beats_tls_encryptkey | bool
+
+- name: Create unencrypted Logstash compatible key
+  command: >
+    openssl pkcs8
+    -in {{ logstash_certs_dir }}/{{ inventory_hostname }}.key
+    -topk8
+    -passin pass:{{ logstash_tls_key_passphrase }}
+    -out {{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key
+    -nocrypt
+  args:
+    creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
+  when: not logstash_beats_tls_encryptkey | bool
 
 - name: Set permissions on Logstash key
   file:

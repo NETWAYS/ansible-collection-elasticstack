@@ -26,6 +26,7 @@ logstash_no_pipelines: false
 #     source: https://github.com/widhalmt/shipper-logstash-pipeline.git
 logstash_elasticsearch_output: true
 logstash_beats_input: true
+logstash_beats_tls_encryptkey: true
 logstash_connector: true
 
 # logstash security

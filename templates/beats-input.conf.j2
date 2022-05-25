@@ -8,7 +8,9 @@ input {
     ssl_verify_mode => force_peer
     ssl_certificate_authorities => ["{{ logstash_certs_dir }}/ca.crt"]
     ssl_peer_metadata => false
+{% if logstash_beats_tls_encryptkey | bool %}
     ssl_key_passphrase => "{{ logstash_tls_key_passphrase }}"
+{% endif %}
 {% endif %}
 
   }

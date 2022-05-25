@@ -51,6 +51,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_beats_input*: Enable default pipeline with `beats` input (default: `true`)
 * *logstash_beats_input_congestion*: Optional congestion threshold for the beats input pipeline
 * *logstash_beats_tls*: Activate TLS for the beats input pipeline (default: none but `true` with full stack setup if not set)
+* *logstash_beats_tls_encryptkey*: Enable encryption of key for beats input - disabling used as a workaround on certain hosts (default: true)
 * *logstash_tls_key_passphrase*: Passphrase for Logstash certificates (default: `ChangeMe`)
 * *logstash_connector*: Create pipelines to connect git managed pipelines. (default: `true`)
 * *logstash_connector_pipelines*: Definition of connector pipelines. See docs/connector-pipelines.md for details

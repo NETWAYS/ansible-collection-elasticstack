@@ -5,7 +5,7 @@ galaxy_info:
   description: Logstash for Linux
   company: "Netways GmbH"
   license: license (GPL-3.0-or-later)
-  min_ansible_version: 2.4
+  min_ansible_version: "2.4"
   platforms:
     - name: EL
       version:

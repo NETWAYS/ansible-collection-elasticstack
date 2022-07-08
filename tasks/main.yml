@@ -105,7 +105,7 @@
     git:
       repo: "{{ item.source }}"
       dest: "/etc/logstash/conf.d/{{ item.name }}"
-      version: "{{ item.version |default('main') }}"
+      version: "{{ item.version | default('main') }}"
     with_items: "{{ logstash_pipelines }}"
     when: item.source is defined
     notify:

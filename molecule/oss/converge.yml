@@ -7,5 +7,5 @@
     elastic_variant: oss
   tasks:
     - name: "Include Elastic Repos"
-      include_role:
+      ansible.builtin.include_role:
         name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"

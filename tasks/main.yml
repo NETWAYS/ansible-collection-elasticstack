@@ -1,7 +1,7 @@
 ---
 
 - name: Check for versions
-  fail:
+  ansible.builtin.fail:
     msg: "No OSS versions later than 7 are available"
   when:
     - elastic_release > 7

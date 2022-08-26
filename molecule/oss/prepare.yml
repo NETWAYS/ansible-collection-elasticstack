@@ -3,7 +3,7 @@
   hosts: all
   tasks:
     - name: Install requirements for Debian
-      apt:
+      ansible.builtin.apt:
         name:
         - gpg
         - apt-transport-https

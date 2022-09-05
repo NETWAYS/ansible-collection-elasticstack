@@ -5,7 +5,7 @@
     name: unzip
   when: beats_manage_unzip | bool
 
-- name: create certificate directory
+- name: Create certificate directory
   file:
     path: /etc/beats/certs
     state: directory
@@ -13,7 +13,7 @@
     group: root
     mode: 0700
 
-- name: create individual certificates for Beats
+- name: Create individual certificates for Beats
   command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
     --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
@@ -88,7 +88,7 @@
   tags:
     - certificates
 
-- name: fetch Beats password
+- name: Fetch Beats password
   shell: >
     grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
     awk {' print $4 '}

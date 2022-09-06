@@ -4,6 +4,7 @@
 - name: Converge
   vars:
     elastic_release: 8
+    elastic_rpm_workaround: true
   hosts: all
   tasks:
     - name: "Include Elastic Repos"

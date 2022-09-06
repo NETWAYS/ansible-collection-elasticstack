@@ -3,6 +3,8 @@
 # Found at: https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
 - name: Converge
   hosts: all
+  vars:
+    elastic_rpm_workaround: true
   tasks:
     - name: "Include Elastic Repos"
       ansible.builtin.include_role:

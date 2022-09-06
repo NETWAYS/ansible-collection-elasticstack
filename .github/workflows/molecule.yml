@@ -13,9 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      # max-parallel: 4
+      max-parallel: 4
       matrix:
-        distro: [centos7, debian10, rockylinux8, rockylinux9]
+
+        distro: [centos7, debian10, debian11, rockylinux8, rockylinux9]
         scenario: [default, oss, elastic8]
 
     steps:

@@ -12,6 +12,8 @@ You need `gpg` to be installed because packages / repositories are digitally sig
 
 Debian and Ubuntu hosts need to have `apt-transport-https` installed to deal with Elastics repositories.
 
+Ubuntu hosts also need to have `gpg-agent` installed.
+
 Role Variables
 --------------
 

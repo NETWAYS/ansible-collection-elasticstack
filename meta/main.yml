@@ -17,6 +17,10 @@ galaxy_info:
     versions:
     - buster
     - bullseye
+  - name: Ubuntu
+    versions:
+    - focal
+    - jammy
 
   galaxy_tags:
     - logmanagement

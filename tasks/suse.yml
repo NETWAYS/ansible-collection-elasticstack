@@ -1,0 +1,17 @@
+---
+
+- name: Ensure Elastic Stack yum repository is configured (SuSE)
+  community.general.zypper_repository:
+    name: elastic-{{ elastic_release }}.x
+    description: Elastic Release {{ elastic_release }}.x
+    repo: https://artifacts.elastic.co/packages/{{ elastic_release }}.x/yum
+    auto_import_keys: yes
+  when: elastic_variant == "elastic"
+
+- name: Ensure Elastic Stack OSS yum repository is configured (SuSE)
+  yum_repository:
+    name: elastic-oss-{{ elastic_release }}.x
+    description: Elastic OSS Release {{ elastic_release }}.x
+    repo: https://artifacts.elastic.co/packages/oss-{{ elastic_release }}.x/yum
+    auto_import_keys: yes
+  when: elastic_variant == "oss"

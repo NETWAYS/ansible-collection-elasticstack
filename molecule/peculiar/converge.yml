@@ -28,6 +28,7 @@
           - _SYSTEMD_UNIT=vault.service
     beats_metricbeat: true
     metricbeat_output: logstash
+    filebeat_docker: true
   tasks:
     - name: Set Filebeat version on RedHat
       set_fact:

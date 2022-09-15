@@ -91,6 +91,13 @@ filebeat.inputs:
 
 {% endfor %}
 {% endif %}
+{% if filebeat_docker | bool %}
+- type: docker
+  containers.ids: "{{ filebeat_docker_ids }}"
+  cri.parse_flags: true
+  combine_partial: true
+
+{% endif %}
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
   reload.enabled: false
@@ -149,3 +156,6 @@ logging.files:
 processors:
   - add_host_metadata: ~
   - add_cloud_metadata: ~
+{% if filebeat_docker | bool %}
+  - add_docker_metadata: ~
+{% endif %}

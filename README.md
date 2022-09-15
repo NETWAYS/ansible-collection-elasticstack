@@ -59,6 +59,9 @@ filebeat_journald_inputs:
   everything:
     id: everything
 ```
+* *filebeat_docker*: Enable collection of Docker logs (default: `false`)
+* *filebeat_docker_ids*: IDs of containers to collect. (default: `*`)
+
 * *filebeat_loadbalance*: Enable loadbalancing for Filebeats Logstash output (default: `true`)
 
 * *beats_auditbeat*: Install and manage filebeat (Default: `false`)

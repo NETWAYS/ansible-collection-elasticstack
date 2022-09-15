@@ -38,6 +38,10 @@ filebeat_journald: false
 filebeat_journald_inputs:
   everything:
     id: everything
+
+filebeat_docker: false
+filebeat_docker_ids: "*"
+
 filebeat_loadbalance: true
 
 filebeat_mysql_slowlog_input: false

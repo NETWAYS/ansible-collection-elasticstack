@@ -7,7 +7,7 @@
   tags:
     - certificates
 
-- name: create directory for Elasticsearch CA
+- name: Create directory for Elasticsearch CA
   file:
     path: "{{ elastic_ca_dir }}"
     owner: root
@@ -17,17 +17,17 @@
   tags:
     - certificates
 
-- name: create keystore
+- name: Create keystore
   command: /usr/share/elasticsearch/bin/elasticsearch-keystore create
   args:
     creates: /etc/elasticsearch/elasticsearch.keystore
 
-- name: check for bootstrap password
+- name: Check for bootstrap password
   command: /usr/share/elasticsearch/bin/elasticsearch-keystore list
   changed_when: false
   register: es_keystore
 
-- name: set bootstrap password
+- name: Set bootstrap password
   shell: >
     echo "{{ elasticsearch_bootstrap_pw }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
@@ -35,9 +35,9 @@
   when: "'bootstrap.password' not in es_keystore.stdout_lines"
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: create ca and certificates
+- name: Create ca and certificates
   block:
-    - name: configure ca
+    - name: Configure ca
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil ca
         --pass {{ elastic_ca_pass }}
@@ -46,7 +46,7 @@
       args:
         creates: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
 
-    - name: create individual certificates
+    - name: Create individual certificates
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil cert
         --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
@@ -60,7 +60,7 @@
       args:
         creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
 
-    - name: extract CA certificate
+    - name: Extract CA certificate
       command: "openssl pkcs12 -in {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12 -cacerts -nokeys -out {{ elastic_ca_dir }}/ca.crt -password pass:{{ elasticsearch_tls_key_passphrase }}"
       args:
         creates: "{{ elastic_ca_dir }}/ca.crt"
@@ -148,7 +148,7 @@
   changed_when: false
   when: not elasticsearch_passwords_file.stat.exists | bool
 
-- name: fetch Elastic password
+- name: Fetch Elastic password
   shell: grep "PASSWORD elastic" {{ elastic_initial_passwords }} | awk {' print $4 '}
   register: elastic_password
   changed_when: false

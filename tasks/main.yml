@@ -12,7 +12,7 @@
   when: elasticsearch_security | bool
 
 # the following should be done by the rpm but failed with 7.4
-- name: set ulimits for Elasticsearch
+- name: Set ulimits for Elasticsearch
   pam_limits:
     limit_item: nofile
     domain: elasticsearch
@@ -47,6 +47,16 @@
     - elastic_variant == "elastic"
   tags:
     - security
+    - certificates
+
+- name: Create Elasticsearch data directory
+  file:
+    path: "{{ elasticsearch_datapath }}"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    mode: "2750"
+  when: elasticsearch_create_datapath | bool
 
 - name: Start Elasticsearch
   service:

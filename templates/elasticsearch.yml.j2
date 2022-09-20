@@ -1,5 +1,5 @@
 node.name: "{{ ansible_hostname }}"
-path.data: /var/lib/elasticsearch
+path.data: {{ elasticsearch_datapath }}
 path.logs: /var/log/elasticsearch
 network.host: ["_local_","_site_"]
 discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}

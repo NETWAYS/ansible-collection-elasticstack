@@ -11,6 +11,9 @@ cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
 {% if elastic_temperature is defined %}
 node.attr.temp: "{{ elastic_temperature }}"
 {% endif %}
+{% if elasticsearch_disable_systemcallfilterchecks | bool %}
+bootstrap.system_call_filter: false
+{% endif %}
 {% if elastic_variant == "elastic" %}
 xpack.ml.enabled: {{ elasticsearch_ml_enabled }}
 xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}

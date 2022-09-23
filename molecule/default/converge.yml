@@ -6,6 +6,7 @@
   vars:
     elasticsearch_enable: false
     elasticsearch_security: false
+    elasticsearch_disable_systemcallfilterchecks: true
   tasks:
     - name: "Include Elastics repos role"
       include_role:

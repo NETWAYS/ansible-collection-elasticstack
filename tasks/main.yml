@@ -15,7 +15,7 @@
 
 # the following should be done by the rpm but failed with 7.4
 - name: Set ulimits for Elasticsearch
-  ansible.builtin.pam_limits:
+  community.general.system.pam_limits:
     limit_item: nofile
     domain: elasticsearch
     value: 65535

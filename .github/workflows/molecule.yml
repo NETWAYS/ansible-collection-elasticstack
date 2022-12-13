@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      #max-parallel: 3
+      max-parallel: 4
       matrix:
         distro: [ubuntu2204]
-        scenario: [default, cluster, cluster-oss]
+        scenario: [default, cluster, cluster-oss, no-security]
 
     steps:
       - name: Check out code

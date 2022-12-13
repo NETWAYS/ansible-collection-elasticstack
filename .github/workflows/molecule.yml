@@ -15,7 +15,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        distro: [ubuntu2204]
+        distro: [debian11, ubuntu2204]
         scenario: [default, cluster, cluster-oss, no-security]
 
     steps:
@@ -37,3 +37,5 @@ jobs:
           molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'

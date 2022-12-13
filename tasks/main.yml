@@ -41,7 +41,8 @@
     - Restart Elasticsearch
   when: elasticsearch_manage_yaml | bool
 
-- import_tasks: elasticsearch-security.yml
+- name: Import security tasks
+  import_tasks: elasticsearch-security.yml
   when:
     - elasticsearch_security | bool
     - elastic_variant == "elastic"
@@ -64,6 +65,7 @@
     state: started
     enabled: yes
   when: elasticsearch_enable | bool
+  failed_when: false
 
 - name: Show hint about passwords
   debug:

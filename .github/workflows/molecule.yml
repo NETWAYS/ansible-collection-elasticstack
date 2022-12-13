@@ -15,7 +15,7 @@ jobs:
     strategy:
       #max-parallel: 3
       matrix:
-        distro: [centos7]
+        distro: [ubuntu2204]
         scenario: [default, cluster, cluster-oss]
 
     steps:

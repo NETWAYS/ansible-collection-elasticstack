@@ -1,0 +1,5 @@
+{
+  "debug": false,
+  "default-cgroupns-mode": "host",
+  "storage-driver": "vfs"
+}

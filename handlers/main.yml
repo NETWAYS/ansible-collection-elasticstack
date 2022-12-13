@@ -4,3 +4,4 @@
   service:
     name: elasticsearch
     state: restarted
+  when: elasticsearch_enable | bool

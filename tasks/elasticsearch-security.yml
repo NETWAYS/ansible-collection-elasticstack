@@ -33,7 +33,143 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -x 'bootstrap.password'
   when: "'bootstrap.password' not in es_keystore.stdout_lines"
+  notify:
+    - Restart Elasticsearch
   ignore_errors: "{{ ansible_check_mode }}"
+
+
+- name: Get xpack.security.http.ssl.keystore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    show 'xpack.security.http.ssl.keystore.secure_password'
+  when:
+    - "'xpack.security.http.ssl.keystore.secure_password' in es_keystore.stdout_lines"
+    - elasticsearch_http_security
+  register:  http_ssl_keystore_secure_password
+  ignore_errors: "{{ ansible_check_mode }}"
+  changed_when: false
+
+- name: Set xpack.security.http.ssl.keystore.secure_password
+  shell: >
+    echo "{{ elasticsearch_tls_key_passphrase }}" |
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    add -f -x 'xpack.security.http.ssl.keystore.secure_password'
+  when:
+    - http_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != http_ssl_keystore_secure_password.stdout
+    - elasticsearch_http_security
+  notify:
+    - Restart Elasticsearch
+
+
+- name: Remove xpack.security.http.ssl.keystore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    remove 'xpack.security.http.ssl.keystore.secure_password'
+  when:
+    - "'xpack.security.http.ssl.keystore.secure_password' in es_keystore.stdout_lines"
+    - not elasticsearch_http_security
+  notify:
+    - Restart Elasticsearch
+
+
+- name: Get xpack.security.http.ssl.truststore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    show 'xpack.security.http.ssl.truststore.secure_password'
+  when:
+    - "'xpack.security.http.ssl.truststore.secure_password' in es_keystore.stdout_lines"
+    - elasticsearch_http_security
+  register:  http_ssl_truststore_secure_password
+  ignore_errors: "{{ ansible_check_mode }}"
+  changed_when: false
+
+- name: Set xpack.security.http.ssl.truststore.secure_password
+  shell: >
+    echo "{{ elasticsearch_tls_key_passphrase }}" |
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    add -f -x 'xpack.security.http.ssl.truststore.secure_password'
+  when:
+    - http_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != http_ssl_truststore_secure_password.stdout
+    - elasticsearch_http_security
+  notify:
+    - Restart Elasticsearch
+
+- name: Remove xpack.security.http.ssl.truststore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    remove 'xpack.security.http.ssl.truststore.secure_password'
+  when:
+    - "'xpack.security.http.ssl.truststore.secure_password' in es_keystore.stdout_lines"
+    - not elasticsearch_http_security
+  notify:
+    - Restart Elasticsearch
+
+
+- name: Get xpack.security.transport.ssl.keystore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    show 'xpack.security.transport.ssl.keystore.secure_password'
+  when:
+    - "'xpack.security.transport.ssl.keystore.secure_password' in es_keystore.stdout_lines"
+    - elasticsearch_security
+  register:  transport_ssl_keystore_secure_password
+  ignore_errors: "{{ ansible_check_mode }}"
+  changed_when: false
+
+- name: Set xpack.security.transport.ssl.keystore.secure_password
+  shell: >
+    echo "{{ elasticsearch_tls_key_passphrase }}" |
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    add -f -x 'xpack.security.transport.ssl.keystore.secure_password'
+  when:
+    - transport_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != transport_ssl_keystore_secure_password.stdout
+    - elasticsearch_security
+  notify:
+    - Restart Elasticsearch
+
+- name: Remove xpack.security.transport.ssl.keystore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    remove 'xpack.security.transport.ssl.keystore.secure_password'
+  when:
+    - "'xpack.security.transport.ssl.keystore.secure_password' in es_keystore.stdout_lines"
+    - not elasticsearch_security
+  notify:
+    - Restart Elasticsearch
+
+
+- name: Get xpack.security.transport.ssl.truststore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    show 'xpack.security.transport.ssl.truststore.secure_password'
+  when:
+    - "'xpack.security.transport.ssl.truststore.secure_password' in es_keystore.stdout_lines"
+    - elasticsearch_security
+  register:  transport_ssl_truststore_secure_password
+  ignore_errors: "{{ ansible_check_mode }}"
+  changed_when: false
+
+- name: Set xpack.security.transport.ssl.truststore.secure_password
+  shell: >
+    echo "{{ elasticsearch_tls_key_passphrase }}" |
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    add -f -x 'xpack.security.transport.ssl.truststore.secure_password'
+  when:
+    - transport_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != transport_ssl_truststore_secure_password.stdout
+    - elasticsearch_security
+  notify:
+    - Restart Elasticsearch
+
+- name: Remove xpack.security.transport.ssl.truststore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    remove 'xpack.security.transport.ssl.truststore.secure_password'
+  when:
+    - "'xpack.security.transport.ssl.truststore.secure_password' in es_keystore.stdout_lines"
+    - not elasticsearch_security
+  notify:
+    - Restart Elasticsearch
+
 
 - name: Create ca and certificates
   block:
@@ -122,6 +258,10 @@
     - certificates
   ignore_errors: "{{ ansible_check_mode }}"
 
+- name: Force all notified handlers to run at this point, not waiting for normal sync points
+  ansible.builtin.meta: flush_handlers
+
+
 - name: Start Elasticsearch
   service:
     name: elasticsearch
@@ -140,10 +280,15 @@
   delegate_to: "{{ elasticsearch_ca }}"
   register: elasticsearch_passwords_file
 
+- name: Setting elasticsearch_http_protocol
+  ansible.builtin.set_fact:
+    elasticsearch_http_protocol: "https"
+  when: elasticsearch_http_security
+
 - name: Check for cluster status with bootstrap password
   shell: >
     curl -ks
-    https://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty |
+    {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty |
     grep status |
     cut -d\" -f4
   register: es_cluster_status_bootstrap
@@ -160,7 +305,7 @@
 - name: Check for cluster status with elastic password
   shell: >
     curl -ks
-    https://elastic:{{ elastic_password.stdout }}@localhost:9200/_cluster/health?pretty |
+    {{ elasticsearch_http_protocol }}://elastic:{{ elastic_password.stdout }}@localhost:9200/_cluster/health?pretty |
     grep status |
     cut -d\" -f4
   register: es_cluster_status

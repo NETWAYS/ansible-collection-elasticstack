@@ -8,6 +8,7 @@ elasticsearch_monitoring_enabled: true
 elasticsearch_security: true
 elasticsearch_bootstrap_pw: PleaseChangeMe
 elasticsearch_http_security: true
+elasticsearch_http_protocol: http
 elasticsearch_datapath: /var/lib/elasticsearch
 elasticsearch_create_datapath: false
 elasticsearch_disable_systemcallfilterchecks: false

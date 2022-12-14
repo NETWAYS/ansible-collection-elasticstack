@@ -1,0 +1,8 @@
+---
+- name: Fail when security is not declared when elasticsearch >= 8
+  ansible.builtin.fail:
+    msg: "Elasticsearch >= 8 requires enabled security. Set elasticsearch_security to true"
+  when:
+    - elastic_release >= 8
+    - elastic_variant == 'elastic'
+    - elasticsearch_security is not defined or not elasticsearch_security

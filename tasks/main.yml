@@ -1,6 +1,8 @@
 ---
 
 - name: Prepare for whole stack roles if used
+  when:
+  - elastic_stack_full_stack | bool
   block:
 
   - name: Set Elasticsearch hosts if used with other roles
@@ -17,9 +19,6 @@
     set_fact:
       logstash_beats_tls: true
     when: logstash_beats_tls is undefined
-
-  when:
-  - elastic_stack_full_stack | bool
 
 - name: Set Elasticsearch hosts to localhost if no other information available
   set_fact:
@@ -52,7 +51,8 @@
   when:
   - elastic_variant == "oss"
 
-- import_tasks: logstash-security.yml
+- name: Import Logstash Security tasks
+  import_tasks: logstash-security.yml
   when:
   - elastic_stack_full_stack | bool
   - logstash_security | bool
@@ -91,6 +91,12 @@
   - logstash_configuration
 
 - name: Fetch pipelines from git repositories
+  when:
+  - logstash_pipelines is defined
+  - not logstash_no_pipelines | bool
+  tags:
+  - configuration
+  - logstash_configuration
   block:
   - name: Create Logstash pipeline directories
     file:
@@ -137,14 +143,13 @@
     notify:
     - Restart Logstash noauto
 
+- name: Create default Elasticsearch output pipeline
   when:
-  - logstash_pipelines is defined
+  - logstash_elasticsearch_output | bool
   - not logstash_no_pipelines | bool
   tags:
   - configuration
   - logstash_configuration
-
-- name: Create default Elasticsearch output pipeline
   block:
   - name: Create directory for default Elasticsearch output pipeline
     file:
@@ -173,14 +178,14 @@
       mode: 0644
     notify:
     - Restart Logstash noauto
+
+- name: Create default Beats input pipeline
   when:
-  - logstash_elasticsearch_output | bool
+  - logstash_beats_input | bool
   - not logstash_no_pipelines | bool
   tags:
   - configuration
   - logstash_configuration
-
-- name: Create default Beats input pipeline
   block:
   - name: Create directory for default beats input pipeline
     file:
@@ -209,14 +214,14 @@
       mode: 0644
     notify:
     - Restart Logstash noauto
+
+- name: Create connector pipelines
   when:
-  - logstash_beats_input | bool
+  - logstash_connector | bool
   - not logstash_no_pipelines | bool
   tags:
   - configuration
   - logstash_configuration
-
-- name: Create connector pipelines
   block:
   - name: Create directory for connector pipelines
     file:
@@ -240,13 +245,6 @@
     notify:
     - Restart Logstash noauto
 
-  when:
-  - logstash_connector | bool
-  - not logstash_no_pipelines | bool
-  tags:
-  - configuration
-  - logstash_configuration
-
 - name: Configure Logstash pipelines
   template:
     src: pipelines.yml.j2
@@ -263,7 +261,7 @@
   - logstash_configuration
 
 - name: Install Logstash plugins
-  logstash_plugin:
+  community.general.monitoring.logstash_plugin:
     state: present
     name: "{{ item }}"
   with_items: "{{ logstash_plugins }}"

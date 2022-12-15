@@ -18,7 +18,7 @@
     - configuration
     - logstash_configuration
 
-- name: create individual certificates for Logstash
+- name: Create individual certificates for Logstash
   command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
     --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
@@ -65,7 +65,7 @@
   tags:
     - certificates
 
-- name: create individual PEM certificates for Logstash
+- name: Create individual PEM certificates for Logstash
   command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
     --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
@@ -197,7 +197,7 @@
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true
 
-- name: fetch Elastic password
+- name: Fetch Elastic password
   shell: >
     grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
     awk {' print $4 '}

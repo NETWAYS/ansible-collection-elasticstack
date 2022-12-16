@@ -4,6 +4,7 @@
 - name: Converge
   hosts: all
   vars:
+    elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
   tasks:
     - name: "Include Elastics repos role"

@@ -5,6 +5,8 @@
   hosts: all
   vars:
     elasticsearch_security: false
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
   tasks:
     - name: "Include Elastics repos role"
       include_role:

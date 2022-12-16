@@ -6,6 +6,7 @@
   vars:
     # elasticsearch_disable_systemcallfilterchecks: true
     elastic_release: 8
+    elasticsearch_jna_workaround: true
   tasks:
     - name: "Include Elastics repos role"
       include_role:

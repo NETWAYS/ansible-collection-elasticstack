@@ -1,7 +1,11 @@
 ---
-- name: elastic-repos
-  src: https://github.com/NETWAYS/ansible-role-elastic-repos
-  scm: git
-# Versions 1.7.0 and 1.8.0 seem to have a problem with idempotency
-- name: geerlingguy.redis
-  version: "1.6.0"
+roles:
+  - name: elastic-repos
+    src: https://github.com/NETWAYS/ansible-role-elastic-repos
+    scm: git
+  # Versions 1.7.0 and 1.8.0 seem to have a problem with idempotency
+  - name: geerlingguy.redis
+    version: "1.6.0"
+
+collections:
+  - community.general

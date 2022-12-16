@@ -16,6 +16,8 @@ It will work with the standard Elastic Stack packages and Elastics OSS variant.
 Requirements
 ------------
 
+* `community.general` collection
+
 You need to have the Elastic Repos configured on your system. You can use our [role](https://github.com/widhalmt/ansible-role-elastic-repos) for that but you don't have to.
 
 If you want to use the default pipeline configuration you need to have `git` available.

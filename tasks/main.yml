@@ -261,7 +261,7 @@
   - logstash_configuration
 
 - name: Install Logstash plugins
-  community.general.monitoring.logstash_plugin:
+  community.general.logstash_plugin:
     state: present
     name: "{{ item }}"
   with_items: "{{ logstash_plugins }}"

@@ -1,4 +1,8 @@
 ---
-- name: elastic-repos
-  src: https://github.com/NETWAYS/ansible-role-elastic-repos
-  scm: git
+roles:
+  - name: elastic-repos
+    src: https://github.com/NETWAYS/ansible-role-elastic-repos
+    scm: git
+
+collections:
+  - community.general

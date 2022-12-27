@@ -20,22 +20,8 @@ logstash_manage_pipelines: true
 
 # this will deactivate all pipeline management
 logstash_no_pipelines: false
-# logstash_pipelines:
-#   shipper:
-#     name: shipper
-#     source: https://github.com/widhalmt/shipper-logstash-pipeline.git
-logstash_elasticsearch_output: true
-logstash_beats_input: true
-logstash_beats_tls_encryptkey: true
-logstash_connector: true
 
-# logstash security
-logstash_user: logstash_writer
-logstash_password: password
-
-# connector pipelines
-# see docs/connector-pipelines.md for details
-logstash_connector_pipelines:
+logstash_pipelines:
   - name: default
     exclusive: false
     input:
@@ -44,6 +30,16 @@ logstash_connector_pipelines:
     output:
       - name: default
         key: forwarder
+#   shipper:
+#     name: shipper
+#     source: https://github.com/widhalmt/shipper-logstash-pipeline.git
+logstash_elasticsearch_output: true
+logstash_beats_input: true
+logstash_beats_tls_encryptkey: true
+
+# logstash security
+logstash_user: logstash_writer
+logstash_password: password
 
 logstash_tls_key_passphrase: ChangeMe
 logstash_certs_dir: /etc/logstash/certs

@@ -215,36 +215,6 @@
     notify:
     - Restart Logstash noauto
 
-- name: Create connector pipelines
-  when:
-  - logstash_connector | bool
-  - not logstash_no_pipelines | bool
-  tags:
-  - configuration
-  - logstash_configuration
-  block:
-  - name: Create directory for connector pipelines
-    file:
-      path: "/etc/logstash/conf.d/ansible-{{ item.name }}-connector"
-      state: directory
-      owner: root
-      group: root
-      mode: 0755
-    with_items:
-      "{{ logstash_connector_pipelines }}"
-
-  - name: Create connector pipelines
-    template:
-      src: connector.conf.j2
-      dest: "/etc/logstash/conf.d/ansible-{{ item.name }}-connector/pipe.conf"
-      owner: root
-      group: root
-      mode: 0644
-    with_items:
-      "{{ logstash_connector_pipelines }}"
-    notify:
-    - Restart Logstash noauto
-
 - name: Configure Logstash pipelines
   template:
     src: pipelines.yml.j2

@@ -30,7 +30,6 @@
         output:
           - name: syslog
             key: netways-syslog-output
-    logstash_connector_pipelines:
       - name: forwarder-distribute
         exclusive: false
         input:

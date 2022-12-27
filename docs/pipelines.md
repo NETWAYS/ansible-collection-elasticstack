@@ -1,7 +1,5 @@
 # Pipelines #
 
-This only refers to "non-connector" pipelines.
-
 ## Git managed ##
 
 If you have pipeline code managed in (and available via) Git repositories, you can use this role to check them out and integrate them into `pipelines.yml`.

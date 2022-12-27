@@ -7,11 +7,14 @@
   hosts: all
   vars:
     logstash_enable: true
+    logstash_security: true
     elastic_stack_full_stack: true
     filebeat_syslog_udp: true
     filebeat_syslog_tcp: true
     beats_fields:
       - "testbed: molecule"
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
   tasks:
     - name: "Include Elastics repos role"
       include_role:

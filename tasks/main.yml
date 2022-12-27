@@ -1,6 +1,8 @@
 ---
 
 - name: Prepare for whole stack roles if used
+  when:
+  - elastic_stack_full_stack | bool
   block:
 
   - name: Enable security if enabled for whole stack
@@ -30,9 +32,6 @@
       beats_tls_key_passphrase: "{{ elastic_cert_pass }}"
     when: elastic_cert_pass is defined
 
-  when:
-  - elastic_stack_full_stack | bool
-
 # We need it for templating even when security is disabled
 # This default corresponds with the default in Elastic-
 # independent "CA" Role
@@ -59,14 +58,15 @@
   - elastic_stack_full_stack | bool
   - elastic_variant == "elastic"
 
-- name: Import Filebeat
+- name: Import Filebeat tasks
   import_tasks: filebeat.yml
   when: beats_filebeat | bool
 
-- name: Import Auditbeat
+- name: Import Auditbeat tasks
   import_tasks: auditbeat.yml
   when: beats_auditbeat | bool
 
-- name: Import Metricbeat
+- name: Import Metricbeat tasks
+
   import_tasks: metricbeat.yml
   when: beats_metricbeat | bool

@@ -16,6 +16,8 @@
           pattern: '^[[:space:]]+(at|\.{3})[[:space:]]+\b|^Caused by:'
           negate: false
           match: after
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
     filebeat_mysql_slowlog_input: true
     beats_auditbeat: true
     beats_auditbeat_version: latest
@@ -47,6 +49,7 @@
     - name: Refresh apt cache
       apt:
         update_cache: yes
+      changed_when: false
       when: ansible_os_family == "Debian"
 
     - name: "Include Beats"

@@ -8,6 +8,16 @@ filter {
 }
 
 {% endif %}
+{% if logstash_ident | bool %}
+filter {
+  mutate {
+    add_field => {
+      "{{ logstash_ident_field_name }}" => "{{ ansible_hostname }}"
+    }
+  }
+}
+
+{% endif %}
 output {
   elasticsearch {
     hosts => [ {% for host in logstash_elasticsearch %}"{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]

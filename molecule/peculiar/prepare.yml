@@ -11,6 +11,7 @@
         name:
           - git
           - gpg
+          - gpg-agent
           - procps
           - curl
         update_cache: yes

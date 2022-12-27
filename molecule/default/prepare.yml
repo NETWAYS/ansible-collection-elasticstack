@@ -6,11 +6,13 @@
       package:
         name: git
       when: ansible_os_family != "Debian"
+
     - name: Install packages for Debian
       apt:
         name:
           - git
           - gpg
+          - gpg-agent
           - procps
           - curl
         update_cache: yes

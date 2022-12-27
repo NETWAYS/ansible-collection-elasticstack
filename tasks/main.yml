@@ -52,17 +52,21 @@
     mode: 0750
   when: beats_logging == "file"
 
-- import_tasks: beats-security.yml
+- name: Import security tasks
+  import_tasks: beats-security.yml
   when:
   - beats_security | bool
   - elastic_stack_full_stack | bool
   - elastic_variant == "elastic"
 
-- import_tasks: filebeat.yml
+- name: Import Filebeat
+  import_tasks: filebeat.yml
   when: beats_filebeat | bool
 
-- import_tasks: auditbeat.yml
+- name: Import Auditbeat
+  import_tasks: auditbeat.yml
   when: beats_auditbeat | bool
 
-- import_tasks: metricbeat.yml
+- name: Import Metricbeat
+  import_tasks: metricbeat.yml
   when: beats_metricbeat | bool

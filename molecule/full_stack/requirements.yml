@@ -3,7 +3,7 @@
   src: https://github.com/netways/ansible-role-elastic-repos
   scm: git
 - name: elasticsearch
-  src: https://github.com/widhalmt/ansible-role-elasticsearch.git
+  src: https://github.com/netways/ansible-role-elasticsearch.git
   scm: git
 - name: logstash
   src: https://github.com/netways/ansible-role-logstash.git

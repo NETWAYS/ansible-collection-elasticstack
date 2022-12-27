@@ -2,17 +2,18 @@
 - name: Prepare
   hosts: all
   tasks:
-    - name: Install git
-      package:
-        name: git
-      when: ansible_os_family != "Debian"
+
     - name: Install packages for Debian
       apt:
         name:
-          - git
           - gpg
           - gpg-agent
           - procps
           - curl
         update_cache: yes
       when: ansible_os_family == "Debian"
+
+    - name: Install common packages
+      package:
+        name:
+          - git

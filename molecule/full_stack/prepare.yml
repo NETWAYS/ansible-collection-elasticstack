@@ -2,6 +2,7 @@
 - name: Prepare
   hosts: all
   tasks:
+
     - name: Refresh apt cache
       apt:
         update_cache: yes
@@ -34,3 +35,8 @@
           - curl
           - iproute2
       when: ansible_os_family == "Debian"
+
+    - name: Install common packages
+      package:
+        name:
+          - git

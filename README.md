@@ -10,7 +10,7 @@ This role installs and configures Filebeat.
 Requirements
 ------------
 
-You need to have Filebeat available in your software repositories. We provide a role for just that but if you have other ways of managing software, just make sure it's available. Alternatively you can install Filebeat yourself.
+You need to have the beats you want to install available in your software repositories. We provide a role for just that but if you have other ways of managing software, just make sure it's available. Alternatively you can install Filebeat yourself.
 
 Role Variables
 --------------

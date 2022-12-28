@@ -1,6 +1,5 @@
 skip_list:
-  - 'command-instead-of-module'
-  - 'risky-shell-pipe'
-  - 'role-name'
-  - 'fqcn-builtins'
   - 'yaml'
+  - command-instead-of-module  # Using command rather than module.
+  - fqcn[action-core]  # Use FQCN for builtin actions.
+  - 'risky-shell-pipe'

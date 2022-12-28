@@ -2,18 +2,18 @@
 filter {
   mutate {
     add_field => {
-      "{{ logstash_pipeline_identifier_field_name }}" => "{{ item.name }}"
+      "{{ logstash_pipeline_identifier_field_name }}" => "{{ pipelinename.name }}"
     }
   }
 }
 
 {% endif %}
 output {
-{% for output in item.output %}
+{% for output in pipelinename.output %}
 
 # {{ output.name }} output
-{% if output.condition is defined or item.exclusive | bool %}
-{% if not loop.first and item.exclusive | bool %}else {% endif %}{% if (not loop.last and item.exclusive | bool) or not item.exclusive %}if {% endif %}{% if output.condition is defined %}{{ output.condition }} {% endif %}{
+{% if output.condition is defined or pipelinename.exclusive | bool %}
+{% if not loop.first and pipelinename.exclusive | bool %}else {% endif %}{% if (not loop.last and pipelinename.exclusive | bool) or not pipelinename.exclusive %}if {% endif %}{% if output.condition is defined %}{{ output.condition }} {% endif %}{
 {% endif %}
   redis {
     host => "localhost"
@@ -22,7 +22,7 @@ output {
     {% if output.congestion is defined %}congestion_threshold => {{ output.congestion }}{% endif %}
 
   }
-{% if output.condition is defined or item.exclusive | bool %}
+{% if output.condition is defined or pipelinename.exclusive | bool %}
 }
 {% endif %}
 {% endfor %}

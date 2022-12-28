@@ -5,6 +5,9 @@
 {% if logstash_beats_input_congestion is defined %}
 # global congestion threshold: {{ logstash_beats_input_congestion }}
 {% endif %}
+#
+# The lines starting with "# source:" are used to help the role manage
+# different types of pipelines. Please don't change them
 
 {% if logstash_elasticsearch_output | bool or logstash_beats_input | bool %}
 
@@ -43,6 +46,10 @@
 {% if item.source is defined %}
 # Filter code from {{ item.source }}
 # Version: {{ item.version |default('main') }}
+#
+# source:{{ item.name }}:remote
+{% else %}
+# source:{{ item.name }}:local
 {% endif %}
 {% if item.input is defined %}
 # Autoconfigured Redis inputs:{% for input in item.input %} {{ input.key }}{% endfor %}

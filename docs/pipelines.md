@@ -222,3 +222,5 @@ logstash_pipelines:
 **You have to make sure the code is available or Logstash will constantly log errors!**
 
 This will create the directories and integrate all `*.conf` files within via `pipelines.yml`.
+
+**If you add a source later, the role will delete the directory and recreate it with it's own code. So make sure you have a backup!"

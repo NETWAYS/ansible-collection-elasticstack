@@ -91,57 +91,16 @@
   - logstash_configuration
 
 - name: Fetch pipelines from git repositories
+  loop: "{{ logstash_pipelines }}"
+  include_tasks: manage_pipeline.yml
+  loop_control:
+    loop_var: pipelinename
   when:
   - logstash_pipelines is defined
   - not logstash_no_pipelines | bool
   tags:
   - configuration
   - logstash_configuration
-  block:
-  - name: Create Logstash pipeline directories
-    file:
-      path: "/etc/logstash/conf.d/{{ item.name }}"
-      state: directory
-      owner: root
-      group: root
-      mode: 0755
-    with_items: "{{ logstash_pipelines }}"
-
-  - name: Check out pipeline configuration
-    git:
-      repo: "{{ item.source }}"
-      dest: "/etc/logstash/conf.d/{{ item.name }}"
-      version: "{{ item.version | default('main') }}"
-    with_items: "{{ logstash_pipelines }}"
-    when: item.source is defined
-    notify:
-    - Restart Logstash noauto
-
-  - name: Create simple input
-    template:
-      src: simple-input.conf.j2
-      dest: "/etc/logstash/conf.d/{{ item.name }}\
-      /input.conf"
-      owner: root
-      group: root
-      mode: 0644
-    with_items: "{{ logstash_pipelines }}"
-    when: item.input is defined
-    notify:
-    - Restart Logstash noauto
-
-  - name: Create simple output
-    template:
-      src: simple-output.conf.j2
-      dest: "/etc/logstash/conf.d/{{ item.name }}\
-      /output.conf"
-      owner: root
-      group: root
-      mode: 0644
-    with_items: "{{ logstash_pipelines }}"
-    when: item.output is defined
-    notify:
-    - Restart Logstash noauto
 
 - name: Create default Elasticsearch output pipeline
   when:

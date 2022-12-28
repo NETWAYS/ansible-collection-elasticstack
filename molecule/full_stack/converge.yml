@@ -6,8 +6,6 @@
 - name: Converge
   hosts: all
   vars:
-    logstash_enable: true
-    logstash_security: true
     elastic_stack_full_stack: true
     filebeat_syslog_udp: true
     filebeat_syslog_tcp: true

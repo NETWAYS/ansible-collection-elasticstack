@@ -55,7 +55,7 @@
   import_tasks: logstash-security.yml
   when:
   - elastic_stack_full_stack | bool
-  - logstash_security | bool
+  - logstash_security is defined and logstash_security | bool
   - elastic_variant == "elastic"
   tags:
   - security

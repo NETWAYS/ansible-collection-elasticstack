@@ -60,8 +60,8 @@ metricbeat_modules:
 metricbeat_loadbalance: true
 
 elastic_stack_full_stack: false
-elastic_security: true
 elastic_variant: elastic
+elastic_security: true
 
 elastic_ca_dir: /opt/es-ca
 elastic_ca_pass: PleaseChangeMe

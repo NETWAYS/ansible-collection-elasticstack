@@ -15,8 +15,8 @@ beats_manage_unzip: true
 
 # Use TLS without Elastic X-Pack #
 
-beats_tls_key: "{{ beats_ca_dir }}/{{ inventory_hostname }}.key"
-beats_tls_cert: "{{ beats_ca_dir }}/{{ inventory_hostname }}.crt"
+beats_tls_key: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.key"
+beats_tls_cert: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.crt"
 beats_tls_cacert: "{{ beats_ca_dir }}/ca.crt"
 beats_tls_key_passphrase: ChangeMe
 

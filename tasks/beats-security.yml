@@ -23,15 +23,15 @@
     --dns {{ ansible_hostname }},{{ ansible_fqdn }}
     --pass {{ beats_tls_key_passphrase }}
     --pem
-    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.zip
+    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip
   delegate_to: "{{ elasticsearch_ca }}"
   args:
-    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.zip"
+    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip"
 
 - name: Fetch certificate from ca host to master
   fetch:
-    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.zip"
-    dest: "/tmp/{{ ansible_hostname }}.zip"
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip"
+    dest: "/tmp/{{ ansible_hostname }}-beats.zip"
     flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
@@ -39,7 +39,7 @@
 
 - name: Copy the certificate to actual node
   unarchive:
-    src: "/tmp/{{ ansible_hostname }}.zip"
+    src: "/tmp/{{ ansible_hostname }}-beats.zip"
     dest: "/etc/beats/certs/"
     owner: root
     group: root
@@ -50,7 +50,7 @@
 - name: Copy certificate locally
   copy:
     src: "/etc/beats/certs/{{ ansible_hostname }}/{{ ansible_hostname }}.crt"
-    dest: "/etc/beats/certs/{{ inventory_hostname }}.crt"
+    dest: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
     owner: root
     group: root
     mode: 0640
@@ -61,7 +61,7 @@
 - name: Copy key locally
   copy:
     src: "/etc/beats/certs/{{ ansible_hostname }}/{{ ansible_hostname }}.key"
-    dest: "/etc/beats/certs/{{ inventory_hostname }}.key"
+    dest: "/etc/beats/certs/{{ inventory_hostname }}-beats.key"
     owner: root
     group: root
     mode: 0640

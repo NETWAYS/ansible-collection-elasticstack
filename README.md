@@ -1,16 +1,14 @@
-Filebeat
+Ansible Role: Beats
 =========
 
 [![CI](https://github.com/NETWAYS/ansible-role-beats/workflows/Molecule%20Test/badge.svg?event=push)](https://github.com/NETWAYS/ansible-role-beats/workflows/Molecule%20Test/badge.svg)
 
-This role installs and configures Filebeat.
-
-*WARNING*: This is a very, very early prototype only usable for a very specific environment. **DO NOT USE IN PRODUCTION**
+This role installs and configures Beats. You can use it as a standalone role or combine it with our other roles managing the Elastic Stack.
 
 Requirements
 ------------
 
-You need to have the beats you want to install available in your software repositories. We provide a role for just that but if you have other ways of managing software, just make sure it's available. Alternatively you can install Filebeat yourself.
+You need to have the beats you want to install available in your software repositories. We provide a role for just that but if you have other ways of managing software, just make sure it's available. Alternatively you can install the Beats yourself.
 
 Role Variables
 --------------
@@ -124,7 +122,3 @@ License
 
 GPL-3.0-or-later
 
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).

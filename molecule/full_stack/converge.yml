@@ -9,6 +9,8 @@
     elastic_stack_full_stack: true
     filebeat_syslog_udp: true
     filebeat_syslog_tcp: true
+    filebeat_modules:
+      - system
     beats_fields:
       - "testbed: molecule"
     elasticsearch_jna_workaround: true

@@ -50,12 +50,13 @@
 
 - name: Enable Ingest Pipelines
   command: >
-    /bin/filebeat setup --pipelines --modules {{ item }} &&
-    /bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
+    /usr/bin/filebeat setup --pipelines --modules {{ item }} &&
+    /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
   args:
     creates: "/etc/filebeat/{{ item }}_pipeline_created"
   notify:
     - Restart Filebeat
+  changed_when: false
   with_items: "{{ filebeat_modules }}"
   when: filebeat_modules is defined
 

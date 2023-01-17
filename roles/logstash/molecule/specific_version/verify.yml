@@ -1,0 +1,13 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Check if Logstash configuration does what it should
+  hosts: all
+  tasks:
+  - name: Run syntax check
+    command: "/usr/share/logstash/bin/logstash --version | grep ^logstash"
+    register: logstash_version
+  - name: Fail if Logstash has the wrong version
+    fail:
+      msg: "Logstash has the wrong version"
+    when: not "logstash 7.10.1" in logstash_version.stdout_lines

@@ -1,0 +1,67 @@
+---
+
+# Managed via Ansible role
+# https://github.com/NETWAYS/ansible-role-logstash
+{% if logstash_beats_input_congestion is defined %}
+# global congestion threshold: {{ logstash_beats_input_congestion }}
+{% endif %}
+#
+# The lines starting with "# source:" are used to help the role manage
+# different types of pipelines. Please don't change them
+
+{% if logstash_elasticsearch_output | bool or logstash_beats_input | bool %}
+
+### Default Inputs and Outputs ###
+
+{% endif %}
+{% if logstash_beats_input | bool %}
+
+# Default beat input #
+# Autoconfigured Redis outputs: input
+
+- pipeline.id: ansible-input
+  path.config: "/etc/logstash/conf.d/ansible-input/*.conf"
+
+{% endif %}
+{% if logstash_elasticsearch_output | bool %}
+
+# Default elasticsearch output #
+# Autoconfigured Redis input: forwarder
+
+- pipeline.id: ansible-forwarder
+  path.config: "/etc/logstash/conf.d/ansible-forwarder/*.conf"
+
+{% endif %}
+{% if logstash_pipelines is defined %}
+
+### Autoconfigured pipelines ###
+# See https://github.com/NETWAYS/ansible-role-logstash/blob/master/docs/pipelines.md
+# for details
+# Hint: They can be mixed up with manual code. When source or Redis is missing it's
+# likely that there is code from another source in place.
+
+{% for item in logstash_pipelines %}
+
+# Pipeline: {{ item.name }}
+{% if item.source is defined %}
+# Filter code from {{ item.source }}
+# Version: {{ item.version |default('main') }}
+#
+# source:{{ item.name }}:remote
+{% else %}
+# source:{{ item.name }}:local
+{% endif %}
+{% if item.input is defined %}
+# Autoconfigured Redis inputs:{% for input in item.input %} {{ input.key }}{% endfor %}
+
+{% endif %}
+{% if item.output is defined %}
+# Autoconfigured Redis outputs:{% for output in item.output %} {{ output.key }}{% endfor %}
+
+{% endif %}
+
+- pipeline.id: {{ item.name }}
+  path.config: "/etc/logstash/conf.d/{{ item.name }}/*.conf"
+
+{% endfor %}
+{% endif %}

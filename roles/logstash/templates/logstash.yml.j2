@@ -1,0 +1,24 @@
+path.data: {{ logstash_config_path_data }}
+config.reload.automatic: {{ logstash_config_autoreload | lower }}
+{% if logstash_config_autoreload | bool and logstash_config_autoreload_interval is defined %}
+config.reload.interval: {{ logstash_config_autoreload_interval }}
+{% endif %}
+path.logs: {{ logstash_config_path_logs }}
+{% if logstash_http_host is defined %}
+http.host: {{ logstash_http_host }}
+{% if logstash_http_port is defined %}
+http.port: {{ logstash_http_port }}
+{% endif %}
+{% endif %}
+{% if logstash_global_ecs is defined %}
+pipeline.ecs_compatibility: {{ logstash_global_ecs }}
+{% endif %}
+{% if logstash_legacy_monitoring | bool and elastic_stack_full_stack | bool and elastic_variant == "elastic" %}
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.hosts: [ {% for host in logstash_elasticsearch %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %} ]
+xpack.monitoring.elasticsearch.username: elastic
+xpack.monitoring.elasticsearch.password: {{ elastic_password_logstash.stdout }}
+xpack.monitoring.elasticsearch.ssl.certificate_authority: "{{ logstash_certs_dir }}/ca.crt"
+xpack.monitoring.elasticsearch.sniffing: true
+xpack.monitoring.collection.pipeline.details.enabled: true
+{% endif %}

@@ -1,0 +1,22 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Check if Logstash configuration does what it should
+  hosts: all
+  tasks:
+  - name: Run syntax check
+    command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
+  - name: Check for open port 5044/tcp
+    wait_for:
+      port: 5044
+  - name: Check for Logstash plugins
+    command: "/usr/share/logstash/bin/logstash-plugin list"
+    register: logstash_plugins_inst
+  - name: Fail if Logstash misses cidr
+    fail:
+      msg: "CIDR Filter not installed"
+    when: not "logstash-filter-cidr" in logstash_plugins_inst.stdout_lines
+  - name: Fail if Logstash misses Icinga
+    fail:
+      msg: "Icinga output not installed"
+    when: not "logstash-output-icinga" in logstash_plugins_inst.stdout_lines

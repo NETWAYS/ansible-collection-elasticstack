@@ -1,0 +1,18 @@
+{% if logstash_pipeline_identifier | bool and logstash_pipeline_identifier_defaults | bool %}
+filter {
+  mutate {
+    add_field => {
+      "{{ logstash_pipeline_identifier_field_name }}" => "ansible-input"
+    }
+  }
+}
+
+{% endif %}
+output {
+  redis {
+    host => "localhost"
+    data_type => "list"
+    key => "input"
+{% if logstash_beats_input_congestion is defined %}    congestion_threshold => {{ logstash_beats_input_congestion }}{% endif %}
+  }
+}

@@ -1,0 +1,66 @@
+---
+
+- name: Check if Logstash pipeline already exists
+  stat:
+    path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
+  register: "pipeline_stat"
+
+- name: Check who managed pipeline in last run
+  shell: >
+    grep -e '^# source:{{ pipelinename.name }}' /etc/logstash/pipelines.yml |
+    cut -d: -f3
+  register: "pipeline_manager"
+  changed_when: false
+  when:
+    - pipeline_stat.stat.exists | bool
+    - pipeline_stat.stat.isdir | bool
+
+- name: Delete directory if changing manager
+  file:
+    path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
+    state: absent
+  when:
+    - pipeline_manager.stdout is defined
+    - pipeline_manager.stdout == "local"
+    - pipelinename.source is defined
+
+- name: Create Logstash pipeline directories
+  file:
+    path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Check out pipeline configuration
+  git:
+    repo: "{{ pipelinename.source }}"
+    dest: "/etc/logstash/conf.d/{{ pipelinename.name }}"
+    version: "{{ pipelinename.version | default('main') }}"
+  when: pipelinename.source is defined
+  notify:
+    - Restart Logstash noauto
+
+- name: Create simple input
+  template:
+    src: simple-input.conf.j2
+    dest: "/etc/logstash/conf.d/{{ pipelinename.name }}\
+    /input.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: pipelinename.input is defined
+  notify:
+    - Restart Logstash noauto
+
+- name: Create simple output
+  template:
+    src: simple-output.conf.j2
+    dest: "/etc/logstash/conf.d/{{ pipelinename.name }}\
+    /output.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: pipelinename.output is defined
+  notify:
+    - Restart Logstash noauto

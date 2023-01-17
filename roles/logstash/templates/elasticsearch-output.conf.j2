@@ -1,0 +1,34 @@
+{% if logstash_pipeline_identifier | bool and logstash_pipeline_identifier_defaults | bool %}
+filter {
+  mutate {
+    add_field => {
+      "{{ logstash_pipeline_identifier_field_name }}" => "ansible-forwarder"
+    }
+  }
+}
+
+{% endif %}
+{% if logstash_ident | bool %}
+filter {
+  mutate {
+    add_field => {
+      "{{ logstash_ident_field_name }}" => "{{ ansible_hostname }}"
+    }
+  }
+}
+
+{% endif %}
+output {
+  elasticsearch {
+    hosts => [ {% for host in logstash_elasticsearch %}"{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
+{% if elastic_stack_full_stack | bool and logstash_security is defined and logstash_security | bool and elastic_variant == "elastic" %}
+    keystore => "{{ logstash_certs_dir }}/keystore.pfx"
+    keystore_password => "{{ logstash_tls_key_passphrase }}"
+    cacert => "{{ logstash_certs_dir }}/ca.crt"
+    ssl => true
+    user => "{{ logstash_user }}"
+    password => "{{ logstash_password }}"
+{% endif %}
+  }
+}
+

@@ -1,0 +1,72 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+
+    - name: Refresh apt cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install git
+      package:
+        name: git
+
+    - name: Install packages for Debian
+      package:
+        name:
+          - gpg
+          - gpg-agent
+          - procps
+          - curl
+      when: ansible_os_family == "Debian"
+
+    #- name: Create Logstash directory
+    #  file:
+    #    path: /etc/logstash
+    #    owner: root
+    #    group: root
+    #    mode: 0755
+    #    state: directory
+
+    #- name: Create Logstash conf.d
+    #  file:
+    #    path: /etc/logstash/conf.d
+    #    owner: root
+    #    group: root
+    #    mode: 0755
+    #    state: directory
+
+    #- name: Create Logstash syslog pipeline
+    #  file:
+    #    path: /etc/logstash/conf.d/syslog
+    #    owner: root
+    #    group: root
+    #    mode: 0755
+    #    state: directory
+
+    #- name: Create Syslog input
+    #  copy:
+    #    dest: /etc/logstash/conf.d/syslog/input.conf
+    #    content: >
+    #      "input {
+    #         redis {
+    #           key => input
+    #           host => localhost
+    #           data_type => list
+    #         }
+    #       }
+    #      "
+
+    #- name: Create Syslog output
+    #  copy:
+    #    dest: /etc/logstash/conf.d/syslog/output.conf
+    #    content: >
+    #      "output {
+    #         redis {
+    #           key => input
+    #           host => localhost
+    #           data_type => list
+    #         }
+    #       }
+    #      "

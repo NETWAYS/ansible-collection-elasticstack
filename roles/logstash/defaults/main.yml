@@ -1,0 +1,70 @@
+---
+# defaults file for logstash
+logstash_version: ""
+logstash_enable: true
+logstash_config_backup: no
+logstash_manage_yaml: true
+logstash_manage_logging: false
+
+# config items in yaml file #
+
+logstash_config_autoreload: true
+## logstash_config_autoreload_interval: 3s
+logstash_config_path_data: /var/lib/logstash
+logstash_config_path_logs: /var/log/logstash
+## logstash_http_host: "127.0.0.1"
+## logstash_http_port: 9600-9700
+
+# pipeline configuration #
+logstash_manage_pipelines: true
+
+# this will deactivate all pipeline management
+logstash_no_pipelines: false
+
+logstash_pipelines:
+  - name: default
+    exclusive: false
+    input:
+      - name: default
+        key: input
+    output:
+      - name: default
+        key: forwarder
+#   shipper:
+#     name: shipper
+#     source: https://github.com/widhalmt/shipper-logstash-pipeline.git
+logstash_elasticsearch_output: true
+logstash_beats_input: true
+logstash_beats_tls_encryptkey: true
+
+# logstash security
+logstash_user: logstash_writer
+logstash_password: password
+
+logstash_tls_key_passphrase: ChangeMe
+logstash_certs_dir: /etc/logstash/certs
+
+logstash_legacy_monitoring: true
+
+logstash_logging_console: true
+logstash_logging_file: true
+logstash_logging_slow_console: true
+logstash_logging_slow_file: true
+
+logstash_ident: true
+logstash_ident_field_name: "[netways][instance]"
+logstash_pipeline_identifier: true
+logstash_pipeline_identifier_field_name: "[netways][pipeline]"
+logstash_pipeline_identifier_defaults: false
+
+# elastic full stack configuration
+elastic_stack_full_stack: false
+elastic_ca_dir: /opt/es-ca
+elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+elastic_ca_pass: PleaseChangeMe
+
+# "global" variables for all roles
+
+elastic_release: 7
+elastic_variant: elastic
+elastic_security: true

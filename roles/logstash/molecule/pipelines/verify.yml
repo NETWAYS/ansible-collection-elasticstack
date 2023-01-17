@@ -1,0 +1,44 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Check if Logstash configuration does what it should
+  hosts: all
+  tasks:
+  - name: Run syntax check
+    command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
+    changed_when: false
+
+  - name: Check for open port 5044/tcp
+    wait_for:
+      port: 5044
+
+  - name: Create Syslog input
+    copy:
+      dest: /etc/logstash/conf.d/syslog/input.conf
+      content: >
+        "input {
+           redis {
+             key => input
+             host => localhost
+             data_type => list
+           }
+         }
+        "
+
+  - name: Create Syslog output
+    copy:
+      dest: /etc/logstash/conf.d/syslog/output.conf
+      content: >
+        "output {
+           redis {
+             key => input
+             host => localhost
+             data_type => list
+           }
+         }
+        "
+  - name: Update Pipeline code
+    git:
+      repo: https://github.com/widhalmt/syslog-logstash-pipeline.git
+      dest: /etc/logstash/conf.d/syslog/
+      version: master

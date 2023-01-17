@@ -1,0 +1,30 @@
+{% if logstash_pipeline_identifier | bool %}
+filter {
+  mutate {
+    add_field => {
+      "{{ logstash_pipeline_identifier_field_name }}" => "{{ pipelinename.name }}"
+    }
+  }
+}
+
+{% endif %}
+output {
+{% for output in pipelinename.output %}
+
+# {{ output.name }} output
+{% if output.condition is defined or pipelinename.exclusive | bool %}
+{% if not loop.first and pipelinename.exclusive | bool %}else {% endif %}{% if (not loop.last and pipelinename.exclusive | bool) or not pipelinename.exclusive %}if {% endif %}{% if output.condition is defined %}{{ output.condition }} {% endif %}{
+{% endif %}
+  redis {
+    host => "localhost"
+    data_type => "list"
+    key => "{{ output.key }}"
+    {% if output.congestion is defined %}congestion_threshold => {{ output.congestion }}{% endif %}
+
+  }
+{% if output.condition is defined or pipelinename.exclusive | bool %}
+}
+{% endif %}
+{% endfor %}
+
+}

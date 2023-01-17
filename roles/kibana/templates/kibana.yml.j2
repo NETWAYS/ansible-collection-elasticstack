@@ -1,0 +1,21 @@
+server.host: "0.0.0.0"
+
+{% if elastic_stack_full_stack is defined and elastic_stack_full_stack | bool and kibana_security | bool  and elastic_variant == "elastic" %}
+elasticsearch.hosts: [{% for host in kibana_elasticsearch_hosts %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
+elasticsearch.username: "kibana"
+elasticsearch.password: "{{ kibana_password.stdout }}"
+elasticsearch.ssl.certificateAuthorities:  "/etc/kibana/certs/ca.crt"
+{% if "localhost" in kibana_elasticsearch_hosts %}elasticsearch.ssl.verificationMode: certificate
+{% endif %}
+
+xpack.security.encryptionKey: "{{ kibana_encryption_key.stdout }}"
+xpack.encryptedSavedObjects.encryptionKey: "{{ kibana_savedobjects_encryption_key.stdout }}"
+{% else %}
+elasticsearch.hosts: [{% for host in kibana_elasticsearch_hosts %}"http://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
+{% endif %}
+
+{% if kibana_tls | bool %}
+server.ssl.enabled: true
+server.ssl.certificate: "{{ kibana_tls_cert }}"
+server.ssl.key: "{{ kibana_tls_key }}"
+{% endif %}

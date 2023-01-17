@@ -1,0 +1,20 @@
+---
+# defaults file for kibana
+kibana_config_backup: true
+kibana_manage_yaml: true
+
+kibana_security: true
+
+kibana_tls: false
+kibana_tls_cert: /etc/kibana/certs/cert.pem
+kibana_tls_key: /etc/kibana/certs/key.pem
+kibana_tls_key_passphrase: PleaseChangeMe
+
+elastic_ca_dir: /opt/es-ca
+elastic_ca_pass: PleaseChangeMe
+elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+
+# "global" variables for all roles
+
+elastic_release: 7
+elastic_variant: elastic

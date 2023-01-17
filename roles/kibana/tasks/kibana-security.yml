@@ -1,0 +1,113 @@
+---
+
+- name: Make sure openssl is installed
+  package:
+    name: openssl
+
+- name: Set elasticsearch_ca variable if not already done by user
+  set_fact:
+    elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
+  when: elasticsearch_ca is undefined
+  tags:
+    - certificates
+
+- name: Block for key generation
+  block:
+    - name: generate encryption key
+      shell: openssl rand -base64 36 > {{ elastic_ca_dir }}/encryption_key
+      changed_when: false
+      args:
+        creates: "{{ elastic_ca_dir }}/encryption_key"
+
+    - name: fetch encryption key
+      command: cat {{ elastic_ca_dir }}/encryption_key
+      changed_when: false
+      register: kibana_encryption_key
+
+    - name: generate saved objects encryption key
+      shell: >
+        openssl rand
+        -base64 36 >
+        {{ elastic_ca_dir }}/savedobjects_encryption_key
+      changed_when: false
+      args:
+        creates: "{{ elastic_ca_dir }}/savedobjects_encryption_key"
+
+    - name: fetch saved objects encryption key
+      command: cat {{ elastic_ca_dir }}/savedobjects_encryption_key
+      changed_when: false
+      register: kibana_savedobjects_encryption_key
+  delegate_to: "{{ elasticsearch_ca }}"
+  run_once: true
+
+- name: create certificate directory
+  file:
+    path: /etc/kibana/certs
+    state: directory
+    owner: root
+    group: kibana
+    mode: 0750
+  tags:
+    - certificates
+
+- name: create individual certificates for Kibana
+  command: >
+    /usr/share/elasticsearch/bin/elasticsearch-certutil cert
+    --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
+    --ca-pass {{ elastic_ca_pass }}
+    --name {{ ansible_hostname }}
+    --ip {{ ansible_default_ipv4.address }}
+    --dns {{ ansible_hostname }},{{ ansible_fqdn }}
+    --pass {{ kibana_tls_key_passphrase }}
+    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
+  delegate_to: "{{ elasticsearch_ca }}"
+  args:
+    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+
+- name: Fetch certificate from ca host to master
+  fetch:
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+    dest: "/tmp/"
+    flat: yes
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - certificates
+
+- name: Copy the certificate to actual node
+  copy:
+    src: "/tmp/{{ ansible_hostname }}.p12"
+    dest: "/etc/kibana/certs"
+    owner: root
+    group: kibana
+    mode: 0640
+  tags:
+    - certificates
+
+- name: fetch Kibana password
+  shell: >
+    grep "PASSWORD kibana " /usr/share/elasticsearch/initial_passwords |
+    awk {' print $4 '}
+  register: kibana_password
+  changed_when: false
+  delegate_to: "{{ elasticsearch_ca }}"
+
+- name: Fetch ca certificate from ca host to master
+  fetch:
+    src: "{{ elastic_ca_dir }}/ca.crt"
+    dest: /tmp/ca.crt
+    flat: yes
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - certificates
+
+- name: Copy the ca certificate to actual node
+  copy:
+    src: /tmp/ca.crt
+    dest: /etc/kibana/certs
+    owner: root
+    group: kibana
+    mode: 0640
+  notify:
+    Restart Kibana
+  tags:
+    - certificates

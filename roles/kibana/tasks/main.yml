@@ -1,0 +1,67 @@
+---
+
+- name: Set common password for common certificates
+  set_fact:
+    kibana_tls_key_passphrase: "{{ elastic_cert_pass }}"
+  when:
+  - elastic_cert_pass is defined
+
+# tasks file for kibana
+- name: Set Elasticsearch hosts if used with other roles
+  set_fact:
+    kibana_elasticsearch_hosts: "{{ groups['elasticsearch'] }}"
+  when:
+    - kibana_elasticsearch_hosts is undefined
+    - groups['elasticsearch'] is defined
+
+- name: Set Elasticsearch hosts to localhost if no other info is available
+  set_fact:
+    kibana_elasticsearch_hosts:
+      - localhost
+  when:
+    - kibana_elasticsearch_hosts is undefined
+    - groups['elasticsearch'] is undefined
+
+- name: install Kibana
+  package:
+    name: kibana
+  when: elastic_variant == "elastic"
+
+- name: install Kibana OSS
+  package:
+    name: kibana-oss
+  when: elastic_variant == "oss"
+
+- import_tasks: kibana-security.yml
+  when:
+    - elastic_stack_full_stack is defined
+    - elastic_stack_full_stack | bool
+    - kibana_security | bool
+    - elastic_variant == "elastic"
+  tags:
+    - security
+
+- name: Configure Kibana
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ kibana_config_backup }}"
+  notify:
+    - Restart Kibana
+  when: kibana_manage_yaml | bool
+
+- name: start Kibana
+  service:
+    name: kibana
+    state: started
+
+# the following is useful when running tests or extra tasks that need to
+# have Kibana running
+
+- name: Wait for Kibana to start
+  wait_for:
+    host: localhost
+    port: 5601

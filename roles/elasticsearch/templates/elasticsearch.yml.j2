@@ -1,0 +1,41 @@
+node.name: "{{ ansible_hostname }}"
+path.data: {{ elasticsearch_datapath }}
+path.logs: /var/log/elasticsearch
+network.host: ["_local_","_site_"]
+discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
+"{{ hostvars[host].ansible_default_ipv4.address | default(hostvars[host].ansible_all_ipv4_addresses[0]) }}"{% if not loop.last %},{% endif %}
+{% endfor %} ]
+cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
+"{{ hostvars[host].ansible_hostname }}"{% if not loop.last %},{% endif %}
+{% endfor %} ]
+{% if elastic_temperature is defined %}
+node.attr.temp: "{{ elastic_temperature }}"
+{% endif %}
+{% if elasticsearch_disable_systemcallfilterchecks | bool %}
+bootstrap.system_call_filter: false
+{% endif %}
+{% if elastic_variant == "elastic" %}
+xpack.ml.enabled: {{ elasticsearch_ml_enabled }}
+xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}
+{% if elasticsearch_security | bool %}
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+#xpack.security.transport.ssl.verification_mode: certificate 
+xpack.security.transport.ssl.verification_mode: none 
+xpack.security.transport.ssl.keystore.path: certs/{{ ansible_hostname }}.p12 
+xpack.security.transport.ssl.truststore.path: certs/{{ ansible_hostname }}.p12 
+{% if elasticsearch_http_security | bool %}
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.keystore.path: certs/{{ ansible_hostname }}.p12
+xpack.security.http.ssl.truststore.path: certs/{{ ansible_hostname }}.p12
+{% endif %}
+{% endif %}
+{% endif %}
+{% if elasticsearch_fs_repo is defined %}
+path:
+  repo:
+{% for path in elasticsearch_fs_repo %}
+    - {{ path }}
+
+{% endfor %}
+{% endif %}

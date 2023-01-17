@@ -1,0 +1,32 @@
+---
+# defaults file for elasticsearch
+elasticsearch_enable: true
+elasticsearch_ml_enabled: true
+elasticsearch_config_backup: false
+elasticsearch_manage_yaml: true
+elasticsearch_monitoring_enabled: true
+elasticsearch_security: true
+elasticsearch_bootstrap_pw: PleaseChangeMe
+elasticsearch_http_security: true
+elasticsearch_http_protocol: http
+elasticsearch_datapath: /var/lib/elasticsearch
+elasticsearch_create_datapath: false
+elasticsearch_disable_systemcallfilterchecks: false
+elasticsearch_heap: "{{ [[ ( ansible_memtotal_mb // 1024) // 2 , 30 ]|min, 1]|max }}"
+
+elasticsearch_jna_workaround: false
+
+# The following variables are to be used when activating security
+# They follow a different naming scheme to show that they are global
+# to our set of Elastic Stack related Ansible roles
+
+# elasticsearch_ca: First host in the `elasticsearch` group
+elastic_ca_dir: /opt/es-ca
+elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+elastic_ca_pass: PleaseChangeMe
+elastic_cert_pass: PleaseChangeMeIndividually
+
+# "global" variables for all roles
+
+elastic_release: 7
+elastic_variant: elastic

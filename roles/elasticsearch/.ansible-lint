@@ -1,0 +1,7 @@
+skip_list:
+  - 'command-instead-of-module'
+  - 'risky-shell-pipe'
+  - 'role-name'
+  - 'line-length'
+  - 'fqcn-builtins'
+  - yaml  # Violations reported by yamllint.

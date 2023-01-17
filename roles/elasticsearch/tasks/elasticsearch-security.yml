@@ -1,0 +1,357 @@
+---
+
+- name: Set elasticsearch_ca variable if not already done by user
+  set_fact:
+    elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
+  when: elasticsearch_ca is undefined
+  tags:
+    - certificates
+
+- name: Create directory for Elasticsearch CA
+  file:
+    path: "{{ elastic_ca_dir }}"
+    owner: root
+    group: elasticsearch
+    mode: 0700
+    state: directory
+  tags:
+    - certificates
+
+- name: Create keystore
+  command: /usr/share/elasticsearch/bin/elasticsearch-keystore create
+  args:
+    creates: /etc/elasticsearch/elasticsearch.keystore
+
+- name: Check for bootstrap password
+  command: /usr/share/elasticsearch/bin/elasticsearch-keystore list
+  changed_when: false
+  register: es_keystore
+
+- name: Set bootstrap password
+  shell: >
+    echo "{{ elasticsearch_bootstrap_pw }}" |
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    add -x 'bootstrap.password'
+  when: "'bootstrap.password' not in es_keystore.stdout_lines"
+  notify:
+    - Restart Elasticsearch
+  ignore_errors: "{{ ansible_check_mode }}"
+
+
+- name: Get xpack.security.http.ssl.keystore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    show 'xpack.security.http.ssl.keystore.secure_password'
+  when:
+    - "'xpack.security.http.ssl.keystore.secure_password' in es_keystore.stdout_lines"
+    - elasticsearch_http_security
+  register:  http_ssl_keystore_secure_password
+  ignore_errors: "{{ ansible_check_mode }}"
+  changed_when: false
+
+- name: Set xpack.security.http.ssl.keystore.secure_password
+  shell: >
+    echo "{{ elasticsearch_tls_key_passphrase }}" |
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    add -f -x 'xpack.security.http.ssl.keystore.secure_password'
+  when:
+    - http_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != http_ssl_keystore_secure_password.stdout
+    - elasticsearch_http_security
+  notify:
+    - Restart Elasticsearch
+
+
+- name: Remove xpack.security.http.ssl.keystore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    remove 'xpack.security.http.ssl.keystore.secure_password'
+  when:
+    - "'xpack.security.http.ssl.keystore.secure_password' in es_keystore.stdout_lines"
+    - not elasticsearch_http_security
+  notify:
+    - Restart Elasticsearch
+
+
+- name: Get xpack.security.http.ssl.truststore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    show 'xpack.security.http.ssl.truststore.secure_password'
+  when:
+    - "'xpack.security.http.ssl.truststore.secure_password' in es_keystore.stdout_lines"
+    - elasticsearch_http_security
+  register:  http_ssl_truststore_secure_password
+  ignore_errors: "{{ ansible_check_mode }}"
+  changed_when: false
+
+- name: Set xpack.security.http.ssl.truststore.secure_password
+  shell: >
+    echo "{{ elasticsearch_tls_key_passphrase }}" |
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    add -f -x 'xpack.security.http.ssl.truststore.secure_password'
+  when:
+    - http_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != http_ssl_truststore_secure_password.stdout
+    - elasticsearch_http_security
+  notify:
+    - Restart Elasticsearch
+
+- name: Remove xpack.security.http.ssl.truststore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    remove 'xpack.security.http.ssl.truststore.secure_password'
+  when:
+    - "'xpack.security.http.ssl.truststore.secure_password' in es_keystore.stdout_lines"
+    - not elasticsearch_http_security
+  notify:
+    - Restart Elasticsearch
+
+
+- name: Get xpack.security.transport.ssl.keystore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    show 'xpack.security.transport.ssl.keystore.secure_password'
+  when:
+    - "'xpack.security.transport.ssl.keystore.secure_password' in es_keystore.stdout_lines"
+    - elasticsearch_security
+  register:  transport_ssl_keystore_secure_password
+  ignore_errors: "{{ ansible_check_mode }}"
+  changed_when: false
+
+- name: Set xpack.security.transport.ssl.keystore.secure_password
+  shell: >
+    echo "{{ elasticsearch_tls_key_passphrase }}" |
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    add -f -x 'xpack.security.transport.ssl.keystore.secure_password'
+  when:
+    - transport_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != transport_ssl_keystore_secure_password.stdout
+    - elasticsearch_security
+  notify:
+    - Restart Elasticsearch
+
+- name: Remove xpack.security.transport.ssl.keystore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    remove 'xpack.security.transport.ssl.keystore.secure_password'
+  when:
+    - "'xpack.security.transport.ssl.keystore.secure_password' in es_keystore.stdout_lines"
+    - not elasticsearch_security
+  notify:
+    - Restart Elasticsearch
+
+
+- name: Get xpack.security.transport.ssl.truststore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    show 'xpack.security.transport.ssl.truststore.secure_password'
+  when:
+    - "'xpack.security.transport.ssl.truststore.secure_password' in es_keystore.stdout_lines"
+    - elasticsearch_security
+  register:  transport_ssl_truststore_secure_password
+  ignore_errors: "{{ ansible_check_mode }}"
+  changed_when: false
+
+- name: Set xpack.security.transport.ssl.truststore.secure_password
+  shell: >
+    echo "{{ elasticsearch_tls_key_passphrase }}" |
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    add -f -x 'xpack.security.transport.ssl.truststore.secure_password'
+  when:
+    - transport_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != transport_ssl_truststore_secure_password.stdout
+    - elasticsearch_security
+  notify:
+    - Restart Elasticsearch
+
+- name: Remove xpack.security.transport.ssl.truststore.secure_password
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-keystore
+    remove 'xpack.security.transport.ssl.truststore.secure_password'
+  when:
+    - "'xpack.security.transport.ssl.truststore.secure_password' in es_keystore.stdout_lines"
+    - not elasticsearch_security
+  notify:
+    - Restart Elasticsearch
+
+
+- name: Create ca and certificates
+  when: inventory_hostname == elasticsearch_ca
+  tags:
+    - certificates
+  block:
+    - name: Configure ca
+      command: >
+        /usr/share/elasticsearch/bin/elasticsearch-certutil ca
+        --pass {{ elastic_ca_pass }}
+        --out {{ elastic_ca_dir }}/elastic-stack-ca.p12
+        --silent
+      args:
+        creates: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
+
+    - name: Create individual certificates
+      command: >
+        /usr/share/elasticsearch/bin/elasticsearch-certutil cert
+        --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
+        --ca-pass {{ elastic_ca_pass }}
+        --name {{ hostvars[item].ansible_hostname }}
+        --ip {{ hostvars[item].ansible_default_ipv4.address | default(hostvars[item].ansible_all_ipv4_addresses[0]) }}
+        --dns {{ hostvars[item].ansible_hostname }},{{ hostvars[item].ansible_fqdn }}
+        --pass {{ elasticsearch_tls_key_passphrase }}
+        --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
+      loop: "{{ groups['elasticsearch'] }}"
+      args:
+        creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
+
+    - name: Extract CA certificate
+      command: >
+        openssl pkcs12 -in {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
+        -cacerts -nokeys -out {{ elastic_ca_dir }}/ca.crt
+        -password pass:{{ elasticsearch_tls_key_passphrase }}
+      args:
+        creates: "{{ elastic_ca_dir }}/ca.crt"
+
+- name: Fetch ca certificate from ca host to master
+  fetch:
+    src: "{{ elastic_ca_dir }}/ca.crt"
+    dest: /tmp/ca.crt
+    flat: yes
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - certificates
+
+- name: Fetch certificate from ca host to master
+  fetch:
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+    dest: "/tmp/{{ ansible_hostname }}.p12"
+    flat: yes
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - certificates
+
+- name: Create certificate directory
+  file:
+    state: directory
+    path: /etc/elasticsearch/certs
+    owner: root
+    group: elasticsearch
+    mode: 0750
+  tags:
+    - certificates
+
+- name: Copy the ca certificate to actual node
+  copy:
+    src: /tmp/ca.crt
+    dest: "/etc/elasticsearch/certs"
+    owner: root
+    group: elasticsearch
+    mode: 0640
+  notify:
+    - Restart Elasticsearch
+  tags:
+    - certificates
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Copy the certificate to actual node
+  copy:
+    src: "/tmp/{{ ansible_hostname }}.p12"
+    dest: "/etc/elasticsearch/certs"
+    owner: root
+    group: elasticsearch
+    mode: 0640
+  notify:
+    - Restart Elasticsearch
+  tags:
+    - certificates
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Start Elasticsearch
+  service:
+    name: elasticsearch
+    state: started
+  when: elasticsearch_enable | bool
+  failed_when: false
+
+- name: Wait for all instances to start
+  include_tasks: wait_for_instance.yml
+  loop: "{{ groups['elasticsearch'] }}"
+
+- name: Force all notified handlers to run at this point, not waiting for normal sync points
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait for all instances to start
+  include_tasks: wait_for_instance.yml
+  loop: "{{ groups['elasticsearch'] }}"
+
+- name: Check for passwords being set
+  stat:
+    path: "{{ elastic_initial_passwords }}"
+  delegate_to: "{{ elasticsearch_ca }}"
+  register: elasticsearch_passwords_file
+
+- name: Setting elasticsearch_http_protocol
+  ansible.builtin.set_fact:
+    elasticsearch_http_protocol: "https"
+  when: elasticsearch_http_security
+
+- name: Check for cluster status with bootstrap password
+  shell: >
+    curl -ks
+    {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty |
+    grep status |
+    cut -d\" -f4
+  register: es_cluster_status_bootstrap
+  changed_when: false
+  when: not elasticsearch_passwords_file.stat.exists | bool
+
+- name: Fetch Elastic password
+  shell: grep "PASSWORD elastic" {{ elastic_initial_passwords }} | awk {' print $4 '}
+  register: elastic_password
+  changed_when: false
+  delegate_to: "{{ elasticsearch_ca }}"
+  #when: elasticsearch_passwords_file.stat.exists
+
+- name: Check for cluster status with elastic password
+  shell: >
+    curl -ks
+    {{ elasticsearch_http_protocol }}://elastic:{{ elastic_password.stdout }}@localhost:9200/_cluster/health?pretty |
+    grep status |
+    cut -d\" -f4
+  register: es_cluster_status
+  changed_when: false
+  ignore_errors: "{{ ansible_check_mode }}"
+  when: elasticsearch_passwords_file.stat.exists | bool
+
+- name: Check for open port 9200/tcp
+  wait_for:
+    port: 9200
+
+- name: Fail if cluster is not ready yet
+  fail:
+    msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status.stdout }} , yet. Please rerun again later."
+  when: es_cluster_status.stdout is defined and es_cluster_status.stdout != "green" and groups['elasticsearch'] | length > 1
+  tags:
+    - notest
+
+- name: Fail if cluster is not ready yet (bootstrap password)
+  fail:
+    msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status_bootstrap.stdout }}), yet. Please rerun again later."
+  when: es_cluster_status_bootstrap.stdout is defined and es_cluster_status_bootstrap.stdout != "green" and groups['elasticsearch'] | length > 1
+  tags:
+    - notest
+
+- name: Create initial passwords
+  shell: >
+    /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b >
+    {{ elastic_initial_passwords }}
+  when: inventory_hostname == elasticsearch_ca
+  args:
+    creates: "{{ elastic_initial_passwords }}"
+
+# It would be better to create and set the permissions before generating the passwords. But this would
+# break the logic that relies on the file being absent when no passwords are set
+- name: Set permissions on passwords file
+  file:
+    path: "{{ elastic_initial_passwords }}"
+    owner: root
+    group: root
+    mode: 0600
+  when: inventory_hostname == elasticsearch_ca
+
+# Maybe make sure that Elasticsearch is using the right protocol http(s) to connect, even in newly setup clusters

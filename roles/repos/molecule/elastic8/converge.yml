@@ -1,0 +1,12 @@
+---
+# The workaround for arbitrarily named role directory is important because the git repo has one name and the role within it another
+# Found at: https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+- name: Converge
+  vars:
+    elastic_release: 8
+    elastic_rpm_workaround: true
+  hosts: all
+  tasks:
+    - name: "Include Elastic Repos"
+      ansible.builtin.include_role:
+        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"

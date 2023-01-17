@@ -1,0 +1,17 @@
+---
+- name: Ensure Elastic Stack key is available (Debian)
+  ansible.builtin.apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Ensure Elastic Stack apt repository is configured (Debian)
+  ansible.builtin.apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/{{ elastic_release }}.x/apt stable main
+    state: present
+  when: elastic_variant == "elastic"
+
+- name: Ensure Elastic Stack OSS apt repository is configured (Debian)
+  ansible.builtin.apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/oss-{{ elastic_release }}.x/apt stable main
+    state: present
+  when: elastic_variant == "oss"

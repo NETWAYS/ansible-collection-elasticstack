@@ -1,0 +1,97 @@
+---
+
+- name: Install unzip for certificate handling
+  package:
+    name: unzip
+  when: beats_manage_unzip | bool
+
+- name: Create certificate directory
+  file:
+    path: /etc/beats/certs
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Create individual certificates for Beats
+  command: >
+    /usr/share/elasticsearch/bin/elasticsearch-certutil cert
+    --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
+    --ca-pass {{ elastic_ca_pass }}
+    --name {{ ansible_hostname }}
+    --ip {{ ansible_default_ipv4.address }}
+    --dns {{ ansible_hostname }},{{ ansible_fqdn }}
+    --pass {{ beats_tls_key_passphrase }}
+    --pem
+    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip
+  delegate_to: "{{ elasticsearch_ca }}"
+  args:
+    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip"
+
+- name: Fetch certificate from ca host to master
+  fetch:
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip"
+    dest: "/tmp/{{ ansible_hostname }}-beats.zip"
+    flat: yes
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - certificates
+
+- name: Copy the certificate to actual node
+  unarchive:
+    src: "/tmp/{{ ansible_hostname }}-beats.zip"
+    dest: "/etc/beats/certs/"
+    owner: root
+    group: root
+    mode: 0640
+  tags:
+    - certificates
+
+- name: Copy certificate locally
+  copy:
+    src: "/etc/beats/certs/{{ ansible_hostname }}/{{ ansible_hostname }}.crt"
+    dest: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
+    owner: root
+    group: root
+    mode: 0640
+    remote_src: true
+  tags:
+    - certificates
+
+- name: Copy key locally
+  copy:
+    src: "/etc/beats/certs/{{ ansible_hostname }}/{{ ansible_hostname }}.key"
+    dest: "/etc/beats/certs/{{ inventory_hostname }}-beats.key"
+    owner: root
+    group: root
+    mode: 0640
+    remote_src: true
+  tags:
+    - certificates
+
+- name: Fetch ca certificate from ca host to master
+  fetch:
+    src: "{{ elastic_ca_dir }}/ca.crt"
+    dest: /tmp/ca.crt
+    flat: yes
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - certificates
+
+- name: Copy the ca certificate to actual node
+  copy:
+    src: /tmp/ca.crt
+    dest: /etc/beats/certs
+    owner: root
+    group: root
+    mode: 0640
+  tags:
+    - certificates
+
+- name: Fetch Beats password
+  shell: >
+    grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
+    awk {' print $4 '}
+  register: beats_writer_password
+  changed_when: false
+  delegate_to: "{{ elasticsearch_ca }}"

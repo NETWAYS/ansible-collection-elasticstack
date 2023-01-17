@@ -1,0 +1,18 @@
+---
+
+- name: Check if Logstash configuration does what it should
+  hosts: all
+  tasks:
+  - name: fetch Filebeat version
+    command: "filebeat version | grep ^filebeat"
+    register: filebeat_version
+
+  - name: DEBUG show filebeat version output
+    debug:
+      var: filebeat_version.stdout
+
+  - name: Fail if Filebeat has the wrong version
+    fail:
+      msg: "Filebeat has the wrong version"
+
+    when: filebeat_version.stdout.find('7.16.1') == -1

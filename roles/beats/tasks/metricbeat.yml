@@ -1,0 +1,61 @@
+---
+- name: Install Metricbeat
+  package:
+    name: metricbeat
+  when: beats_metricbeat_version is not defined
+
+- name: Install Metricbeat specific version
+  package:
+    name: "metricbeat{{ beats_metricbeat_version }}"
+  notify:
+    - Restart Metricbeat
+  when:
+    - beats_metricbeat_version is defined
+    - beats_metricbeat_version != "latest"
+
+- name: Install Metricbeat latest version
+  package:
+    name: metricbeat
+    state: latest
+  notify:
+    - Restart Metricbeat
+  when:
+    - beats_metricbeat_version is defined
+    - beats_metricbeat_version == "latest"
+
+- name: Configure Metricbeat
+  template:
+    src: metricbeat.yml.j2
+    dest: /etc/metricbeat/metricbeat.yml
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Restart Metricbeat
+
+- name: Enable modules
+  command: "metricbeat modules enable {{ item }}"
+  args:
+    creates: "/etc/metricbeat/modules.d/{{ item }}.yml"
+  with_items: "{{ metricbeat_modules }}"
+  when: metricbeat_modules is defined
+
+- name: Enable Ingest Pipelines
+  command: >
+    metricbeat setup &&
+    metricbeat version > /etc/metricbeat/pipelines_created
+  args:
+    creates: "/etc/metricbeat/pipelines_created"
+  notify:
+    - Restart Metricbeat
+  with_items: "{{ metricbeat_modules }}"
+  when:
+    - metricbeat_modules is defined
+    - metricbeat_output == "elasticsearch"
+
+- name: Start Metricbeat
+  service:
+    name: metricbeat
+    state: started
+    enabled: true
+  when: metricbeat_enable | bool

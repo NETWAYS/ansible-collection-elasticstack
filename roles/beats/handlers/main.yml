@@ -1,0 +1,20 @@
+---
+# handlers file for beats
+#
+- name: Restart Filebeat
+  service:
+    name: filebeat
+    state: restarted
+  when: filebeat_enable | bool
+
+- name: Restart Auditbeat
+  service:
+    name: auditbeat
+    state: restarted
+  when: auditbeat_enable | bool
+
+- name: Restart Metricbeat
+  service:
+    name: metricbeat
+    state: restarted
+  when: metricbeat_enable | bool

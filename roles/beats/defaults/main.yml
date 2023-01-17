@@ -1,0 +1,68 @@
+---
+# defaults file for beats
+beats_security: false
+beats_filebeat: true
+beats_auditbeat: false
+beats_metricbeat: false
+beats_target_hosts:
+  - localhost
+beats_logstash_output_port: 5044
+beats_elasticsearch_output_port: 9200
+beats_logging: file
+beats_logpath: /var/log/beats
+beats_loglevel: info
+beats_manage_unzip: true
+
+# Use TLS without Elastic X-Pack #
+
+beats_tls_key: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.key"
+beats_tls_cert: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.crt"
+beats_tls_cacert: "{{ beats_ca_dir }}/ca.crt"
+beats_tls_key_passphrase: ChangeMe
+
+# Filebeat specific #
+
+filebeat_output: logstash
+filebeat_syslog_udp: false
+filebeat_syslog_udp_port: 514
+filebeat_syslog_tcp: false
+filebeat_syslog_tcp_port: 514
+filebeat_log_input: true
+filebeat_log_inputs:
+  messages:
+    name: messages
+    paths:
+      - /var/log/messages
+filebeat_enable: true
+filebeat_journald: false
+filebeat_journald_inputs:
+  everything:
+    id: everything
+
+filebeat_docker: false
+filebeat_docker_ids: "*"
+
+filebeat_loadbalance: true
+
+filebeat_mysql_slowlog_input: false
+#filebeat_modules:
+#  - system
+
+auditbeat_setup: true
+auditbeat_enable: true
+auditbeat_output: elasticsearch
+auditbeat_loadbalance: true
+
+metricbeat_enable: true
+metricbeat_output: elasticsearch
+metricbeat_modules:
+  - system
+metricbeat_loadbalance: true
+
+elastic_stack_full_stack: false
+elastic_variant: elastic
+elastic_security: true
+
+elastic_ca_dir: /opt/es-ca
+elastic_ca_pass: PleaseChangeMe
+elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords

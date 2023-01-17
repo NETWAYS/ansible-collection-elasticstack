@@ -1,0 +1,68 @@
+---
+- name: Install Filebeat
+  package:
+    name: filebeat
+  when: beats_filebeat_version is not defined
+
+- name: Install Filebeat specific version
+  package:
+    name: "filebeat{{ beats_filebeat_version }}"
+  notify:
+    - Restart Filebeat
+  when:
+    - beats_filebeat_version is defined
+    - beats_filebeat_version != "latest"
+
+- name: Install Filebeat latest version
+  package:
+    name: filebeat
+    state: latest
+  notify:
+    - Restart Filebeat
+  when:
+    - beats_filebeat_version is defined
+    - beats_filebeat_version == "latest"
+
+- name: Configure Filebeat
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - Restart Filebeat
+  tags:
+    - configuration
+    - filebeat_configuration
+    - beats_configuration
+
+- name: Enable modules
+  command: "filebeat modules enable {{ item }}"
+  args:
+    creates: "/etc/filebeat/modules.d/{{ item }}.yml"
+  with_items: "{{ filebeat_modules }}"
+  when: filebeat_modules is defined
+  tags:
+    - configuration
+    - filebeat_configuration
+    - beats_configuration
+
+- name: Enable Ingest Pipelines
+  command: >
+    /usr/bin/filebeat setup --pipelines --modules {{ item }} &&
+    /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
+  args:
+    creates: "/etc/filebeat/{{ item }}_pipeline_created"
+  notify:
+    - Restart Filebeat
+  changed_when: false
+  with_items: "{{ filebeat_modules }}"
+  when: filebeat_modules is defined
+
+- name: Start Filebeat
+  service:
+    name: filebeat
+    state: started
+    enabled: true
+  when: filebeat_enable | bool

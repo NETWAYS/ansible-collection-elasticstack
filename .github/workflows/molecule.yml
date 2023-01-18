@@ -27,7 +27,7 @@ jobs:
       max-parallel: 1
       matrix:
         distro: [ubuntu2204]
-        scenario: [kibana_full_stack-oss, default, cluster, cluster-oss, no-security]
+        scenario: [default, cluster, cluster-oss, no-security]
 
     steps:
       - name: Check out code

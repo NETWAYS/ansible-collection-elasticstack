@@ -1,3 +1,0 @@
-skip_list:
-  - '106'
-  - fqcn-builtins  # Use FQCN for builtin actions.

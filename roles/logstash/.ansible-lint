@@ -1,5 +1,0 @@
-skip_list:
-  - 'yaml'
-  - command-instead-of-module  # Using command rather than module.
-  - fqcn[action-core]  # Use FQCN for builtin actions.
-  - 'risky-shell-pipe'

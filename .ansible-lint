@@ -1,3 +1,5 @@
+warn_list:
+  - name[missing]
 skip_list:
   - '106'
   - 'command-instead-of-module'

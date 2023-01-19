@@ -1,0 +1,23 @@
+---
+- name: Converge
+  collections:
+    - NETWAYS.elasticstack
+  hosts: all
+  vars:
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
+    elastic_stack_full_stack: true
+    elastic_variant: oss
+  tasks:
+    - name: Include Elastic Repos
+      include_role:
+        name: repos
+    - name: Include Elasticsearch role
+      include_role:
+        name: elasticsearch
+    - name: Include logstash
+      include_role:
+        name: logstash
+    - name: Include Kibana
+      include_role:
+        name: kibana

@@ -8,6 +8,7 @@ on:
       - '!doc/**'
     paths:
       - 'roles/logstash/**'
+      - '.github/workflows/test_role_logstash.yml'
   pull_request:
     branches:
       - 'feature/**'
@@ -15,6 +16,7 @@ on:
       - '!doc/**'
     paths:
       - 'roles/logstash/**'
+      - '.github/workflows/test_role_logstash.yml'
 
 
 jobs:

@@ -39,7 +39,7 @@ jobs:
           yamllint roles/logstash/
           ansible-lint roles/logstash/
 
-  build:
+  molecule_default:
     runs-on: ubuntu-latest
     needs: lint
 

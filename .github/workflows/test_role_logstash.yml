@@ -9,6 +9,7 @@ on:
     paths:
       - 'roles/logstash/**'
       - '.github/workflows/test_role_logstash.yml'
+      - 'molecule/logstash_**'
   pull_request:
     branches:
       - 'feature/**'
@@ -17,6 +18,7 @@ on:
     paths:
       - 'roles/logstash/**'
       - '.github/workflows/test_role_logstash.yml'
+      - 'molecule/logstash_**'
 
 
 jobs:

@@ -5,10 +5,12 @@
 # https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
 - name: Converge
   hosts: all
+  collections:
+    - NETWAYS.elasticstack
   tasks:
-    - name: "Include Elastics repos role"
+    - name: Include Elastics repos role
       include_role:
-        name: elastic-repos
-    - name: "Include Logstash"
+        name: repos
+    - name: Include Logstash
       include_role:
-        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+        name: logstash

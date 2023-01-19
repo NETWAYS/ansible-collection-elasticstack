@@ -11,6 +11,8 @@
 # Logstash
 - name: Converge
   hosts: all
+  collections:
+    - NETWAYS.elasticstack
   vars:
     elastic_stack_full_stack: true
     elastic_variant: oss
@@ -22,7 +24,7 @@
   tasks:
     - name: "Include Elastics repos role"
       include_role:
-        name: elastic-repos
+        name: repos
     - name: Install rsyslog
       package:
         name: rsyslog
@@ -41,7 +43,7 @@
         name: geerlingguy.redis
     - name: "Include Logstash"
       include_role:
-        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+        name: logstash
     - name: Configure rsyslog
       lineinfile:
         line: "*.* @@localhost:514"

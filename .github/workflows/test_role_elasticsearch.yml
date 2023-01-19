@@ -8,6 +8,8 @@ on:
       - '!doc/**'
     paths:
       - 'roles/elasticsearch/**'
+      - '.github/workflows/test_role_elasticsearch.yml'
+      - 'molecule/elasticsearch_**'
   pull_request:
     branches:
       - 'feature/**'
@@ -15,6 +17,8 @@ on:
       - '!doc/**'
     paths:
       - 'roles/elasticsearch/**'
+      - '.github/workflows/test_role_elasticsearch.yml'
+      - 'molecule/elasticsearch_**'
 
 jobs:
   lint:

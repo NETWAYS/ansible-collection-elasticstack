@@ -8,6 +8,8 @@ on:
       - '!doc/**'
     paths:
       - 'roles/beats/**'
+      - '.github/workflows/test_role_beats.yml'
+      - 'molecule/beats_**'
   pull_request:
     branches:
       - 'feature/**'
@@ -15,6 +17,8 @@ on:
       - '!doc/**'
     paths:
       - 'roles/beats/**'
+      - '.github/workflows/test_role_beats.yml'
+      - 'molecule/beats_**'
 
 jobs:
   lint:

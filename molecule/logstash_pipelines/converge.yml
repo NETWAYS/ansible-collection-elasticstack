@@ -6,6 +6,8 @@
 # https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
 - name: Converge
   hosts: all
+  collections:
+    - NETWAYS.elasticstack
   vars:
     logstash_enable: true
     logstash_pipelines:
@@ -30,10 +32,10 @@
   tasks:
     - name: "Include Elastics repos role"
       include_role:
-        name: elastic-repos
+        name: repos
     - name: "Include Redis"
       include_role:
         name: geerlingguy.redis
     - name: "Include Logstash"
       include_role:
-        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+        name: logstash

@@ -8,6 +8,8 @@ on:
       - '!doc/**'
     paths:
       - 'roles/kibana/**'
+      - '.github/workflows/test_role_kibana.yml'
+      - 'molecule/kibana_**'
   pull_request:
     branches:
       - 'feature/**'
@@ -15,6 +17,8 @@ on:
       - '!doc/**'
     paths:
       - 'roles/kibana/**'
+      - '.github/workflows/test_role_kibana.yml'
+      - 'molecule/kibana_**'
 
 jobs:
   lint:

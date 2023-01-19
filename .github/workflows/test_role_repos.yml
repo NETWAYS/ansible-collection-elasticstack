@@ -7,6 +7,8 @@ on:
       - '!doc/**'
     paths:
       - 'roles/repos/**'
+      - '.github/workflows/test_role_repos.yml'
+      - 'molecule/repos_**'
   pull_request:
     branches:
       - 'feature/**'
@@ -14,6 +16,8 @@ on:
       - '!doc/**'
     paths:
       - 'roles/repos/**'
+      - '.github/workflows/test_role_repos.yml'
+      - 'molecule/repos_**'
 
 jobs:
   lint:
@@ -36,7 +40,7 @@ jobs:
         run: |
           yamllint roles/repos/
           ansible-lint roles/repos/
-          
+
   build:
     runs-on: ubuntu-latest
 

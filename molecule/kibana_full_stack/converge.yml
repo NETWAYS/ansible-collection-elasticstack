@@ -5,6 +5,8 @@
 # https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
 - name: Converge
   hosts: all
+  collections:
+    - NETWAYS.elasticstack
   vars:
     elastic_stack_full_stack: true
   tasks:

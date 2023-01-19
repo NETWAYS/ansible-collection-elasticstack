@@ -1,0 +1,78 @@
+name: Test Role repos
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'roles/repos/**'
+  pull_request:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'roles/repos/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install yamllint ansible-lint
+
+      - name: Lint code.
+        run: |
+          yamllint roles/repos/
+          ansible-lint roles/repos/
+          
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      COLLECTION_NAMESPACE: NETWAYS
+      COLLECTION_NAME: elasticstack
+
+    strategy:
+      max-parallel: 4
+      matrix:
+
+        distro: [centos7, debian10, debian11, rockylinux8, rockylinux9, ubuntu2004, ubuntu2204]
+        scenario: [repos_default, repos_oss, repos_elastic8]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements-test.txt
+          ansible-galaxy collection install community.general
+
+      - name: Install collection
+        run: |
+          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
+          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+
+      - name: Test with molecule
+        run: |
+          molecule test -s ${{ matrix.scenario }}
+        env:
+          MOLECULE_DISTRO: ${{ matrix.distro }}

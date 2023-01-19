@@ -5,6 +5,8 @@
 # https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
 - name: Converge
   hosts: all
+  collections:
+    - NETWAYS.elasticstack
   vars:
     elastic_stack_full_stack: true
     filebeat_syslog_udp: true
@@ -18,7 +20,7 @@
   tasks:
     - name: Include Elastics repos role
       include_role:
-        name: elastic-repos
+        name: repos
     - name: Install rsyslog
       package:
         name: rsyslog

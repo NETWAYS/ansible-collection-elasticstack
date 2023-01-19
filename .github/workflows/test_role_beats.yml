@@ -1,0 +1,79 @@
+---
+name: Test Role beats
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'roles/beats/**'
+  pull_request:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'roles/beats/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install yamllint ansible-lint
+
+      - name: Lint code.
+        run: |
+          yamllint roles/beats/
+          ansible-lint roles/beats/
+
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      COLLECTION_NAMESPACE: NETWAYS
+      COLLECTION_NAME: elasticstack
+
+    strategy:
+      max-parallel: 1
+      matrix:
+        distro: [debian11, rockylinux8, ubuntu2204]
+        scenario: [beats_default, beats_full_stack, beats_peculiar]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Install collection
+        run: |
+          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
+          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+
+      - name: Test with molecule
+        run: |
+          molecule test -s ${{ matrix.scenario }}
+        env:
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'

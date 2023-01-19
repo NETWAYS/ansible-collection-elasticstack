@@ -1,0 +1,16 @@
+---
+name: Test ElasticStack
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - main
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+  pull_request:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'

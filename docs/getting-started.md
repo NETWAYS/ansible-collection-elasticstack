@@ -33,7 +33,7 @@ To use the collection in your Ansible playbook add the following key to your pla
         name: logstash
 ```
 
-Or refer to the role with the FQDN of the role.
+Or refer to the role with the FQCN of the role.
 
 ```
 - name: Playbook

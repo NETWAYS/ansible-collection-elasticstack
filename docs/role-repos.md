@@ -1,7 +1,7 @@
 Elastic Repos
 =========
 
-[![CI](https://github.com/widhalmt/ansible-role-elastic-repos/workflows/CI/badge.svg?event=push)](https://github.com/widhalmt/ansible-role-elastic-repos/actions?query=workflow%3ACI)
+![Test Role repos](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_role_repos.yml/badge.svg)
 
 The role adds Elastic repositories to the package manager. It's main use is in connection with other roles that provide installation and configuration of the Elastic Stack.
 
@@ -32,5 +32,7 @@ Example Playbook
     ---
     - hosts: localhost
       become: yes
+      collections:
+        - NETWAYS.elasticstack
       roles:
-        - elastic-repos
+        - repos

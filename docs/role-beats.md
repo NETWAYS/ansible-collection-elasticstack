@@ -1,14 +1,14 @@
 Ansible Role: Beats
 =========
 
-[![CI](https://github.com/NETWAYS/ansible-role-beats/workflows/Molecule%20Test/badge.svg?event=push)](https://github.com/NETWAYS/ansible-role-beats/workflows/Molecule%20Test/badge.svg)
+![Test Role Beats](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_role_beats.yml/badge.svg)
 
 This role installs and configures Beats. You can use it as a standalone role or combine it with our other roles managing the Elastic Stack.
 
 Requirements
 ------------
 
-You need to have the beats you want to install available in your software repositories. We provide a role for just that but if you have other ways of managing software, just make sure it's available. Alternatively you can install the Beats yourself.
+You need to have the beats you want to install available in your software repositories. We provide a [role](./role-repos.md) for just that but if you have other ways of managing software, just make sure it's available. Alternatively you can install the Beats yourself.
 
 Role Variables
 --------------
@@ -88,7 +88,7 @@ filebeat_journald_inputs:
 
 The following variables only apply if you use this role together with our other Elastic Stack roles.
 
-* *elastic_stack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
+* *elastic_stack_full_stack*: Use `elasticsearch` as well (default: `false`)
 * *elastic_variant*: Define which variant of elastic stack to use. (default: `elastic`)
 * *elastic_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 * *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
@@ -101,18 +101,3 @@ If you want to use this role with your own TLS certificates, use these variables
 * *beats_tls_cert*: Path to the certificate (default: `{{ beats_ca_dir }}/{{ ansible_hostname }}.crt`)
 * *beats_tls_key_passphrase*: Passphrase of the keyfile (default: `ChangeMe`)
 * *beats_tls_cacert*: Path to the CA.crt (default: `{{ beats_ca_dir }}/ca.crt`)
-
-
-Dependencies
-------------
-
-None yet
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }

@@ -1,7 +1,7 @@
 Ansible Role: Logstash
 =========
 
-[![CI](https://github.com/NETWAYS/ansible-role-logstash/workflows/Molecule%20Test/badge.svg?event=push)](https://github.com/NETWAYS/ansible-role-logstash/workflows/Molecule%20Test/badge.svg)
+![Test Role Logstash](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_role_logstash.yml/badge.svg)
 
 This role installs and configures [Logstash](https://www.elastic.co/products/logstash) on Linux systems.
 
@@ -18,7 +18,7 @@ Requirements
 
 * `community.general` collection
 
-You need to have the Elastic Repos configured on your system. You can use our [role](https://github.com/widhalmt/ansible-role-elastic-repos) for that but you don't have to.
+You need to have the Elastic Repos configured on your system. You can use our [role](./role-repos.md)
 
 If you want to use the default pipeline configuration you need to have `git` available.
 
@@ -99,7 +99,3 @@ This is a simple sample playbook which first uses an Ansible role to install Red
       roles:
         - geerlingguy.redis
         - logstash
-
-
-
-This role was created in 2019 by [Netways](https://www.netways.de/).

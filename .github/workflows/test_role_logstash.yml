@@ -106,6 +106,7 @@ jobs:
       COLLECTION_NAME: elasticstack
 
     strategy:
+      fail-fast: false
       max-parallel: 1
       matrix:
         distro: [ubuntu2204]

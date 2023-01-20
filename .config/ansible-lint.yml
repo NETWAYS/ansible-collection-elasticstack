@@ -1,8 +1,11 @@
 warn_list:
-  - schema[meta] 
+  - schema[meta]
   - name[missing]
   - package-latest
   - jinja[spacing]
+  - experimental  # all rules tagged as experimental
+  - key-order[task]  # Ensure specific order of keys in mappings.
+  - name[casing]
 skip_list:
   - '106'
   - 'command-instead-of-module'

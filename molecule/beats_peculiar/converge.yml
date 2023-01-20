@@ -1,0 +1,59 @@
+---
+# The workaround for arbitrarily named role directory is important because the
+# git repo has one name and the role within it another
+# Found at:
+# https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+- name: Converge
+  hosts: all
+  collections:
+    - NETWAYS.elasticstack
+  vars:
+    filebeat_log_inputs:
+      messages:
+        name: messages
+        paths:
+          - /var/log/messages
+        multiline:
+          type: pattern
+          pattern: '^[[:space:]]+(at|\.{3})[[:space:]]+\b|^Caused by:'
+          negate: false
+          match: after
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
+    filebeat_mysql_slowlog_input: true
+    beats_auditbeat: true
+    beats_auditbeat_version: latest
+    auditbeat_output: logstash
+    auditbeat_enable: false # can't run on GitHub because of permissions
+    filebeat_journald_inputs:
+      everything:
+        id: service-vault
+        include_matches:
+          - _SYSTEMD_UNIT=vault.service
+    beats_metricbeat: true
+    metricbeat_output: logstash
+    filebeat_docker: true
+  tasks:
+    - name: Set Filebeat version on RedHat
+      set_fact:
+        beats_filebeat_version: "-7.16.1"
+      when: ansible_os_family == "RedHat"
+
+    - name: Set Filebeat version on Debian
+      set_fact:
+        beats_filebeat_version: "=7.16.1"
+      when: ansible_os_family == "Debian"
+
+    - name: "Include Elastics repos role"
+      include_role:
+        name: repos
+
+    - name: Refresh apt cache
+      apt:
+        update_cache: yes
+      changed_when: false
+      when: ansible_os_family == "Debian"
+
+    - name: "Include Beats"
+      include_role:
+        name: beats

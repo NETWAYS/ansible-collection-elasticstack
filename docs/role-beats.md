@@ -1,7 +1,7 @@
 Ansible Role: Beats
 =========
 
-[![CI](https://github.com/NETWAYS/ansible-role-beats/workflows/Molecule%20Test/badge.svg?event=push)](https://github.com/NETWAYS/ansible-role-beats/workflows/Molecule%20Test/badge.svg)
+[![CI](https://github.com/NETWAYS/ansible-collection-elasticstack/workflows/Test%20Role%20beats/badge.svg?event=push)](https://github.com/NETWAYS/ansible-collection-elasticstack/workflows/Test%20Role%20beats/badge.svg)
 
 This role installs and configures Beats. You can use it as a standalone role or combine it with our other roles managing the Elastic Stack.
 

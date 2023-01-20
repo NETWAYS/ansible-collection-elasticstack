@@ -1,4 +1,5 @@
-ame: Test Collection Roles
+---
+name: Test Collection Roles
 on:
   pull_request:
     branches:

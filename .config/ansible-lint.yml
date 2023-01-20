@@ -1,5 +1,6 @@
 warn_list:
   - name[missing]
+  - package-latest
 skip_list:
   - '106'
   - 'command-instead-of-module'

@@ -10,6 +10,8 @@ on:
       - 'roles/beats/**'
       - '.github/workflows/test_role_beats.yml'
       - 'molecule/beats_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
   pull_request:
     branches:
       - 'feature/**'

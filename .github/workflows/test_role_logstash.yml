@@ -10,6 +10,8 @@ on:
       - 'roles/logstash/**'
       - '.github/workflows/test_role_logstash.yml'
       - 'molecule/logstash_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
   pull_request:
     branches:
       - 'feature/**'
@@ -19,7 +21,8 @@ on:
       - 'roles/logstash/**'
       - '.github/workflows/test_role_logstash.yml'
       - 'molecule/logstash_**'
-
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
 
 jobs:
   lint:

@@ -68,7 +68,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        distro: [centos7]
+        distro: [ubuntu2204]
         scenario: [kibana_default, kibana_full_stack, kibana_full_stack-oss]
 
     steps:

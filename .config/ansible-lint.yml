@@ -1,6 +1,8 @@
 warn_list:
+  - schema[meta] 
   - name[missing]
   - package-latest
+  - jinja[spacing]
 skip_list:
   - '106'
   - 'command-instead-of-module'

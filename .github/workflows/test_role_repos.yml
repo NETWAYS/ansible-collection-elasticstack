@@ -22,7 +22,7 @@ on:
       - 'molecule/repos_**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
-      
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -46,6 +46,7 @@ jobs:
           ansible-lint roles/repos/
 
   build:
+    needs: lint
     runs-on: ubuntu-latest
 
     env:

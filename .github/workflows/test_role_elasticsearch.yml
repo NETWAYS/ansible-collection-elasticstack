@@ -23,7 +23,7 @@ on:
       - 'molecule/elasticsearch_**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
-      
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -47,6 +47,7 @@ jobs:
           ansible-lint roles/elasticsearch/
 
   build:
+    needs: lint
     runs-on: ubuntu-latest
 
     env:

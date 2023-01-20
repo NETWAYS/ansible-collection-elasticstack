@@ -21,6 +21,8 @@ on:
       - 'roles/beats/**'
       - '.github/workflows/test_role_beats.yml'
       - 'molecule/beats_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
 
 jobs:
   lint:
@@ -45,6 +47,7 @@ jobs:
           ansible-lint roles/beats/
 
   build:
+    needs: lint
     runs-on: ubuntu-latest
 
     env:

@@ -23,7 +23,7 @@ on:
       - 'molecule/kibana_**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
-      
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -47,6 +47,7 @@ jobs:
           ansible-lint roles/kibana/
 
   build:
+    needs: lint
     runs-on: ubuntu-latest
 
     env:

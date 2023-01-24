@@ -1,14 +1,10 @@
 Ansible Role: Kibana
 =========
 
-[![Molecule Tests](https://github.com/widhalmt/ansible-role-kibana/workflows/Molecule%20Test/badge.svg?event=push)](https://github.com/widhalmt/ansible-role-kibana/workflows/Molecule%20Test/badge.svg)
+![Test Role Kibana](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_role_kibana.yml/badge.svg)
 
 This roles installs and configures Kibana.
 
-Requirements
-------------
-
-You need to have the Elastic Repos configured on you system. You can use our [role](https://github.com/widhalmt/ansible-role-elastic-repos) for that but you don't have to.
 
 Role Variables
 --------------
@@ -34,22 +30,17 @@ These variables are identical over all our elastic related roles, hence the diff
 
 If you use `localhost` in `kibana_elasticsearch_hosts` , certificate verification will skip hostname checks
 
-Dependencies
-------------
+## Usage
 
-There's no real dependency but you might want to use this role together with our other Elastic Stack related roles:
-
-* [Elasticsearch](https://github.com/widhalmt/ansible-role-elasticsearch)
-* [Logstash](https://github.com/NETWAYS/ansible-role-logstash)
-* [Elastic Repositories](https://github.com/widhalmt/ansible-role-elastic-repos)
-
-Example Playbook
-----------------
-
-    - hosts: kibana
-      roles:
-         - kibana
-
-
-
-This role was created in 2019 by [Netways](https://www.netways.de/).
+```
+- name: Install Kibana
+  collections:
+    - NETWAYS.elasticstack
+  hosts: kibana-host
+  vars:
+    elastic_stack_full_stack: true
+    elastic_variant: oss
+  roles:
+    - repos
+    - kibana
+```

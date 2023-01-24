@@ -21,18 +21,14 @@ Role Variables
 
 Please note that no `oss` versions are available for Elastic Stack later than `7`. This role will fail if you try to install them.
 
-Dependencies
-------------
+## Usage
+--------
 
-None.
-
-Example Playbook
-----------------
-
-    ---
-    - hosts: localhost
-      become: yes
-      collections:
-        - NETWAYS.elasticstack
-      roles:
-        - repos
+```
+  - hosts: all
+    become: yes
+    collections:
+      - NETWAYS.elasticstack
+    roles:
+      - repos
+```

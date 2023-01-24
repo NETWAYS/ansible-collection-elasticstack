@@ -29,3 +29,18 @@ These variables are identical over all our elastic related roles, hence the diff
 * *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
 
 If you use `localhost` in `kibana_elasticsearch_hosts` , certificate verification will skip hostname checks
+
+## Usage
+
+```
+- name: Install Kibana
+  collections:
+    - NETWAYS.elasticstack
+  hosts: kibana-host
+  vars:
+    elastic_stack_full_stack: true
+    elastic_variant: oss
+  roles:
+    - repos
+    - kibana
+```

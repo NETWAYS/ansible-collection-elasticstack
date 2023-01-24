@@ -24,3 +24,21 @@ Or if you are using Tower or AWX add the collection to your requirements file.
 collections:
   - name: netways.elasticstack
 ```
+
+## Usage
+
+```
+- name: Install Elasticsearch
+  hosts: all
+  collections:
+    - NETWAYS.elasticstack
+  vars:
+    elastic_variant: oss
+    elasticsearch_jna_workaround: true
+  roles:
+    - repos
+    - beats
+    - elasticsearch
+    - logstash
+    - kibana
+```

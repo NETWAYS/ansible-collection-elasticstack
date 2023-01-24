@@ -14,7 +14,7 @@ Role Variables
 --------------
 
 * *beats_filebeat*: Install and manage filebeat (Default: `true`)
-* *beats_filebeat_version*: Install specific version (Default: none. Possible values: e.g. ``-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
+* *beats_filebeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
 * *filebeat_enable*: Automatically start Filebeat (Default: `true`)
 * *filebeat_output*: Set to `logstash` or `elasticsearch`. (default: `logstash`)
 * *filebeat_syslog_udp*: Use UDP Syslog input (Default: `false`)
@@ -26,12 +26,14 @@ Role Variables
 * *filebeat_log_inputs*: Logfiles to read (Default: see below)
 
 Default of `filebeat_log_inputs`
+
 ```
   messages:
     name: messages
     paths:
       - /var/log/messages
 ```
+
 You can optionally add `fields` to every input as well. You can also add a `multiline` section with options (`type`, `pattern`, `negate` and `match` so far)
 
 Here's a longer example for an input:
@@ -51,7 +53,7 @@ filebeat_log_inputs:
 ```
 * *filebeat_journald*: Enable collection of JournalD logs (default: `false`) - available since Filebeat 7.16
 * *filebeat_journald_inputs*: List of journald inputs. Use for different filters on events. You can add a list of `include_matches` entries for filtering.
-Default of `filebeat_journald_inputs:
+Default of `filebeat_journald_inputs`:
 ```
 filebeat_journald_inputs:
   everything:
@@ -63,14 +65,14 @@ filebeat_journald_inputs:
 * *filebeat_loadbalance*: Enable loadbalancing for Filebeats Logstash output (default: `true`)
 
 * *beats_auditbeat*: Install and manage filebeat (Default: `false`)
-* *beats_auditbeat_version*: Install specific version (Default: none. Possible values: e.g. ``-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
+* *beats_auditbeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
 * *auditbeat_output*: Output for Auditbeat Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
 * *auditbeat_enable*: Automatically start Auditbeat (Default: `true`)
 * *auditbeat_setup*: Run Auditbeat Setup (Default: `true`) (Only works with Elasticsearch output)
 * *auditbeat_loadbalance*: Enable loadbalancing for Auditbeats Logstash output (default: `true`)
 
 * *beats_metricbeat*: Enable installation and management of Metricbeat (Default: `false`)
-* *beats_metricbeat_version*: Install specific version (Default: none. Possible values: e.g. ``-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
+* *beats_metricbeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
 * *metricbeat_enable*: Start Metricbeat automatically (Default: `true`)
 * *metricbeat_output*: Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
 * *metricbeat_modules*: List of modules to enable. (Default: `- system`)
@@ -101,3 +103,18 @@ If you want to use this role with your own TLS certificates, use these variables
 * *beats_tls_cert*: Path to the certificate (default: `{{ beats_ca_dir }}/{{ ansible_hostname }}.crt`)
 * *beats_tls_key_passphrase*: Passphrase of the keyfile (default: `ChangeMe`)
 * *beats_tls_cacert*: Path to the CA.crt (default: `{{ beats_ca_dir }}/ca.crt`)
+
+## Usage
+
+```
+- name: Install Elastic Beats
+  hosts: beats-hosts
+  collections:
+    - NETWAYS.elasticstack
+  vars:
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
+  roles:
+    - repos
+    - beats
+```

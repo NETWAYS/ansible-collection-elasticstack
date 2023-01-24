@@ -1,0 +1,19 @@
+---
+# The workaround for arbitrarily named role directory is important because the
+# git repo has one name and the role within it another
+# Found at:
+# https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+- name: Converge
+  hosts: all
+  collections:
+    - NETWAYS.elasticstack
+  vars:
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
+  tasks:
+    - name: Include Elastics repos role
+      include_role:
+        name: repos
+    - name: Include Beats
+      include_role:
+        name: beats

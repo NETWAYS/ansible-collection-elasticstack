@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  collections:
+    - NETWAYS.elasticstack
+  vars:
+    elastic_rpm_workaround: true
+  tasks:
+    - name: Include Elastic Repos
+      ansible.builtin.include_role:
+        name: repos

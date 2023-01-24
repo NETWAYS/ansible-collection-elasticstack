@@ -21,7 +21,7 @@ Role Variables
 
 Please note that no `oss` versions are available for Elastic Stack later than `7`. This role will fail if you try to install them.
 
-## Usage
+Usage
 --------
 
 ```

@@ -29,6 +29,18 @@ collections:
 
 ## Usage
 
+### Default Passwords 
+
+Default Passwords  can be seen during generation, or found later in `usr/share/elasticsearch/initial_passwords`
+
+### Redis
+
+0) You need to install the redis role which is maintained by geerlingguy
+
+```
+ansible-galaxy install geerlingguy.redis 
+```
+
 1) 
 
 Default: For general Elastic Stack installations using all features use the following.
@@ -68,6 +80,7 @@ You will need Redis installed and running for the default setup to run. A viable
     - repos
     - beats
     - elasticsearch
+    - geerlingguy.redis
     - logstash
     - kibana
 ```

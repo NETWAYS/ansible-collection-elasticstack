@@ -31,7 +31,9 @@ collections:
 
 1) 
 
-Default: For general Elastic Installations including all other Belk Stacks you shoud use:
+Default: For general Elastic Stack installations using all features use the following.
+
+You will need Redis installed and running for the default setup to run. A viable way is using the `geerlingguy.redis` role. (You can install it with `ansible-galaxy install geerlingguy.redis)
 
 ```
 - name: Install Elasticsearch
@@ -47,17 +49,19 @@ Default: For general Elastic Installations including all other Belk Stacks you s
     - repos
     - beats
     - elasticsearch
+    - geerlingguy.redis
     - logstash
     - kibana
 ```
 
-2) Specific: For OSS Installation without all the other BELK Stacks you could use:
+2) Specific: For OSS Installation without X-Pack features you can use the following. _Note_ this is only available for version `7.x`.
 ```
 - name: Install Elasticsearch
   hosts: all
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   vars:
+    elastic_stack_full_stack: true
     elastic_variant: oss
     elasticsearch_jna_workaround: true
   roles:

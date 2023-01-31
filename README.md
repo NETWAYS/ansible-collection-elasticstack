@@ -29,6 +29,29 @@ collections:
 
 ## Usage
 
+1) 
+
+Default: For general Elastic Installations including all other Belk Stacks you shoud use:
+
+```
+- name: Install Elasticsearch
+  hosts: all
+  become: true
+  collections:
+    - netways.elasticstack
+  vars:
+    elastic_stack_full_stack: true
+    elastic_variant: elastic
+    elasticsearch_jna_workaround: true
+  roles:
+    - repos
+    - beats
+    - elasticsearch
+    - logstash
+    - kibana
+```
+
+2) Specific: For OSS Installation without all the other BELK Stacks you could use:
 ```
 - name: Install Elasticsearch
   hosts: all

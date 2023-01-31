@@ -59,11 +59,11 @@ You will need Redis installed and running for the default setup to run. A viable
     elasticsearch_jna_workaround: true
   roles:
     - repos
-    - beats
     - elasticsearch
     - geerlingguy.redis
     - logstash
     - kibana
+    - beats
 ```
 
 2) Specific: For OSS Installation without X-Pack features you can use the following. _Note_ this is only available for version `7.x`.
@@ -78,9 +78,9 @@ You will need Redis installed and running for the default setup to run. A viable
     elasticsearch_jna_workaround: true
   roles:
     - repos
-    - beats
     - elasticsearch
     - geerlingguy.redis
     - logstash
     - kibana
+    - beats
 ```

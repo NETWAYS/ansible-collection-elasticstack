@@ -3,9 +3,9 @@
   "indices": [
     {
 {% if logstash_global_ecs is defined and logstash_global_ecs != "disabled" %}
-      "names": [ "ecs-logstash*", "logstash*" ],
+      "names": [ "ecs-logstash*", "logstash*", "logs*" ],
 {% else %}
-      "names": [ "logstash*" ], 
+      "names": [ "logstash*", "logs*", "logs*" ],
 {% endif %}
       "privileges": ["write","create","delete","create_index","manage","manage_ilm"]  
     }

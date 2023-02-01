@@ -5,7 +5,7 @@
 {% if logstash_global_ecs is defined and logstash_global_ecs != "disabled" %}
       "names": [ "ecs-logstash*", "logstash*", "logs*" ],
 {% else %}
-      "names": [ "logstash*", "logs*", "logs*" ],
+      "names": [ "logstash*", "logs*" ],
 {% endif %}
       "privileges": ["write","create","delete","create_index","manage","manage_ilm"]  
     }

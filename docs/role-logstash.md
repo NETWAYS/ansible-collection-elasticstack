@@ -59,6 +59,13 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_tls_key_passphrase*: Passphrase for Logstash certificates (default: `ChangeMe`)
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
+* *logstash_user*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
+* *logstash_password*: Password of Elasticsearch user (Default: `password`)
+* *logstash_user_indices*: Indices the user has access to (Default: `'"ecs-logstash*", "logstash*", "logs*"'`)
+* *logstash_reset_writer_role*: Reset user and role with every run: (Default: `true`)
+
+
+
 * *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elastic_stack_full_stack` is not set. (default: `true`)
 
 The following variables configure Log4j for Logstash. All default to `true` as this is the default after the installation.

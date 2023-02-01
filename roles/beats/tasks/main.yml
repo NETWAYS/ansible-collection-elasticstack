@@ -11,6 +11,7 @@
     when:
     - elastic_security | bool
     - elastic_variant != "oss"
+    - not elastic_override_beats_tls | bool
 
   - name: Set elasticsearch_ca variable if not already done by user
     set_fact:

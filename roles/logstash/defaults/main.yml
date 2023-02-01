@@ -68,3 +68,7 @@ elastic_ca_pass: PleaseChangeMe
 elastic_release: 7
 elastic_variant: elastic
 elastic_security: true
+
+# Variables for debugging and development
+
+elastic_override_beats_tls: false

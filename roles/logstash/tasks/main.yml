@@ -18,7 +18,9 @@
   - name: Activate TLS for Beats for full stack
     set_fact:
       logstash_beats_tls: true
-    when: logstash_beats_tls is undefined
+    when:
+      - logstash_beats_tls is undefined
+      - not elastic_override_beats_tls | bool
 
 - name: Set Elasticsearch hosts to localhost if no other information available
   set_fact:

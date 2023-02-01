@@ -31,11 +31,13 @@ collections:
 
 ### Default Passwords 
 
-Default Passwords  can be seen during generation, or found later in `usr/share/elasticsearch/initial_passwords`
+Default Passwords  can be seen during generation, or found later in `/usr/share/elasticsearch/initial_passwords`
 
+To turn off security currently:
+`elastic_override_beats_tls: true`
 ### Redis
 
-0) You need to install the redis role which is maintained by geerlingguy
+0) You need to install the redis role which is maintained by geerlingguy.
 
 ```
 ansible-galaxy install geerlingguy.redis 

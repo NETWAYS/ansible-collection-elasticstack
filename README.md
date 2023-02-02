@@ -30,17 +30,33 @@ collections:
 ## Usage
 
 ```
-- name: Install Elasticsearch
-  hosts: all
+---
+- hosts: all
+#  remote_user: my_username
+  become: true
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   vars:
-    elastic_variant: oss
+    #    elastic_stack_full_stack: true
+    elastic_variant: elastic #oss
     elasticsearch_jna_workaround: true
+    elastic_override_beats_tls: true
+    #  elastic_release: 8 #7
+  pre_tasks:
+    - name: Install Rsyslog
+      package:
+        name: rsyslog
+    - name: Start rsyslog
+      service:
+        name: rsyslog
+        state: started
+        enabled: true
   roles:
     - repos
-    - beats
     - elasticsearch
+    - geerlingguy.redis
     - logstash
     - kibana
+    - beats
+
 ```

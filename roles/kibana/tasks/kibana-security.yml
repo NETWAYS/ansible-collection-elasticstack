@@ -85,7 +85,7 @@
 
 - name: fetch Kibana password
   shell: >
-    grep "PASSWORD kibana " /usr/share/elasticsearch/initial_passwords |
+    grep "PASSWORD kibana_system " /usr/share/elasticsearch/initial_passwords |
     awk {' print $4 '}
   register: kibana_password
   changed_when: false

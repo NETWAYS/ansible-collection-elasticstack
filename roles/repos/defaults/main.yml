@@ -1,6 +1,7 @@
 ---
 # defaults file for elastic-repos
 elastic_release: 7
+elastic_stack_full_stack: true
 elastic_variant: elastic
 
 elastic_rpm_workaround: false

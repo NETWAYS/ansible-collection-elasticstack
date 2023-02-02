@@ -29,4 +29,5 @@ elastic_cert_pass: PleaseChangeMeIndividually
 # "global" variables for all roles
 
 elastic_release: 7
+elastic_stack_full_stack: true
 elastic_variant: elastic

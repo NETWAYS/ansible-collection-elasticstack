@@ -59,7 +59,7 @@ metricbeat_modules:
   - system
 metricbeat_loadbalance: true
 
-elastic_stack_full_stack: false
+elastic_stack_full_stack: true
 elastic_variant: elastic
 elastic_security: true
 

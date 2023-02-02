@@ -40,7 +40,6 @@ There are some comments in the Playbook. Either fill them with the correct value
   collections:
     - netways.elasticstack
   vars:
-    #    elastic_stack_full_stack: true
     elastic_variant: elastic #oss
     elasticsearch_jna_workaround: true
     elastic_override_beats_tls: true

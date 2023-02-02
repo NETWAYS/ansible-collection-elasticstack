@@ -7,6 +7,7 @@
   hosts: all
   vars:
     elastic_stack_full_stack: false
+    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   collections:
     - NETWAYS.elasticstack
   tasks:

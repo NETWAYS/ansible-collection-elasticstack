@@ -234,7 +234,7 @@
   run_once: true
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
-    - elastic_release < 8
+    - elastic_release | int < 8
 
 - name: Put logstash_writer role into Elasticsearch > 7
   command: >
@@ -246,7 +246,7 @@
   run_once: true
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
-    - elastic_release > 7
+    - elastic_release | int > 7
 
 - name: Check for logstash_writer user
   shell: >
@@ -274,7 +274,7 @@
   run_once: true
   when:
     - logstash_writer_user_present.rc > 0
-    - elastic_release < 8
+    - elastic_release | int < 8
 
 - name: Put logstash_writer user into Elasticsearch > 7
   command: >
@@ -286,4 +286,4 @@
   run_once: true
   when:
     - logstash_writer_user_present.rc > 0
-    - elastic_release > 7
+    - elastic_release | int > 7

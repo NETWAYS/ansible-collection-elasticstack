@@ -33,6 +33,7 @@ filebeat_log_inputs:
     name: messages
     paths:
       - /var/log/messages
+      - /var/log/syslog
 filebeat_enable: true
 filebeat_journald: false
 filebeat_journald_inputs:

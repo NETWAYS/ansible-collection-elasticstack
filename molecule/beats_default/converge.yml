@@ -8,6 +8,7 @@
   collections:
     - NETWAYS.elasticstack
   vars:
+    elastic_stack_full_stack: false
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
   tasks:

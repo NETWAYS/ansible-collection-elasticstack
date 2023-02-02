@@ -5,6 +5,7 @@
     - NETWAYS.elasticstack
   vars:
     elastic_rpm_workaround: true
+    elastic_stack_full_stack: false
   tasks:
     - name: Include Elastic Repos
       ansible.builtin.include_role:

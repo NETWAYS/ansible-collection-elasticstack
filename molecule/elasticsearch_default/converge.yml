@@ -8,6 +8,7 @@
   vars:
     elasticsearch_enable: false
     elasticsearch_security: false
+    elastic_stack_full_stack: false
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
     elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') }}"

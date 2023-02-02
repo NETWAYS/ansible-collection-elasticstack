@@ -2,7 +2,7 @@ server.host: "0.0.0.0"
 
 {% if elastic_stack_full_stack is defined and elastic_stack_full_stack | bool and kibana_security | bool  and elastic_variant == "elastic" %}
 elasticsearch.hosts: [{% for host in kibana_elasticsearch_hosts %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
-elasticsearch.username: "kibana"
+elasticsearch.username: "kibana_system"
 elasticsearch.password: "{{ kibana_password.stdout }}"
 elasticsearch.ssl.certificateAuthorities:  "/etc/kibana/certs/ca.crt"
 {% if "localhost" in kibana_elasticsearch_hosts %}elasticsearch.ssl.verificationMode: certificate

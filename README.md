@@ -27,11 +27,23 @@ collections:
   - name: netways.elasticstack
 ```
 
+### Requirements
+
+You will need the following Ansible collections installed
+
+* community.general (probably already present)
+
+You may want the following Ansible roles installed. There other ways to achieve what they are doing but using them is easy and convenient.
+
+* geerlingguy.redis
+
 ## Usage
 
 Our default configuration will collect filesystem logs placed by `rsyslog`. Therefor our example playbook makes sure, `rsyslog` is installed. If you don't want that, please change the configuration of the `beats` module. Without syslog you won't receive any messages with the default configuration.
 
 There are some comments in the Playbook. Either fill them with the correct values (`remote_user`) or consider them as a hint to commonly used options.
+
+The execution order of the roles is important! (see below)
 ```
 ---
 - hosts: all

@@ -17,7 +17,7 @@ This collection installs and manages the Elastic Stack. It provides roles every 
 You can easily install the collection with the ansible-galaxy command.
 
 ```
-ansible-galaxy collection install netways.elasticstack
+ansible-galaxy collection install https://github.com/netways/ansible-collection-elasticstack.git
 ```
 
 Or if you are using Tower or AWX add the collection to your requirements file.

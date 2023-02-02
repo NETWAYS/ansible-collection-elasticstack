@@ -17,7 +17,7 @@ This collection installs and manages the Elastic Stack. It provides roles every 
 You can easily install the collection with the ansible-galaxy command.
 
 ```
-ansible-galaxy collection install netways.elasticstack
+ansible-galaxy collection install https://github.com/netways/ansible-collection-elasticstack.git
 ```
 
 Or if you are using Tower or AWX add the collection to your requirements file.
@@ -29,18 +29,36 @@ collections:
 
 ## Usage
 
+Our default configuration will collect filesystem logs placed by `rsyslog`. Therefor our example playbook makes sure, `rsyslog` is installed. If you don't want that, please change the configuration of the `beats` module. Without syslog you won't receive any messages with the default configuration.
+
+There are some comments in the Playbook. Either fill them with the correct values (`remote_user`) or consider them as a hint to commonly used options.
 ```
-- name: Install Elasticsearch
-  hosts: all
+---
+- hosts: all
+    # remote_user: my_username
+  become: true
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   vars:
-    elastic_variant: oss
+    elastic_variant: elastic #oss
     elasticsearch_jna_workaround: true
+    elastic_override_beats_tls: true
+    #  elastic_release: 8 #7
+  pre_tasks:
+    - name: Install Rsyslog
+      package:
+        name: rsyslog
+    - name: Start rsyslog
+      service:
+        name: rsyslog
+        state: started
+        enabled: true
   roles:
     - repos
-    - beats
     - elasticsearch
+    - geerlingguy.redis
     - logstash
     - kibana
+    - beats
+
 ```

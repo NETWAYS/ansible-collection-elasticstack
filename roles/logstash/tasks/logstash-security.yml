@@ -220,7 +220,11 @@
   register: logstash_writer_role_present
   run_once: true
 
-- name: Put logstash_writer role into Elasticsearch
+# we doubled the task and didn't use a more sophisticated way to just change
+# the URI because we expect this task to be removed when ES 7 is out of
+# support
+
+- name: Put logstash_writer role into Elasticsearch < 8
   command: >
     curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
     --cacert {{ elastic_ca_dir }}/ca.crt
@@ -228,7 +232,21 @@
     https://{{ elasticsearch_ca }}:9200/_xpack/security/role/logstash_writer
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true
-  when: logstash_writer_role_present.rc > 0
+  when:
+    - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
+    - elastic_release | int < 8
+
+- name: Put logstash_writer role into Elasticsearch > 7
+  command: >
+    curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
+    --cacert {{ elastic_ca_dir }}/ca.crt
+    -u elastic:{{ elastic_password_logstash.stdout }}
+    https://{{ elasticsearch_ca }}:9200/_security/role/logstash_writer
+  delegate_to: "{{ elasticsearch_ca }}"
+  run_once: true
+  when:
+    - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
+    - elastic_release | int > 7
 
 - name: Check for logstash_writer user
   shell: >
@@ -242,7 +260,11 @@
   register: logstash_writer_user_present
   run_once: true
 
-- name: Put logstash_writer user into Elasticsearch
+# we doubled the task and didn't use a more sophisticated way to just change
+# the URI because we expect this task to be removed when ES 7 is out of
+# support
+
+- name: Put logstash_writer user into Elasticsearch < 8
   command: >
     curl -T /root/logstash_writer_user --header 'Content-Type: application/json'
     --cacert {{ elastic_ca_dir }}/ca.crt
@@ -250,4 +272,18 @@
     https://{{ elasticsearch_ca }}:9200/_xpack/security/user/{{ logstash_user }}
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true
-  when: logstash_writer_user_present.rc > 0
+  when:
+    - logstash_writer_user_present.rc > 0
+    - elastic_release | int < 8
+
+- name: Put logstash_writer user into Elasticsearch > 7
+  command: >
+    curl -T /root/logstash_writer_user --header 'Content-Type: application/json'
+    --cacert {{ elastic_ca_dir }}/ca.crt
+    -u elastic:{{ elastic_password_logstash.stdout }}
+    https://{{ elasticsearch_ca }}:9200/_security/user/{{ logstash_user }}
+  delegate_to: "{{ elasticsearch_ca }}"
+  run_once: true
+  when:
+    - logstash_writer_user_present.rc > 0
+    - elastic_release | int > 7

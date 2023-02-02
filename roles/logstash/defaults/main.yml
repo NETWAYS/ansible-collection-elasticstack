@@ -40,6 +40,8 @@ logstash_beats_tls_encryptkey: true
 # logstash security
 logstash_user: logstash_writer
 logstash_password: password
+logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'
+logstash_reset_writer_role: true
 
 logstash_tls_key_passphrase: ChangeMe
 logstash_certs_dir: /etc/logstash/certs

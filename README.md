@@ -35,7 +35,7 @@ There are some comments in the Playbook. Either fill them with the correct value
 ```
 ---
 - hosts: all
-#  remote_user: my_username
+    # remote_user: my_username
   become: true
   collections:
     - netways.elasticstack

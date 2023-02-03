@@ -7,6 +7,7 @@
   hosts: all
   vars:
     elasticsearch_security: false
+    elastic_security: false
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
     elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"

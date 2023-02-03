@@ -27,6 +27,16 @@ collections:
   - name: netways.elasticstack
 ```
 
+### Requirements
+
+You will need the following Ansible collections installed
+
+* community.general (probably already present)
+
+You may want the following Ansible roles installed. There other ways to achieve what they are doing but using them is easy and convenient.
+
+* geerlingguy.redis
+
 ## Usage
 
 Our default configuration will collect filesystem logs placed by `rsyslog`. Therefor our example playbook makes sure, `rsyslog` is installed. If you don't want that, please change the configuration of the `beats` module. Without syslog you won't receive any messages with the default configuration.
@@ -35,6 +45,7 @@ There are some comments in the Playbook. Either fill them with the correct value
 
 _Note_: The roles rely on hardcoded group names for placing services on hosts. Please make sure you have groups named `elasticsearch`, `logstash` and `kibana` in your Ansible inventory. Hosts in these groups will get the respective services. Restricting your plays to the appropriate hosts will not work because the roles interact with hosts from other groups e.g. for certificate generation.
 
+The execution order of the roles is important! (see below)
 ```
 ---
 - hosts: all

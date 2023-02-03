@@ -21,7 +21,8 @@ tags:
   - metricbeat
   - filebeat
   - monitoring
-dependencies: {}
+dependencies:
+  "community.general": "*"
 repository: https://github.com/NETWAYS/ansible-collection-elasticstack
 documentation: https://github.com/NETWAYS/ansible-collection-elasticstack/README.md
 homepage: https://www.netways.de

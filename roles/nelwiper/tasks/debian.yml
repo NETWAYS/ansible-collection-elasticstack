@@ -6,15 +6,15 @@
     update_cache: yes
     force_apt_get: yes
 
-- name: "Check if listed package is installed or not on Debian Linux family"
-  command: dpkg-query -l "{{ item }}"
-  with_items:
-    - filebeat
-    - elasticsearch
-    - logstash
-    - kibana
-  register: package_check
-  when: ansible_facts['os_family'] == "Debian"
+#- name: "Check if listed package is installed or not on Debian Linux family"
+#  command: dpkg-query -l "{{ item }}"
+#  with_items:
+#    - filebeat
+#    - elasticsearch
+#    - logstash
+#    - kibana
+#  register: package_check
+#  when: ansible_facts['os_family'] == "Debian"
 
 - name: Remove apt lock file
   file:
@@ -57,14 +57,14 @@
 - name: Debian, Ubuntu Remove the entire elastic stack
   apt:
     autoremove: yes 
-    update_cache: yes
+    #update_cache: yes
     name:
     - filebeat
     - kibana
     - elasticsearch
     - logstash
     state: absent
-  when: package_check is not failed and ansible_facts['os_family']  == 'Debian'  
+  when: ansible_facts['os_family']  == 'Debian'  
 
 
 # clean directories
@@ -84,7 +84,7 @@
     - kibana
     - filebeat
 
-- name: Remove leftover /etc/$name
+- name: Remove leftover /etc/$package
   file:
     path: /etc/{{ item }}
     state: absent
@@ -94,7 +94,7 @@
     - kibana
     - filebeat
 
-- name: Remove leftover /var/$lib
+- name: Remove leftover /var/lib/$package
   file:
     path: /var/lib/{{ item }}
     state: absent
@@ -104,7 +104,7 @@
     - kibana
     - filebeat
 
-- name: Remove leftover /var/log
+- name: Remove leftover /var/log/$package
   file:
     path: /var/log/{{item}}
     state: absent
@@ -113,6 +113,15 @@
     - elasticsearch
     - kibana
     - filebeat
+
+## Wipe all leftover dependencies
+- name: Warning, Potentially uncomment, Wipe all everything with left dependencies over
+  shell:
+    cmd: dpkg -l | grep '^rc' | awk '{print $2}' | xargs sudo apt-get purge --yes
+
+- name: Reload unit Files
+  shell:
+    cmd: systemctl daemon-reload
 #- name: Apt for sure
 #  apt: name=foobar state=installed
 #  register: apt_status

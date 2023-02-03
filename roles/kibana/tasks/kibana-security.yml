@@ -111,3 +111,40 @@
     Restart Kibana
   tags:
     - certificates
+
+# Version 1 with Globbing, Find and File
+
+# Cleanup ca.crt
+- name: Controller tmp cleanup of CA
+  connection: local
+  become: no
+  file:
+    path: /tmp/ca.crt
+    state: absent
+
+# Cleanup .p12 & .crt
+- name: Controller Directory Cleanup - Find & local p12 & zip without Ansible_Hostname
+  connection: local
+  become: no  
+  find:
+    paths: /tmp
+    use_regex: yes
+    patterns:
+      - .*\.(p12|zip)$
+  register: find_p12_zip
+
+- name: delete local p12
+  connection: local
+  become: no
+  file:
+    path: "{{ item['path'] }}"
+    state: absent
+  with_items: "{{ find_p12_zip['files'] }}"
+
+# Version 2 with Shell
+
+- name: Controller Directory Cleanup - Shell removes & has the Ansible_Hostname
+#  connection: local
+#  become: no 
+#  shell:
+#    cmd: rm /tmp/{{ ansible_hostname }}* && rm /tmp/ca.crt

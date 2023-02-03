@@ -17,7 +17,7 @@ This collection installs and manages the Elastic Stack. It provides roles every 
 You can easily install the collection with the ansible-galaxy command.
 
 ```
-ansible-galaxy collection install netways.elasticstack
+ansible-galaxy collection install https://github.com/netways/ansible-collection-elasticstack.git
 ```
 
 Or if you are using Tower or AWX add the collection to your requirements file.
@@ -43,41 +43,35 @@ To turn off security currently:
 ansible-galaxy install geerlingguy.redis 
 ```
 
-1) 
+1) Default: For general Elastic Stack installations using all features use the following. You will need Redis installed and running for the default setup to run. A viable way is using the `geerlingguy.redis` role. (You can install it with `ansible-galaxy install geerlingguy.redis)
 
-Default: For general Elastic Stack installations using all features use the following.
+2) Specific: For OSS Installation without X-Pack features you can use the following. _Note_ this is only available for version `7.x`.
 
-You will need Redis installed and running for the default setup to run. A viable way is using the `geerlingguy.redis` role. (You can install it with `ansible-galaxy install geerlingguy.redis)
+Our default configuration will collect filesystem logs placed by `rsyslog`. Therefor our example playbook makes sure, `rsyslog` is installed. If you don't want that, please change the configuration of the `beats` module. Without syslog you won't receive any messages with the default configuration.
+
+There are some comments in the Playbook. Either fill them with the correct values (`remote_user`) or consider them as a hint to commonly used options.
 
 ```
-- name: Install Elasticsearch
-  hosts: all
+---
+- hosts: all
+    # remote_user: my_username
   become: true
   collections:
     - netways.elasticstack
   vars:
-    elastic_stack_full_stack: true
-    elastic_variant: elastic
+    elastic_variant: elastic #oss
     elasticsearch_jna_workaround: true
-  roles:
-    - repos
-    - elasticsearch
-    - geerlingguy.redis
-    - logstash
-    - kibana
-    - beats
-```
-
-2) Specific: For OSS Installation without X-Pack features you can use the following. _Note_ this is only available for version `7.x`.
-```
-- name: Install Elasticsearch
-  hosts: all
-  collections:
-    - netways.elasticstack
-  vars:
-    elastic_stack_full_stack: true
-    elastic_variant: oss
-    elasticsearch_jna_workaround: true
+    elastic_override_beats_tls: true
+    #  elastic_release: 8 #7
+  pre_tasks:
+    - name: Install Rsyslog
+      package:
+        name: rsyslog
+    - name: Start rsyslog
+      service:
+        name: rsyslog
+        state: started
+        enabled: true
   roles:
     - repos
     - elasticsearch

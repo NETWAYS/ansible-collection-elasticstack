@@ -26,6 +26,8 @@
     domain: elasticsearch
     value: 65535
     limit_type: hard
+  when:
+    - elasticsearch_pamlimits | bool
 
 - name: Ensure Elasticsearch is installed
   package:

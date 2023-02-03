@@ -28,6 +28,9 @@ jobs:
           - ubuntu2204
         scenario:
           - elasticstack_default
+        release:
+          - 7
+          - 8
 
     steps:
       - name: Check out code
@@ -55,3 +58,4 @@ jobs:
           MOLECULE_DISTRO: ${{ matrix.distro }}
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
+          ELASTIC_RELEASE: ${{ matrix.release }}

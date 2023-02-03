@@ -29,6 +29,7 @@
             key: forwarder
     logstash_pipeline_identifier_field_name: "[mytest][pipelines]"
     logstash_pipeline_identifier_defaults: true
+    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: "Include Elastics repos role"
       include_role:

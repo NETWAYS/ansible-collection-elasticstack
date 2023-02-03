@@ -70,7 +70,8 @@ jobs:
       matrix:
 
         distro: [centos7, debian10, debian11, rockylinux8, rockylinux9, ubuntu2004, ubuntu2204]
-        scenario: [repos_default, repos_oss, repos_elastic8]
+        scenario: [repos_default, repos_oss]
+        release: [ 7, 8 ]
 
     steps:
       - name: Check out code
@@ -97,3 +98,4 @@ jobs:
           molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
+          ELASTIC_RELEASE: ${{ matrix.release }}

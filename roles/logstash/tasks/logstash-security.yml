@@ -231,6 +231,7 @@
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_xpack/security/role/logstash_writer
   delegate_to: "{{ elasticsearch_ca }}"
+  changed_when: false
   run_once: true
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
@@ -243,6 +244,7 @@
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_security/role/logstash_writer
   delegate_to: "{{ elasticsearch_ca }}"
+  changed_when: false
   run_once: true
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
@@ -271,6 +273,7 @@
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_xpack/security/user/{{ logstash_user }}
   delegate_to: "{{ elasticsearch_ca }}"
+  changed_when: false
   run_once: true
   when:
     - logstash_writer_user_present.rc > 0
@@ -284,6 +287,7 @@
     https://{{ elasticsearch_ca }}:9200/_security/user/{{ logstash_user }}
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true
+  changed_when: false
   when:
     - logstash_writer_user_present.rc > 0
     - elastic_release | int > 7

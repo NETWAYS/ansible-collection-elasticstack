@@ -29,28 +29,28 @@
   when: ansible_facts['os_family'] == "Debian"
 
 ## start kill pids if running
-- name: Get running processes list from remote host
-  ignore_errors: yes
-  shell: "ps -few | grep logstash | awk '{print $2}'"
-  register: running_processes
-
-- name: Kill running processes
-  ignore_errors: yes
-  shell: "kill {{ item }}"
-  with_items: "{{ running_processes.stdout_lines }}"
-
-- wait_for:
-    path: "/proc/{{ item }}/status"
-    state: absent
-  with_items: "{{ running_processes.stdout_lines }}"
-  ignore_errors: yes
-  register: processes_name
-
-- name: Force kill stuck processes
-  ignore_errors: yes
-  shell: "kill -9 {{ item }}"
-  with_items: "{{ process_name.results | select('failed') | map(attribute='item') | list }}"
-
+#- name: Get running processes list from remote host
+#  ignore_errors: yes
+#  shell: "ps -few | grep logstash | awk '{print $2}'"
+#  register: running_processes
+#
+#- name: Kill running processes
+#  ignore_errors: yes
+#  shell: "kill {{ item }}"
+#  with_items: "{{ running_processes.stdout_lines }}"
+#
+#- wait_for:
+#    path: "/proc/{{ item }}/status"
+#    state: absent
+#  with_items: "{{ running_processes.stdout_lines }}"
+#  ignore_errors: yes
+#  register: processes_name
+#
+#- name: Force kill stuck processes
+#  ignore_errors: yes
+#  shell: "kill -9 {{ item }}"
+#  with_items: "{{ process_name.results | select('failed') | map(attribute='item') | list }}"
+#
 ## end kill pids if running
 
 # start purging

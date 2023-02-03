@@ -27,6 +27,9 @@
   changed_when: false
   register: es_keystore
 
+- name: elasticsearch_bootstrap_pw genpw
+  ansible.builtin.include_tasks: elastic-password-generator.yml
+
 - name: Set bootstrap password
   shell: >
     echo "{{ elasticsearch_bootstrap_pw }}" |
@@ -60,7 +63,6 @@
   notify:
     - Restart Elasticsearch
 
-
 - name: Remove xpack.security.http.ssl.keystore.secure_password
   shell: >
     /usr/share/elasticsearch/bin/elasticsearch-keystore
@@ -70,7 +72,6 @@
     - not elasticsearch_http_security
   notify:
     - Restart Elasticsearch
-
 
 - name: Get xpack.security.http.ssl.truststore.secure_password
   shell: >
@@ -137,7 +138,6 @@
   notify:
     - Restart Elasticsearch
 
-
 - name: Get xpack.security.transport.ssl.truststore.secure_password
   shell: >
     /usr/share/elasticsearch/bin/elasticsearch-keystore
@@ -169,7 +169,6 @@
     - not elasticsearch_security
   notify:
     - Restart Elasticsearch
-
 
 - name: Create ca and certificates
   when: inventory_hostname == elasticsearch_ca
@@ -289,6 +288,8 @@
   ansible.builtin.set_fact:
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
+
+-  
 
 - name: Check for cluster status with bootstrap password
   shell: >

@@ -147,3 +147,4 @@
 #  register: out
 #
 #
+# add this: sudo dpkg --configure -a

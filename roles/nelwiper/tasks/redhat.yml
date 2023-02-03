@@ -1,0 +1,13 @@
+---
+
+#- name: Remove the entire Elastic stack
+#  yum:
+#    name: "{{item}}" 
+#    state: absent
+#  with_items:
+#    - filebeat
+#    - kibana
+#    - elasticsearch
+#    - logstash
+#  when: ansible_os_family == 'RedHat'  
+#

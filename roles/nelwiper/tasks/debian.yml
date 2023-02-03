@@ -1,0 +1,123 @@
+---
+# https://techviewleo.com/ansible-check-if-software-package-is-installed/
+# https://crunchify.com/ansible-how-to-grep-ps-few-and-kill-process-running-on-remote-host/
+- name: Update APT Cache
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+
+- name: "Check if listed package is installed or not on Debian Linux family"
+  command: dpkg-query -l "{{ item }}"
+  with_items:
+    - filebeat
+    - elasticsearch
+    - logstash
+    - kibana
+  register: package_check
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Remove apt lock file
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items: 
+    - /var/lib/dpkg/lock
+    - /var/lib/dpkg/lock
+    - /var/lib/dpkg/lock-frontend
+    - /var/lib/apt/lists/lock
+    - /var/cache/apt/archives/lock
+  when: ansible_facts['os_family'] == "Debian"
+
+## start kill pids if running
+- name: Get running processes list from remote host
+  ignore_errors: yes
+  shell: "ps -few | grep logstash | awk '{print $2}'"
+  register: running_processes
+
+- name: Kill running processes
+  ignore_errors: yes
+  shell: "kill {{ item }}"
+  with_items: "{{ running_processes.stdout_lines }}"
+
+- wait_for:
+    path: "/proc/{{ item }}/status"
+    state: absent
+  with_items: "{{ running_processes.stdout_lines }}"
+  ignore_errors: yes
+  register: processes_name
+
+- name: Force kill stuck processes
+  ignore_errors: yes
+  shell: "kill -9 {{ item }}"
+  with_items: "{{ process_name.results | select('failed') | map(attribute='item') | list }}"
+
+## end kill pids if running
+
+- name: Debian, Ubuntu Remove the entire elastic stack
+  apt:
+    autoremove: yes 
+    update_cache: yes
+    name:
+    - filebeat
+    - kibana
+    - elasticsearch
+    - logstash
+    state: absent
+  when: package_check is not failed and ansible_facts['os_family']  == 'Debian'  
+
+
+- name: Remove leftover /usr/share/$name
+  file:
+    path: /usr/share/{{ item }}
+    state: absent
+  with_items:
+    - logstash
+    - elasticsearch
+    - kibana
+    - filebeat
+
+- name: Remove leftover /etc/$name
+  file:
+    path: /etc/{{ item }}
+    state: absent
+  with_items:
+    - logstash
+    - elasticsearch
+    - kibana
+    - filebeat
+
+- name: Remove leftover /etc/$name
+  file:
+    path: /var/lib/{{ item }}
+    state: absent
+  with_items:
+    - logstash
+    - elasticsearch
+    - kibana
+    - filebeat
+
+#- name: Apt for sure
+#  apt: name=foobar state=installed
+#  register: apt_status
+#  # 2018 syntax:
+#  # until: apt_status|success
+#  # 2020 syntax:
+#  until: apt_status is success
+#  delay: 2
+#  retries: 2
+
+# name: store all of the files and directories in the /tmp directory that contain 'foo' in the 'out' variable
+#  find:
+#    paths:
+#      - /etc/
+#      - /usr/share
+#      - /var/lib
+#    patterns: 
+#      - (?i).logstash*
+#      - (?i).elasticsearch*
+#      - (?i).kibana*
+#      - (?i).filebeat*
+#    use_regex: true
+#  register: out
+#
+#

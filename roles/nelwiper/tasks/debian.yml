@@ -53,6 +53,7 @@
 
 ## end kill pids if running
 
+# start purging
 - name: Debian, Ubuntu Remove the entire elastic stack
   apt:
     autoremove: yes 
@@ -66,6 +67,13 @@
   when: package_check is not failed and ansible_facts['os_family']  == 'Debian'  
 
 
+# clean directories
+- name: Remove leftover /opt/es-ca
+  file:
+    path: /opt/es-ca
+    state: absent
+
+# clean directories
 - name: Remove leftover /usr/share/$name
   file:
     path: /usr/share/{{ item }}
@@ -86,7 +94,7 @@
     - kibana
     - filebeat
 
-- name: Remove leftover /etc/$name
+- name: Remove leftover /var/$lib
   file:
     path: /var/lib/{{ item }}
     state: absent
@@ -96,6 +104,15 @@
     - kibana
     - filebeat
 
+- name: Remove leftover /var/log
+  file:
+    path: /var/log/{{item}}
+    state: absent
+  with_items:
+    - logstash
+    - elasticsearch
+    - kibana
+    - filebeat
 #- name: Apt for sure
 #  apt: name=foobar state=installed
 #  register: apt_status

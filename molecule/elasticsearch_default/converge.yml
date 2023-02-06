@@ -6,7 +6,6 @@
     - NETWAYS.elasticstack
   hosts: all
   vars:
-    elasticsearch_enable: false
     #elasticsearch_security: true # needed for tests of > 7 releases
     elastic_stack_full_stack: false
     elasticsearch_jna_workaround: true

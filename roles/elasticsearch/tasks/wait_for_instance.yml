@@ -4,3 +4,4 @@
   wait_for:
     host: "{{ hostvars[item].ansible_default_ipv4.address }}"
     port: 9200
+    timeout: 600

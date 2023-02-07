@@ -130,6 +130,9 @@
     openssl pkcs8
     -in {{ logstash_certs_dir }}/{{ inventory_hostname }}.key
     -topk8
+    -v1 PBE-MD5-DES
+    -inform PEM
+    -outform PEM
     -passin pass:{{ logstash_tls_key_passphrase }}
     -out {{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key
     -passout pass:{{ logstash_tls_key_passphrase }}

@@ -13,7 +13,7 @@ cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
 {% if elastic_temperature is defined %}
 node.attr.temp: "{{ elastic_temperature }}"
 {% endif %}
-{% if elasticsearch_disable_systemcallfilterchecks | bool %}
+{% if elasticsearch_disable_systemcallfilterchecks | bool and elastic_release == 7 %}
 bootstrap.system_call_filter: false
 {% endif %}
 {% if elastic_variant == "elastic" %}

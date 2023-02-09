@@ -2,30 +2,30 @@
 
 - name: Prepare for whole stack roles if used
   when:
-  - elastic_stack_full_stack | bool
+    - elastic_stack_full_stack | bool
   block:
 
-  - name: Set Elasticsearch hosts if used with other roles
-    set_fact:
-      logstash_elasticsearch: "{{ groups['elasticsearch'] }}"
-    when:
-      - logstash_elasticsearch is undefined
-      - groups['elasticsearch'] is defined
-    tags:
-      - configuration
-      - logstash_configuration
+    - name: Set Elasticsearch hosts if used with other roles
+      set_fact:
+        logstash_elasticsearch: "{{ groups['elasticsearch'] }}"
+      when:
+        - logstash_elasticsearch is undefined
+        - groups['elasticsearch'] is defined
+      tags:
+        - configuration
+        - logstash_configuration
 
-  - name: Activate TLS for Beats for full stack
-    set_fact:
-      logstash_beats_tls: true
-    when:
-      - logstash_beats_tls is undefined
-      - not elastic_override_beats_tls | bool
+    - name: Activate TLS for Beats for full stack
+      set_fact:
+        logstash_beats_tls: true
+      when:
+        - logstash_beats_tls is undefined
+        - not elastic_override_beats_tls | bool
 
 - name: Set Elasticsearch hosts to localhost if no other information available
   set_fact:
     logstash_elasticsearch:
-    - localhost
+      - localhost
   when:
     - logstash_elasticsearch is undefined
     - groups['elasticsearch'] is undefined

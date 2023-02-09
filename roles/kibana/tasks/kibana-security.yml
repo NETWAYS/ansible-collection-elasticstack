@@ -12,19 +12,21 @@
     - certificates
 
 - name: Block for key generation
+  delegate_to: "{{ elasticsearch_ca }}"
+  run_once: true
   block:
-    - name: generate encryption key
+    - name: Generate encryption key
       shell: openssl rand -base64 36 > {{ elastic_ca_dir }}/encryption_key
       changed_when: false
       args:
         creates: "{{ elastic_ca_dir }}/encryption_key"
 
-    - name: fetch encryption key
+    - name: Fetch encryption key
       command: cat {{ elastic_ca_dir }}/encryption_key
       changed_when: false
       register: kibana_encryption_key
 
-    - name: generate saved objects encryption key
+    - name: Generate saved objects encryption key
       shell: >
         openssl rand
         -base64 36 >
@@ -33,14 +35,12 @@
       args:
         creates: "{{ elastic_ca_dir }}/savedobjects_encryption_key"
 
-    - name: fetch saved objects encryption key
+    - name: Fetch saved objects encryption key
       command: cat {{ elastic_ca_dir }}/savedobjects_encryption_key
       changed_when: false
       register: kibana_savedobjects_encryption_key
-  delegate_to: "{{ elasticsearch_ca }}"
-  run_once: true
 
-- name: create certificate directory
+- name: Create certificate directory
   file:
     path: /etc/kibana/certs
     state: directory
@@ -50,7 +50,7 @@
   tags:
     - certificates
 
-- name: create individual certificates for Kibana
+- name: Create individual certificates for Kibana
   command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
     --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
@@ -83,7 +83,7 @@
   tags:
     - certificates
 
-- name: fetch Kibana password
+- name: Fetch Kibana password
   shell: >
     grep "PASSWORD kibana_system " /usr/share/elasticsearch/initial_passwords |
     awk {' print $4 '}

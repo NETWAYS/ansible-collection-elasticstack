@@ -7,12 +7,14 @@ galaxy_info:
 
   min_ansible_version: "2.4"
   platforms:
-  - name: CentOS
+  - name: "EL"
     versions:
-    - 7
+    - "7"
+    - "8"
   - name: Debian
     versions:
-    - 10
+    - "10"
+    - "11"
 
   galaxy_tags: []
 dependencies: []

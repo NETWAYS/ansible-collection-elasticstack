@@ -7,11 +7,14 @@
     - elastic_release | int > 7
     - elastic_variant == "oss"
 
-- import_tasks: redhat.yml
+- name: Import RedHat tasks
+  import_tasks: redhat.yml
   when: ansible_os_family == 'RedHat'
 
-- import_tasks: debian.yml
+- name: Import Debian tasks
+  import_tasks: debian.yml
   when: ansible_os_family == 'Debian'
 
-- import_tasks: suse.yml
+- name: Import SuSE tasks
+  import_tasks: suse.yml
   when: ansible_os_family|lower == 'suse'

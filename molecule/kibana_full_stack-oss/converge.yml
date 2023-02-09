@@ -10,6 +10,7 @@
   vars:
     elastic_stack_full_stack: true
     elastic_variant: oss
+    elastic_release: 7
   tasks:
     - name: Include Elastic Repos
       include_role:

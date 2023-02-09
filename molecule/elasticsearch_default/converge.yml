@@ -6,10 +6,11 @@
     - NETWAYS.elasticstack
   hosts: all
   vars:
-    elasticsearch_enable: false
-    elasticsearch_security: false
+    #elasticsearch_security: true # needed for tests of > 7 releases
+    elastic_stack_full_stack: false
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
+    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Include Elastics repos role
       include_role:

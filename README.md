@@ -39,6 +39,24 @@ You may want the following Ansible roles installed. There other ways to achieve 
 
 ## Usage
 
+### Default Passwords 
+
+Default Passwords  can be seen during generation, or found later in `/usr/share/elasticsearch/initial_passwords`
+
+To turn off security currently:
+`elastic_override_beats_tls: true`
+### Redis
+
+0) You need to install the redis role which is maintained by geerlingguy.
+
+```
+ansible-galaxy install geerlingguy.redis 
+```
+
+1) Default: For general Elastic Stack installations using all features use the following. You will need Redis installed and running for the default setup to run. A viable way is using the `geerlingguy.redis` role. (You can install it with `ansible-galaxy install geerlingguy.redis)
+
+2) Specific: For OSS Installation without X-Pack features you can use the following. _Note_ this is only available for version `7.x`.
+
 Our default configuration will collect filesystem logs placed by `rsyslog`. Therefor our example playbook makes sure, `rsyslog` is installed. If you don't want that, please change the configuration of the `beats` module. Without syslog you won't receive any messages with the default configuration.
 
 There are some comments in the Playbook. Either fill them with the correct values (`remote_user`) or consider them as a hint to commonly used options.
@@ -46,6 +64,7 @@ There are some comments in the Playbook. Either fill them with the correct value
 _Note_: The roles rely on hardcoded group names for placing services on hosts. Please make sure you have groups named `elasticsearch`, `logstash` and `kibana` in your Ansible inventory. Hosts in these groups will get the respective services. Restricting your plays to the appropriate hosts will not work because the roles interact with hosts from other groups e.g. for certificate generation.
 
 The execution order of the roles is important! (see below)
+
 ```
 ---
 - hosts: all
@@ -74,5 +93,4 @@ The execution order of the roles is important! (see below)
     - logstash
     - kibana
     - beats
-
 ```

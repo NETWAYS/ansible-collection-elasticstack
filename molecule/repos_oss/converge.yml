@@ -8,6 +8,7 @@
   vars:
     elastic_variant: oss
     elastic_rpm_workaround: true
+    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: "Include Elastic Repos"
       ansible.builtin.include_role:

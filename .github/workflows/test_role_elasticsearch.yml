@@ -71,6 +71,7 @@ jobs:
       matrix:
         distro: [ubuntu2204]
         scenario: [elasticsearch_default, elasticsearch_cluster, elasticsearch_cluster-oss, elasticsearch_no-security]
+        release: [7, 8]
 
     steps:
       - name: Check out code
@@ -96,5 +97,6 @@ jobs:
           molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
+          ELASTIC_RELEASE: ${{ matrix.release }}
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

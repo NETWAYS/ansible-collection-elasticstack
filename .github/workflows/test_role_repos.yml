@@ -49,7 +49,7 @@ jobs:
       - name: Install test dependencies.
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install yamllint ansible-lint
+          python3 -m pip install -r requirements-test.txt
 
       - name: Lint code.
         run: |

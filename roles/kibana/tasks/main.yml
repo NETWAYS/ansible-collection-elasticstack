@@ -4,7 +4,7 @@
   set_fact:
     kibana_tls_key_passphrase: "{{ elastic_cert_pass }}"
   when:
-  - elastic_cert_pass is defined
+    - elastic_cert_pass is defined
 
 # tasks file for kibana
 - name: Set Elasticsearch hosts if used with other roles

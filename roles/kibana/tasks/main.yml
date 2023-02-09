@@ -22,12 +22,12 @@
     - kibana_elasticsearch_hosts is undefined
     - groups['elasticsearch'] is undefined
 
-- name: install Kibana
+- name: Install Kibana
   package:
     name: kibana
   when: elastic_variant == "elastic"
 
-- name: install Kibana OSS
+- name: Install Kibana OSS
   package:
     name: kibana-oss
   when: elastic_variant == "oss"

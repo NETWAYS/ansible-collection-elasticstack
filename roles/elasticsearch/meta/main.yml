@@ -35,7 +35,8 @@ galaxy_info:
     - "8"
   - name: Debian
     versions:
-    - "11"
+    - buster
+    - bullseye
   #   - 25
   # - name: SomePlatform
   #   versions:

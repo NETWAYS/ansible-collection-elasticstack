@@ -16,7 +16,7 @@
 - name: Install Auditbeat latest version
   package:
     name: auditbeat
-    state: latest
+    state: latest # yamllint disable-line just for updates
   notify:
     - Restart Auditbeat
   when:

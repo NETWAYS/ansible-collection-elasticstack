@@ -13,8 +13,8 @@ galaxy_info:
     - "8"
   - name: Debian
     versions:
-    - "10"
-    - "11"
+    - buster
+    - bullseye
 
   galaxy_tags: []
 dependencies: []

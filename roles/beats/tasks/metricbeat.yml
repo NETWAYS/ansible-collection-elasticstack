@@ -16,7 +16,7 @@
 - name: Install Metricbeat latest version
   package:
     name: metricbeat
-    state: latest # yamllint disable-line just for updates
+    state: latest # yamllint disable-line rule:package-latest
   notify:
     - Restart Metricbeat
   when:

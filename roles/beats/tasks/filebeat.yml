@@ -16,7 +16,7 @@
 - name: Install Filebeat latest version
   package:
     name: filebeat
-    state: latest # yamllint disable-line just for updates
+    state: latest # yamllint disable-line rule:package-latest
   notify:
     - Restart Filebeat
   when:

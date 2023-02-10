@@ -29,8 +29,8 @@
       command: "curl -s -u elastic:{{ elastic_password.stdout }} http://{{ ansible_hostname }}:5601/api/status"
       register: curl_out
       failed_when:
-        - '"state": "green"' not in curl_out.stdout
-        - '"summary": "Elasticsearch is available"' not in curl_out.stdout
+        - "'"state": "green"' not in curl_out.stdout"
+        - "'"summary": "Elasticsearch is available"' not in curl_out.stdout"
     when: "'kibana' in group_names"
   # The following might be nicer but doesn't work
   #- name: Connect to Kibana

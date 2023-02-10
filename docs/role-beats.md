@@ -63,6 +63,7 @@ filebeat_journald_inputs:
 * *filebeat_docker_ids*: IDs of containers to collect. (default: `*`)
 
 * *filebeat_loadbalance*: Enable loadbalancing for Filebeats Logstash output (default: `true`)
+* *filebeat_modules*: **EXPERIMENTAL**: Give a list of modules to enable. (default: none)
 
 * *beats_auditbeat*: Install and manage filebeat (Default: `false`)
 * *beats_auditbeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)

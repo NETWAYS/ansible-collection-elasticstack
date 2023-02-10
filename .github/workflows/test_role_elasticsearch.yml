@@ -36,7 +36,7 @@ on:
       - '.yamllint'
 
 jobs:
-  lint:
+  lint_elasticsearch:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
@@ -57,12 +57,12 @@ jobs:
           yamllint roles/elasticsearch/
           ansible-lint roles/elasticsearch/
 
-  build:
-    needs: lint
+  molecule_elasticsearch:
+    needs: lint_elasticsearch
     runs-on: ubuntu-latest
 
     env:
-      COLLECTION_NAMESPACE: NETWAYS
+      COLLECTION_NAMESPACE: netways
       COLLECTION_NAME: elasticstack
 
     strategy:

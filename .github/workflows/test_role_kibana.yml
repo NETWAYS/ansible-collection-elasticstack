@@ -36,7 +36,7 @@ on:
       - '.yamllint'
 
 jobs:
-  lint:
+  lint_kibana:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
@@ -57,8 +57,8 @@ jobs:
           yamllint roles/kibana/
           ansible-lint roles/kibana/
 
-  build:
-    needs: lint
+  molecule_kibana:
+    needs: lint_kibana
     runs-on: ubuntu-latest
 
     env:

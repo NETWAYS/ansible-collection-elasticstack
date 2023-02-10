@@ -35,7 +35,7 @@ on:
       - '.yamllint'
 
 jobs:
-  lint:
+  lint_repos:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
@@ -56,12 +56,12 @@ jobs:
           yamllint roles/repos/
           ansible-lint roles/repos/
 
-  build:
-    needs: lint
+  molecule_repos:
+    needs: lint_repos
     runs-on: ubuntu-latest
 
     env:
-      COLLECTION_NAMESPACE: NETWAYS
+      COLLECTION_NAMESPACE: netways
       COLLECTION_NAME: elasticstack
 
     strategy:

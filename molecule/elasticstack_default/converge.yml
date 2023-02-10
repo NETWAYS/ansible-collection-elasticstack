@@ -6,8 +6,6 @@
   vars:
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
-    elastic_stack_full_stack: true
-    elastic_variant: oss
     elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Include Elastic Repos

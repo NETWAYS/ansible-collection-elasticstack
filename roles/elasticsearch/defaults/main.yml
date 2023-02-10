@@ -12,7 +12,7 @@ elasticsearch_http_protocol: http
 elasticsearch_datapath: /var/lib/elasticsearch
 elasticsearch_create_datapath: false
 elasticsearch_disable_systemcallfilterchecks: false
-elasticsearch_heap: "{{ [[ ( ansible_memtotal_mb // 1024) // 2 , 30 ]|min, 1]|max }}"
+elasticsearch_heap: "{{ [[(ansible_memtotal_mb // 1024) // 2, 30] | min, 1] | max }}"
 elasticsearch_pamlimits: true
 
 elasticsearch_jna_workaround: false

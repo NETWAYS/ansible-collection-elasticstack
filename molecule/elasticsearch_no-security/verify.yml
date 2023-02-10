@@ -3,8 +3,6 @@
 
 - name: Verify
   hosts: all
-  vars:
-    elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
   tasks:
 
 # Remember, this is the no-security scenario. So no https
@@ -12,9 +10,6 @@
     uri:
       url: http://localhost:9200/_cluster/health
       method: GET
-      force_basic_auth: yes
-      user: elastic
-      password: "{{ elastic_password.stdout }}"
       return_content: yes
       status_code: 200
       validate_certs: false
@@ -27,10 +22,15 @@
     uri:
       url: http://localhost:9200/_cat/nodes
       method: GET
-      force_basic_auth: yes
-      user: elastic
-      password: "{{ elastic_password.stdout }}"
       return_content: yes
       status_code: 200
       validate_certs: false
     register: nodes
+
+  - name: Check if all Nodes see each other
+    ansible.builtin.assert:
+      that:
+        - "'{{ item }}' in nodes.content"
+      fail_msg: "'{{ item }}' was not found in nodes.content"
+      success_msg: "'{{ item }}' was found in nodes.content"
+    with_inventory_hostnames: all

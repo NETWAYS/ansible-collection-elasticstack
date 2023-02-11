@@ -15,6 +15,15 @@
 #    - kibana
 #  register: package_check
 #  when: ansible_facts['os_family'] == "Debian"
+- name: Stop Belk Services
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - elasticsearch
+    - logstash
+    - filebeat
+    - kibana
 
 - name: Remove apt lock file
   file:
@@ -28,30 +37,30 @@
     - /var/cache/apt/archives/lock
   when: ansible_facts['os_family'] == "Debian"
 
-## start kill pids if running
-#- name: Get running processes list from remote host
-#  ignore_errors: yes
-#  shell: "ps -few | grep logstash | awk '{print $2}'"
-#  register: running_processes
-#
-#- name: Kill running processes
-#  ignore_errors: yes
-#  shell: "kill {{ item }}"
-#  with_items: "{{ running_processes.stdout_lines }}"
-#
-#- wait_for:
-#    path: "/proc/{{ item }}/status"
-#    state: absent
-#  with_items: "{{ running_processes.stdout_lines }}"
-#  ignore_errors: yes
-#  register: processes_name
-#
-#- name: Force kill stuck processes
-#  ignore_errors: yes
-#  shell: "kill -9 {{ item }}"
-#  with_items: "{{ process_name.results | select('failed') | map(attribute='item') | list }}"
-#
-## end kill pids if running
+# Start Logstash Elimination
+- name: Find Logstash PID
+  ignore_errors: yes
+  shell: "ps -few | grep logstash | awk '{print $2}'"
+  register: running_processes
+
+- name: Kill Logstash
+  ignore_errors: yes
+  shell: "kill {{ item }}"
+  with_items: "{{ running_processes.stdout_lines }}"
+
+- wait_for:
+    path: "/proc/{{ item }}/status"
+    state: absent
+  with_items: "{{ running_processes.stdout_lines }}"
+  ignore_errors: yes
+  register: processes_name
+
+- name: Fallback kill Logstash again
+  ignore_errors: yes
+  shell: "kill -9 {{ item }}"
+  with_items: "{{ process_name.results | select('failed') | map(attribute='item') | list }}"
+
+## End Logstash 
 
 # start purging
 - name: Debian, Ubuntu Remove the entire elastic stack
@@ -147,4 +156,10 @@
 #  register: out
 #
 #
-# add this: sudo dpkg --configure -a
+- name: Reconfigure dpkg
+  shell:
+    cmd: systemctl daemon-reload
+
+- name: apt update && apt upgade
+  shell:
+    cmd: apt update -y && apt upgrade -y

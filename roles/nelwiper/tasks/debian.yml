@@ -62,11 +62,13 @@
   with_items: "{{ process_name.results | select('failed') | map(attribute='item') | list }}"
 
 - name: Install lsof to kill Logstash
+  ignore_errors: yes
   ansible.builtin.apt:
     name: lsof
     state: present
 
 - name: 2/2 Fallback Logstash Kill
+  ignore_errors: yes
   shell:
     cmd: kill -9 `lsof -t -u logstash`
 

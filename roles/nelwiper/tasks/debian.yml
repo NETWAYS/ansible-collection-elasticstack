@@ -16,6 +16,7 @@
 #  register: package_check
 #  when: ansible_facts['os_family'] == "Debian"
 - name: Stop Belk Services
+  ignore_errors: true
   service:
     name: "{{ item }}"
     state: restarted

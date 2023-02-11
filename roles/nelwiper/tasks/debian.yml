@@ -6,6 +6,9 @@
     update_cache: yes
     force_apt_get: yes
 
+-name: Resets all units with failed status
+  shell:
+    cmd: systemctl reset-failed
 #- name: "Check if listed package is installed or not on Debian Linux family"
 #  command: dpkg-query -l "{{ item }}"
 #  with_items:

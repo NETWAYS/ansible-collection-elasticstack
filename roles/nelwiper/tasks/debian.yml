@@ -19,10 +19,10 @@
   ignore_errors: true
   service:
     name: "{{ item }}"
-    state: restarted
+    state: stopped
   with_items:
     - elasticsearch
-    - logstash
+   # - logstash
     - filebeat
     - kibana
 
@@ -56,10 +56,19 @@
   ignore_errors: yes
   register: processes_name
 
-- name: Fallback kill Logstash again
+- name: 1/2 Fallback Logstash Kill
   ignore_errors: yes
   shell: "kill -9 {{ item }}"
   with_items: "{{ process_name.results | select('failed') | map(attribute='item') | list }}"
+
+- name: Install lsof to kill Logstash
+  ansible.builtin.apt:
+    name: lsof
+    state: present
+
+- name: 2/2 Fallback Logstash Kill
+  shell:
+    cmd: kill -9 `lsof -t -u logstash`
 
 ## End Logstash 
 

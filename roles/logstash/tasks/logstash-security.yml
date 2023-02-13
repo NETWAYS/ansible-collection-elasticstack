@@ -3,11 +3,19 @@
 - name: Install unzip for certificate handling
   package:
     name: unzip
+  tags:
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Set common password for common certificates
   set_fact:
     logstash_tls_key_passphrase: "{{ elastic_cert_pass }}"
   when: elastic_cert_pass is defined
+  tags:
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Set elasticsearch_ca variable if not already done by user
   set_fact:
@@ -17,6 +25,129 @@
     - certificates
     - configuration
     - logstash_configuration
+    - renew_ca
+    - renew_logstash_cert
+
+- name: Backup logstash certs then remove
+  block:
+    - name: Check if cert directory exists
+      stat:
+        path: /etc/logstash/certs
+      register: logstash_check_cert_path
+    
+    - name: Move cert directory
+      copy:
+        src: /etc/logstash/certs
+        dest: "/etc/logstash/certs_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+        remote_src: true
+      when: logstash_check_cert_path.stat.exists
+      register: logstash_move_cert_directory
+
+    - name: Remove cert directory
+      file:
+        path: /etc/logstash/certs
+        state: absent
+      when: logstash_move_cert_directory.changed
+  when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  tags:
+    - renew_ca
+    - renew_logstash_cert
+    - never
+  
+- name: Backup logstash certs on elasticsearch_ca host then remove
+  block:
+    - name: Check if cert file exists
+      stat:
+        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
+      register: logstash_check_cert_file
+    
+    - name: Move cert file
+      copy:
+        src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
+        dest: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+        remote_src: true
+      when: logstash_check_cert_file.stat.exists
+      register: logstash_move_cert_file
+
+    - name: Remove cert file
+      file:
+        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
+        state: absent
+      when: logstash_move_cert_file.changed
+
+    - name: Check if cert zip file exists
+      stat:
+        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+      register: logstash_check_cert_zip_file
+    
+    - name: Move cert zip file
+      copy:
+        src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+        dest: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+        remote_src: true
+      when: logstash_check_cert_zip_file.stat.exists
+      register: logstash_move_cert_zip_file
+
+    - name: Remove cert zip file
+      file:
+        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+        state: absent
+      when: logstash_move_cert_zip_file.changed
+  when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - renew_ca
+    - renew_logstash_cert
+    - never
+
+- name: Backup logstash cert on localhost then remove
+  block:
+    - name: Check the existance of cert on localhost
+      stat:
+        path: /tmp/{{ ansible_hostname }}-ls.p12
+      register: logstash_check_temporary_cert
+
+    - name: Move temporary cert file
+      copy:
+        src: /tmp/{{ ansible_hostname }}-ls.p12
+        dest: "/tmp/{{ ansible_hostname }}-ls.p12_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+      when: logstash_check_temporary_cert.stat.exists
+      register: logstash_move_cert_file
+    
+    - name: Remove temporary cert file
+      file:
+        path: /tmp/{{ ansible_hostname }}-ls.p12
+        state: absent
+      when: logstash_move_cert_file.changed
+
+    - name: Check the existance of cert zip file on localhost
+      stat:
+        path: /tmp/{{ ansible_hostname }}-ls.zip
+      register: logstash_check_temporary_cert_zip
+
+    - name: Move temporary cert zip file
+      copy:
+        src: /tmp/{{ ansible_hostname }}-ls.zip
+        dest: "/tmp/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+      when: logstash_check_temporary_cert_zip.stat.exists
+      register: logstash_move_cert_zip
+    
+    - name: Remove temporary cert zip file
+      file:
+        path: /tmp/{{ ansible_hostname }}-ls.zip
+        state: absent
+      when: logstash_move_cert_zip.changed
+  delegate_to: localhost
+  when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  tags:
+    - renew_ca
+    - renew_logstash_cert
+    - never
 
 - name: Create individual certificates for Logstash
   command: >
@@ -33,6 +164,8 @@
     creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
   tags:
     - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Fetch certificate from ca host to master
   fetch:
@@ -42,6 +175,8 @@
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Create certificate directory
   file:
@@ -52,6 +187,8 @@
     mode: 0750
   tags:
     - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Copy the certificate to actual node
   copy:
@@ -64,6 +201,8 @@
     - Restart Logstash
   tags:
     - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Create individual PEM certificates for Logstash
   command: >
@@ -79,6 +218,10 @@
   delegate_to: "{{ elasticsearch_ca }}"
   args:
     creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+  tags:
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Fetch certificate from ca host to master
   fetch:
@@ -88,6 +231,8 @@
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Copy the certificate to actual node
   unarchive:
@@ -98,6 +243,8 @@
     mode: 0640
   tags:
     - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Copy certificate locally
   copy:
@@ -111,6 +258,8 @@
     remote_src: true
   tags:
     - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Copy key locally
   copy:
@@ -124,6 +273,8 @@
     remote_src: true
   tags:
     - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Create Logstash compatible key
   command: >
@@ -148,6 +299,10 @@
   args:
     creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
   when: not logstash_beats_tls_encryptkey | bool
+  tags:
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Set permissions on Logstash key
   file:
@@ -155,6 +310,10 @@
     owner: root
     group: logstash
     mode: 0660
+  tags:
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Fetch ca certificate from ca host to master
   fetch:
@@ -164,6 +323,8 @@
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Copy the ca certificate to actual node
   copy:
@@ -176,6 +337,8 @@
     Restart Logstash
   tags:
     - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Place logstash_writer role configuration on ca node
   template:

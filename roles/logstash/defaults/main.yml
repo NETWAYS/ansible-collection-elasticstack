@@ -34,6 +34,8 @@ logstash_pipelines:
 #     name: shipper
 #     source: https://github.com/widhalmt/shipper-logstash-pipeline.git
 logstash_elasticsearch_output: true
+logstash_validate_after_inactivity: '0'
+logstash_queue_max_bytes: '2gb'
 logstash_beats_input: true
 logstash_beats_tls_encryptkey: true
 

@@ -39,7 +39,9 @@
     - kibana_security | bool
     - elastic_variant == "elastic"
   tags:
-    - security
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: Configure Kibana
   template:

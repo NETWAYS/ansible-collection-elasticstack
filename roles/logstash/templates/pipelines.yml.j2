@@ -30,6 +30,8 @@
 
 - pipeline.id: ansible-forwarder
   path.config: "/etc/logstash/conf.d/ansible-forwarder/*.conf"
+  queue.type: {{ logstash_queue_type }}
+  queue.max_bytes: {{ logstash_queue_max_bytes }}
 
 {% endif %}
 {% if logstash_pipelines is defined %}

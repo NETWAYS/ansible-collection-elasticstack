@@ -3,6 +3,10 @@
 - name: Make sure openssl is installed
   package:
     name: openssl
+  tags:
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: Set elasticsearch_ca variable if not already done by user
   set_fact:
@@ -10,6 +14,90 @@
   when: elasticsearch_ca is undefined
   tags:
     - certificates
+    - renew_ca
+    - renew_kibana_cert
+
+- name: Backup kibana certs then remove
+  block:
+    - name: Check if cert directory exists
+      stat:
+        path: /etc/kibana/certs
+      register: kibana_check_cert_path
+    
+    - name: Move cert directory
+      copy:
+        src: /etc/kibana/certs
+        dest: "/etc/kibana/certs_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+        remote_src: true
+      when: kibana_check_cert_path.stat.exists
+      register: kibana_move_cert_directory
+
+    - name: Remove cert directory
+      file:
+        path: /etc/kibana/certs
+        state: absent
+      when: kibana_move_cert_directory.changed
+  when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  tags:
+    - renew_ca
+    - renew_kibana_cert
+    - never
+
+- name: Backup kibana certs on elasticsearch_ca host then remove
+  block:
+    - name: Check if cert file exists
+      stat:
+        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+      register: kibana_check_cert_file
+    
+    - name: Move cert file
+      copy:
+        src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+        dest: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+        remote_src: true
+      when: kibana_check_cert_file.stat.exists
+      register: kibana_move_cert_file
+
+    - name: Remove cert file
+      file:
+        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+        state: absent
+      when: kibana_move_cert_file.changed
+  when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - renew_ca
+    - renew_kibana_cert
+    - never
+
+- name: Backup kibana cert on localhost then remove
+  block:
+    - name: Check the existance of cert on localhost
+      stat:
+        path: /tmp/{{ ansible_hostname }}-kibana.p12
+      register: kibana_check_temporary_cert
+
+    - name: Move temporary cert file
+      copy:
+        src: /tmp/{{ ansible_hostname }}-kibana.p12
+        dest: "/tmp/{{ ansible_hostname }}-kibana.p12_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+      when: kibana_check_temporary_cert.stat.exists
+      register: kibana_move_cert_file
+    
+    - name: Remove temporary cert file
+      file:
+        path: /tmp/{{ ansible_hostname }}-kibana.p12
+        state: absent
+      when: kibana_move_cert_file.changed
+  delegate_to: localhost
+  when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  tags:
+    - renew_ca
+    - renew_kibana_cert
+    - never
 
 - name: Block for key generation
   block:
@@ -39,6 +127,10 @@
       register: kibana_savedobjects_encryption_key
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true
+  tags:
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: create certificate directory
   file:
@@ -49,6 +141,8 @@
     mode: 0750
   tags:
     - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: create individual certificates for Kibana
   command: >
@@ -59,29 +153,40 @@
     --ip {{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}
     --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
     --pass {{ kibana_tls_key_passphrase }}
-    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
+    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12
   delegate_to: "{{ elasticsearch_ca }}"
   args:
-    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+  tags:
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: Fetch certificate from ca host to master
   fetch:
-    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
     dest: "/tmp/"
     flat: yes
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: Copy the certificate to actual node
   copy:
-    src: "/tmp/{{ ansible_hostname }}.p12"
+    src: "/tmp/{{ ansible_hostname }}-kibana.p12"
     dest: "/etc/kibana/certs"
     owner: root
     group: kibana
     mode: 0640
+  notify:
+   - Restart Kibana
+   - Restart Elasticsearch
   tags:
     - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: fetch Kibana password
   shell: >
@@ -99,6 +204,8 @@
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: Copy the ca certificate to actual node
   copy:
@@ -108,6 +215,9 @@
     group: kibana
     mode: 0640
   notify:
-    Restart Kibana
+   - Restart Kibana
+   - Restart Elasticsearch
   tags:
     - certificates
+    - renew_ca
+    - renew_kibana_cert

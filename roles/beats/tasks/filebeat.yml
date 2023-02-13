@@ -51,17 +51,6 @@
         creates: "/etc/filebeat/modules.d/{{ item }}.yml"
       with_items: "{{ filebeat_modules }}"
 
-    - name: Enable Ingest Pipelines
-      command: >
-        /usr/bin/filebeat setup --pipelines --modules {{ item }} &&
-        /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
-      args:
-        creates: "/etc/filebeat/{{ item }}_pipeline_created"
-      with_items: "{{ filebeat_modules }}"
-      notify:
-        - Restart Filebeat
-      changed_when: false
-
     # Code is very ugly. It's a makeshift solution for things
     # to come
     - name: Enable System module
@@ -75,6 +64,17 @@
       when:
         - item == 'system'
         - elastic_release | int > 7
+
+    - name: Enable Ingest Pipelines
+      command: >
+        /usr/bin/filebeat setup --pipelines --modules {{ item }} &&
+        /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
+      args:
+        creates: "/etc/filebeat/{{ item }}_pipeline_created"
+      with_items: "{{ filebeat_modules }}"
+      notify:
+        - Restart Filebeat
+      changed_when: false
 
 - name: Start Filebeat
   service:

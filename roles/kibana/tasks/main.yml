@@ -60,6 +60,8 @@
   service:
     name: kibana
     state: started
+    enabled: yes
+  when: kibana_enable | bool
 
 # the following is useful when running tests or extra tasks that need to
 # have Kibana running

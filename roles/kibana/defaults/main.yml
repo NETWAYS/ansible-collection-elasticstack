@@ -1,5 +1,6 @@
 ---
 # defaults file for kibana
+kibana_enable: true
 kibana_config_backup: true
 kibana_manage_yaml: true
 

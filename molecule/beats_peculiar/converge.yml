@@ -33,6 +33,7 @@
     beats_metricbeat: true
     metricbeat_output: logstash
     filebeat_docker: true
+    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Set Filebeat version on RedHat
       set_fact:

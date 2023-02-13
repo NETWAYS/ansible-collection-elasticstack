@@ -101,7 +101,7 @@
 
 - name: Show Info about heap
   debug:
-    msg: "Using {{ elasticsearch_heap * 1024 }} of {{ ansible_memtotal_mb }} MB as heap for Elasticsearch"
+    msg: "Using {{ elasticsearch_heap | int / 1024 }} of {{ ansible_memtotal_mb }} MB as heap for Elasticsearch"
 
 - name: Start Elasticsearch
   service:

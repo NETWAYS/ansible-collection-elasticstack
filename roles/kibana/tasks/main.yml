@@ -4,7 +4,7 @@
   set_fact:
     kibana_tls_key_passphrase: "{{ elastic_cert_pass }}"
   when:
-  - elastic_cert_pass is defined
+    - elastic_cert_pass is defined
 
 # tasks file for kibana
 - name: Set Elasticsearch hosts if used with other roles
@@ -22,17 +22,18 @@
     - kibana_elasticsearch_hosts is undefined
     - groups['elasticsearch'] is undefined
 
-- name: install Kibana
+- name: Install Kibana
   package:
     name: kibana
   when: elastic_variant == "elastic"
 
-- name: install Kibana OSS
+- name: Install Kibana OSS
   package:
     name: kibana-oss
   when: elastic_variant == "oss"
 
-- import_tasks: kibana-security.yml
+- name: Import security related tasks
+  import_tasks: kibana-security.yml
   when:
     - elastic_stack_full_stack is defined
     - elastic_stack_full_stack | bool
@@ -55,7 +56,7 @@
     - Restart Kibana
   when: kibana_manage_yaml | bool
 
-- name: start Kibana
+- name: Start Kibana
   service:
     name: kibana
     state: started

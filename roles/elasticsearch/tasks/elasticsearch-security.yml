@@ -215,7 +215,7 @@
   when:
     - "'xpack.security.http.ssl.truststore.secure_password' in es_keystore.stdout_lines"
     - elasticsearch_http_security
-  register:  http_ssl_truststore_secure_password
+  register: http_ssl_truststore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
   changed_when: false
 
@@ -248,7 +248,7 @@
   when:
     - "'xpack.security.transport.ssl.keystore.secure_password' in es_keystore.stdout_lines"
     - elasticsearch_security
-  register:  transport_ssl_keystore_secure_password
+  register: transport_ssl_keystore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
   changed_when: false
 
@@ -281,7 +281,7 @@
   when:
     - "'xpack.security.transport.ssl.truststore.secure_password' in es_keystore.stdout_lines"
     - elasticsearch_security
-  register:  transport_ssl_truststore_secure_password
+  register: transport_ssl_truststore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
   changed_when: false
 

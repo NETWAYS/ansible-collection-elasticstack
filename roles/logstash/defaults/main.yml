@@ -37,7 +37,6 @@ logstash_elasticsearch_output: true
 logstash_validate_after_inactivity: '0'
 logstash_queue_max_bytes: '2gb'
 logstash_beats_input: true
-logstash_beats_tls_encryptkey: true
 
 # logstash security
 logstash_user: logstash_writer
@@ -61,15 +60,14 @@ logstash_pipeline_identifier: true
 logstash_pipeline_identifier_field_name: "[netways][pipeline]"
 logstash_pipeline_identifier_defaults: false
 
-# elastic full stack configuration
-elastic_stack_full_stack: false
 elastic_ca_dir: /opt/es-ca
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elastic_ca_pass: PleaseChangeMe
 
 # "global" variables for all roles
 
-elastic_release: 7
+elastic_release: 8
+elastic_stack_full_stack: true
 elastic_variant: elastic
 elastic_security: true
 

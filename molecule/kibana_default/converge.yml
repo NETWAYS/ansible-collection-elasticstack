@@ -5,6 +5,9 @@
 # https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
 - name: Converge
   hosts: all
+  vars:
+    elastic_stack_full_stack: false
+    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   collections:
     - NETWAYS.elasticstack
   tasks:

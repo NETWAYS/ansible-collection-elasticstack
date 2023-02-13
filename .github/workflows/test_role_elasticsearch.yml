@@ -36,7 +36,7 @@ on:
       - '.yamllint'
 
 jobs:
-  lint:
+  lint_elasticsearch:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
@@ -50,19 +50,19 @@ jobs:
       - name: Install test dependencies.
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install yamllint ansible-lint
+          python3 -m pip install -r requirements-test.txt
 
       - name: Lint code.
         run: |
           yamllint roles/elasticsearch/
           ansible-lint roles/elasticsearch/
 
-  build:
-    needs: lint
+  molecule_elasticsearch:
+    needs: lint_elasticsearch
     runs-on: ubuntu-latest
 
     env:
-      COLLECTION_NAMESPACE: NETWAYS
+      COLLECTION_NAMESPACE: netways
       COLLECTION_NAME: elasticstack
 
     strategy:
@@ -71,6 +71,7 @@ jobs:
       matrix:
         distro: [ubuntu2204]
         scenario: [elasticsearch_default, elasticsearch_cluster, elasticsearch_cluster-oss, elasticsearch_no-security]
+        release: [7, 8]
 
     steps:
       - name: Check out code
@@ -96,5 +97,6 @@ jobs:
           molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
+          ELASTIC_RELEASE: ${{ matrix.release }}
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

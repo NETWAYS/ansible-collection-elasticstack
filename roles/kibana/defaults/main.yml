@@ -16,5 +16,6 @@ elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
 
 # "global" variables for all roles
 
-elastic_release: 7
+elastic_release: 8
+elastic_stack_full_stack: true
 elastic_variant: elastic

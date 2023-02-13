@@ -36,7 +36,7 @@ on:
       - '.yamllint'
 
 jobs:
-  lint:
+  lint_kibana:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
@@ -50,15 +50,15 @@ jobs:
       - name: Install test dependencies.
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install yamllint ansible-lint
+          python3 -m pip install -r requirements-test.txt
 
       - name: Lint code.
         run: |
           yamllint roles/kibana/
           ansible-lint roles/kibana/
 
-  build:
-    needs: lint
+  molecule_kibana:
+    needs: lint_kibana
     runs-on: ubuntu-latest
 
     env:
@@ -71,6 +71,7 @@ jobs:
       matrix:
         distro: [ubuntu2204]
         scenario: [kibana_default, kibana_full_stack, kibana_full_stack-oss]
+        release: [ 7, 8 ]
 
     steps:
       - name: Check out code
@@ -96,3 +97,4 @@ jobs:
           molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
+          ELASTIC_RELEASE: ${{ matrix.release }}

@@ -276,18 +276,6 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Create Logstash compatible key
-  command: >
-    openssl pkcs8
-    -in {{ logstash_certs_dir }}/{{ inventory_hostname }}.key
-    -topk8
-    -passin pass:{{ logstash_tls_key_passphrase }}
-    -out {{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key
-    -passout pass:{{ logstash_tls_key_passphrase }}
-  args:
-    creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
-  when: logstash_beats_tls_encryptkey | bool
-
 - name: Create unencrypted Logstash compatible key
   command: >
     openssl pkcs8

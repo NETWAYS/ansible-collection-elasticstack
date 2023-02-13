@@ -11,6 +11,7 @@
     elastic_stack_full_stack: true
     filebeat_syslog_udp: true
     filebeat_syslog_tcp: true
+    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Include repos role
       include_role:

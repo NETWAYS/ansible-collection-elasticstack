@@ -127,8 +127,6 @@
       command: cat {{ elastic_ca_dir }}/savedobjects_encryption_key
       changed_when: false
       register: kibana_savedobjects_encryption_key
-  delegate_to: "{{ elasticsearch_ca }}"
-  run_once: true
   tags:
     - certificates
     - renew_ca
@@ -184,7 +182,7 @@
     mode: 0640
   notify:
    - Restart Kibana
-   - Restart Elasticsearch
+   - Restart Elasticsearch for Kibana certificates
   tags:
     - certificates
     - renew_ca
@@ -218,7 +216,7 @@
     mode: 0640
   notify:
    - Restart Kibana
-   - Restart Elasticsearch
+   - Restart Elasticsearch for Kibana certificates
   tags:
     - certificates
     - renew_ca

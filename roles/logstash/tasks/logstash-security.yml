@@ -286,7 +286,6 @@
     -nocrypt
   args:
     creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
-  when: not logstash_beats_tls_encryptkey | bool
   tags:
     - certificates
     - renew_ca

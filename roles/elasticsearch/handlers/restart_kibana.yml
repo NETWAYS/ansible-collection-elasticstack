@@ -1,0 +1,12 @@
+
+- name: Check if kibana is installed
+  package_facts:
+    manager: "auto"
+  changed_when: false
+
+- name: Restart Kibana
+  service:
+    name: kibana
+    state: restarted
+  delegate_to: "{{ item }}"
+  when: "'kibana' in ansible_facts.packages"

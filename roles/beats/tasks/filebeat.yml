@@ -39,7 +39,6 @@
 
 - name: Configure modules
   when: filebeat_modules is defined
-  with_items: "{{ filebeat_modules }}"
   tags:
     - configuration
     - filebeat_configuration
@@ -50,6 +49,7 @@
       command: "filebeat modules enable {{ item }}"
       args:
         creates: "/etc/filebeat/modules.d/{{ item }}.yml"
+      with_items: "{{ filebeat_modules }}"
 
     - name: Enable Ingest Pipelines
       command: >
@@ -57,10 +57,13 @@
         /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
       args:
         creates: "/etc/filebeat/{{ item }}_pipeline_created"
+      with_items: "{{ filebeat_modules }}"
       notify:
         - Restart Filebeat
       changed_when: false
 
+    # Code is very ugly. It's a makeshift solution for things
+    # to come
     - name: Enable System module
       template:
         src: filebeat-system.yml.j2
@@ -68,6 +71,7 @@
         owner: root
         group: root
         mode: 0644
+      with_items: "{{ filebeat_modules }}"
       when:
         - item == 'system'
         - elastic_release | int > 7

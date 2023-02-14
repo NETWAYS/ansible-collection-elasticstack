@@ -37,7 +37,7 @@ logstash_pipelines:
 #     name: shipper
 #     source: https://github.com/widhalmt/shipper-logstash-pipeline.git
 logstash_elasticsearch_output: true
-logstash_validate_after_inactivity: '0'
+logstash_validate_after_inactivity: '300'
 logstash_beats_input: true
 ansible_input_queue_type: memory
 ansible_input_queue_max_bytes: 1gb

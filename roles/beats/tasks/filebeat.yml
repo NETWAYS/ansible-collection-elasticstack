@@ -51,6 +51,18 @@
         creates: "/etc/filebeat/modules.d/{{ item }}.yml"
       with_items: "{{ filebeat_modules }}"
 
+    # this is just a makeshift solution before we integrate more modules
+    # or Elastic Agent
+    # see https://github.com/NETWAYS/ansible-collection-elasticstack/issues/77
+    # for details
+    - name: Enable filesets for Filebeat system module
+      lineinfile:
+        path: /etc/filebeat/modules.d/system.yml
+        line: '    enabled: true'
+        regex: '^    enabled:'
+      notify:
+        - Restart Filebeat
+
     - name: Enable Ingest Pipelines
       command: >
         /usr/bin/filebeat setup --pipelines &&

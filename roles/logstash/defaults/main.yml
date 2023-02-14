@@ -25,6 +25,8 @@ logstash_no_pipelines: false
 logstash_pipelines:
   - name: default
     exclusive: false
+    queue_type: memory
+    queue_max_bytes: 1gb
     input:
       - name: default
         key: input
@@ -36,8 +38,11 @@ logstash_pipelines:
 #     source: https://github.com/widhalmt/shipper-logstash-pipeline.git
 logstash_elasticsearch_output: true
 logstash_validate_after_inactivity: '0'
-logstash_queue_max_bytes: '2gb'
 logstash_beats_input: true
+ansible_input_queue_type: memory
+ansible_input_queue_max_bytes: 1gb
+ansible_forwarder_queue_type: memory
+ansible_forwarder_queue_max_bytes: 1gb
 
 # logstash security
 logstash_user: logstash_writer

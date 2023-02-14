@@ -12,6 +12,7 @@ logstash_pipelines:
 ```
 
 You can add a `version` attribute to your pipeline. It defaults to `main`. You can use every string, [Ansibles git](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html) module accepts.
+You can also determine the place for logstash to store the data of each pipeline while processing it by using `queue_type` attribute. It defaults to `memory`, you can use `persisted` to write the data temporarily to the hard disk. Moreover you can limit the maximal size of data in every pipeline throgh `queue_max_bytes` attribute, which is default `1gb`.
 
 ## Input and Output ##
 
@@ -24,6 +25,8 @@ logstash_pipelines:
   syslog:
     name: syslog
     source: https://github.com/widhalmt/syslog-logstash-pipeline.git
+    queue.type: memory
+    queue.max_bytes: 1gb
     exclusive: false
     input:
       - name: default
@@ -67,6 +70,8 @@ logstash_pipelines:
   syslog:
     name: syslog
     source: https://github.com/widhalmt/syslog-logstash-pipeline.git
+    queue.type: memory
+    queue.max_bytes: 1gb
     exclusive: false
     input:
       - name: default

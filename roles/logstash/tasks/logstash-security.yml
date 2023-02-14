@@ -32,13 +32,13 @@
   block:
     - name: Check if cert directory exists
       stat:
-        path: /etc/logstash/certs
+        path: "{{ logstash_certs_dir }}"
       register: logstash_check_cert_path
     
     - name: Move cert directory
       copy:
-        src: /etc/logstash/certs
-        dest: "/etc/logstash/certs_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ logstash_certs_dir }}"
+        dest: "{{ logstash_certs_dir }}_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
         remote_src: true
       when: logstash_check_cert_path.stat.exists
@@ -46,7 +46,7 @@
 
     - name: Remove cert directory
       file:
-        path: /etc/logstash/certs
+        path: "{{ logstash_certs_dir }}"
         state: absent
       when: logstash_move_cert_directory.changed
   when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
@@ -181,7 +181,7 @@
 - name: Create certificate directory
   file:
     state: directory
-    path: /etc/logstash/certs
+    path: "{{ logstash_certs_dir }}"
     owner: root
     group: logstash
     mode: 0750
@@ -316,7 +316,7 @@
 - name: Copy the ca certificate to actual node
   copy:
     src: /tmp/ca.crt
-    dest: /etc/logstash/certs
+    dest: "{{ logstash_certs_dir }}"
     owner: root
     group: logstash
     mode: 0640

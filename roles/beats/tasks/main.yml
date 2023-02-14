@@ -18,6 +18,10 @@
       when:
       - beats_security | bool
       - elasticsearch_ca is undefined
+      tags:
+        - certificates
+        - renew_ca
+        - renew_beats_cert
 
     - name: Set beats_ca_dir if whole stack is used
       set_fact:

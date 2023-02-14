@@ -152,6 +152,10 @@
     group: root
     mode: 0640
     remote_src: true
+  notify:
+    - Restart Filebeat
+    - Restart Auditbeat
+    - Restart Metricbeat
   tags:
     - certificates
     - renew_ca
@@ -165,6 +169,10 @@
     group: root
     mode: 0640
     remote_src: true
+  notify:
+    - Restart Filebeat
+    - Restart Auditbeat
+    - Restart Metricbeat
   tags:
     - certificates
     - renew_ca
@@ -188,6 +196,10 @@
     owner: root
     group: root
     mode: 0640
+  notify:
+    - Restart Filebeat
+    - Restart Auditbeat
+    - Restart Metricbeat
   tags:
     - certificates
     - renew_ca

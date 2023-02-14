@@ -25,7 +25,7 @@ elasticsearch_jna_workaround: false
 elastic_ca_dir: /opt/es-ca
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elastic_ca_pass: PleaseChangeMe
-elastic_cert_pass: PleaseChangeMeIndividually
+elasticsearch_tls_key_passphrase: PleaseChangeMeIndividually
 
 # "global" variables for all roles
 

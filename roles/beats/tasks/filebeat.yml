@@ -51,17 +51,15 @@
         creates: "/etc/filebeat/modules.d/{{ item }}.yml"
       with_items: "{{ filebeat_modules }}"
 
-    # this is just a makeshift solution before we integrate more modules
-    # or Elastic Agent
-    # see https://github.com/NETWAYS/ansible-collection-elasticstack/issues/77
-    # for details
-    - name: Enable filesets for Filebeat system module
-      lineinfile:
-        path: /etc/filebeat/modules.d/system.yml
-        line: '    enabled: true'
-        regex: '^    enabled:'
-      notify:
-        - Restart Filebeat
+    - name: Enable System module
+      template:
+        src: filebeat-system.yml.j2
+        dest: /etc/filebeat/modules.d/system.yml
+        owner: root
+        group: root
+        mode: 0644
+      when:
+        - elastic_release | int > 7
 
     - name: Enable Ingest Pipelines
       command: >

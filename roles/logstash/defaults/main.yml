@@ -50,7 +50,7 @@ logstash_password: password
 logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'
 logstash_reset_writer_role: true
 
-logstash_tls_key_passphrase: ChangeMe
+logstash_tls_key_passphrase: LogstashChangeMe
 logstash_certs_dir: /etc/logstash/certs
 
 logstash_legacy_monitoring: true

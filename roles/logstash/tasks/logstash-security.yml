@@ -8,15 +8,6 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Set common password for common certificates
-  set_fact:
-    logstash_tls_key_passphrase: "{{ elastic_cert_pass }}"
-  when: elastic_cert_pass is defined
-  tags:
-    - certificates
-    - renew_ca
-    - renew_logstash_cert
-
 - name: Set elasticsearch_ca variable if not already done by user
   set_fact:
     elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"

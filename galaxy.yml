@@ -1,4 +1,4 @@
-namespace: NETWAYS
+namespace: netways
 name: elasticstack
 version: 1.0.0
 readme: README.md
@@ -23,10 +23,10 @@ tags:
   - monitoring
 dependencies:
   "community.general": "*"
-repository: https://github.com/NETWAYS/ansible-collection-elasticstack
-documentation: https://github.com/NETWAYS/ansible-collection-elasticstack/README.md
+repository: https://github.com/netways/ansible-collection-elasticstack
+documentation: https://github.com/netways/ansible-collection-elasticstack/README.md
 homepage: https://www.netways.de
-issues: https://github.com/NETWAYS/ansible-collection-elasticstack/issues
+issues: https://github.com/netways/ansible-collection-elasticstack/issues
 build_ignore:
   - .github
   - .cache

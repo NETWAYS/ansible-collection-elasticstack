@@ -37,28 +37,40 @@
     - filebeat_configuration
     - beats_configuration
 
-- name: Enable modules
-  command: "filebeat modules enable {{ item }}"
-  args:
-    creates: "/etc/filebeat/modules.d/{{ item }}.yml"
-  with_items: "{{ filebeat_modules }}"
+- name: Configure modules
   when: filebeat_modules is defined
   tags:
     - configuration
     - filebeat_configuration
     - beats_configuration
+  block:
 
-- name: Enable Ingest Pipelines
-  command: >
-    /usr/bin/filebeat setup --pipelines --modules {{ item }} &&
-    /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
-  args:
-    creates: "/etc/filebeat/{{ item }}_pipeline_created"
-  notify:
-    - Restart Filebeat
-  changed_when: false
-  with_items: "{{ filebeat_modules }}"
-  when: filebeat_modules is defined
+    - name: Enable modules
+      command: "filebeat modules enable {{ item }}"
+      args:
+        creates: "/etc/filebeat/modules.d/{{ item }}.yml"
+      with_items: "{{ filebeat_modules }}"
+
+    - name: Enable System module
+      template:
+        src: filebeat-system.yml.j2
+        dest: /etc/filebeat/modules.d/system.yml
+        owner: root
+        group: root
+        mode: 0644
+      when:
+        - elastic_release | int > 7
+
+    - name: Enable Ingest Pipelines
+      command: >
+        /usr/bin/filebeat setup --pipelines &&
+        /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
+      args:
+        creates: "/etc/filebeat/{{ item }}_pipeline_created"
+      with_items: "{{ filebeat_modules }}"
+      notify:
+        - Restart Filebeat
+      changed_when: false
 
 - name: Start Filebeat
   service:

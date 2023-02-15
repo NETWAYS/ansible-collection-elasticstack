@@ -2,7 +2,7 @@
 - name: Converge
   hosts: all
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   vars:
     elastic_rpm_workaround: true
     elastic_stack_full_stack: false

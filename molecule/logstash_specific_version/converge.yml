@@ -6,7 +6,7 @@
 - name: Converge
   hosts: all
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   vars:
     logstash_manage_logging: true
     logstash_logging_console: false

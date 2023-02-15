@@ -6,7 +6,7 @@
 - name: Converge
   hosts: all
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   vars:
     elastic_stack_full_stack: true
     filebeat_syslog_udp: true

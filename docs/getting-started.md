@@ -14,7 +14,7 @@ Or if you are using Tower or AWX add the collection to your requirements file.
 
 ```
 collections:
-  - name: NETWAYS.elasticstack
+  - name: netways.elasticstack
 ```
 
 Usage
@@ -26,7 +26,7 @@ To use the collection in your Ansible playbook add the following key to your pla
 - name: Playbook
   hosts: some_host_pattern
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   tasks:
     - name: import role logstash
       import_role:
@@ -41,7 +41,7 @@ Or refer to the role with the FQCN of the role.
   tasks:
     - name: import role by FQCN  from a collection
       import_role:
-        name: NETWAYS.elasticstack.logstash
+        name: netways.elasticstack.logstash
 ```
 
 Roles

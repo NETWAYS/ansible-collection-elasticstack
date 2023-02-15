@@ -1,7 +1,7 @@
 Ansible Role: Kibana
 =========
 
-![Test Role Kibana](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_role_kibana.yml/badge.svg)
+![Test Role Kibana](https://github.com/netways/ansible-collection-elasticstack/actions/workflows/test_role_kibana.yml/badge.svg)
 
 This roles installs and configures Kibana.
 
@@ -35,7 +35,7 @@ If you use `localhost` in `kibana_elasticsearch_hosts` , certificate verificatio
 ```
 - name: Install Kibana
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   hosts: kibana-host
   vars:
     elastic_stack_full_stack: true

@@ -1,7 +1,7 @@
 Ansible Role: Beats
 =========
 
-![Test Role Beats](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_role_beats.yml/badge.svg)
+![Test Role Beats](https://github.com/netways/ansible-collection-elasticstack/actions/workflows/test_role_beats.yml/badge.svg)
 
 This role installs and configures Beats. You can use it as a standalone role or combine it with our other roles managing the Elastic Stack.
 
@@ -111,7 +111,7 @@ If you want to use this role with your own TLS certificates, use these variables
 - name: Install Elastic Beats
   hosts: beats-hosts
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   vars:
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true

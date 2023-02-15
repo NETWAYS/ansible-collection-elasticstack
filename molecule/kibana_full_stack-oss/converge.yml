@@ -5,7 +5,7 @@
 # https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
 - name: Converge
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   hosts: all
   vars:
     elastic_stack_full_stack: true

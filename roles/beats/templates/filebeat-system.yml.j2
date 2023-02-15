@@ -1,4 +1,6 @@
 - module: system
   syslog:
     enabled: true
-    var.paths: ["{% if ansible_os_family == 'Debian' %}/var/log/syslog{% else %}/var/log/messages{% endif %}"]
+    var.paths:
+      {% if ansible_os_family == 'Debian' %}- /var/log/syslog{% endif %}
+      {% if ansible_os_family == 'RedHat' %}- /var/log/messages{% endif %}

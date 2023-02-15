@@ -33,7 +33,7 @@
           - _SYSTEMD_UNIT=vault.service
     beats_metricbeat: true
     metricbeat_output: logstash
-    filebeat_docker: true
+    #filebeat_docker: true
     elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     # Looks like Elastic isn't providing all old releases

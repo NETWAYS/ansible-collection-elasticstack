@@ -26,7 +26,7 @@ jobs:
         run: |
           yamllint .
           ansible-lint roles/
-  molecule_pr:
+  molecule_full_stack:
     runs-on: ubuntu-latest
     needs: lint_full
 

@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  molecule_full_stack:
+  molecule_full_stack_every_os:
     runs-on: ubuntu-latest
     needs: lint_full
 

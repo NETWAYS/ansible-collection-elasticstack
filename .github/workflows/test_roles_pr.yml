@@ -42,7 +42,7 @@ jobs:
           - ubuntu2204
           - rockylinux8
         scenario:
-          - elasticstack_full
+          - elasticstack_default
         release:
           - 7
           - 8

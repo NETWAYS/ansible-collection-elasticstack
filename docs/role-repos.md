@@ -1,7 +1,7 @@
 Elastic Repos
 =========
 
-![Test Role repos](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_role_repos.yml/badge.svg)
+![Test Role repos](https://github.com/netways/ansible-collection-elasticstack/actions/workflows/test_role_repos.yml/badge.svg)
 
 The role adds Elastic repositories to the package manager. It's main use is in connection with other roles that provide installation and configuration of the Elastic Stack.
 
@@ -28,7 +28,7 @@ Usage
   - hosts: all
     become: yes
     collections:
-      - NETWAYS.elasticstack
+      - netways.elasticstack
     roles:
       - repos
 ```

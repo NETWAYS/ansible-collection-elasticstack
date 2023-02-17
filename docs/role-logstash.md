@@ -1,7 +1,7 @@
 Ansible Role: Logstash
 =========
 
-![Test Role Logstash](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_role_logstash.yml/badge.svg)
+![Test Role Logstash](https://github.com/netways/ansible-collection-elasticstack/actions/workflows/test_role_logstash.yml/badge.svg)
 
 This role installs and configures [Logstash](https://www.elastic.co/products/logstash) on Linux systems.
 
@@ -101,7 +101,7 @@ The following variables only apply if you use this role together with our Elasti
 - name: Install Logstash
   hosts: logstash-host
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   roles:
     - repos
     - logstash

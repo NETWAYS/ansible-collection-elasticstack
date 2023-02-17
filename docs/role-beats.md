@@ -1,7 +1,7 @@
 Ansible Role: Beats
 =========
 
-![Test Role Beats](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_role_beats.yml/badge.svg)
+![Test Role Beats](https://github.com/netways/ansible-collection-elasticstack/actions/workflows/test_role_beats.yml/badge.svg)
 
 This role installs and configures Beats. You can use it as a standalone role or combine it with our other roles managing the Elastic Stack.
 
@@ -59,10 +59,11 @@ filebeat_journald_inputs:
   everything:
     id: everything
 ```
-* *filebeat_docker*: Enable collection of Docker logs (default: `false`)
+* *filebeat_docker*: Enable collection of Docker logs (default: `false`) **ONLY WORKS ON RELEASE 7 SO FAR**
 * *filebeat_docker_ids*: IDs of containers to collect. (default: `*`)
 
 * *filebeat_loadbalance*: Enable loadbalancing for Filebeats Logstash output (default: `true`)
+* *filebeat_modules*: **EXPERIMENTAL**: Give a list of modules to enable. (default: none)
 
 * *beats_auditbeat*: Install and manage filebeat (Default: `false`)
 * *beats_auditbeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
@@ -110,7 +111,7 @@ If you want to use this role with your own TLS certificates, use these variables
 - name: Install Elastic Beats
   hosts: beats-hosts
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   vars:
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true

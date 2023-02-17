@@ -9,7 +9,7 @@
     elastic_stack_full_stack: false
     elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   collections:
-    - NETWAYS.elasticstack
+    - netways.elasticstack
   tasks:
     - name: Include Elastics repos role
       include_role:

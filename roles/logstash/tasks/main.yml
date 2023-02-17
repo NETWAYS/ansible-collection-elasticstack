@@ -43,13 +43,13 @@
 
 - name: Ensure Logstash is installed
   package:
-    name: "logstash{{ logstash_version }}"
+    name: "logstash{{ elastic_version }}"
   when:
     - elastic_variant == "elastic"
 
 - name: Ensure Logstash OSS is installed
   package:
-    name: "logstash-oss{{ logstash_version }}"
+    name: "logstash-oss{{ elastic_version }}"
   when:
     - elastic_variant == "oss"
 

@@ -176,6 +176,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -x 'bootstrap.password'
   when: "'bootstrap.password' not in es_keystore.stdout_lines"
+  changed_when: false
   notify:
     - Restart Elasticsearch
   ignore_errors: "{{ ansible_check_mode }}"
@@ -197,6 +198,7 @@
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.keystore.secure_password'
+  changed_when: false
   when:
     - http_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != http_ssl_keystore_secure_password.stdout
     - elasticsearch_http_security
@@ -208,6 +210,7 @@
   shell: >
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.keystore.secure_password'
+  changed_when: false
   when:
     - "'xpack.security.http.ssl.keystore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_http_security
@@ -231,6 +234,7 @@
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.truststore.secure_password'
+  changed_when: false
   when:
     - http_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != http_ssl_truststore_secure_password.stdout
     - elasticsearch_http_security
@@ -241,6 +245,7 @@
   shell: >
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.truststore.secure_password'
+  changed_when: false
   when:
     - "'xpack.security.http.ssl.truststore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_http_security
@@ -263,6 +268,7 @@
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.keystore.secure_password'
+  changed_when: false
   when:
     - transport_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != transport_ssl_keystore_secure_password.stdout
     - elasticsearch_security
@@ -273,6 +279,7 @@
   shell: >
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.keystore.secure_password'
+  changed_when: false
   when:
     - "'xpack.security.transport.ssl.keystore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_security
@@ -295,6 +302,7 @@
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.truststore.secure_password'
+  changed_when: false
   when:
     - transport_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != transport_ssl_truststore_secure_password.stdout
     - elasticsearch_security
@@ -305,6 +313,7 @@
   shell: >
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.truststore.secure_password'
+  changed_when: false
   when:
     - "'xpack.security.transport.ssl.truststore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_security

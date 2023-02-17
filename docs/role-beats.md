@@ -14,7 +14,7 @@ Role Variables
 --------------
 
 * *beats_filebeat*: Install and manage filebeat (Default: `true`)
-* *beats_filebeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
+* *elastic_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
 * *filebeat_enable*: Automatically start Filebeat (Default: `true`)
 * *filebeat_output*: Set to `logstash` or `elasticsearch`. (default: `logstash`)
 * *filebeat_syslog_udp*: Use UDP Syslog input (Default: `false`)
@@ -66,14 +66,14 @@ filebeat_journald_inputs:
 * *filebeat_modules*: **EXPERIMENTAL**: Give a list of modules to enable. (default: none)
 
 * *beats_auditbeat*: Install and manage filebeat (Default: `false`)
-* *beats_auditbeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
+* *elastic_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
 * *auditbeat_output*: Output for Auditbeat Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
 * *auditbeat_enable*: Automatically start Auditbeat (Default: `true`)
 * *auditbeat_setup*: Run Auditbeat Setup (Default: `true`) (Only works with Elasticsearch output)
 * *auditbeat_loadbalance*: Enable loadbalancing for Auditbeats Logstash output (default: `true`)
 
 * *beats_metricbeat*: Enable installation and management of Metricbeat (Default: `false`)
-* *beats_metricbeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
+* *elastic_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
 * *metricbeat_enable*: Start Metricbeat automatically (Default: `true`)
 * *metricbeat_output*: Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
 * *metricbeat_modules*: List of modules to enable. (Default: `- system`)

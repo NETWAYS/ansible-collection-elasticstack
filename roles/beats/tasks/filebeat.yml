@@ -2,16 +2,16 @@
 - name: Install Filebeat
   package:
     name: filebeat
-  when: beats_filebeat_version is not defined
+  when: elastic_version is not defined
 
 - name: Install Filebeat specific version
   package:
-    name: "filebeat{{ beats_filebeat_version }}"
+    name: "filebeat{{ elastic_version }}"
   notify:
     - Restart Filebeat
   when:
-    - beats_filebeat_version is defined
-    - beats_filebeat_version != "latest"
+    - elastic_version is defined
+    - elastic_version != "latest"
 
 - name: Install Filebeat latest version
   package:
@@ -20,8 +20,8 @@
   notify:
     - Restart Filebeat
   when:
-    - beats_filebeat_version is defined
-    - beats_filebeat_version == "latest"
+    - elastic_version is defined
+    - elastic_version == "latest"
 
 - name: Configure Filebeat
   template:

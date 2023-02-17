@@ -9,14 +9,22 @@
     - renew_ca
     - renew_es_cert
 
+- name: Stop Logstash
+  service:
+    name: logstash
+    state: stopped
+  with_items: "{{ groups['logstash'] }}"
+  delegate_to: "{{ item }}"
+  when: "'renew_ca' in ansible_run_tags"
+
 - name: Backup ca directory on elasticsearch ca host then remove
   block:
-    - name: Check if ca directory exists
+    - name: Check if ca directory exists on elasticsearch ca host
       stat:
         path: "{{ elastic_ca_dir }}"
       register: elasticsearch_check_ca_path
 
-    - name: Move the ca directory
+    - name: Move the ca directory on elasticsearch ca host
       copy:
         src: "{{ elastic_ca_dir }}"
         dest: "{{ elastic_ca_dir }}_{{ ansible_date_time.iso8601_micro }}"
@@ -25,19 +33,19 @@
       when: elasticsearch_check_ca_path.stat.exists
       register: elasticsearch_move_ca_directory
   
-    - name: Remove ca directory
+    - name: Remove ca directory on elasticsearch ca host
       file:
         path: "{{ elastic_ca_dir }}"
         state: absent
       when: elasticsearch_move_ca_directory.changed
 
-    - name: Check the existance of ca on localhost
+    - name: Check the existance of ca on Ansible controler
       stat:
         path: /tmp/ca.crt
       register: elasticsearch_check_temporary_ca
       delegate_to: localhost
 
-    - name: Move temporary ca
+    - name: Move temporary ca file on Ansible controler
       copy:
         src: /tmp/ca.crt
         dest: "/tmp/ca.crt_{{ ansible_date_time.iso8601_micro }}"
@@ -46,7 +54,7 @@
       delegate_to: localhost
       register: elasticsearch_move_ca_file
     
-    - name: Remove temporary ca
+    - name: Remove temporary ca file on Ansible controler
       file:
         path: /tmp/ca.crt
         state: absent
@@ -60,12 +68,12 @@
 
 - name: Backup elasticsearch certs on node then remove
   block:
-    - name: Check if cert directory exists
+    - name: Check if cert directory exists on elasticsearch node
       stat:
         path: /etc/elasticsearch/certs
       register: elasticsearch_check_cert_path
     
-    - name: Move cert directory
+    - name: Move cert directory on elasticsearch node
       copy:
         src: /etc/elasticsearch/certs
         dest: "/etc/elasticsearch/certs_{{ ansible_date_time.iso8601_micro }}"
@@ -74,7 +82,7 @@
       when: elasticsearch_check_cert_path.stat.exists
       register: elasticsearch_move_cert_directory
 
-    - name: Remove cert directory
+    - name: Remove cert directory on elasticsearch node
       file:
         path: /etc/elasticsearch/certs
         state: absent
@@ -87,12 +95,12 @@
   
 - name: Backup elasticsearch certs on elasticsearch_ca host then remove
   block:
-    - name: Check if cert file exists
+    - name: Check if cert file exists on elasticsearch_ca host
       stat:
         path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
       register: elasticsearch_check_cert_file
     
-    - name: Move cert file
+    - name: Move cert file on elasticsearch_ca host
       copy:
         src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
         dest: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
@@ -101,7 +109,7 @@
       when: elasticsearch_check_cert_file.stat.exists
       register: elasticsearch_move_cert_file
 
-    - name: Remove cert file
+    - name: Remove cert file on elasticsearch_ca host
       file:
         path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
         state: absent
@@ -115,12 +123,12 @@
 
 - name: Backup elasticsearch cert on localhost then remove
   block:
-    - name: Check the existance of cert on localhost
+    - name: Check the existance of cert on Ansible controler
       stat:
         path: /tmp/{{ ansible_hostname }}.p12
       register: elasticsearch_check_temporary_cert
 
-    - name: Move temporary cert
+    - name: Move temporary cert on Ansible controler
       copy:
         src: /tmp/{{ ansible_hostname }}.p12
         dest: "/tmp/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
@@ -128,7 +136,7 @@
       when: elasticsearch_check_temporary_cert.stat.exists
       register: elasticsearch_move_cert_file
     
-    - name: Remove temporary cert
+    - name: Remove temporary cert on Ansible controler
       file:
         path: /tmp/{{ ansible_hostname }}.p12
         state: absent
@@ -139,7 +147,6 @@
     - renew_es_cert
     - renew_ca
     - never
-
 
 - name: Create directory for Elasticsearch CA
   file:
@@ -240,7 +247,6 @@
   notify:
     - Restart Elasticsearch
 
-
 - name: Get xpack.security.transport.ssl.keystore.secure_password
   shell: >
     /usr/share/elasticsearch/bin/elasticsearch-keystore
@@ -272,7 +278,6 @@
     - not elasticsearch_security
   notify:
     - Restart Elasticsearch
-
 
 - name: Get xpack.security.transport.ssl.truststore.secure_password
   shell: >
@@ -306,14 +311,14 @@
   notify:
     - Restart Elasticsearch
 
-- name: Create ca and certificates
+- name: Create ca and certificates on elasticsearch_ca host
   when: inventory_hostname == elasticsearch_ca
   tags:
     - certificates
     - renew_ca
     - renew_es_cert
   block:
-    - name: Configure ca
+    - name: Configure ca on elasticsearch_ca host
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil ca
         --pass {{ elastic_ca_pass }}
@@ -322,7 +327,7 @@
       args:
         creates: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
 
-    - name: Create individual certificates
+    - name: Create node certificates on elasticsearch_ca host
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil cert
         --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
@@ -336,7 +341,7 @@
       args:
         creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
 
-    - name: Extract CA certificate
+    - name: Extract CA certificate on elasticsearch_ca host
       command: >
         openssl pkcs12 -in {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
         -cacerts -nokeys -out {{ elastic_ca_dir }}/ca.crt
@@ -344,18 +349,18 @@
       args:
         creates: "{{ elastic_ca_dir }}/ca.crt"
 
-- name: Fetch ca certificate from ca host to master
+- name: Fetch ca certificate from ca host to Ansible controller
   fetch:
     src: "{{ elastic_ca_dir }}/ca.crt"
     dest: /tmp/ca.crt
     flat: yes
-  delegate_to: "{{ elasticsearch_ca }}"
+  when: inventory_hostname == elasticsearch_ca
   tags:
     - certificates
     - renew_ca
     - renew_es_cert
 
-- name: Fetch certificate from ca host to master
+- name: Fetch certificate from ca host to Ansible controller
   fetch:
     src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
     dest: "/tmp/{{ ansible_hostname }}.p12"
@@ -378,7 +383,7 @@
     - renew_ca
     - renew_es_cert
 
-- name: Copy the ca certificate to actual node
+- name: Copy the ca certificate to elasticsearch nodes
   copy:
     src: /tmp/ca.crt
     dest: "/etc/elasticsearch/certs"
@@ -394,7 +399,7 @@
     - renew_es_cert
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: Copy the certificate to actual node
+- name: Copy the certificate to elasticsearch nodes
   copy:
     src: "/tmp/{{ ansible_hostname }}.p12"
     dest: "/etc/elasticsearch/certs"
@@ -423,10 +428,18 @@
 
 - name: Force all notified handlers to run at this point, not waiting for normal sync points
   ansible.builtin.meta: flush_handlers
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Wait for all instances to start
   include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Check for passwords being set
   stat:
@@ -470,6 +483,10 @@
 - name: Check for open port 9200/tcp
   wait_for:
     port: 9200
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Fail if cluster is not ready yet
   fail:

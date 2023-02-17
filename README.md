@@ -39,6 +39,10 @@ You may want the following Ansible roles installed. There other ways to achieve 
 
 ## Usage
 
+* *elastic_version*: Version number of tools to install (use os specific version string. e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems). Only set if you don't want the latest. (default: none). For OSS version see `elastic_variant` below. **IMPORTANT** Do not change the version once you have set up the stack. There are unpredictable effects to be expected when using this for upgrades. And upgrade mechanism is already on it's way.
+*elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
+*elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+
 ### Default Passwords 
 
 Default Passwords  can be seen during generation, or found later in `/usr/share/elasticsearch/initial_passwords`

@@ -24,12 +24,12 @@
 
 - name: Install Kibana
   package:
-    name: kibana
+    name: kibana{{ elastic_version }}
   when: elastic_variant == "elastic"
 
 - name: Install Kibana OSS
   package:
-    name: kibana-oss
+    name: kibana-oss{{ elastic_version }}
   when: elastic_variant == "oss"
 
 - name: Import security related tasks

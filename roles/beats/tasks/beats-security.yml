@@ -14,7 +14,7 @@
       stat:
         path: /etc/beats/certs
       register: beats_check_cert_path
-    
+
     - name: Move cert directory
       copy:
         src: /etc/beats/certs

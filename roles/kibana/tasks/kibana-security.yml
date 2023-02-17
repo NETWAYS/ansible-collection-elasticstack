@@ -23,7 +23,7 @@
       stat:
         path: /etc/kibana/certs
       register: kibana_check_cert_path
-    
+
     - name: Move cert directory
       copy:
         src: /etc/kibana/certs
@@ -50,7 +50,7 @@
       stat:
         path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
       register: kibana_check_cert_file
-    
+
     - name: Move cert file
       copy:
         src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
@@ -86,7 +86,7 @@
         mode: preserve
       when: kibana_check_temporary_cert.stat.exists
       register: kibana_move_cert_file
-    
+
     - name: Remove temporary cert file
       file:
         path: /tmp/{{ ansible_hostname }}-kibana.p12

@@ -41,7 +41,7 @@
       stat:
         path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip"
       register: beats_check_cert_file
-    
+
     - name: Move cert file
       copy:
         src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip"
@@ -77,7 +77,7 @@
         mode: preserve
       when: beats_check_temporary_cert.stat.exists
       register: beats_move_cert_file
-    
+
     - name: Remove temporary cert file
       file:
         path: /tmp/{{ ansible_hostname }}-beats.zip

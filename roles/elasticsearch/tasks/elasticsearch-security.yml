@@ -32,7 +32,7 @@
         remote_src: true
       when: elasticsearch_check_ca_path.stat.exists
       register: elasticsearch_move_ca_directory
-  
+
     - name: Remove ca directory on elasticsearch ca host
       file:
         path: "{{ elastic_ca_dir }}"
@@ -53,7 +53,7 @@
       when: elasticsearch_check_temporary_ca.stat.exists
       delegate_to: localhost
       register: elasticsearch_move_ca_file
-    
+
     - name: Remove temporary ca file on Ansible controler
       file:
         path: /tmp/ca.crt
@@ -72,7 +72,7 @@
       stat:
         path: /etc/elasticsearch/certs
       register: elasticsearch_check_cert_path
-    
+
     - name: Move cert directory on elasticsearch node
       copy:
         src: /etc/elasticsearch/certs
@@ -92,14 +92,14 @@
     - renew_ca
     - renew_es_cert
     - never
-  
+
 - name: Backup elasticsearch certs on elasticsearch_ca host then remove
   block:
     - name: Check if cert file exists on elasticsearch_ca host
       stat:
         path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
       register: elasticsearch_check_cert_file
-    
+
     - name: Move cert file on elasticsearch_ca host
       copy:
         src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
@@ -135,7 +135,7 @@
         mode: preserve
       when: elasticsearch_check_temporary_cert.stat.exists
       register: elasticsearch_move_cert_file
-    
+
     - name: Remove temporary cert on Ansible controler
       file:
         path: /tmp/{{ ansible_hostname }}.p12

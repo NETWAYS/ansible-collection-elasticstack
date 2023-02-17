@@ -2,15 +2,32 @@
 name: Test Collection Roles
 on:
   pull_request:
-    branches:
-      - main
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
+  merge_group:
 
 jobs:
-  molecule_pr:
+  lint_full:
     runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Lint code.
+        run: |
+          yamllint .
+          ansible-lint roles/
+  molecule_full_stack:
+    runs-on: ubuntu-latest
+    needs: lint_full
 
     env:
       COLLECTION_NAMESPACE: netways
@@ -22,12 +39,9 @@ jobs:
       matrix:
         distro:
           - ubuntu2204
+          - rockylinux8
         scenario:
-          - beats_default
-          - elasticsearch_default
-          - kibana_default
-          - logstash_default
-          - repos_default
+          - elasticstack_default
         release:
           - 7
           - 8

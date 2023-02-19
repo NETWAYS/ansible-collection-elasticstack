@@ -117,3 +117,4 @@
   when:
     - elasticsearch_security | bool
     - elastic_variant == "elastic"
+    - inventory_hostname == elasticsearch_ca

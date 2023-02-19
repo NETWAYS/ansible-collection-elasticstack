@@ -8,6 +8,35 @@
     - certificates
     - renew_ca
     - renew_es_cert
+  
+- name: Ensure ca exists
+  stat:
+    path: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
+  register: ca_exists
+  when: inventory_hostname == elasticsearch_ca
+
+- name: Get the ca expiration date
+  shell: set -o pipefail && openssl pkcs12 -in "{{ elastic_ca_dir }}/elastic-stack-ca.p12" -nodes -passin pass:"{{ elastic_ca_pass }}" | openssl x509 -noout -enddate | awk -F'=' '{print $2}'
+  register: ca_expiration_date
+  changed_when: false
+  when: inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
+
+- name: Set the ca expiration date in days
+  set_fact:
+    ca_expiration_days: "{{ ((ca_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  when: inventory_hostname == elasticsearch_ca and ca_expiration_date.skipped is not defined
+  
+- name: Set ca will expire soon to true
+  set_fact:
+    ca_will_expire_soon: true
+  when: inventory_hostname == elasticsearch_ca and ca_expiration_days is defined and ca_expiration_days | int <= ca_expiration_buffer | int
+
+- name: Print the ca renew message
+  debug:
+    msg: |
+      Your ca will expire in {{ ca_expiration_days }}. 
+      Ansible will renew it and all elastic stack certificates
+  when: inventory_hostname == elasticsearch_ca and ca_expiration_days is defined and ca_expiration_days | int <= ca_expiration_buffer | int
 
 - name: Stop Logstash
   service:
@@ -15,7 +44,7 @@
     state: stopped
   with_items: "{{ groups['logstash'] }}"
   delegate_to: "{{ item }}"
-  when: "'renew_ca' in ansible_run_tags"
+  when: "'renew_ca' in ansible_run_tags or ca_will_expire_soon | bool"
 
 - name: Backup ca directory on elasticsearch ca host then remove
   block:
@@ -61,10 +90,9 @@
       when: elasticsearch_move_ca_file.changed
       delegate_to: localhost
 
-  when: "inventory_hostname == elasticsearch_ca and 'renew_ca' in ansible_run_tags"
+  when: (inventory_hostname == elasticsearch_ca) and ('renew_ca' in "ansible_run_tags" or ca_will_expire_soon | bool)
   tags:
     - renew_ca
-    - never
 
 - name: Backup elasticsearch certs on node then remove
   block:
@@ -87,12 +115,11 @@
         path: /etc/elasticsearch/certs
         state: absent
       when: elasticsearch_move_cert_directory.changed
-  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or ca_will_expire_soon | bool"
   tags:
     - renew_ca
     - renew_es_cert
-    - never
-
+  
 - name: Backup elasticsearch certs on elasticsearch_ca host then remove
   block:
     - name: Check if cert file exists on elasticsearch_ca host
@@ -114,12 +141,11 @@
         path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
         state: absent
       when: elasticsearch_move_cert_file.changed
-  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or ca_will_expire_soon | bool"
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - renew_ca
     - renew_es_cert
-    - never
 
 - name: Backup elasticsearch cert on localhost then remove
   block:
@@ -142,11 +168,10 @@
         state: absent
       when: elasticsearch_move_cert_file.changed
   delegate_to: localhost
-  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or ca_will_expire_soon | bool"
   tags:
     - renew_es_cert
     - renew_ca
-    - never
 
 - name: Create directory for Elasticsearch CA
   file:

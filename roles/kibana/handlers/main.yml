@@ -13,4 +13,4 @@
   delegate_to: "{{ item }}"
   when:
     - elastic_stack_full_stack: true
-    - "not 'renew_ca' in ansible_run_tags"
+    - "'renew_kibana_cert' in ansible_run_tags"

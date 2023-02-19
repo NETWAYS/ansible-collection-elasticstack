@@ -8,7 +8,7 @@
     - certificates
     - renew_ca
     - renew_es_cert
-  
+
 - name: Ensure ca exists
   stat:
     path: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
@@ -25,7 +25,7 @@
   set_fact:
     ca_expiration_days: "{{ ((ca_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: inventory_hostname == elasticsearch_ca and ca_expiration_date.skipped is not defined
-  
+
 - name: Set ca will expire soon to true
   set_fact:
     ca_will_expire_soon: true
@@ -34,7 +34,7 @@
 - name: Print the ca renew message
   debug:
     msg: |
-      Your ca will expire in {{ ca_expiration_days }}. 
+      Your ca will expire in {{ ca_expiration_days }}.
       Ansible will renew it and all elastic stack certificates
   when: inventory_hostname == elasticsearch_ca and ca_expiration_days is defined and ca_expiration_days | int <= ca_expiration_buffer | int
 
@@ -119,7 +119,7 @@
   tags:
     - renew_ca
     - renew_es_cert
-  
+
 - name: Backup elasticsearch certs on elasticsearch_ca host then remove
   block:
     - name: Check if cert file exists on elasticsearch_ca host

@@ -93,6 +93,33 @@
   when: (inventory_hostname == elasticsearch_ca) and ('renew_ca' in "ansible_run_tags" or ca_will_expire_soon | bool)
   tags:
     - renew_ca
+  
+- name: Ensure elasticsearch certificate exists
+  stat:
+    path: "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
+  register: elasticsearch_cert_exists
+
+- name: Get the elasticsearch certificate expiration date
+  shell: set -o pipefail && openssl pkcs12 -in "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12" -nodes -passin pass:"{{ elasticsearch_tls_key_passphrase }}" | openssl x509 -noout -enddate | awk -F'=' '{print $2}'
+  register: elasticsearch_cert_expiration_date
+  changed_when: false
+  when: elasticsearch_cert_exists.stat.exists | bool
+
+- name: Set the elasticsearch certificate expiration date in days
+  set_fact:
+    elasticsearch_cert_expiration_days: "{{ ((elasticsearch_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  when: elasticsearch_cert_expiration_date.skipped is not defined
+
+- name: Set elasticsearch certificate will expire soon to true
+  set_fact:
+    elasticsearch_cert_will_expire_soon: true
+  when: elasticsearch_cert_expiration_days is defined and elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
+
+- name: Print the elasticsearch certificate renew message
+  debug:
+    msg: |
+      Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }}.
+      Ansible will renew it.
 
 - name: Backup elasticsearch certs on node then remove
   block:
@@ -115,7 +142,7 @@
         path: /etc/elasticsearch/certs
         state: absent
       when: elasticsearch_move_cert_directory.changed
-  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or ca_will_expire_soon | bool"
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
   tags:
     - renew_ca
     - renew_es_cert
@@ -141,7 +168,7 @@
         path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
         state: absent
       when: elasticsearch_move_cert_file.changed
-  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or ca_will_expire_soon | bool"
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - renew_ca
@@ -168,7 +195,7 @@
         state: absent
       when: elasticsearch_move_cert_file.changed
   delegate_to: localhost
-  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or ca_will_expire_soon | bool"
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
   tags:
     - renew_es_cert
     - renew_ca

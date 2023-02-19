@@ -11,4 +11,5 @@
   with_items: "{{ groups['kibana'] }}"
   when:
     - elastic_stack_full_stack: true
-    - "'renew_es_cert' in ansible_run_tags"
+    - "not 'renew_ca' in ansible_run_tags"
+    - "not ca_will_expire_soon | bool"

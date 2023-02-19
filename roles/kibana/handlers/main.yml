@@ -5,12 +5,3 @@
     name: kibana
     state: restarted
 
-- name: Restart Elasticsearch for Kibana certificates
-  service:
-    state: restarted
-    name: elasticsearch
-  with_items: "{{ groups['elasticsearch'] }}"
-  delegate_to: "{{ item }}"
-  when:
-    - elastic_stack_full_stack: true
-    - "'renew_kibana_cert' in ansible_run_tags"

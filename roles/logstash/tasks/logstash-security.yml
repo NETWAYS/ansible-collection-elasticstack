@@ -25,7 +25,16 @@
   register: logstash_cert_exists
 
 - name: Get the logstash certificate expiration date
-  shell: "set -o pipefail && openssl pkcs12 -in '{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12' -nodes -passin pass:'{{ logstash_tls_key_passphrase }}' | openssl x509 -noout -enddate | awk -F'=' '{print $2}'"
+  shell: >-
+    if test -v BASH; then set -o pipefail; fi
+    openssl pkcs12
+    -in '{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12'
+    -nodes
+    -passin pass:'{{ logstash_tls_key_passphrase }}' |
+    openssl x509
+    -noout
+    -enddate |
+    awk -F'=' '{print $2}'
   register: logstash_cert_expiration_date
   args:
     executable: /bin/bash

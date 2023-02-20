@@ -16,7 +16,14 @@
   when: inventory_hostname == elasticsearch_ca
 
 - name: Get the ca expiration date
-  shell: "set -o pipefail && openssl pkcs12 -in '{{ elastic_ca_dir }}/elastic-stack-ca.p12' -nodes -passin pass:'{{ elastic_ca_pass }}' | openssl x509 -noout -enddate | awk -F'=' '{print $2}'"
+  shell: >-
+    if test -v BASH; then set -o pipefail; fi
+    openssl pkcs12
+    -in '{{ elastic_ca_dir }}/elastic-stack-ca.p12'
+    -nodes
+    -passin pass:'{{ elastic_ca_pass }}' |
+    openssl x509 -noout -enddate |
+    awk -F'=' '{print $2}'
   register: ca_expiration_date
   args:
     executable: /bin/bash
@@ -102,7 +109,14 @@
   register: elasticsearch_cert_exists
 
 - name: Get the elasticsearch certificate expiration date
-  shell: set -o pipefail && openssl pkcs12 -in "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12" -nodes -passin pass:"{{ elasticsearch_tls_key_passphrase }}" | openssl x509 -noout -enddate | awk -F'=' '{print $2}'
+  shell: >-
+    if test -v BASH; then set -o pipefail; fi
+    openssl pkcs12
+    -in "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
+    -nodes
+    -passin pass:"{{ elasticsearch_tls_key_passphrase }}" |
+    openssl x509 -noout -enddate |
+    awk -F'=' '{print $2}'
   register: elasticsearch_cert_expiration_date
   changed_when: false
   when: elasticsearch_cert_exists.stat.exists | bool

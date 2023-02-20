@@ -14,7 +14,12 @@
   register: beats_cert_exists
 
 - name: Get the beats certificate expiration date
-  shell: "set -o pipefail && openssl x509 -in '/etc/beats/certs/{{ inventory_hostname }}-beats.crt' -noout -enddate | awk -F'=' '{print $2}'"
+  shell: >-
+    if test -v BASH; then set -o pipefail; fi
+    openssl x509
+    -in '/etc/beats/certs/{{ inventory_hostname }}-beats.crt'
+    -noout -enddate |
+    awk -F'=' '{print $2}'
   register: beats_cert_expiration_date
   args:
     executable: /bin/bash

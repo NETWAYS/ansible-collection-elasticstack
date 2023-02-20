@@ -1,5 +1,11 @@
 ---
 
+- name: Include OS specific vars
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
+    - '{{ ansible_os_family }}.yml'
+
 - name: Prepare for whole stack roles if used
   when:
     - elastic_stack_full_stack | bool
@@ -43,13 +49,13 @@
 
 - name: Ensure Logstash is installed
   package:
-    name: "logstash{{ elastic_version }}"
+    name: "logstash{{ elastic_versionseparator }}{{ elastic_version }}"
   when:
     - elastic_variant == "elastic"
 
 - name: Ensure Logstash OSS is installed
   package:
-    name: "logstash-oss{{ elastic_version }}"
+    name: "logstash-oss{{ elastic_versionseparator }}{{ elastic_version }}"
   when:
     - elastic_variant == "oss"
 

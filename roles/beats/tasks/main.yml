@@ -1,5 +1,11 @@
 ---
 
+- name: Include OS specific vars
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
+    - '{{ ansible_os_family }}.yml'
+
 - name: Prepare for whole stack roles if used
   when:
   - elastic_stack_full_stack | bool

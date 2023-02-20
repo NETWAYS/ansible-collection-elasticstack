@@ -1,5 +1,11 @@
 ---
 
+- name: Include OS specific vars
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
+    - '{{ ansible_os_family }}.yml'
+
 - name: Set common password for common certificates
   set_fact:
     kibana_tls_key_passphrase: "{{ elastic_cert_pass }}"
@@ -24,12 +30,12 @@
 
 - name: Install Kibana
   package:
-    name: kibana{{ elastic_version }}
+    name: kibana{{ elastic_versionseparator }}{{ elastic_version }}
   when: elastic_variant == "elastic"
 
 - name: Install Kibana OSS
   package:
-    name: kibana-oss{{ elastic_version }}
+    name: kibana-oss{{ elastic_versionseparator }}{{ elastic_version }}
   when: elastic_variant == "oss"
 
 - name: Import security related tasks

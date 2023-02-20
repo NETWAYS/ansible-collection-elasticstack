@@ -6,7 +6,7 @@
 
 - name: Install Metricbeat specific version
   package:
-    name: "metricbeat{{ elastic_version }}"
+    name: "metricbeat{{ elastic_versionseparator }}{{ elastic_version }}"
   notify:
     - Restart Metricbeat
   when:

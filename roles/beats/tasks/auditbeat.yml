@@ -6,7 +6,7 @@
 
 - name: Install Auditbeat specific version
   package:
-    name: "auditbeat{{ elastic_version }}"
+    name: "auditbeat{{ elastic_versionseparator }}{{ elastic_version }}"
   notify:
     - Restart Auditbeat
   when:

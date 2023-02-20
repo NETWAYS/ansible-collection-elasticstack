@@ -6,7 +6,7 @@
 
 - name: Install Filebeat specific version
   package:
-    name: "filebeat{{ elastic_version }}"
+    name: "filebeat{{ elastic_versionseparator }}{{ elastic_version }}"
   notify:
     - Restart Filebeat
   when:

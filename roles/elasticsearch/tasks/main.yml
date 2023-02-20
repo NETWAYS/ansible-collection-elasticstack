@@ -31,12 +31,12 @@
 
 - name: Ensure Elasticsearch is installed
   package:
-    name: elasticsearch{{ elastic_version }}
+    name: elasticsearch{{ elastic_versionseparator }}{{ elastic_version }}
   when: elastic_variant == "elastic"
 
 - name: Ensure Elasticsearch OSS is installed
   package:
-    name: elasticsearch-oss{{ elastic_version }}
+    name: elasticsearch-oss{{ elastic_versionseparator }}{{ elastic_version }}
   when: elastic_variant == "oss"
 
 - name: Configure Elasticsearch

@@ -2,7 +2,14 @@
 name: Test Collection Roles
 on:
   pull_request:
+    branches:
+      - 'main'
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+
   merge_group:
+    types: [checks_requested]
 
 jobs:
   lint_full:

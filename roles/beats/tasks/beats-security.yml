@@ -26,9 +26,6 @@
     beats_cert_expiration_days: "{{ ((beats_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: beats_cert_expiration_date.skipped is not defined
 
-- debug:
-    var: beats_cert_expiration_days
-
 - name: Set beats certificate will expire soon to true
   set_fact:
     beats_cert_will_expire_soon: true

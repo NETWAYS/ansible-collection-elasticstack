@@ -23,8 +23,10 @@
   register: kibana_cert_exists
 
 - name: Get the kibana certificate expiration date
-  shell: set -o pipefail && openssl pkcs12 -in "/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12" -nodes -passin pass:"{{ kibana_tls_key_passphrase }}" | openssl x509 -noout -enddate | awk -F'=' '{print $2}'
+  shell: "set -o pipefail && openssl pkcs12 -in '/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12' -nodes -passin pass:'{{ kibana_tls_key_passphrase }}' | openssl x509 -noout -enddate | awk -F'=' '{print $2}'"
   register: kibana_cert_expiration_date
+  args:
+    executable: /bin/bash
   changed_when: false
   when: kibana_cert_exists.stat.exists | bool
 

@@ -43,7 +43,7 @@
     msg: |
       Your kibana certificate will expire in {{ kibana_cert_expiration_days }}.
       Ansible will renew it.
-  when: kibana_cert_expiration_days is defined and ca_expiration_days | int <= ca_expiration_buffer | int
+  when: kibana_cert_expiration_days is defined and kibana_cert_expiration_days | int <= kibana_cert_expiration_buffer | int
 
 - name: Backup kibana certs then remove
   block:

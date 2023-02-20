@@ -23,7 +23,6 @@
     elastic_stack_full_stack: false
     filebeat_mysql_slowlog_input: true
     beats_auditbeat: true
-    elastic_version: latest
     auditbeat_output: logstash
     auditbeat_enable: false # can't run on GitHub because of permissions
     filebeat_journald_inputs:

@@ -31,13 +31,31 @@
 
 - name: Ensure Elasticsearch is installed
   package:
-    name: elasticsearch{{ elastic_versionseparator }}{{ elastic_version }}
-  when: elastic_variant == "elastic"
+    name: elasticsearch
+  when:
+    - elastic_variant == "elastic"
+    - elastic_version is undefined
 
 - name: Ensure Elasticsearch OSS is installed
   package:
     name: elasticsearch-oss{{ elastic_versionseparator }}{{ elastic_version }}
-  when: elastic_variant == "oss"
+  when:
+    - elastic_variant == "oss"
+    - elastic_version is undefined
+
+- name: Ensure Elasticsearch is installed (specific version)
+  package:
+    name: elasticsearch{{ elastic_versionseparator }}{{ elastic_version }}
+  when:
+    - elastic_variant == "elastic"
+    - elastic_version is defined
+
+- name: Ensure Elasticsearch OSS is installed (specific version)
+  package:
+    name: elasticsearch-oss{{ elastic_versionseparator }}{{ elastic_version }}
+  when:
+    - elastic_variant == "oss"
+    - elastic_version is defined
 
 - name: Configure Elasticsearch
   template:

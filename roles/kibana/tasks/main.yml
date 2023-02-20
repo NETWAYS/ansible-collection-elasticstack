@@ -12,7 +12,6 @@
   when:
     - elastic_cert_pass is defined
 
-# tasks file for kibana
 - name: Set Elasticsearch hosts if used with other roles
   set_fact:
     kibana_elasticsearch_hosts: "{{ groups['elasticsearch'] }}"
@@ -30,13 +29,32 @@
 
 - name: Install Kibana
   package:
-    name: kibana{{ elastic_versionseparator }}{{ elastic_version }}
-  when: elastic_variant == "elastic"
+    name: kibana
+  when:
+    - elastic_variant == "elastic"
+    - elastic_version is undefined
 
 - name: Install Kibana OSS
   package:
+    name: kibana-oss
+  when:
+    - elastic_variant == "oss"
+    - elastic_version is undefined
+
+- name: Install Kibana (specific version)
+  package:
+    name: kibana{{ elastic_versionseparator }}{{ elastic_version }}
+  when:
+    - elastic_variant == "elastic"
+    - elastic_version is defined
+
+- name: Install Kibana OSS (specific version)
+  package:
     name: kibana-oss{{ elastic_versionseparator }}{{ elastic_version }}
-  when: elastic_variant == "oss"
+  when:
+    - elastic_variant == "oss"
+    - elastic_version is defined
+
 
 - name: Import security related tasks
   import_tasks: kibana-security.yml

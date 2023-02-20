@@ -49,15 +49,32 @@
 
 - name: Ensure Logstash is installed
   package:
+    name: logstash
+  when:
+    - elastic_variant == "elastic"
+    - elastic_version is undefined
+
+- name: Ensure Logstash OSS is installed
+  package:
+    name: logstash-oss
+  when:
+    - elastic_variant == "oss"
+    - elastic_version is undefined
+
+- name: Ensure Logstash is installed (specific version)
+  package:
     name: "logstash{{ elastic_versionseparator }}{{ elastic_version }}"
   when:
     - elastic_variant == "elastic"
+    - elastic_version is defined
 
-- name: Ensure Logstash OSS is installed
+- name: Ensure Logstash OSS is installed (specific version)
   package:
     name: "logstash-oss{{ elastic_versionseparator }}{{ elastic_version }}"
   when:
     - elastic_variant == "oss"
+    - elastic_version is defined
+
 
 - name: Import Logstash Security tasks
   import_tasks: logstash-security.yml

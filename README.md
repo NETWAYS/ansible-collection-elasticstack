@@ -45,7 +45,7 @@ You will want to have reliable DNS resolution or enter all hosts of the stack in
 
 ### Default Passwords 
 
-Default Passwords  can be seen during generation, or found later in `/usr/share/elasticsearch/initial_passwords`
+Default Passwords can be seen during generation, or found later in `/usr/share/elasticsearch/initial_passwords`
 
 To turn off security currently:
 `elastic_override_beats_tls: true`

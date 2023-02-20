@@ -4,6 +4,123 @@
   package:
     name: unzip
   when: beats_manage_unzip | bool
+  tags:
+    - renew_ca
+    - renew_beats_cert
+
+- name: Ensure beats certificate exists
+  stat:
+    path: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
+  register: beats_cert_exists
+
+- name: Get the beats certificate expiration date
+  shell: >-
+    if test -v BASH; then set -o pipefail; fi;
+    openssl x509
+    -in '/etc/beats/certs/{{ inventory_hostname }}-beats.crt'
+    -noout -enddate |
+    awk -F'=' '{print $2}'
+  register: beats_cert_expiration_date
+  args:
+    executable: /bin/bash
+  changed_when: false
+  when: beats_cert_exists.stat.exists | bool
+
+- name: Set the beats certificate expiration date in days
+  set_fact:
+    beats_cert_expiration_days: "{{ ((beats_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  when: beats_cert_expiration_date.skipped is not defined
+
+- name: Set beats certificate will expire soon to true
+  set_fact:
+    beats_cert_will_expire_soon: true
+  when: beats_cert_expiration_days is defined and beats_cert_expiration_days | int <= beats_cert_expiration_buffer | int
+
+- name: Print the beats certificate renew message
+  debug:
+    msg: |
+      Your beats certificate will expire in {{ beats_cert_expiration_days }}.
+      Ansible will renew it.
+  when: beats_cert_expiration_days is defined and beats_cert_expiration_days | int <= beats_cert_expiration_buffer | int
+
+- name: Backup beats certs then remove
+  block:
+    - name: Check if cert directory exists
+      stat:
+        path: /etc/beats/certs
+      register: beats_check_cert_path
+
+    - name: Move cert directory
+      copy:
+        src: /etc/beats/certs
+        dest: "/etc/beats/certs_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+        remote_src: true
+      when: beats_check_cert_path.stat.exists
+      register: beats_move_cert_directory
+
+    - name: Remove cert directory
+      file:
+        path: /etc/beats/certs
+        state: absent
+      when: beats_move_cert_directory.changed
+  when: "'renew_beats_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or beats_cert_will_expire_soon | bool"
+  tags:
+    - renew_ca
+    - renew_beats_cert
+
+- name: Backup beats certs on elasticsearch_ca host then remove
+  block:
+    - name: Check if cert file exists
+      stat:
+        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip"
+      register: beats_check_cert_file
+
+    - name: Move cert file
+      copy:
+        src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip"
+        dest: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+        remote_src: true
+      when: beats_check_cert_file.stat.exists
+      register: beats_move_cert_file
+
+    - name: Remove cert file
+      file:
+        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip"
+        state: absent
+      when: beats_move_cert_file.changed
+  when: "'renew_beats_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or beats_cert_will_expire_soon | bool"
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - renew_ca
+    - renew_beats_cert
+
+- name: Backup beats zip file on localhost then remove
+  block:
+    - name: Check the existance of cert on localhost
+      stat:
+        path: /tmp/{{ ansible_hostname }}-beats.zip
+      register: beats_check_temporary_cert
+
+    - name: Move temporary zip file
+      copy:
+        src: /tmp/{{ ansible_hostname }}-beats.zip
+        dest: "/tmp/{{ ansible_hostname }}-beats.zip_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+      when: beats_check_temporary_cert.stat.exists
+      register: beats_move_cert_file
+
+    - name: Remove temporary cert file
+      file:
+        path: /tmp/{{ ansible_hostname }}-beats.zip
+        state: absent
+      when: beats_move_cert_file.changed
+  delegate_to: localhost
+  when: "'renew_beats_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or beats_cert_will_expire_soon | bool"
+  tags:
+    - renew_ca
+    - renew_beats_cert
 
 - name: Create certificate directory
   file:
@@ -12,6 +129,10 @@
     owner: root
     group: root
     mode: 0700
+  tags:
+    - certificates
+    - renew_ca
+    - renew_beats_cert
 
 - name: Create individual certificates for Beats
   command: >
@@ -27,6 +148,10 @@
   delegate_to: "{{ elasticsearch_ca }}"
   args:
     creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-beats.zip"
+  tags:
+    - certificates
+    - renew_ca
+    - renew_beats_cert
 
 - name: Fetch certificate from ca host to master
   fetch:
@@ -36,6 +161,8 @@
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
+    - renew_ca
+    - renew_beats_cert
 
 - name: Copy the certificate to actual node
   unarchive:
@@ -46,6 +173,8 @@
     mode: 0640
   tags:
     - certificates
+    - renew_ca
+    - renew_beats_cert
 
 - name: Copy certificate locally
   copy:
@@ -55,8 +184,14 @@
     group: root
     mode: 0640
     remote_src: true
+  notify:
+    - Restart Filebeat
+    - Restart Auditbeat
+    - Restart Metricbeat
   tags:
     - certificates
+    - renew_ca
+    - renew_beats_cert
 
 - name: Copy key locally
   copy:
@@ -66,8 +201,14 @@
     group: root
     mode: 0640
     remote_src: true
+  notify:
+    - Restart Filebeat
+    - Restart Auditbeat
+    - Restart Metricbeat
   tags:
     - certificates
+    - renew_ca
+    - renew_beats_cert
 
 - name: Fetch ca certificate from ca host to master
   fetch:
@@ -77,6 +218,8 @@
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
+    - renew_ca
+    - renew_beats_cert
 
 - name: Copy the ca certificate to actual node
   copy:
@@ -85,8 +228,14 @@
     owner: root
     group: root
     mode: 0640
+  notify:
+    - Restart Filebeat
+    - Restart Auditbeat
+    - Restart Metricbeat
   tags:
     - certificates
+    - renew_ca
+    - renew_beats_cert
 
 - name: Fetch Beats password
   shell: >
@@ -94,4 +243,5 @@
     awk {' print $4 '}
   register: beats_writer_password
   changed_when: false
+  no_log: true
   delegate_to: "{{ elasticsearch_ca }}"

@@ -102,7 +102,9 @@ If you want to use this role with your own TLS certificates, use these variables
 * *beats_ca_dir*: Path to custom CA certificates and keys (default: none - if not set will be filled with different values depending on which Stack variant is used)
 * *beats_tls_key*: Path to the keyfiles (default: `{{ beats_ca_dir }}/{{ ansible_hostname }}.key`)
 * *beats_tls_cert*: Path to the certificate (default: `{{ beats_ca_dir }}/{{ ansible_hostname }}.crt`)
-* *beats_tls_key_passphrase*: Passphrase of the keyfile (default: `ChangeMe`)
+* *beats_tls_key_passphrase*: Passphrase of the keyfile (default: `BeatsChangeMe`)
+* *beats_cert_expiration_buffer*: Ansible will renew the beats certificate if its validity is shorter than this value, which should be number of days. (default: 30)
+* *beats_cert_will_expire_soon*: Set it to true to renew beats certificate (default: `false`), Or run the playbook with `--tags renew_beats_cert` to do that.
 * *beats_tls_cacert*: Path to the CA.crt (default: `{{ beats_ca_dir }}/ca.crt`)
 
 ## Usage

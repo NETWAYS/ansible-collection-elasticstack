@@ -36,18 +36,18 @@
     #filebeat_docker: true
     elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
-    # Looks like Elastic isn't providing all old releases
-    # anymore
-    #
-    #- name: Set Filebeat version on RedHat
-    #  set_fact:
-    #    elastic_version: "-7.16.1"
-    #  when: ansible_os_family == "RedHat"
 
-    #- name: Set Filebeat version on Debian
-    #  set_fact:
-    #    elastic_version: "=7.16.1"
-    #  when: ansible_os_family == "Debian"
+    - name: Set Filebeat version for 7.x
+      set_fact:
+        elastic_version: "7.17.1"
+      when:
+        - elastic_release == 7
+
+    - name: Set Filebeat version for 8.x
+      set_fact:
+        elastic_version: "8.4.1"
+      when:
+        - elastic_release == 8
 
     - name: "Include Elastics repos role"
       include_role:

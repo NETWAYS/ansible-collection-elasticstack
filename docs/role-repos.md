@@ -18,11 +18,20 @@ Role Variables
 
 * *elastic_release*: Major release version of Elastic stack to configure. (default: `7`). `7` and `8` are supported.
 * *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`).
+* *elastic_enable_repos*: Enable repositories after creating them. (default: `true`)
 
 Please note that no `oss` versions are available for Elastic Stack later than `7`. This role will fail if you try to install them.
 
 Usage
 --------
+
+Upgrades
+========
+
+If you want to be able to update your operating system without worrying about accidentally upgrading Elastic Stack, set `elastic_enable_repos` to `false`. The roles in this collection will enable the repository in case they need it.
+
+Example playbook
+================
 
 ```
   - hosts: all

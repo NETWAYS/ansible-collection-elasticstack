@@ -25,11 +25,15 @@
 - name: Install Kibana
   package:
     name: kibana
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   when: elastic_variant == "elastic"
 
 - name: Install Kibana OSS
   package:
     name: kibana-oss
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   when: elastic_variant == "oss"
 
 - name: Import security related tasks

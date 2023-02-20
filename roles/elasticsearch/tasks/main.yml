@@ -32,11 +32,15 @@
 - name: Ensure Elasticsearch is installed
   package:
     name: elasticsearch
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   when: elastic_variant == "elastic"
 
 - name: Ensure Elasticsearch OSS is installed
   package:
     name: elasticsearch-oss
+    enablerepo:
+      - "elastic-oss-{{ elastic_release }}.x"
   when: elastic_variant == "oss"
 
 - name: Configure Elasticsearch

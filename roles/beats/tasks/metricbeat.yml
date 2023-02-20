@@ -2,11 +2,15 @@
 - name: Install Metricbeat
   package:
     name: metricbeat
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   when: beats_metricbeat_version is not defined
 
 - name: Install Metricbeat specific version
   package:
     name: "metricbeat{{ beats_metricbeat_version }}"
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   notify:
     - Restart Metricbeat
   when:
@@ -17,6 +21,8 @@
   package:
     name: metricbeat
     state: latest
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   notify:
     - Restart Metricbeat
   when:

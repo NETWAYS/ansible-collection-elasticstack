@@ -44,12 +44,16 @@
 - name: Ensure Logstash is installed
   package:
     name: "logstash{{ logstash_version }}"
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   when:
     - elastic_variant == "elastic"
 
 - name: Ensure Logstash OSS is installed
   package:
     name: "logstash-oss{{ logstash_version }}"
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   when:
     - elastic_variant == "oss"
 

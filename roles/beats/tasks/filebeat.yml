@@ -2,11 +2,15 @@
 - name: Install Filebeat
   package:
     name: filebeat
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   when: beats_filebeat_version is not defined
 
 - name: Install Filebeat specific version
   package:
     name: "filebeat{{ beats_filebeat_version }}"
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   notify:
     - Restart Filebeat
   when:
@@ -17,6 +21,8 @@
   package:
     name: filebeat
     state: latest
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   notify:
     - Restart Filebeat
   when:

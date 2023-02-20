@@ -2,11 +2,15 @@
 - name: Install Auditbeat
   package:
     name: auditbeat
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   when: beats_auditbeat_version is not defined
 
 - name: Install Auditbeat specific version
   package:
     name: "auditbeat{{ beats_auditbeat_version }}"
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   notify:
     - Restart Auditbeat
   when:
@@ -17,6 +21,8 @@
   package:
     name: auditbeat
     state: latest
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   notify:
     - Restart Auditbeat
   when:

@@ -36,7 +36,7 @@
 - name: Set kibana certificate will expire soon to true
   set_fact:
     kibana_cert_will_expire_soon: true
-  when: kiban_cert_expiration_days is defined and kibana_cert_expiration_days | int <= kibana_cert_expiration_buffer | int
+  when: kibana_cert_expiration_days is defined and kibana_cert_expiration_days | int <= kibana_cert_expiration_buffer | int
 
 - name: Print the kibana certificate renew message
   debug:

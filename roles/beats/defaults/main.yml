@@ -68,6 +68,8 @@ elastic_security: true
 elastic_ca_dir: /opt/es-ca
 elastic_ca_pass: PleaseChangeMe
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+beats_cert_expiration_buffer: 30
+beats_cert_will_expire_soon: false
 
 # Variables for debugging and development
 

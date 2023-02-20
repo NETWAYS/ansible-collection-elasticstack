@@ -17,7 +17,7 @@
 
 - name: Get the ca expiration date
   shell: >-
-    if test -v BASH; then set -o pipefail; fi
+    if test -v BASH; then set -o pipefail; fi;
     openssl pkcs12
     -in '{{ elastic_ca_dir }}/elastic-stack-ca.p12'
     -nodes
@@ -110,7 +110,7 @@
 
 - name: Get the elasticsearch certificate expiration date
   shell: >-
-    if test -v BASH; then set -o pipefail; fi
+    if test -v BASH; then set -o pipefail; fi;
     openssl pkcs12
     -in "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
     -nodes

@@ -15,7 +15,7 @@
 
 - name: Get the beats certificate expiration date
   shell: >-
-    if test -v BASH; then set -o pipefail; fi
+    if test -v BASH; then set -o pipefail; fi;
     openssl x509
     -in '/etc/beats/certs/{{ inventory_hostname }}-beats.crt'
     -noout -enddate |

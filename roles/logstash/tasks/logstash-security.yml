@@ -26,7 +26,7 @@
 
 - name: Get the logstash certificate expiration date
   shell: >-
-    if test -v BASH; then set -o pipefail; fi
+    if test -v BASH; then set -o pipefail; fi;
     openssl pkcs12
     -in '{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12'
     -nodes

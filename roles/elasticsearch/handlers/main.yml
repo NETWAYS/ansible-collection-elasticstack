@@ -12,4 +12,4 @@
   when:
     - elastic_stack_full_stack: true
     - "not 'renew_ca' in ansible_run_tags"
-    - "not ca_will_expire_soon | bool"
+    - "not elastic_ca_will_expire_soon | bool"

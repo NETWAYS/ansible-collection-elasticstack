@@ -14,6 +14,7 @@ kibana_tls_key_passphrase: PleaseChangeMe
 elastic_ca_dir: /opt/es-ca
 elastic_ca_pass: PleaseChangeMe
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+kibana_cert_expiration_buffer: 30
 
 # "global" variables for all roles
 

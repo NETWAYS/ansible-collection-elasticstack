@@ -120,6 +120,7 @@
     msg: |
       Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }}.
       Ansible will renew it.
+  when: elasticsearch_cert_expiration_day is defined and ca_expiration_days | int <= ca_expiration_buffer | int
 
 - name: Backup elasticsearch certs on node then remove
   block:

@@ -26,9 +26,9 @@ elastic_ca_dir: /opt/es-ca
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elastic_ca_pass: PleaseChangeMe
 elasticsearch_tls_key_passphrase: PleaseChangeMeIndividually
-elasticsearch_ca_expiration_buffer: 30
+elastic_ca_expiration_buffer: 30
 elasticsearch_cert_expiration_buffer: 30
-elasticsearch_ca_will_expire_soon: false
+elastic_ca_will_expire_soon: false
 elasticsearch_cert_will_expire_soon: false
 
 # "global" variables for all roles

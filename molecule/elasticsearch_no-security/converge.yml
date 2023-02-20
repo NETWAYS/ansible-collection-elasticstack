@@ -10,7 +10,7 @@
     elastic_security: false
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
-    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elastic_release: 7
   tasks:
     - name: Include Elastics repos role
       include_role:

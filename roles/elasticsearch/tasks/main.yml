@@ -38,7 +38,7 @@
 
 - name: Ensure Elasticsearch OSS is installed
   package:
-    name: elasticsearch-oss{{ elastic_versionseparator }}{{ elastic_version }}
+    name: elasticsearch-oss
   when:
     - elastic_variant == "oss"
     - elastic_version is undefined

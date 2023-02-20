@@ -28,6 +28,7 @@
   args:
     executable: /bin/bash
   changed_when: false
+  no_log: true
   when: inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
 
 - name: Set the ca expiration date in days
@@ -119,6 +120,7 @@
     awk -F'=' '{print $2}'
   register: elasticsearch_cert_expiration_date
   changed_when: false
+  no_log: true
   when: elasticsearch_cert_exists.stat.exists | bool
 
 - name: Set the elasticsearch certificate expiration date in days
@@ -246,6 +248,7 @@
     add -x 'bootstrap.password'
   when: "'bootstrap.password' not in es_keystore.stdout_lines"
   changed_when: false
+  no_log: true
   notify:
     - Restart Elasticsearch
   ignore_errors: "{{ ansible_check_mode }}"
@@ -260,6 +263,7 @@
     - elasticsearch_http_security
   register: http_ssl_keystore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: true
   changed_when: false
 
 - name: Set xpack.security.http.ssl.keystore.secure_password
@@ -268,6 +272,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.keystore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - http_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != http_ssl_keystore_secure_password.stdout
     - elasticsearch_http_security
@@ -280,6 +285,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.keystore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - "'xpack.security.http.ssl.keystore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_http_security
@@ -296,6 +302,7 @@
     - elasticsearch_http_security
   register: http_ssl_truststore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: true
   changed_when: false
 
 - name: Set xpack.security.http.ssl.truststore.secure_password
@@ -304,6 +311,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.truststore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - http_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != http_ssl_truststore_secure_password.stdout
     - elasticsearch_http_security
@@ -315,6 +323,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.truststore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - "'xpack.security.http.ssl.truststore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_http_security
@@ -330,6 +339,7 @@
     - elasticsearch_security
   register: transport_ssl_keystore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: true
   changed_when: false
 
 - name: Set xpack.security.transport.ssl.keystore.secure_password
@@ -338,6 +348,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.keystore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - transport_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != transport_ssl_keystore_secure_password.stdout
     - elasticsearch_security
@@ -349,6 +360,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.keystore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - "'xpack.security.transport.ssl.keystore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_security
@@ -364,6 +376,7 @@
     - elasticsearch_security
   register: transport_ssl_truststore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: true
   changed_when: false
 
 - name: Set xpack.security.transport.ssl.truststore.secure_password
@@ -372,6 +385,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.truststore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - transport_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != transport_ssl_truststore_secure_password.stdout
     - elasticsearch_security
@@ -383,6 +397,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.truststore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - "'xpack.security.transport.ssl.truststore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_security
@@ -404,6 +419,7 @@
         --silent
       args:
         creates: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
+      no_log: true
 
     - name: Create node certificates on elasticsearch_ca host
       command: >
@@ -416,6 +432,7 @@
         --pass {{ elasticsearch_tls_key_passphrase }}
         --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
       loop: "{{ groups['elasticsearch'] }}"
+      no_log: true
       args:
         creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
 
@@ -426,6 +443,7 @@
         -password pass:{{ elasticsearch_tls_key_passphrase }}
       args:
         creates: "{{ elastic_ca_dir }}/ca.crt"
+      no_log: true
 
 - name: Fetch ca certificate from ca host to Ansible controller
   fetch:
@@ -538,12 +556,14 @@
     cut -d\" -f4
   register: es_cluster_status_bootstrap
   changed_when: false
+  no_log: true
   when: not elasticsearch_passwords_file.stat.exists | bool
 
 - name: Fetch Elastic password
   shell: grep "PASSWORD elastic" {{ elastic_initial_passwords }} | awk {' print $4 '}
   register: elastic_password
   changed_when: false
+  no_log: true
   delegate_to: "{{ elasticsearch_ca }}"
   #when: elasticsearch_passwords_file.stat.exists
 
@@ -555,6 +575,7 @@
     cut -d\" -f4
   register: es_cluster_status
   changed_when: false
+  no_log: true
   ignore_errors: "{{ ansible_check_mode }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
@@ -585,6 +606,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b >
     {{ elastic_initial_passwords }}
   when: inventory_hostname == elasticsearch_ca
+  no_log: true
   args:
     creates: "{{ elastic_initial_passwords }}"
 

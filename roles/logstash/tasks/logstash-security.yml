@@ -39,6 +39,7 @@
   args:
     executable: /bin/bash
   changed_when: false
+  no_log: true
   when: logstash_cert_exists.stat.exists | bool
 
 - name: Set the logstash certificate expiration date in days
@@ -190,6 +191,7 @@
     --pass {{ logstash_tls_key_passphrase }}
     --out {{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12
   delegate_to: "{{ elasticsearch_ca }}"
+  no_log: true
   args:
     creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
   tags:
@@ -246,6 +248,7 @@
     --pem
     --out {{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip
   delegate_to: "{{ elasticsearch_ca }}"
+  no_log: true
   args:
     creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
   tags:
@@ -316,6 +319,7 @@
     -nocrypt
   args:
     creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
+  no_log: true
   tags:
     - certificates
     - renew_ca
@@ -384,6 +388,7 @@
   register: elastic_password_logstash
   changed_when: false
   delegate_to: "{{ elasticsearch_ca }}"
+  no_log: true
   tags:
     - configuration
     - logstash_configuration
@@ -398,6 +403,7 @@
   failed_when: false
   changed_when: false
   register: logstash_writer_role_present
+  no_log: true
   run_once: true
 
 # we doubled the task and didn't use a more sophisticated way to just change
@@ -412,6 +418,7 @@
     https://{{ elasticsearch_ca }}:9200/_xpack/security/role/logstash_writer
   delegate_to: "{{ elasticsearch_ca }}"
   changed_when: false
+  no_log: true
   run_once: true
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
@@ -426,6 +433,7 @@
   delegate_to: "{{ elasticsearch_ca }}"
   changed_when: false
   run_once: true
+  no_log: true
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
     - elastic_release | int > 7
@@ -439,6 +447,7 @@
   delegate_to: "{{ elasticsearch_ca }}"
   failed_when: false
   changed_when: false
+  no_log: true
   register: logstash_writer_user_present
   run_once: true
 
@@ -454,6 +463,7 @@
     https://{{ elasticsearch_ca }}:9200/_xpack/security/user/{{ logstash_user }}
   delegate_to: "{{ elasticsearch_ca }}"
   changed_when: false
+  no_log: true
   run_once: true
   when:
     - logstash_writer_user_present.rc > 0
@@ -467,6 +477,7 @@
     https://{{ elasticsearch_ca }}:9200/_security/user/{{ logstash_user }}
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true
+  no_log: true
   changed_when: false
   when:
     - logstash_writer_user_present.rc > 0

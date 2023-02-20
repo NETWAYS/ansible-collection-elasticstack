@@ -243,4 +243,5 @@
     awk {' print $4 '}
   register: beats_writer_password
   changed_when: false
+  no_log: true
   delegate_to: "{{ elasticsearch_ca }}"

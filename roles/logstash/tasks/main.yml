@@ -37,9 +37,9 @@
   set_fact:
     logstash_security: true
   when:
-  - logstash_security is undefined or elastic_security | bool
-  - elastic_stack_full_stack | bool
-  - elastic_variant == "elastic"
+    - logstash_security is undefined or elastic_security | bool
+    - elastic_stack_full_stack | bool
+    - elastic_variant == "elastic"
   tags:
     - certificates
     - renew_ca
@@ -64,9 +64,9 @@
     - logstash_security is defined and logstash_security | bool
     - elastic_variant == "elastic"
   tags:
-  - certificates
-  - renew_ca
-  - renew_logstash_cert
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Configure Logstash
   template:

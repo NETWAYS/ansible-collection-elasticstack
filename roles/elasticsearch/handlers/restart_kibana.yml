@@ -1,4 +1,4 @@
-
+---
 - name: Check if kibana is installed
   package_facts:
     manager: "auto"

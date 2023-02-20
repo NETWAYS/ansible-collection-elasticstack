@@ -8,16 +8,16 @@
       set_fact:
         beats_security: true
       when:
-      - elastic_security | bool
-      - elastic_variant != "oss"
-      - not elastic_override_beats_tls | bool
+        - elastic_security | bool
+        - elastic_variant != "oss"
+        - not elastic_override_beats_tls | bool
 
     - name: Set elasticsearch_ca variable if not already done by user
       set_fact:
         elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
       when:
-      - beats_security | bool
-      - elasticsearch_ca is undefined
+        - beats_security | bool
+        - elasticsearch_ca is undefined
       tags:
         - certificates
         - renew_ca
@@ -27,8 +27,8 @@
       set_fact:
         beats_ca_dir: "/etc/beats/certs"
       when:
-      - elastic_security | bool
-      - beats_ca_dir is undefined
+        - elastic_security | bool
+        - beats_ca_dir is undefined
 
 # We need it for templating even when security is disabled
 # This default corresponds with the default in Elastic-
@@ -38,7 +38,7 @@
   set_fact:
     beats_ca_dir: "/opt/ca"
   when:
-  - beats_ca_dir is undefined
+    - beats_ca_dir is undefined
   tags:
     - certificates
     - renew_ca
@@ -56,9 +56,9 @@
 - name: Import security tasks
   import_tasks: beats-security.yml
   when:
-  - beats_security | bool
-  - elastic_stack_full_stack | bool
-  - elastic_variant == "elastic"
+    - beats_security | bool
+    - elastic_stack_full_stack | bool
+    - elastic_variant == "elastic"
   tags:
     - certificates
     - renew_ca

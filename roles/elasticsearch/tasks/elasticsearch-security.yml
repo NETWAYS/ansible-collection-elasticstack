@@ -93,7 +93,7 @@
   when: (inventory_hostname == elasticsearch_ca) and ('renew_ca' in "ansible_run_tags" or ca_will_expire_soon | bool)
   tags:
     - renew_ca
-  
+
 - name: Ensure elasticsearch certificate exists
   stat:
     path: "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"

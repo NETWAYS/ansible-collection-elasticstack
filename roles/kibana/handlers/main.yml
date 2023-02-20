@@ -4,4 +4,3 @@
   service:
     name: kibana
     state: restarted
-

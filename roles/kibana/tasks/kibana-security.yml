@@ -206,7 +206,7 @@
     group: kibana
     mode: 0640
   notify:
-   - Restart Kibana
+    - Restart Kibana
   tags:
     - certificates
     - renew_ca
@@ -239,7 +239,7 @@
     group: kibana
     mode: 0640
   notify:
-   - Restart Kibana
+    - Restart Kibana
   tags:
     - certificates
     - renew_ca

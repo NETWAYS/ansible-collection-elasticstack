@@ -64,7 +64,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_password*: Password of Elasticsearch user (Default: `password`)
 * *logstash_user_indices*: Indices the user has access to (Default: `'"ecs-logstash*", "logstash*", "logs*"'`)
 * *logstash_reset_writer_role*: Reset user and role with every run: (Default: `true`)
-* *logstash_validate_after_inactivity*: How long should logstash wait, before starting a new connection and leave the old one with elasticsearch, when the connection with elasticsearch get lost: (Default: `0`).
+* *logstash_validate_after_inactivity*: How long should logstash wait, before starting a new connection and leave the old one with elasticsearch, when the connection with elasticsearch get lost: (Default: `300`).
 * *logstash_queue_type*: What kind of queue should Logstash use per default: (Default: `persisted`, alternative: `memory`)
 * *logstash_queue_max_bytes*: The total capacity of ansible-forwarder queue in number of bytes: (Default: `2gb`)
 

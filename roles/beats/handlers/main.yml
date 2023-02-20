@@ -5,16 +5,22 @@
   service:
     name: filebeat
     state: restarted
-  when: beats_filebeat | bool
+  when:
+    - beats_filebeat | bool
+    - filebeat_enable | bool
 
 - name: Restart Auditbeat
   service:
     name: auditbeat
     state: restarted
-  when: beats_auditbeat | bool
+  when:
+    - beats_auditbeat | bool
+    - auditbeat_enable | bool
 
 - name: Restart Metricbeat
   service:
     name: metricbeat
     state: restarted
-  when: beats_metricbeat | bool
+  when:
+  - beats_metricbeat | bool
+  - metricbeat_enable | bool

@@ -36,9 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint_full
 
-    env:
-      COLLECTION_NAMESPACE: netways
-      COLLECTION_NAME: elasticstack
+#    env:
+#      COLLECTION_NAMESPACE: netways
+#      COLLECTION_NAME: elasticstack
 
     strategy:
       fail-fast: false
@@ -67,10 +67,15 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements-test.txt
 
+      - name: Set the value
+        run: |
+          echo "COLLECTION_NAMESPACE=netways" >> $GITHUB_ENV
+          echo "COLLECTION_NAME=elasticstack" >> $GITHUB_ENV
+
       - name: Install collection
         run: |
-          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
-          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+          mkdir -p ~/.ansible/collections/ansible_collections/${{ env.COLLECTION_NAMESPACE }}
+          cp -a ../ansible-collection-${{ env.COLLECTION_NAME }} ~/.ansible/collections/ansible_collections/${{ env.COLLECTION_NAMESPACE }}/${{ env.COLLECTION_NAME }}
 
       - name: Test with molecule
         run: |

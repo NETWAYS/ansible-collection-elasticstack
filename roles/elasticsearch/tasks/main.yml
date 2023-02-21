@@ -13,6 +13,10 @@
     elasticsearch_tls_key_passphrase: "{{ elastic_cert_pass }}"
   when:
     - elastic_cert_pass is defined
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Install openssl if security is activated
   package:
@@ -75,8 +79,9 @@
     - elasticsearch_security | bool
     - elastic_variant == "elastic"
   tags:
-    - security
     - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Create Elasticsearch data directory
   file:
@@ -130,3 +135,4 @@
   when:
     - elasticsearch_security | bool
     - elastic_variant == "elastic"
+    - inventory_hostname == elasticsearch_ca

@@ -18,7 +18,7 @@ beats_manage_unzip: true
 beats_tls_key: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.key"
 beats_tls_cert: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.crt"
 beats_tls_cacert: "{{ beats_ca_dir }}/ca.crt"
-beats_tls_key_passphrase: ChangeMe
+beats_tls_key_passphrase: BeatsChangeMe
 
 # Filebeat specific #
 
@@ -68,6 +68,8 @@ elastic_security: true
 elastic_ca_dir: /opt/es-ca
 elastic_ca_pass: PleaseChangeMe
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+beats_cert_expiration_buffer: 30
+beats_cert_will_expire_soon: false
 
 # Variables for debugging and development
 

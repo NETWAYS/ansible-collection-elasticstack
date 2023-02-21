@@ -6,6 +6,218 @@
   when: elasticsearch_ca is undefined
   tags:
     - certificates
+    - renew_ca
+    - renew_es_cert
+
+- name: Ensure ca exists
+  stat:
+    path: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
+  register: ca_exists
+  when: inventory_hostname == elasticsearch_ca
+
+- name: Get the ca expiration date
+  shell: >-
+    if test -v BASH; then set -o pipefail; fi;
+    openssl pkcs12
+    -in '{{ elastic_ca_dir }}/elastic-stack-ca.p12'
+    -nodes
+    -passin pass:'{{ elastic_ca_pass }}' |
+    openssl x509 -noout -enddate |
+    awk -F'=' '{print $2}'
+  register: ca_expiration_date
+  args:
+    executable: /bin/bash
+  changed_when: false
+  no_log: true
+  when: inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
+
+- name: Set the ca expiration date in days
+  set_fact:
+    elastic_ca_expiration_days: "{{ ((ca_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  when: inventory_hostname == elasticsearch_ca and ca_expiration_date.skipped is not defined
+
+- name: Set ca will expire soon to true
+  set_fact:
+    elastic_ca_will_expire_soon: true
+  when: inventory_hostname == elasticsearch_ca and elastic_ca_expiration_days is defined and elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
+
+- name: Print the ca renew message
+  debug:
+    msg: |
+      Your ca will expire in {{ elastic_ca_expiration_days }}.
+      Ansible will renew it and all elastic stack certificates
+  when: inventory_hostname == elasticsearch_ca and elastic_ca_expiration_days is defined and elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
+
+- name: Stop Logstash
+  service:
+    name: logstash
+    state: stopped
+  with_items: "{{ groups['logstash'] }}"
+  delegate_to: "{{ item }}"
+  when: "'renew_ca' in ansible_run_tags or elastic_ca_will_expire_soon | bool"
+
+- name: Backup ca directory on elasticsearch ca host then remove
+  block:
+    - name: Check if ca directory exists on elasticsearch ca host
+      stat:
+        path: "{{ elastic_ca_dir }}"
+      register: elasticsearch_check_ca_path
+
+    - name: Move the ca directory on elasticsearch ca host
+      copy:
+        src: "{{ elastic_ca_dir }}"
+        dest: "{{ elastic_ca_dir }}_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+        remote_src: true
+      when: elasticsearch_check_ca_path.stat.exists
+      register: elasticsearch_move_ca_directory
+
+    - name: Remove ca directory on elasticsearch ca host
+      file:
+        path: "{{ elastic_ca_dir }}"
+        state: absent
+      when: elasticsearch_move_ca_directory.changed
+
+    - name: Check the existance of ca on Ansible controler
+      stat:
+        path: /tmp/ca.crt
+      register: elasticsearch_check_temporary_ca
+      delegate_to: localhost
+
+    - name: Move temporary ca file on Ansible controler
+      copy:
+        src: /tmp/ca.crt
+        dest: "/tmp/ca.crt_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+      when: elasticsearch_check_temporary_ca.stat.exists
+      delegate_to: localhost
+      register: elasticsearch_move_ca_file
+
+    - name: Remove temporary ca file on Ansible controler
+      file:
+        path: /tmp/ca.crt
+        state: absent
+      when: elasticsearch_move_ca_file.changed
+      delegate_to: localhost
+
+  when: (inventory_hostname == elasticsearch_ca) and ('renew_ca' in "ansible_run_tags" or elastic_ca_will_expire_soon | bool)
+  tags:
+    - renew_ca
+
+- name: Ensure elasticsearch certificate exists
+  stat:
+    path: "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
+  register: elasticsearch_cert_exists
+
+- name: Get the elasticsearch certificate expiration date
+  shell: >-
+    if test -v BASH; then set -o pipefail; fi;
+    openssl pkcs12
+    -in "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
+    -nodes
+    -passin pass:"{{ elasticsearch_tls_key_passphrase }}" |
+    openssl x509 -noout -enddate |
+    awk -F'=' '{print $2}'
+  register: elasticsearch_cert_expiration_date
+  changed_when: false
+  no_log: true
+  when: elasticsearch_cert_exists.stat.exists | bool
+
+- name: Set the elasticsearch certificate expiration date in days
+  set_fact:
+    elasticsearch_cert_expiration_days: "{{ ((elasticsearch_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  when: elasticsearch_cert_expiration_date.skipped is not defined
+
+- name: Set elasticsearch certificate will expire soon to true
+  set_fact:
+    elasticsearch_cert_will_expire_soon: true
+  when: elasticsearch_cert_expiration_days is defined and elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
+
+- name: Print the elasticsearch certificate renew message
+  debug:
+    msg: |
+      Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }}.
+      Ansible will renew it.
+  when: elasticsearch_cert_expiration_day is defined and elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
+
+- name: Backup elasticsearch certs on node then remove
+  block:
+    - name: Check if cert directory exists on elasticsearch node
+      stat:
+        path: /etc/elasticsearch/certs
+      register: elasticsearch_check_cert_path
+
+    - name: Move cert directory on elasticsearch node
+      copy:
+        src: /etc/elasticsearch/certs
+        dest: "/etc/elasticsearch/certs_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+        remote_src: true
+      when: elasticsearch_check_cert_path.stat.exists
+      register: elasticsearch_move_cert_directory
+
+    - name: Remove cert directory on elasticsearch node
+      file:
+        path: /etc/elasticsearch/certs
+        state: absent
+      when: elasticsearch_move_cert_directory.changed
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
+  tags:
+    - renew_ca
+    - renew_es_cert
+
+- name: Backup elasticsearch certs on elasticsearch_ca host then remove
+  block:
+    - name: Check if cert file exists on elasticsearch_ca host
+      stat:
+        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+      register: elasticsearch_check_cert_file
+
+    - name: Move cert file on elasticsearch_ca host
+      copy:
+        src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+        dest: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+        remote_src: true
+      when: elasticsearch_check_cert_file.stat.exists
+      register: elasticsearch_move_cert_file
+
+    - name: Remove cert file on elasticsearch_ca host
+      file:
+        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+        state: absent
+      when: elasticsearch_move_cert_file.changed
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
+  delegate_to: "{{ elasticsearch_ca }}"
+  tags:
+    - renew_ca
+    - renew_es_cert
+
+- name: Backup elasticsearch cert on localhost then remove
+  block:
+    - name: Check the existance of cert on Ansible controler
+      stat:
+        path: /tmp/{{ ansible_hostname }}.p12
+      register: elasticsearch_check_temporary_cert
+
+    - name: Move temporary cert on Ansible controler
+      copy:
+        src: /tmp/{{ ansible_hostname }}.p12
+        dest: "/tmp/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
+        mode: preserve
+      when: elasticsearch_check_temporary_cert.stat.exists
+      register: elasticsearch_move_cert_file
+
+    - name: Remove temporary cert on Ansible controler
+      file:
+        path: /tmp/{{ ansible_hostname }}.p12
+        state: absent
+      when: elasticsearch_move_cert_file.changed
+  delegate_to: localhost
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
+  tags:
+    - renew_es_cert
+    - renew_ca
 
 - name: Create directory for Elasticsearch CA
   file:
@@ -16,6 +228,8 @@
     state: directory
   tags:
     - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Create keystore
   command: /usr/share/elasticsearch/bin/elasticsearch-keystore create
@@ -34,6 +248,7 @@
     add -x 'bootstrap.password'
   when: "'bootstrap.password' not in es_keystore.stdout_lines"
   changed_when: false
+  no_log: true
   notify:
     - Restart Elasticsearch
   ignore_errors: "{{ ansible_check_mode }}"
@@ -48,6 +263,7 @@
     - elasticsearch_http_security
   register: http_ssl_keystore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: true
   changed_when: false
 
 - name: Set xpack.security.http.ssl.keystore.secure_password
@@ -56,6 +272,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.keystore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - http_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != http_ssl_keystore_secure_password.stdout
     - elasticsearch_http_security
@@ -68,6 +285,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.keystore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - "'xpack.security.http.ssl.keystore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_http_security
@@ -84,6 +302,7 @@
     - elasticsearch_http_security
   register: http_ssl_truststore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: true
   changed_when: false
 
 - name: Set xpack.security.http.ssl.truststore.secure_password
@@ -92,6 +311,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.truststore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - http_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != http_ssl_truststore_secure_password.stdout
     - elasticsearch_http_security
@@ -103,12 +323,12 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.truststore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - "'xpack.security.http.ssl.truststore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_http_security
   notify:
     - Restart Elasticsearch
-
 
 - name: Get xpack.security.transport.ssl.keystore.secure_password
   shell: >
@@ -119,6 +339,7 @@
     - elasticsearch_security
   register: transport_ssl_keystore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: true
   changed_when: false
 
 - name: Set xpack.security.transport.ssl.keystore.secure_password
@@ -127,6 +348,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.keystore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - transport_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != transport_ssl_keystore_secure_password.stdout
     - elasticsearch_security
@@ -138,12 +360,12 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.keystore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - "'xpack.security.transport.ssl.keystore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_security
   notify:
     - Restart Elasticsearch
-
 
 - name: Get xpack.security.transport.ssl.truststore.secure_password
   shell: >
@@ -154,6 +376,7 @@
     - elasticsearch_security
   register: transport_ssl_truststore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
+  no_log: true
   changed_when: false
 
 - name: Set xpack.security.transport.ssl.truststore.secure_password
@@ -162,6 +385,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.truststore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - transport_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != transport_ssl_truststore_secure_password.stdout
     - elasticsearch_security
@@ -173,19 +397,21 @@
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.truststore.secure_password'
   changed_when: false
+  no_log: true
   when:
     - "'xpack.security.transport.ssl.truststore.secure_password' in es_keystore.stdout_lines"
     - not elasticsearch_security
   notify:
     - Restart Elasticsearch
 
-
-- name: Create ca and certificates
+- name: Create ca and certificates on elasticsearch_ca host
   when: inventory_hostname == elasticsearch_ca
   tags:
     - certificates
+    - renew_ca
+    - renew_es_cert
   block:
-    - name: Configure ca
+    - name: Configure ca on elasticsearch_ca host
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil ca
         --pass {{ elastic_ca_pass }}
@@ -193,8 +419,9 @@
         --silent
       args:
         creates: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
+      no_log: true
 
-    - name: Create individual certificates
+    - name: Create node certificates on elasticsearch_ca host
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil cert
         --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
@@ -205,27 +432,31 @@
         --pass {{ elasticsearch_tls_key_passphrase }}
         --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
       loop: "{{ groups['elasticsearch'] }}"
+      no_log: true
       args:
         creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
 
-    - name: Extract CA certificate
+    - name: Extract CA certificate on elasticsearch_ca host
       command: >
         openssl pkcs12 -in {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
         -cacerts -nokeys -out {{ elastic_ca_dir }}/ca.crt
         -password pass:{{ elasticsearch_tls_key_passphrase }}
       args:
         creates: "{{ elastic_ca_dir }}/ca.crt"
+      no_log: true
 
-- name: Fetch ca certificate from ca host to master
+- name: Fetch ca certificate from ca host to Ansible controller
   fetch:
     src: "{{ elastic_ca_dir }}/ca.crt"
     dest: /tmp/ca.crt
     flat: yes
-  delegate_to: "{{ elasticsearch_ca }}"
+  when: inventory_hostname == elasticsearch_ca
   tags:
     - certificates
+    - renew_ca
+    - renew_es_cert
 
-- name: Fetch certificate from ca host to master
+- name: Fetch certificate from ca host to Ansible controller
   fetch:
     src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
     dest: "/tmp/{{ ansible_hostname }}.p12"
@@ -233,6 +464,8 @@
   delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Create certificate directory
   file:
@@ -243,8 +476,10 @@
     mode: 0750
   tags:
     - certificates
+    - renew_ca
+    - renew_es_cert
 
-- name: Copy the ca certificate to actual node
+- name: Copy the ca certificate to elasticsearch nodes
   copy:
     src: /tmp/ca.crt
     dest: "/etc/elasticsearch/certs"
@@ -253,11 +488,14 @@
     mode: 0640
   notify:
     - Restart Elasticsearch
+    - Restart kibana if available for elasticsearch certificates
   tags:
     - certificates
+    - renew_ca
+    - renew_es_cert
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: Copy the certificate to actual node
+- name: Copy the certificate to elasticsearch nodes
   copy:
     src: "/tmp/{{ ansible_hostname }}.p12"
     dest: "/etc/elasticsearch/certs"
@@ -266,8 +504,11 @@
     mode: 0640
   notify:
     - Restart Elasticsearch
+    - Restart kibana if available for elasticsearch certificates
   tags:
     - certificates
+    - renew_ca
+    - renew_es_cert
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Start Elasticsearch
@@ -283,10 +524,18 @@
 
 - name: Force all notified handlers to run at this point, not waiting for normal sync points
   ansible.builtin.meta: flush_handlers
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Wait for all instances to start
   include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Check for passwords being set
   stat:
@@ -307,12 +556,14 @@
     cut -d\" -f4
   register: es_cluster_status_bootstrap
   changed_when: false
+  no_log: true
   when: not elasticsearch_passwords_file.stat.exists | bool
 
 - name: Fetch Elastic password
   shell: grep "PASSWORD elastic" {{ elastic_initial_passwords }} | awk {' print $4 '}
   register: elastic_password
   changed_when: false
+  no_log: true
   delegate_to: "{{ elasticsearch_ca }}"
   #when: elasticsearch_passwords_file.stat.exists
 
@@ -324,12 +575,17 @@
     cut -d\" -f4
   register: es_cluster_status
   changed_when: false
+  no_log: true
   ignore_errors: "{{ ansible_check_mode }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
 - name: Check for open port 9200/tcp
   wait_for:
     port: 9200
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Fail if cluster is not ready yet
   fail:
@@ -350,6 +606,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b >
     {{ elastic_initial_passwords }}
   when: inventory_hostname == elasticsearch_ca
+  no_log: true
   args:
     creates: "{{ elastic_initial_passwords }}"
 

@@ -46,6 +46,10 @@
     - logstash_security is undefined or elastic_security | bool
     - elastic_stack_full_stack | bool
     - elastic_variant == "elastic"
+  tags:
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Ensure Logstash is installed
   package:
@@ -83,7 +87,9 @@
     - logstash_security is defined and logstash_security | bool
     - elastic_variant == "elastic"
   tags:
-    - security
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Configure Logstash
   template:

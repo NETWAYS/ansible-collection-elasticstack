@@ -13,9 +13,9 @@ http.port: {{ logstash_http_port }}
 {% if logstash_global_ecs is defined %}
 pipeline.ecs_compatibility: {{ logstash_global_ecs }}
 {% endif %}
-{% if logstash_legacy_monitoring | bool and elastic_stack_full_stack | bool and elastic_variant == "elastic" %}
+{% if logstash_legacy_monitoring | bool and elastic_stack_full_stack | bool and elastic_variant == "elastic" and elastic_release | int < 8 %}
 xpack.monitoring.enabled: true
-xpack.monitoring.elasticsearch.hosts: [ {% for host in logstash_elasticsearch %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %} ]
+xpack.monitoring.elasticsearch.hosts: [ {% for host in logstash_elasticsearch %}"https://{{ hostvars[host].ansible_hostname }}:9200"{% if not loop.last %},{% endif %}{% endfor %} ]
 xpack.monitoring.elasticsearch.username: elastic
 xpack.monitoring.elasticsearch.password: {{ elastic_password_logstash.stdout }}
 xpack.monitoring.elasticsearch.ssl.certificate_authority: "{{ logstash_certs_dir }}/ca.crt"

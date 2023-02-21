@@ -21,6 +21,8 @@
 
 - pipeline.id: ansible-input
   path.config: "/etc/logstash/conf.d/ansible-input/*.conf"
+  queue.type: {{ ansible_input_queue_type }}
+  queue.max_bytes: {{ ansible_input_queue_max_bytes }}
 
 {% endif %}
 {% if logstash_elasticsearch_output | bool %}
@@ -30,6 +32,8 @@
 
 - pipeline.id: ansible-forwarder
   path.config: "/etc/logstash/conf.d/ansible-forwarder/*.conf"
+  queue.type: {{ ansible_forwarder_queue_type }}
+  queue.max_bytes: {{ ansible_forwarder_queue_max_bytes }}
 
 {% endif %}
 {% if logstash_pipelines is defined %}
@@ -62,6 +66,8 @@
 
 - pipeline.id: {{ item.name }}
   path.config: "/etc/logstash/conf.d/{{ item.name }}/*.conf"
+  queue.type: {{ item.queue_type | default('memory') }}
+  queue.max_bytes: {{ item.queue_max_bytes | default('1gb') }}
 
 {% endfor %}
 {% endif %}

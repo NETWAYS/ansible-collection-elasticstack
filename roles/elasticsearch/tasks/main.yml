@@ -29,19 +29,34 @@
   when:
     - elasticsearch_pamlimits | bool
 
-- name: Ensure Elasticsearch is installed
-  package:
-    name: elasticsearch
-    enablerepo:
-      - "elastic-{{ elastic_release }}.x"
-  when: elastic_variant == "elastic"
+- name: Construct exact name of Elasticsearch package
+  set_fact:
+    elasticsearch_package: >-
+      '{{
+      {{ elasticsearch
+      {% if elastic_variant == "oss" %}
+      -oss
+      {% endif %}
+      {% if elastic_version is defined %}
+      {{ elastic_versionseparator }}
+      {{ elastic_version }}
+      {% endif %} }}
+      | replace(" ","")
+      }}'
 
-- name: Ensure Elasticsearch OSS is installed
+- name: Install Elasticsearch - rpm
   package:
-    name: elasticsearch-oss
+    name: "{{ elasticsearch_package }}"
     enablerepo:
-      - "elastic-oss-{{ elastic_release }}.x"
-  when: elastic_variant == "oss"
+      - 'elastic-{% if elastic_variant == "oss" %}oss-{% endif %}{{ elastic_release }}.x'
+    when:
+      - ansible_os_family == "RedHat"
+
+- name: Install Elasticsearch - deb
+  package:
+    name: "{{ elasticsearch_package }}"
+    when:
+      - ansible_os_family == "Debian"
 
 - name: Configure Elasticsearch
   template:

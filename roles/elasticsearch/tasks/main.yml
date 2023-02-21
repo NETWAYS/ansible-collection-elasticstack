@@ -37,7 +37,7 @@
   set_fact:
     elasticsearch_package: >-
       "{{
-      elasticsearch
+      'elasticsearch'
       + ('-oss' if elastic_variant == 'oss' else '')
       + (elastic_versionseparator + elastic_version
       | string if elastic_version is defined else '')

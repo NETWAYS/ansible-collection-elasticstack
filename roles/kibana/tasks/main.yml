@@ -40,7 +40,9 @@
     - kibana_security | bool
     - elastic_variant == "elastic"
   tags:
-    - security
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: Configure Kibana
   template:
@@ -58,6 +60,8 @@
   service:
     name: kibana
     state: started
+    enabled: yes
+  when: kibana_enable | bool
 
 # the following is useful when running tests or extra tasks that need to
 # have Kibana running

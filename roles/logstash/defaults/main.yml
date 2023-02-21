@@ -17,6 +17,7 @@ logstash_config_path_logs: /var/log/logstash
 
 # pipeline configuration #
 logstash_manage_pipelines: true
+logstash_queue_type: persisted
 
 # this will deactivate all pipeline management
 logstash_no_pipelines: false
@@ -24,6 +25,8 @@ logstash_no_pipelines: false
 logstash_pipelines:
   - name: default
     exclusive: false
+    queue_type: memory
+    queue_max_bytes: 1gb
     input:
       - name: default
         key: input
@@ -34,7 +37,12 @@ logstash_pipelines:
 #     name: shipper
 #     source: https://github.com/widhalmt/shipper-logstash-pipeline.git
 logstash_elasticsearch_output: true
+logstash_validate_after_inactivity: '300'
 logstash_beats_input: true
+ansible_input_queue_type: memory
+ansible_input_queue_max_bytes: 1gb
+ansible_forwarder_queue_type: memory
+ansible_forwarder_queue_max_bytes: 1gb
 
 # logstash security
 logstash_user: logstash_writer
@@ -42,9 +50,10 @@ logstash_password: password
 logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'
 logstash_reset_writer_role: true
 
-logstash_tls_key_passphrase: ChangeMe
+logstash_tls_key_passphrase: LogstashChangeMe
 logstash_certs_dir: /etc/logstash/certs
-
+logstash_cert_expiration_buffer: 30
+logstash_cert_will_expire_soon: false
 logstash_legacy_monitoring: true
 
 logstash_logging_console: true

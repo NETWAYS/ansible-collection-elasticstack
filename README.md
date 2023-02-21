@@ -39,6 +39,10 @@ You may want the following Ansible roles installed. There other ways to achieve 
 
 ## Usage
 
+Make sure all hosts that should be configured are part of your playbook. (See below for details on groups etc.). The collection is built to first collect all facts from all hosts (including those only running beats) and then use facts like hostnames or ip addresses to connect the tools to each other.
+
+You will want to have reliable DNS resolution or enter all hosts of the stack into your systems hosts files.
+
 ### Default Passwords 
 
 Default Passwords  can be seen during generation, or found later in `/usr/share/elasticsearch/initial_passwords`

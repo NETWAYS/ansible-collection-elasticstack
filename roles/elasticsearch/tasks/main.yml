@@ -36,17 +36,13 @@
 - name: Construct exact name of Elasticsearch package
   set_fact:
     elasticsearch_package: >-
-      '{{
+      "{{
       elasticsearch
-      {% if elastic_variant == "oss" %}
-      -oss
-      {% endif %}
-      {% if elastic_version is defined %}
-      {{ elastic_versionseparator }}
-      {{ elastic_version }}
-      {% endif %}
-      | replace(" ","")
-      }}'
+      + ('-oss' if elastic_variant == 'oss' else '')
+      + (elastic_versionseparator + elastic_version
+      | string if elastic_version is defined else '')
+      | replace(' ','')
+      }}"
 
 - name: Install Elasticsearch - rpm
   package:

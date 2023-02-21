@@ -58,21 +58,6 @@
     when:
       - ansible_os_family == "Debian"
 
-- name: Ensure Elasticsearch is installed (specific version)
-  package:
-    name: elasticsearch{{ elastic_versionseparator }}{{ elastic_version }}
-  when:
-    - elastic_variant == "elastic"
-    - elastic_version is defined
-
-- name: Ensure Elasticsearch OSS is installed (specific version)
-  package:
-    name: elasticsearch-oss{{ elastic_versionseparator }}{{ elastic_version }}
-  when:
-    - elastic_variant == "oss"
-    - elastic_version is defined
->>>>>>> feature/specificversion-98
-
 - name: Configure Elasticsearch
   template:
     src: elasticsearch.yml.j2

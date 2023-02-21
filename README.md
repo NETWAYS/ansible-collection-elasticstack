@@ -37,6 +37,23 @@ You may want the following Ansible roles installed. There other ways to achieve 
 
 * geerlingguy.redis
 
+### Supported systems
+
+We test the collection on the following Linux distributions. Each one with Elastic Stack 7 and 8.
+
+* Rocky Linux 8
+* Ubuntu 20.04 LTS
+* Ubuntu 22.04 LTS
+* Debian 11
+
+We know from personal experience, that the collections work in following combinations. Missing tests mostly come from incompatibilties between the distribution and our testing environment, not from problems with the collection itself.
+
+* CentOS 7 - Elastic Stack 7
+
+We have known issues with the following Distributions.
+
+* Rocky Linux 9: The GnuPG key used by Elastic seems to be incompatible with this version of Rocky.
+
 ## Usage
 
 Make sure all hosts that should be configured are part of your playbook. (See below for details on groups etc.). The collection is built to first collect all facts from all hosts (including those only running beats) and then use facts like hostnames or ip addresses to connect the tools to each other.

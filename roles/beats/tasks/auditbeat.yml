@@ -1,23 +1,30 @@
 ---
-- name: Install Auditbeat
-  package:
-    name: auditbeat
-    enablerepo:
-      - "elastic-{{ elastic_release }}.x"
-  when: elastic_version is not defined
 
-- name: Install Auditbeat specific version
+- name: Construct exact name of Auditbeat package
+  set_fact:
+    auditbeat_package: >-
+      {{
+      'auditbeat'
+      + (elastic_versionseparator + elastic_version
+      | string if elastic_version is defined else '')
+      | replace(' ','')
+      }}
+
+- name: Install Auditbeat - rpm
   package:
-    name: "auditbeat{{ elastic_versionseparator }}{{ elastic_version }}"
+    name: "{{ auditbeat_package }}"
     enablerepo:
-      - "elastic-{{ elastic_release }}.x"
-  notify:
-    - Restart Auditbeat
+      - 'elastic-{{ elastic_release }}.x'
   when:
-    - elastic_version is defined
-    - elastic_version != "latest"
+    - ansible_os_family == "RedHat"
 
-- name: Install Auditbeat latest version
+- name: Install Auditbeat - deb
+  package:
+    name: "{{ auditbeat_package }}"
+  when:
+    - ansible_os_family == "Debian"
+
+- name: Install Auditbeat latest version - rpm
   package:
     name: auditbeat
     state: latest
@@ -28,6 +35,18 @@
   when:
     - elastic_version is defined
     - elastic_version == "latest"
+    - ansible_os_family == "RedHat"
+
+- name: Install Auditbeat latest version - deb
+  package:
+    name: auditbeat
+    state: latest
+  notify:
+    - Restart Auditbeat
+  when:
+    - elastic_version is defined
+    - elastic_version == "latest"
+    - ansible_os_family == "Debian"
 
 - name: Configure Auditbeat
   template:

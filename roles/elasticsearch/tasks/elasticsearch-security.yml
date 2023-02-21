@@ -56,7 +56,7 @@
   delegate_to: "{{ item }}"
   when:
     - "'renew_ca' in ansible_run_tags or elastic_ca_will_expire_soon | bool"
-    - - groups['logstash'] is defined
+    - groups['logstash'] is defined
 
 - name: Backup ca directory on elasticsearch ca host then remove
   block:

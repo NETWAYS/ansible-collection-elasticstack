@@ -33,14 +33,14 @@
   set_fact:
     elasticsearch_package: >-
       '{{
-      {{ elasticsearch
+      elasticsearch
       {% if elastic_variant == "oss" %}
       -oss
       {% endif %}
       {% if elastic_version is defined %}
       {{ elastic_versionseparator }}
       {{ elastic_version }}
-      {% endif %} }}
+      {% endif %}
       | replace(" ","")
       }}'
 

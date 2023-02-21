@@ -56,17 +56,15 @@
     name: "logstash"
     enablerepo:
       - "elastic-{{ elastic_release }}.x"
-    name: logstash
   when:
     - elastic_variant == "elastic"
     - elastic_version is undefined
 
 - name: Ensure Logstash OSS is installed
   package:
-    name: "logstash-oss"
+    name: logstash-oss
     enablerepo:
       - "elastic-{{ elastic_release }}.x"
-    name: logstash-oss
   when:
     - elastic_variant == "oss"
     - elastic_version is undefined

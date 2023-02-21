@@ -1,5 +1,11 @@
 ---
 
+- name: Include OS specific vars
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
+    - '{{ ansible_os_family }}.yml'
+
 - name: Prepare for whole stack roles if used
   when:
     - elastic_stack_full_stack | bool
@@ -40,22 +46,49 @@
     - logstash_security is undefined or elastic_security | bool
     - elastic_stack_full_stack | bool
     - elastic_variant == "elastic"
+  tags:
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Ensure Logstash is installed
   package:
-    name: "logstash{{ logstash_version }}"
+    name: "logstash"
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
+    name: logstash
+  when:
+    - elastic_variant == "elastic"
+    - elastic_version is undefined
+
+- name: Ensure Logstash OSS is installed
+  package:
+    name: "logstash-oss"
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
+    name: logstash-oss
+  when:
+    - elastic_variant == "oss"
+    - elastic_version is undefined
+
+- name: Ensure Logstash is installed (specific version)
+  package:
+    name: "logstash{{ elastic_versionseparator }}{{ elastic_version }}"
     enablerepo:
       - "elastic-{{ elastic_release }}.x"
   when:
     - elastic_variant == "elastic"
+    - elastic_version is defined
 
-- name: Ensure Logstash OSS is installed
+- name: Ensure Logstash OSS is installed (specific version)
   package:
-    name: "logstash-oss{{ logstash_version }}"
+    name: "logstash-oss{{ elastic_versionseparator }}{{ elastic_version }}"
     enablerepo:
       - "elastic-{{ elastic_release }}.x"
   when:
     - elastic_variant == "oss"
+    - elastic_version is defined
+
 
 - name: Import Logstash Security tasks
   import_tasks: logstash-security.yml
@@ -64,7 +97,9 @@
     - logstash_security is defined and logstash_security | bool
     - elastic_variant == "elastic"
   tags:
-    - security
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
 
 - name: Configure Logstash
   template:

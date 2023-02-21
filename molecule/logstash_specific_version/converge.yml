@@ -18,12 +18,12 @@
 
   - name: Set Logstash version on RedHat
     set_fact:
-      logstash_version: "-7.10.1"
+      elastic_version: "-7.10.1"
     when: ansible_os_family == "RedHat"
 
   - name: Set Logstash version on Debian
     set_fact:
-      logstash_version: "=1:7.10.1-1"
+      elastic_version: "=1:7.10.1-1"
     when: ansible_os_family == "Debian"
 
   - name: "Include Elastics repos role"

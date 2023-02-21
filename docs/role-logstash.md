@@ -29,7 +29,7 @@ If you want to use the default pipeline (or other pipelines communicating via Re
 Role Variables
 --------------
 
-* *logstash_version*: Version number of Logstash to install (use os specific version string. e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems). Only set if you don't want the latest. (default: none). For OSS version see `elastic_variant` below.
+* *elastic_version*: Version number of Logstash to install (use os specific version string. e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems). Only set if you don't want the latest. (default: none). For OSS version see `elastic_variant` below.
 * *logstash_enable*: Start and enable Logstash service (default: `true`)
 * *logstash_config_backup*: Keep backups of all changed configuration (default: `no`)
 * *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)
@@ -47,7 +47,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 
 * *logstash_manage_pipelines*: Manage `pipelines.yml` (default: `true`)
 * *logstash_no_pipelines*: Don't manage pipelines at all (default: `false`)
-* *logstash_pipelines*: List of pipelines with optional URL to repo (see docs/pipelines.md for details)
+* *logstash_pipelines*: List of pipelines with optional URL to repo (see [pipelines documentation](file:///roles/logstash/docs/pipelines.md) for details)
 * *logstash_global_ecs*: Set ECS compatibilty mode (default: none. Possible values: `disabled` or `v1`)
 * *logstash_elasticsearch_output*: Enable default pipeline to Elasticsearch (default: `true`)
 * *logstash_ident*: Add a field identifying the node that processed an event (default: `true`)
@@ -55,13 +55,19 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_beats_input*: Enable default pipeline with `beats` input (default: `true`)
 * *logstash_beats_input_congestion*: Optional congestion threshold for the beats input pipeline
 * *logstash_beats_tls*: Activate TLS for the beats input pipeline (default: none but `true` with full stack setup if not set)
-* *logstash_tls_key_passphrase*: Passphrase for Logstash certificates (default: `ChangeMe`)
+* *logstash_tls_key_passphrase*: Passphrase for Logstash certificates (default: `LogstashChangeMe`)
+* *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
+* *logstash_cert_expiration_buffer*: Ansible will renew the Logstash certificate if its validity is shorter than this value, which should be number of days. (default: 30)
+* *logstash_cert_will_expire_soon*: Set it to true to renew logstash certificate (default: `fasle`), Or run the playbook with `--tags renew_logstash_cert` to do that.
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
 * *logstash_user*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
 * *logstash_password*: Password of Elasticsearch user (Default: `password`)
 * *logstash_user_indices*: Indices the user has access to (Default: `'"ecs-logstash*", "logstash*", "logs*"'`)
 * *logstash_reset_writer_role*: Reset user and role with every run: (Default: `true`)
+* *logstash_validate_after_inactivity*: How long should logstash wait, before starting a new connection and leave the old one with elasticsearch, when the connection with elasticsearch get lost: (Default: `300`).
+* *logstash_queue_type*: What kind of queue should Logstash use per default: (Default: `persisted`, alternative: `memory`)
+* *logstash_queue_max_bytes*: The total capacity of ansible-forwarder queue in number of bytes: (Default: `2gb`)
 
 
 

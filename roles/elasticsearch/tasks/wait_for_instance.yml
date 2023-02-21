@@ -5,3 +5,7 @@
     host: "{{ hostvars[item].ansible_default_ipv4.address }}"
     port: 9200
     timeout: 600
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert

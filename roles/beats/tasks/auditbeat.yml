@@ -4,18 +4,18 @@
     name: auditbeat
     enablerepo:
       - "elastic-{{ elastic_release }}.x"
-  when: beats_auditbeat_version is not defined
+  when: elastic_version is not defined
 
 - name: Install Auditbeat specific version
   package:
-    name: "auditbeat{{ beats_auditbeat_version }}"
+    name: "auditbeat{{ elastic_versionseparator }}{{ elastic_version }}"
     enablerepo:
       - "elastic-{{ elastic_release }}.x"
   notify:
     - Restart Auditbeat
   when:
-    - beats_auditbeat_version is defined
-    - beats_auditbeat_version != "latest"
+    - elastic_version is defined
+    - elastic_version != "latest"
 
 - name: Install Auditbeat latest version
   package:
@@ -26,8 +26,8 @@
   notify:
     - Restart Auditbeat
   when:
-    - beats_auditbeat_version is defined
-    - beats_auditbeat_version == "latest"
+    - elastic_version is defined
+    - elastic_version == "latest"
 
 - name: Configure Auditbeat
   template:

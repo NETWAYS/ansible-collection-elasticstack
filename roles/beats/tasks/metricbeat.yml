@@ -4,18 +4,18 @@
     name: metricbeat
     enablerepo:
       - "elastic-{{ elastic_release }}.x"
-  when: beats_metricbeat_version is not defined
+  when: elastic_version is not defined
 
 - name: Install Metricbeat specific version
   package:
-    name: "metricbeat{{ beats_metricbeat_version }}"
+    name: "metricbeat{{ elastic_versionseparator }}{{ elastic_version }}"
     enablerepo:
       - "elastic-{{ elastic_release }}.x"
   notify:
     - Restart Metricbeat
   when:
-    - beats_metricbeat_version is defined
-    - beats_metricbeat_version != "latest"
+    - elastic_version is defined
+    - elastic_version != "latest"
 
 - name: Install Metricbeat latest version
   package:
@@ -26,8 +26,8 @@
   notify:
     - Restart Metricbeat
   when:
-    - beats_metricbeat_version is defined
-    - beats_metricbeat_version == "latest"
+    - elastic_version is defined
+    - elastic_version == "latest"
 
 - name: Configure Metricbeat
   template:

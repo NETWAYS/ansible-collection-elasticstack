@@ -1,12 +1,17 @@
 ---
 
+- name: Include OS specific vars
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
+    - '{{ ansible_os_family }}.yml'
+
 - name: Set common password for common certificates
   set_fact:
     kibana_tls_key_passphrase: "{{ elastic_cert_pass }}"
   when:
     - elastic_cert_pass is defined
 
-# tasks file for kibana
 - name: Set Elasticsearch hosts if used with other roles
   set_fact:
     kibana_elasticsearch_hosts: "{{ groups['elasticsearch'] }}"
@@ -27,14 +32,33 @@
     name: kibana
     enablerepo:
       - "elastic-{{ elastic_release }}.x"
-  when: elastic_variant == "elastic"
+  when:
+    - elastic_variant == "elastic"
+    - elastic_version is undefined
 
 - name: Install Kibana OSS
   package:
     name: kibana-oss
     enablerepo:
       - "elastic-{{ elastic_release }}.x"
-  when: elastic_variant == "oss"
+  when:
+    - elastic_variant == "oss"
+    - elastic_version is undefined
+
+- name: Install Kibana (specific version)
+  package:
+    name: kibana{{ elastic_versionseparator }}{{ elastic_version }}
+  when:
+    - elastic_variant == "elastic"
+    - elastic_version is defined
+
+- name: Install Kibana OSS (specific version)
+  package:
+    name: kibana-oss{{ elastic_versionseparator }}{{ elastic_version }}
+  when:
+    - elastic_variant == "oss"
+    - elastic_version is defined
+
 
 - name: Import security related tasks
   import_tasks: kibana-security.yml
@@ -44,7 +68,9 @@
     - kibana_security | bool
     - elastic_variant == "elastic"
   tags:
-    - security
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: Configure Kibana
   template:
@@ -62,6 +88,8 @@
   service:
     name: kibana
     state: started
+    enabled: yes
+  when: kibana_enable | bool
 
 # the following is useful when running tests or extra tasks that need to
 # have Kibana running

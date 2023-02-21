@@ -13,6 +13,10 @@
     elasticsearch_tls_key_passphrase: "{{ elastic_cert_pass }}"
   when:
     - elastic_cert_pass is defined
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Install openssl if security is activated
   package:
@@ -58,6 +62,21 @@
     when:
       - ansible_os_family == "Debian"
 
+- name: Ensure Elasticsearch is installed (specific version)
+  package:
+    name: elasticsearch{{ elastic_versionseparator }}{{ elastic_version }}
+  when:
+    - elastic_variant == "elastic"
+    - elastic_version is defined
+
+- name: Ensure Elasticsearch OSS is installed (specific version)
+  package:
+    name: elasticsearch-oss{{ elastic_versionseparator }}{{ elastic_version }}
+  when:
+    - elastic_variant == "oss"
+    - elastic_version is defined
+>>>>>>> feature/specificversion-98
+
 - name: Configure Elasticsearch
   template:
     src: elasticsearch.yml.j2
@@ -76,8 +95,9 @@
     - elasticsearch_security | bool
     - elastic_variant == "elastic"
   tags:
-    - security
     - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Create Elasticsearch data directory
   file:
@@ -131,3 +151,4 @@
   when:
     - elasticsearch_security | bool
     - elastic_variant == "elastic"
+    - inventory_hostname == elasticsearch_ca

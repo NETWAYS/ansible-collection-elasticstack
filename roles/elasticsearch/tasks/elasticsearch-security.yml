@@ -581,7 +581,7 @@
 
 - name: Check for open port {{ elastic_elasticsearch_http_port }}/tcp
   wait_for:
-    port: {{ elastic_elasticsearch_http_port }}
+    port: "{{ elastic_elasticsearch_http_port }}"
   tags:
     - certificates
     - renew_ca

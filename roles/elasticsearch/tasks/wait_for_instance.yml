@@ -3,7 +3,7 @@
 - name: Wait for instance
   wait_for:
     host: "{{ hostvars[item].ansible_default_ipv4.address }}"
-    port: {{ elastic_elasticsearch_http_port }}
+    port: "{{ elastic_elasticsearch_http_port }}"
     timeout: 600
   tags:
     - certificates

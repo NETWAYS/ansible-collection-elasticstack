@@ -8,7 +8,7 @@
 # Remember, this is the no-security scenario. So no https
   - name: Health check
     uri:
-      url: http://localhost:9200/_cluster/health
+      url: http://localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health
       method: GET
       return_content: yes
       status_code: 200
@@ -20,7 +20,7 @@
 
   - name: Node check
     uri:
-      url: http://localhost:9200/_cat/nodes
+      url: http://localhost:{{ elastic_elasticsearch_http_port }}/_cat/nodes
       method: GET
       return_content: yes
       status_code: 200

@@ -36,6 +36,7 @@ These variables are identical over all our elastic related roles, hence the diff
 
 * *elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
 * *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+* *elastic_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
 
 ```
 - name: Install Elasticsearch

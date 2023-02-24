@@ -23,7 +23,7 @@
   - name: Query for Logstasch indices
     shell: >
       curl -ks -uelastic:{{ elastic_pass.stdout }}
-      https://localhost:9200/_cat/indices |
+      https://localhost:{{ elastic_elasticsearch_http_port }}/_cat/indices |
       grep logstash |
       awk {' print $7 '} |
       sort -n |

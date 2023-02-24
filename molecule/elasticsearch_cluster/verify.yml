@@ -20,7 +20,7 @@
 
   - name: Health check
     uri:
-      url: https://localhost:9200/_cluster/health
+      url: https://localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health
       method: GET
       force_basic_auth: yes
       user: elastic
@@ -35,7 +35,7 @@
 
   - name: Node check
     uri:
-      url: https://localhost:9200/_cat/nodes
+      url: https://localhost:{{ elastic_elasticsearch_http_port }}/_cat/nodes
       method: GET
       force_basic_auth: yes
       user: elastic

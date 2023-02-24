@@ -551,7 +551,7 @@
 - name: Check for cluster status with bootstrap password
   shell: >
     curl -ks
-    {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty |
+    {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
     grep status |
     cut -d\" -f4
   register: es_cluster_status_bootstrap
@@ -570,7 +570,7 @@
 - name: Check for cluster status with elastic password
   shell: >
     curl -ks
-    {{ elasticsearch_http_protocol }}://elastic:{{ elastic_password.stdout }}@localhost:9200/_cluster/health?pretty |
+    {{ elasticsearch_http_protocol }}://elastic:{{ elastic_password.stdout }}@localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
     grep status |
     cut -d\" -f4
   register: es_cluster_status
@@ -579,9 +579,9 @@
   ignore_errors: "{{ ansible_check_mode }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
-- name: Check for open port 9200/tcp
+- name: Check for open port {{ elastic_elasticsearch_http_port }}/tcp
   wait_for:
-    port: 9200
+    port: {{ elastic_elasticsearch_http_port }}
   tags:
     - certificates
     - renew_ca

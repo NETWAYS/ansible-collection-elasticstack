@@ -31,7 +31,7 @@
       delegate_to: "{{ groups['elasticsearch'][0] }}"
 
     - name: Connect to Elasticsearch
-      command: "curl -s --cacert /etc/kibana/certs/ca.crt -u elastic:{{ elastic_password.stdout }} https://{{ groups['elasticsearch'][0] }}:9200/_cat/indices"
+      command: "curl -s --cacert /etc/kibana/certs/ca.crt -u elastic:{{ elastic_password.stdout }} https://{{ groups['elasticsearch'][0] }}:{{ elastic_elasticsearch_http_port }}/_cat/indices"
 
     - name: Connect to Kibana
       command: "curl -s -u elastic:{{ elastic_password.stdout }} http://{{ ansible_hostname }}:5601/api/status"

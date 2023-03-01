@@ -46,11 +46,8 @@ jobs:
         distro:
           - ubuntu2004
           - ubuntu2204
-          - centos7
           - rockylinux8
-          - rockylinux9
           - debian10
-          - debian11
         scenario:
           - elasticstack_default
         release:

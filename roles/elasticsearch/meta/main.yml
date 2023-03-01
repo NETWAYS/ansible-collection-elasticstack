@@ -1,5 +1,5 @@
 galaxy_info:
-  author: Thomas Widhalm
+  author: Netways GmbH
   description: Elasticsearch Ansible role
   role_name: elasticsearch
   company: Netways GmbH
@@ -31,12 +31,14 @@ galaxy_info:
   platforms:
   - name: EL
     versions:
-    - "7"
-    - "8"
+      - "8"
   - name: Debian
     versions:
-    - buster
-    - bullseye
+      - bullseye
+  - name: Ubuntu
+    versions:
+      - focal
+      - jammy
   #   - 25
   # - name: SomePlatform
   #   versions:

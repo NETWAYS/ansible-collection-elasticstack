@@ -581,7 +581,7 @@
   ignore_errors: "{{ ansible_check_mode }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
-- name: Check for open port {{ elastic_elasticsearch_http_port }}/tcp
+- name: Check for open port tcp {{ elastic_elasticsearch_http_port }}
   wait_for:
     port: "{{ elastic_elasticsearch_http_port }}"
   tags:

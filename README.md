@@ -35,6 +35,23 @@ You may want the following Ansible roles installed. There other ways to achieve 
 
 * geerlingguy.redis
 
+### Supported systems
+
+We test the collection on the following Linux distributions. Each one with Elastic Stack 7 and 8.
+
+* Rocky Linux 8
+* Ubuntu 20.04 LTS
+* Ubuntu 22.04 LTS
+* Debian 11
+
+We know from personal experience, that the collections work in following combinations. Missing tests mostly come from incompatibilties between the distribution and our testing environment, not from problems with the collection itself.
+
+* CentOS 7 - Elastic Stack 7
+
+We have known issues with the following Distributions.
+
+* Rocky Linux 9: The GnuPG key used by Elastic seems to be incompatible with this version of Rocky.
+
 ## Usage
 
 * *elastic_version*: Version number of tools to install Only set if you don't want the latest. (default: none). For OSS version see `elastic_variant` below. **IMPORTANT** Do not change the version once you have set up the stack. There are unpredictable effects to be expected when using this for upgrades. And upgrade mechanism is already on it's way. (default: none. Example: `7.17.2`
@@ -47,7 +64,7 @@ You will want to have reliable DNS resolution or enter all hosts of the stack in
 
 ### Default Passwords 
 
-Default Passwords  can be seen during generation, or found later in `/usr/share/elasticsearch/initial_passwords`
+Default Passwords can be seen during generation, or found later in `/usr/share/elasticsearch/initial_passwords`
 
 To turn off security currently:
 `elastic_override_beats_tls: true`

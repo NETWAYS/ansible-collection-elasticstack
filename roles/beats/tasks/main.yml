@@ -24,6 +24,7 @@
       when:
         - beats_security | bool
         - elasticsearch_ca is undefined
+        - groups['elasticsearch'] is defined
       tags:
         - certificates
         - renew_ca

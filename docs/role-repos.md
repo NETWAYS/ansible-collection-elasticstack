@@ -11,7 +11,7 @@ Requirements
 * You need `gpg` to be installed because packages / repositories are digitally signed and verified.
 * Debian and Ubuntu hosts need to have `apt-transport-https` installed to deal with Elastics repositories.
 * Ubuntu hosts also need to have `gpg-agent` installed.
-* For SuSE hosts you need the Ansible collection `community.general` on your Ansible controller
+* For SuSE hosts you need the Ansible collection `community.general` on your Ansible controller.
 
 Role Variables
 --------------

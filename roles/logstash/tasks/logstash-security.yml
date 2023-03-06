@@ -11,7 +11,9 @@
 - name: Set elasticsearch_ca variable if not already done by user
   set_fact:
     elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
-  when: elasticsearch_ca is undefined
+  when:
+    - elasticsearch_ca is undefined
+    - groups['elasticsearch'] is defined
   tags:
     - certificates
     - configuration

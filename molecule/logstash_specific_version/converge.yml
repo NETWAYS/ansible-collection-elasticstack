@@ -28,10 +28,10 @@
       when:
         - elastic_release == 8
 
-  - name: "Include Elastics repos role"
-    include_role:
-      name: repos
-
-  - name: "Include Logstash"
-    include_role:
-      name: logstash
+    - name: "Include Elastics repos role"
+      include_role:
+        name: repos
+  
+    - name: "Include Logstash"
+      include_role:
+        name: logstash

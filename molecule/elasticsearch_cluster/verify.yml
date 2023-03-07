@@ -5,6 +5,7 @@
   hosts: all
   vars:
     elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+    elastic_elasticsearch_http_port: 9200
   tasks:
 
   - name: Set elasticsearch_ca variable if not already done by user

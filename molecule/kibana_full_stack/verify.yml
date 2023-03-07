@@ -4,6 +4,8 @@
 - name: Verify
   hosts: all
   tasks:
+  vars:
+    elastic_elasticsearch_http_port: 9200
 
   - name: Give some time for all services to connect
     wait_for:

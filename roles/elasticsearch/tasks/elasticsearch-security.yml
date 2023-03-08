@@ -589,17 +589,43 @@
     - renew_ca
     - renew_es_cert
 
+- name: Fail if API can't be queried with elastic password
+  fail:
+    msg: "Elasticsearch API can't be queried with elastic user (status: {{ es_cluster_status.stdout }}"
+  when:
+    - es_cluster_status.stdout is defined
+    - es_cluster_status.stdout not in [ "green", "yellow", "red" ]
+    - groups['elasticsearch'] | length > 1
+  tags:
+    - notest
+
+- name: Fail if API can't be queried with bootstrap password
+  fail:
+    msg: "Elasticsearch API can't be queried with bootstrap password (status: {{ es_cluster_status_bootstrap.stdout }})"
+  when:
+    - es_cluster_status_bootstrap.stdout is defined
+    - es_cluster_status.stdout not in [ "green", "yellow", "red" ]
+    - and groups['elasticsearch'] | length > 1
+  tags:
+    - notest
+
 - name: Fail if cluster is not ready yet
   fail:
     msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status.stdout }} , yet. Please rerun again later."
-  when: es_cluster_status.stdout is defined and es_cluster_status.stdout != "green" and groups['elasticsearch'] | length > 1
+  when:
+    - es_cluster_status.stdout is defined
+    - es_cluster_status.stdout != "green"
+    - groups['elasticsearch'] | length > 1
   tags:
     - notest
 
 - name: Fail if cluster is not ready yet (bootstrap password)
   fail:
     msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status_bootstrap.stdout }}), yet. Please rerun again later."
-  when: es_cluster_status_bootstrap.stdout is defined and es_cluster_status_bootstrap.stdout != "green" and groups['elasticsearch'] | length > 1
+  when:
+    - es_cluster_status_bootstrap.stdout is defined
+    - es_cluster_status_bootstrap.stdout != "green"
+    - and groups['elasticsearch'] | length > 1
   tags:
     - notest
 

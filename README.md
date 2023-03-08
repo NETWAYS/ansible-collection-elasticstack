@@ -1,5 +1,7 @@
 # Ansible Collection - netways.elasticstack
 
+[![Test ElasticStack](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_full_stack.yml/badge.svg)](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_full_stack.yml)
+
 This collection installs and manages the Elastic Stack. It provides roles every component which is part of the Stack. Furthermore it is possible to differentiate between Enterprise or OSS releases. Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/getting-started.md)**
 
 

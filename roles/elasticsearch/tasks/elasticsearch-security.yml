@@ -560,6 +560,9 @@
   changed_when: false
   no_log: true
   when: not elasticsearch_passwords_file.stat.exists | bool
+  until: es_cluster_status_bootstrap.stdout == "green"
+  retries: 5
+  delay: 10
 
 - name: Fetch Elastic password
   shell: grep "PASSWORD elastic" {{ elastic_initial_passwords }} | awk {' print $4 '}
@@ -580,6 +583,9 @@
   no_log: true
   ignore_errors: "{{ ansible_check_mode }}"
   when: elasticsearch_passwords_file.stat.exists | bool
+  until: es_cluster_status.stdout == "green"
+  retries: 5
+  delay: 10
 
 - name: Check for open port 9200/tcp
   wait_for:
@@ -588,46 +594,6 @@
     - certificates
     - renew_ca
     - renew_es_cert
-
-- name: Fail if API can't be queried with elastic password
-  fail:
-    msg: "Elasticsearch API can't be queried with elastic user (status: {{ es_cluster_status.stdout }}"
-  when:
-    - es_cluster_status.stdout is defined
-    - es_cluster_status.stdout not in [ "green", "yellow", "red" ]
-    - groups['elasticsearch'] | length > 1
-  tags:
-    - notest
-
-- name: Fail if API can't be queried with bootstrap password
-  fail:
-    msg: "Elasticsearch API can't be queried with bootstrap password (status: {{ es_cluster_status_bootstrap.stdout }})"
-  when:
-    - es_cluster_status_bootstrap.stdout is defined
-    - es_cluster_status.stdout not in [ "green", "yellow", "red" ]
-    - and groups['elasticsearch'] | length > 1
-  tags:
-    - notest
-
-- name: Fail if cluster is not ready yet
-  fail:
-    msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status.stdout }} , yet. Please rerun again later."
-  when:
-    - es_cluster_status.stdout is defined
-    - es_cluster_status.stdout != "green"
-    - groups['elasticsearch'] | length > 1
-  tags:
-    - notest
-
-- name: Fail if cluster is not ready yet (bootstrap password)
-  fail:
-    msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status_bootstrap.stdout }}), yet. Please rerun again later."
-  when:
-    - es_cluster_status_bootstrap.stdout is defined
-    - es_cluster_status_bootstrap.stdout != "green"
-    - and groups['elasticsearch'] | length > 1
-  tags:
-    - notest
 
 - name: Create initial passwords
   shell: >

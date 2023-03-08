@@ -1,0 +1,12 @@
+---
+#
+#- name: Remove the entire elastic stack
+#  zypper: 
+#    name: "{{item}}" 
+#    state: absent
+#  with_items:
+#    - filebeat
+#    - kibana
+#    - elasticsearch
+#    - logstash
+#  when: ansible_os_family|lower == "suse"

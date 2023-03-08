@@ -4,8 +4,6 @@
 
 This collection installs and manages the Elastic Stack. It provides roles every component which is part of the Stack. Furthermore it is possible to differentiate between Enterprise or OSS releases. Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/getting-started.md)**
 
-
-
 ## Roles Documentation
 
 * [Beats](docs/role-beats.md)
@@ -117,3 +115,15 @@ The execution order of the roles is important! (see below)
     - kibana
     - beats
 ```
+
+## Contributing
+
+Every kind of contribution is very welcome. Open [issues](https://github.com/NETWAYS/ansible-collection-elasticstack/issues) or provide [pull requests](https://github.com/NETWAYS/ansible-collection-elasticstack/pulls).
+
+Please note that we have some actions bound to specific names of branches. So please stick to the following naming scheme:
+
+* `fix/` as a prefix for every branch that fixes a problem
+* `feature/` for every branch that enhances the code with new features
+* `doc/` as a prefix for every branch that only changes documentation
+
+For now we open pull requests against `main`. We are planning to introduce dedicated branches to support older versions without breaking changes. Since we don't need them for now, please check back with this section because when we decided on how to proceed, you will find the information here. For now `main` always has the newest changes and if you want a stable version, please use the newest release.

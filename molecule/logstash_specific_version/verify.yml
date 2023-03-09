@@ -2,6 +2,8 @@
 
 - name: Check if Logstash configuration does what it should
   hosts: all
+  vars:
+    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
   - name: Run syntax check
     command: "/usr/share/logstash/bin/logstash --version | grep ^logstash"

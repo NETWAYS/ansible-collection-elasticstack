@@ -2,6 +2,8 @@
 
 - name: Check if Logstash configuration does what it should
   hosts: all
+  vars:
+    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
   - name: fetch Filebeat version
     command: "filebeat version | grep ^filebeat"

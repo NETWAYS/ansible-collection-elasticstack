@@ -108,9 +108,9 @@ setup.kibana:
 output.elasticsearch:
 {% if beats_security | bool %}
 {% if elastic_stack_full_stack | bool %}
-  hosts: [ {% for host in groups['elasticsearch'] %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
+  hosts: [ {% for host in groups['elasticsearch'] %}"https://{{ host }}:{{ elastic_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% else %}
-  hosts: [ {% for host in beats_target_hosts %}"https://{{ host }}:9200"{% if not loop.last %},{% endif %}{% endfor %}]
+  hosts: [ {% for host in beats_target_hosts %}"https://{{ host }}:{{ elastic_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}
   username: "elastic"
   password: "{{ beats_writer_password.stdout }}"
@@ -119,9 +119,9 @@ output.elasticsearch:
   ssl.certificate_authorities: ["/etc/beats/certs/ca.crt"]
 {% else %}
 {% if elastic_stack_full_stack | bool %}
-  hosts: [ {% for host in groups['elasticsearch'] %}"http://{{ host }}:{{ beats_elasticsearch_output_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+  hosts: [ {% for host in groups['elasticsearch'] %}"http://{{ host }}:{{ elastic_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% else %}
-  hosts: [ {% for host in beats_target_hosts %}"http://{{ host }}:{{ beats_elasticsearch_output_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+  hosts: [ {% for host in beats_target_hosts %}"http://{{ host }}:{{ elastic_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}
 {% endif %}
 {% endif %}

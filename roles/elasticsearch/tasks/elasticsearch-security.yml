@@ -15,7 +15,7 @@
   register: ca_exists
   when: inventory_hostname == elasticsearch_ca
 
-- name: Get the ca expiration date
+- name: Get the ca expiration date # noqa: risky-shell-pipe
   shell: >-
     if test -v BASH; then set -o pipefail; fi;
     openssl pkcs12
@@ -33,7 +33,7 @@
 
 - name: Set the ca expiration date in days
   set_fact:
-    elastic_ca_expiration_days: "{{ ((ca_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    elastic_ca_expiration_days: "{{ ((ca_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: inventory_hostname == elasticsearch_ca and ca_expiration_date.skipped is not defined
 
 - name: Set ca will expire soon to true
@@ -59,6 +59,9 @@
     - groups['logstash'] is defined
 
 - name: Backup ca directory on elasticsearch ca host then remove
+  when: (inventory_hostname == elasticsearch_ca) and ('renew_ca' in "ansible_run_tags" or elastic_ca_will_expire_soon | bool)
+  tags:
+    - renew_ca
   block:
     - name: Check if ca directory exists on elasticsearch ca host
       stat:
@@ -102,16 +105,12 @@
       when: elasticsearch_move_ca_file.changed
       delegate_to: localhost
 
-  when: (inventory_hostname == elasticsearch_ca) and ('renew_ca' in "ansible_run_tags" or elastic_ca_will_expire_soon | bool)
-  tags:
-    - renew_ca
-
 - name: Ensure elasticsearch certificate exists
   stat:
     path: "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
   register: elasticsearch_cert_exists
 
-- name: Get the elasticsearch certificate expiration date
+- name: Get the elasticsearch certificate expiration date # noqa: risky-shell-pipe
   shell: >-
     if test -v BASH; then set -o pipefail; fi;
     openssl pkcs12
@@ -127,7 +126,7 @@
 
 - name: Set the elasticsearch certificate expiration date in days
   set_fact:
-    elasticsearch_cert_expiration_days: "{{ ((elasticsearch_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    elasticsearch_cert_expiration_days: "{{ ((elasticsearch_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: elasticsearch_cert_expiration_date.skipped is not defined
 
 - name: Set elasticsearch certificate will expire soon to true
@@ -143,6 +142,10 @@
   when: elasticsearch_cert_expiration_day is defined and elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
 
 - name: Backup elasticsearch certs on node then remove
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
+  tags:
+    - renew_ca
+    - renew_es_cert
   block:
     - name: Check if cert directory exists on elasticsearch node
       stat:
@@ -163,12 +166,13 @@
         path: /etc/elasticsearch/certs
         state: absent
       when: elasticsearch_move_cert_directory.changed
+
+- name: Backup elasticsearch certs on elasticsearch_ca host then remove
   when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
+  delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - renew_ca
     - renew_es_cert
-
-- name: Backup elasticsearch certs on elasticsearch_ca host then remove
   block:
     - name: Check if cert file exists on elasticsearch_ca host
       stat:
@@ -189,13 +193,13 @@
         path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
         state: absent
       when: elasticsearch_move_cert_file.changed
-  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
-  delegate_to: "{{ elasticsearch_ca }}"
-  tags:
-    - renew_ca
-    - renew_es_cert
 
 - name: Backup elasticsearch cert on localhost then remove
+  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
+  delegate_to: localhost
+  tags:
+    - renew_es_cert
+    - renew_ca
   block:
     - name: Check the existance of cert on Ansible controler
       stat:
@@ -215,11 +219,6 @@
         path: /tmp/{{ ansible_hostname }}.p12
         state: absent
       when: elasticsearch_move_cert_file.changed
-  delegate_to: localhost
-  when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
-  tags:
-    - renew_es_cert
-    - renew_ca
 
 - name: Create directory for Elasticsearch CA
   file:
@@ -243,8 +242,9 @@
   changed_when: false
   register: es_keystore
 
-- name: Set bootstrap password
+- name: Set bootstrap password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     echo "{{ elasticsearch_bootstrap_pw }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -x 'bootstrap.password'
@@ -256,8 +256,9 @@
   ignore_errors: "{{ ansible_check_mode }}"
 
 
-- name: Get xpack.security.http.ssl.keystore.secure_password
+- name: Get xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.http.ssl.keystore.secure_password'
   when:
@@ -268,8 +269,9 @@
   no_log: true
   changed_when: false
 
-- name: Set xpack.security.http.ssl.keystore.secure_password
+- name: Set xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.keystore.secure_password'
@@ -282,8 +284,9 @@
     - Restart Elasticsearch
 
 
-- name: Remove xpack.security.http.ssl.keystore.secure_password
+- name: Remove xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.keystore.secure_password'
   changed_when: false
@@ -295,8 +298,9 @@
     - Restart Elasticsearch
 
 
-- name: Get xpack.security.http.ssl.truststore.secure_password
+- name: Get xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.http.ssl.truststore.secure_password'
   when:
@@ -307,8 +311,9 @@
   no_log: true
   changed_when: false
 
-- name: Set xpack.security.http.ssl.truststore.secure_password
+- name: Set xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.truststore.secure_password'
@@ -320,8 +325,9 @@
   notify:
     - Restart Elasticsearch
 
-- name: Remove xpack.security.http.ssl.truststore.secure_password
+- name: Remove xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.truststore.secure_password'
   changed_when: false
@@ -332,8 +338,9 @@
   notify:
     - Restart Elasticsearch
 
-- name: Get xpack.security.transport.ssl.keystore.secure_password
+- name: Get xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.transport.ssl.keystore.secure_password'
   when:
@@ -344,8 +351,9 @@
   no_log: true
   changed_when: false
 
-- name: Set xpack.security.transport.ssl.keystore.secure_password
+- name: Set xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.keystore.secure_password'
@@ -357,8 +365,9 @@
   notify:
     - Restart Elasticsearch
 
-- name: Remove xpack.security.transport.ssl.keystore.secure_password
+- name: Remove xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.keystore.secure_password'
   changed_when: false
@@ -369,8 +378,9 @@
   notify:
     - Restart Elasticsearch
 
-- name: Get xpack.security.transport.ssl.truststore.secure_password
+- name: Get xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.transport.ssl.truststore.secure_password'
   when:
@@ -381,8 +391,9 @@
   no_log: true
   changed_when: false
 
-- name: Set xpack.security.transport.ssl.truststore.secure_password
+- name: Set xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.truststore.secure_password'
@@ -394,8 +405,9 @@
   notify:
     - Restart Elasticsearch
 
-- name: Remove xpack.security.transport.ssl.truststore.secure_password
+- name: Remove xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.truststore.secure_password'
   changed_when: false
@@ -550,8 +562,9 @@
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
 
-- name: Check for cluster status with bootstrap password
+- name: Check for cluster status with bootstrap password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     curl -ks
     {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
     grep status |
@@ -561,16 +574,20 @@
   no_log: true
   when: not elasticsearch_passwords_file.stat.exists | bool
 
-- name: Fetch Elastic password
-  shell: grep "PASSWORD elastic" {{ elastic_initial_passwords }} | awk {' print $4 '}
+- name: Fetch Elastic password # noqa: risky-shell-pipe
+  shell: >
+    if test -v BASH; then set -o pipefail; fi;
+    grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
+    awk {' print $4 '}
   register: elastic_password
   changed_when: false
   no_log: true
   delegate_to: "{{ elasticsearch_ca }}"
   #when: elasticsearch_passwords_file.stat.exists
 
-- name: Check for cluster status with elastic password
+- name: Check for cluster status with elastic password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     curl -ks
     {{ elasticsearch_http_protocol }}://elastic:{{ elastic_password.stdout }}@localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
     grep status |
@@ -603,8 +620,9 @@
   tags:
     - notest
 
-- name: Create initial passwords
+- name: Create initial passwords # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b >
     {{ elastic_initial_passwords }}
   when: inventory_hostname == elasticsearch_ca

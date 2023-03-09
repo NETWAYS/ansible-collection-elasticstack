@@ -5,8 +5,9 @@
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
   register: "pipeline_stat"
 
-- name: Check who managed pipeline in last run
+- name: Check who managed pipeline in last run # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     grep -e '^# source:{{ pipelinename.name }}' /etc/logstash/pipelines.yml |
     cut -d: -f3
   register: "pipeline_manager"

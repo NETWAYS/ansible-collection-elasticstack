@@ -16,7 +16,7 @@
     when: "'logstash' in group_names"
   - name: Query for Logstasch indices
     shell: >
-      curl -s http://localhost:9200/_cat/indices |
+      curl -s http://localhost:{{ elastic_elasticsearch_http_port }}/_cat/indices |
       grep logstash |
       awk {' print $7 '} |
       sort -n |

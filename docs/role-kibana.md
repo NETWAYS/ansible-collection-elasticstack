@@ -21,6 +21,7 @@ Role Variables
 These variables are identical over all our elastic related roles, hence the different naming scheme.
 
 * *elastic_stack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
+* *elastic_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
 * *kibana_tls_key_passphrase*: Passphrase for kibana certificates (default: `PleaseChangeMe`)
 * *kibana_cert_expiration_buffer*: Ansible will renew the kibana certificate if its validity is shorter than this value, which should be number of days. (default: 30)
 * *kibana_cert_will_expire_soon*: Set it to true to renew kibana certificate (default: `fasle`), Or run the playbook with `--tags renew_kibana_cert` to do that.

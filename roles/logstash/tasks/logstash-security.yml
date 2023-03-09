@@ -26,7 +26,7 @@
     path: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"
   register: logstash_cert_exists
 
-- name: Get the logstash certificate expiration date
+- name: Get the logstash certificate expiration date # noqa: risky-shell-pipe
   shell: >-
     if test -v BASH; then set -o pipefail; fi;
     openssl pkcs12
@@ -46,7 +46,7 @@
 
 - name: Set the logstash certificate expiration date in days
   set_fact:
-    logstash_cert_expiration_days: "{{ ((logstash_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    logstash_cert_expiration_days: "{{ ((logstash_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: logstash_cert_expiration_date.skipped is not defined
 
 - name: Set logstash certificate will expire soon to true
@@ -62,6 +62,11 @@
   when: logstash_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_expiration_buffer | int
 
 - name: Backup logstash certs then remove
+  when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  tags:
+    - renew_ca
+    - renew_logstash_cert
+    - never
   block:
     - name: Check if cert directory exists on logstash
       stat:
@@ -82,13 +87,14 @@
         path: "{{ logstash_certs_dir }}"
         state: absent
       when: logstash_move_cert_directory.changed
+
+- name: Backup logstash certs on elasticsearch_ca host then remove
   when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
+  delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - renew_ca
     - renew_logstash_cert
     - never
-
-- name: Backup logstash certs on elasticsearch_ca host then remove
   block:
     - name: Check if cert file exists on elasticsearch_ca host
       stat:
@@ -129,14 +135,14 @@
         path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
         state: absent
       when: logstash_move_cert_zip_file_ca_host.changed
+
+- name: Backup logstash cert on Ansible controler then remove
   when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: localhost
   tags:
     - renew_ca
     - renew_logstash_cert
     - never
-
-- name: Backup logstash cert on Ansible controler then remove
   block:
     - name: Check the existance of cert on Ansible controler
       stat:
@@ -175,12 +181,6 @@
         path: /tmp/{{ ansible_hostname }}-ls.zip
         state: absent
       when: logstash_move_cert_zip_ansible_controler.changed
-  delegate_to: localhost
-  when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
-  tags:
-    - renew_ca
-    - renew_logstash_cert
-    - never
 
 - name: Create individual certificates for Logstash
   command: >
@@ -383,8 +383,9 @@
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true
 
-- name: Fetch Elastic password
+- name: Fetch Elastic password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
     awk {' print $4 '}
   register: elastic_password_logstash
@@ -395,8 +396,9 @@
     - configuration
     - logstash_configuration
 
-- name: Check for logstash_writer role
+- name: Check for logstash_writer role # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     curl --cacert {{ elastic_ca_dir }}/ca.crt
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_security/role/logstash_writer
@@ -440,8 +442,9 @@
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
     - elastic_release | int > 7
 
-- name: Check for logstash_writer user
+- name: Check for logstash_writer user # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     curl --cacert {{ elastic_ca_dir }}/ca.crt
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ elasticsearch_ca }}:9200/_security/user/{{ logstash_user }}

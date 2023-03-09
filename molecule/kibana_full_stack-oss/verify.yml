@@ -19,7 +19,7 @@
       wait_for:
         port: 5601
     - name: Connect to Elasticsearch
-      command: "curl -s http://{{ groups['elasticsearch'][0] }}:9200/_cat/indices"
+      command: "curl -s http://{{ groups['elasticsearch'][0] }}:{{ elastic_elasticsearch_http_port }}/_cat/indices"
     - name: Connect to Kibana
       command: "curl -s http://{{ ansible_hostname }}:5601/api/status"
       register: curl_out

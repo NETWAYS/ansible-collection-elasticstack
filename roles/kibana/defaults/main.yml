@@ -22,3 +22,4 @@ kibana_cert_will_expire_soon: false
 elastic_release: 8
 elastic_stack_full_stack: true
 elastic_variant: elastic
+elastic_elasticsearch_http_port: 9200

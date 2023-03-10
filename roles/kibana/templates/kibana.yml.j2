@@ -1,5 +1,7 @@
 server.host: "0.0.0.0"
-http{% if kibana_tls | bool %}s{% endif %}://{{ elastic_kibana_host | default( {{ ansible_fqdn }} ) }}:{{ elastic_kibana_port }}
+server.publicBaseUrl: "http"
+{% if kibana_tls | bool %}s{% endif %}
+"://{{ elastic_kibana_host | default( {{ ansible_fqdn }} ) }}:{{ elastic_kibana_port }}"
 
 {% if elastic_stack_full_stack is defined and elastic_stack_full_stack | bool and kibana_security | bool  and elastic_variant == "elastic" %}
 elasticsearch.hosts: [{% for host in kibana_elasticsearch_hosts %}"https://{{ host }}:{{ elastic_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]

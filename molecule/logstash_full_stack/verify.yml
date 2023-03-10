@@ -3,6 +3,8 @@
 
 - name: Check if Logstash configuration does what it should
   hosts: all
+  vars:
+    elastic_elasticsearch_http_port: 9200
   tasks:
   - name: Give some time for tools to connect
     wait_for:

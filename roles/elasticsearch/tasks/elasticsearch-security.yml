@@ -553,13 +553,16 @@
 - name: Check for cluster status with bootstrap password
   shell: >
     curl -ks
-    {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/health?pretty |
+    {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
     grep status |
     cut -d\" -f4
   register: es_cluster_status_bootstrap
   changed_when: false
   no_log: true
   when: not elasticsearch_passwords_file.stat.exists | bool
+  until: es_cluster_status_bootstrap.stdout == "green"
+  retries: 5
+  delay: 10
 
 - name: Fetch Elastic password
   shell: grep "PASSWORD elastic" {{ elastic_initial_passwords }} | awk {' print $4 '}
@@ -572,7 +575,7 @@
 - name: Check for cluster status with elastic password
   shell: >
     curl -ks
-    {{ elasticsearch_http_protocol }}://elastic:{{ elastic_password.stdout }}@localhost:9200/_cluster/health?pretty |
+    {{ elasticsearch_http_protocol }}://elastic:{{ elastic_password.stdout }}@localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
     grep status |
     cut -d\" -f4
   register: es_cluster_status
@@ -580,28 +583,17 @@
   no_log: true
   ignore_errors: "{{ ansible_check_mode }}"
   when: elasticsearch_passwords_file.stat.exists | bool
+  until: es_cluster_status.stdout == "green"
+  retries: 5
+  delay: 10
 
-- name: Check for open port 9200/tcp
+- name: Check for open port tcp {{ elastic_elasticsearch_http_port }}
   wait_for:
-    port: 9200
+    port: "{{ elastic_elasticsearch_http_port }}"
   tags:
     - certificates
     - renew_ca
     - renew_es_cert
-
-- name: Fail if cluster is not ready yet
-  fail:
-    msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status.stdout }} , yet. Please rerun again later."
-  when: es_cluster_status.stdout is defined and es_cluster_status.stdout != "green" and groups['elasticsearch'] | length > 1
-  tags:
-    - notest
-
-- name: Fail if cluster is not ready yet (bootstrap password)
-  fail:
-    msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status_bootstrap.stdout }}), yet. Please rerun again later."
-  when: es_cluster_status_bootstrap.stdout is defined and es_cluster_status_bootstrap.stdout != "green" and groups['elasticsearch'] | length > 1
-  tags:
-    - notest
 
 - name: Create initial passwords
   shell: >

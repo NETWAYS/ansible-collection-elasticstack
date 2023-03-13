@@ -1,5 +1,11 @@
 ---
 
+- name: Include OS specific vars
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
+    - '{{ ansible_os_family }}.yml'
+
 - name: Prepare for whole stack roles if used
   when:
     - elastic_stack_full_stack | bool
@@ -45,17 +51,30 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Ensure Logstash is installed
-  package:
-    name: "logstash{{ logstash_version }}"
-  when:
-    - elastic_variant == "elastic"
+- name: Construct exact name of Logstas package
+  set_fact:
+    logstash_package: >-
+      {{
+      'logstash'
+      + ('-oss' if elastic_variant == 'oss' else '')
+      + (elastic_versionseparator + elastic_version
+      | string if elastic_version is defined else '')
+      | replace(' ','')
+      }}
 
-- name: Ensure Logstash OSS is installed
+- name: Install Logstash - rpm
   package:
-    name: "logstash-oss{{ logstash_version }}"
+    name: "{{ logstash_package }}"
+    enablerepo:
+      - 'elastic-{% if elastic_variant == "oss" %}oss-{% endif %}{{ elastic_release }}.x'
   when:
-    - elastic_variant == "oss"
+    - ansible_os_family == "RedHat"
+
+- name: Install Logstash - deb
+  package:
+    name: "{{ logstash_package }}"
+  when:
+    - ansible_os_family == "Debian"
 
 - name: Import Logstash Security tasks
   import_tasks: logstash-security.yml

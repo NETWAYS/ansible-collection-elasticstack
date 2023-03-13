@@ -29,7 +29,7 @@ If you want to use the default pipeline (or other pipelines communicating via Re
 Role Variables
 --------------
 
-* *logstash_version*: Version number of Logstash to install (use os specific version string. e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems). Only set if you don't want the latest. (default: none). For OSS version see `elastic_variant` below.
+* *elastic_version*: Version number of Logstash to install (e.g. `7.10.1`). Only set if you don't want the latest. (default: none). For OSS version see `elastic_variant` below.
 * *logstash_enable*: Start and enable Logstash service (default: `true`)
 * *logstash_config_backup*: Keep backups of all changed configuration (default: `no`)
 * *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)
@@ -95,6 +95,7 @@ The following variables only apply if you use this role together with our Elasti
 
 * *elastic_stack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
 * *elastic_ca_dir*: Directory where the CA and certificates lie on the main Elasticsearch host (default: `/opt/es-ca`)
+* *elastic_elasticsearch_http_port*: Port of Elasticsearch to send events to (Default: `9200`)
 * *elastic_initial_passwords*: File where initial passwords are stored on the main Elasticsearch host (default: `/usr/share/elasticsearch/initial_passwords`)
 
 ## Usage

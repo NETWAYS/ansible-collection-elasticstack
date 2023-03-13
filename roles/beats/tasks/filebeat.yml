@@ -1,27 +1,52 @@
 ---
-- name: Install Filebeat
+
+- name: Construct exact name of Filebeat package
+  set_fact:
+    filebeat_package: >-
+      {{
+      'filebeat'
+      + (elastic_versionseparator + elastic_version
+      | string if elastic_version is defined else '')
+      | replace(' ','')
+      }}
+
+- name: Install Filebeat - rpm
+  package:
+    name: "{{ filebeat_package }}"
+    enablerepo:
+      - 'elastic-{{ elastic_release }}.x'
+  when:
+    - ansible_os_family == "RedHat"
+
+- name: Install Filebeat - deb
+  package:
+    name: "{{ filebeat_package }}"
+  when:
+    - ansible_os_family == "Debian"
+
+- name: Install Filebeat latest version - rpm
   package:
     name: filebeat
-  when: beats_filebeat_version is not defined
-
-- name: Install Filebeat specific version
-  package:
-    name: "filebeat{{ beats_filebeat_version }}"
+    state: latest
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   notify:
     - Restart Filebeat
   when:
-    - beats_filebeat_version is defined
-    - beats_filebeat_version != "latest"
+    - elastic_version is defined
+    - elastic_version == "latest"
+    - ansible_os_family == "RedHat"
 
-- name: Install Filebeat latest version
+- name: Install Filebeat latest version - deb
   package:
     name: filebeat
     state: latest
   notify:
     - Restart Filebeat
   when:
-    - beats_filebeat_version is defined
-    - beats_filebeat_version == "latest"
+    - elastic_version is defined
+    - elastic_version == "latest"
+    - ansible_os_family == "Debian"
 
 - name: Configure Filebeat
   template:

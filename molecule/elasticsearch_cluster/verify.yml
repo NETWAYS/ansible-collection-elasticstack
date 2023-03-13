@@ -5,6 +5,7 @@
   hosts: all
   vars:
     elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+    elastic_elasticsearch_http_port: 9200
   tasks:
 
   - name: Set elasticsearch_ca variable if not already done by user
@@ -20,7 +21,7 @@
 
   - name: Health check
     uri:
-      url: https://localhost:9200/_cluster/health
+      url: https://localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health
       method: GET
       force_basic_auth: yes
       user: elastic
@@ -35,7 +36,7 @@
 
   - name: Node check
     uri:
-      url: https://localhost:9200/_cat/nodes
+      url: https://localhost:{{ elastic_elasticsearch_http_port }}/_cat/nodes
       method: GET
       force_basic_auth: yes
       user: elastic

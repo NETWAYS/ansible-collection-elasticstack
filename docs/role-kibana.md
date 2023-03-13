@@ -25,6 +25,8 @@ These variables are identical over all our elastic related roles, hence the diff
 * *kibana_tls_key_passphrase*: Passphrase for kibana certificates (default: `PleaseChangeMe`)
 * *kibana_cert_expiration_buffer*: Ansible will renew the kibana certificate if its validity is shorter than this value, which should be number of days. (default: 30)
 * *kibana_cert_will_expire_soon*: Set it to true to renew kibana certificate (default: `fasle`), Or run the playbook with `--tags renew_kibana_cert` to do that.
+* *elastic_kibana_host*: Hostname users use to connect to Kibana (default: FQDN of the host the role is executed on)
+* *elastic_kibana_port*: Port Kibana webinterface is listening on (default: `5601`)
 * *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
 * *elastic_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 * *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)

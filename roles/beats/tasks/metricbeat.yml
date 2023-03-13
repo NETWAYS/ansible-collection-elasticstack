@@ -1,27 +1,52 @@
 ---
-- name: Install Metricbeat
+
+- name: Construct exact name of Metricbeat package
+  set_fact:
+    metricbeat_package: >-
+      {{
+      'metricbeat'
+      + (elastic_versionseparator + elastic_version
+      | string if elastic_version is defined else '')
+      | replace(' ','')
+      }}
+
+- name: Install Metricbeat - rpm
+  package:
+    name: "{{ metricbeat_package }}"
+    enablerepo:
+      - 'elastic-{{ elastic_release }}.x'
+  when:
+    - ansible_os_family == "RedHat"
+
+- name: Install Metricbeat - deb
+  package:
+    name: "{{ metricbeat_package }}"
+  when:
+    - ansible_os_family == "Debian"
+
+- name: Install Metricbeat latest version - rpm
   package:
     name: metricbeat
-  when: beats_metricbeat_version is not defined
-
-- name: Install Metricbeat specific version
-  package:
-    name: "metricbeat{{ beats_metricbeat_version }}"
+    state: latest
+    enablerepo:
+      - "elastic-{{ elastic_release }}.x"
   notify:
     - Restart Metricbeat
   when:
-    - beats_metricbeat_version is defined
-    - beats_metricbeat_version != "latest"
+    - elastic_version is defined
+    - elastic_version == "latest"
+    - ansible_os_family == "RedHat"
 
-- name: Install Metricbeat latest version
+- name: Install Metricbeat latest version - deb
   package:
     name: metricbeat
     state: latest
   notify:
     - Restart Metricbeat
   when:
-    - beats_metricbeat_version is defined
-    - beats_metricbeat_version == "latest"
+    - elastic_version is defined
+    - elastic_version == "latest"
+    - ansible_os_family == "Debian"
 
 - name: Configure Metricbeat
   template:

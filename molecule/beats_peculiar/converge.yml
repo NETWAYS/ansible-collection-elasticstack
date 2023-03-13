@@ -23,7 +23,6 @@
     elastic_stack_full_stack: false
     filebeat_mysql_slowlog_input: true
     beats_auditbeat: true
-    beats_auditbeat_version: latest
     auditbeat_output: logstash
     auditbeat_enable: false # can't run on GitHub because of permissions
     filebeat_journald_inputs:
@@ -36,18 +35,18 @@
     #filebeat_docker: true
     elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
-    # Looks like Elastic isn't providing all old releases
-    # anymore
-    #
-    #- name: Set Filebeat version on RedHat
-    #  set_fact:
-    #    beats_filebeat_version: "-7.16.1"
-    #  when: ansible_os_family == "RedHat"
 
-    #- name: Set Filebeat version on Debian
-    #  set_fact:
-    #    beats_filebeat_version: "=7.16.1"
-    #  when: ansible_os_family == "Debian"
+    - name: Set Filebeat version for 7.x
+      set_fact:
+        elastic_version: "7.17.1"
+      when:
+        - elastic_release == 7
+
+    - name: Set Filebeat version for 8.x
+      set_fact:
+        elastic_version: "8.4.1"
+      when:
+        - elastic_release == 8
 
     - name: "Include Elastics repos role"
       include_role:

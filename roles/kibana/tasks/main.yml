@@ -1,12 +1,17 @@
 ---
 
+- name: Include OS specific vars
+  include_vars: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
+    - '{{ ansible_os_family }}.yml'
+
 - name: Set common password for common certificates
   set_fact:
     kibana_tls_key_passphrase: "{{ elastic_cert_pass }}"
   when:
     - elastic_cert_pass is defined
 
-# tasks file for kibana
 - name: Set Elasticsearch hosts if used with other roles
   set_fact:
     kibana_elasticsearch_hosts: "{{ groups['elasticsearch'] }}"
@@ -22,15 +27,30 @@
     - kibana_elasticsearch_hosts is undefined
     - groups['elasticsearch'] is undefined
 
-- name: Install Kibana
-  package:
-    name: kibana
-  when: elastic_variant == "elastic"
+- name: Construct exact name of Kibana package
+  set_fact:
+    kibana_package: >-
+      {{
+      'kibana'
+      + ('-oss' if elastic_variant == 'oss' else '')
+      + (elastic_versionseparator + elastic_version
+      | string if elastic_version is defined else '')
+      | replace(' ','')
+      }}
 
-- name: Install Kibana OSS
+- name: Install Kibana - rpm
   package:
-    name: kibana-oss
-  when: elastic_variant == "oss"
+    name: "{{ kibana_package }}"
+    enablerepo:
+      - 'elastic-{% if elastic_variant == "oss" %}oss-{% endif %}{{ elastic_release }}.x'
+  when:
+    - ansible_os_family == "RedHat"
+
+- name: Install Kibana - deb
+  package:
+    name: "{{ kibana_package }}"
+  when:
+    - ansible_os_family == "Debian"
 
 - name: Import security related tasks
   import_tasks: kibana-security.yml

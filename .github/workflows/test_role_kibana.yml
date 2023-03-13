@@ -70,7 +70,7 @@ jobs:
       max-parallel: 1
       matrix:
         distro: [ubuntu2204]
-        scenario: [kibana_default, kibana_full_stack, kibana_full_stack-oss]
+        scenario: [kibana_default, kibana_full_stack]
         release: [ 7, 8 ]
 
     steps:

@@ -12,7 +12,7 @@
 
   - name: Check for open port tcp {{ elastic_beats_port }}
     wait_for:
-      port: {{ elastic_beats_port }}
+      port: "{{ elastic_beats_port }}"
 
   - name: Create Syslog input
     copy:

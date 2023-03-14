@@ -10,7 +10,7 @@
     command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
   - name: Check for open port tcp {{ elastic_beats_port }}
     wait_for:
-      port: {{ elastic_beats_port }}
+      port: "{{ elastic_beats_port }}"
   - name: Check for Logstash plugins
     command: "/usr/share/logstash/bin/logstash-plugin list"
     register: logstash_plugins_inst

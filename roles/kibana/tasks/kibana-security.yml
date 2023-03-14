@@ -24,7 +24,7 @@
     path: "/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12"
   register: kibana_cert_exists
 
-- name: Get the kibana certificate expiration date
+- name: Get the kibana certificate expiration date # noqa: risky-shell-pipe
   shell: >-
     if test -v BASH; then set -o pipefail; fi;
     openssl pkcs12
@@ -41,7 +41,7 @@
 
 - name: Set the kibana certificate expiration date in days
   set_fact:
-    kibana_cert_expiration_days: "{{ ((kibana_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - ( ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    kibana_cert_expiration_days: "{{ ((kibana_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: kibana_cert_expiration_date.skipped is not defined
 
 - name: Set kibana certificate will expire soon to true
@@ -57,6 +57,10 @@
   when: kibana_cert_expiration_days is defined and kibana_cert_expiration_days | int <= kibana_cert_expiration_buffer | int
 
 - name: Backup kibana certs then remove
+  when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or kibana_cert_will_expire_soon | bool"
+  tags:
+    - renew_ca
+    - renew_kibana_cert
   block:
     - name: Check if cert directory exists
       stat:
@@ -77,12 +81,13 @@
         path: /etc/kibana/certs
         state: absent
       when: kibana_move_cert_directory.changed
+
+- name: Backup kibana certs on elasticsearch_ca host then remove
   when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or kibana_cert_will_expire_soon | bool"
+  delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - renew_ca
     - renew_kibana_cert
-
-- name: Backup kibana certs on elasticsearch_ca host then remove
   block:
     - name: Check if cert file exists
       stat:
@@ -103,13 +108,13 @@
         path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
         state: absent
       when: kibana_move_cert_file.changed
+
+- name: Backup kibana cert on localhost then remove
+  delegate_to: localhost
   when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or kibana_cert_will_expire_soon | bool"
-  delegate_to: "{{ elasticsearch_ca }}"
   tags:
     - renew_ca
     - renew_kibana_cert
-
-- name: Backup kibana cert on localhost then remove
   block:
     - name: Check the existance of cert on localhost
       stat:
@@ -129,18 +134,20 @@
         path: /tmp/{{ ansible_hostname }}-kibana.p12
         state: absent
       when: kibana_move_cert_file.changed
-  delegate_to: localhost
-  when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or kibana_cert_will_expire_soon | bool"
-  tags:
-    - renew_ca
-    - renew_kibana_cert
 
 - name: Block for key generation
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true
+  tags:
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
   block:
-    - name: Generate encryption key
-      shell: openssl rand -base64 36 > {{ elastic_ca_dir }}/encryption_key
+    - name: Generate encryption key # noqa: risky-shell-pipe
+      shell: >
+        if test -v BASH; then set -o pipefail; fi;
+        openssl rand -base64 36 >
+        {{ elastic_ca_dir }}/encryption_key
       changed_when: false
       args:
         creates: "{{ elastic_ca_dir }}/encryption_key"
@@ -150,8 +157,9 @@
       changed_when: false
       register: kibana_encryption_key
 
-    - name: Generate saved objects encryption key
+    - name: Generate saved objects encryption key # noqa: risky-shell-pipe
       shell: >
+        if test -v BASH; then set -o pipefail; fi;
         openssl rand
         -base64 36 >
         {{ elastic_ca_dir }}/savedobjects_encryption_key
@@ -163,10 +171,6 @@
       command: cat {{ elastic_ca_dir }}/savedobjects_encryption_key
       changed_when: false
       register: kibana_savedobjects_encryption_key
-  tags:
-    - certificates
-    - renew_ca
-    - renew_kibana_cert
 
 - name: Create certificate directory
   file:
@@ -224,8 +228,9 @@
     - renew_ca
     - renew_kibana_cert
 
-- name: Fetch Kibana password
+- name: Fetch Kibana password # noqa: risky-shell-pipe
   shell: >
+    if test -v BASH; then set -o pipefail; fi;
     grep "PASSWORD kibana_system " /usr/share/elasticsearch/initial_passwords |
     awk {' print $4 '}
   register: kibana_password

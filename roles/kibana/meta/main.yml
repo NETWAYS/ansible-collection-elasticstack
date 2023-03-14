@@ -7,16 +7,16 @@ galaxy_info:
 
   min_ansible_version: "2.4"
   platforms:
-  - name: EL
-    versions:
-      - "8"
-  - name: Debian
-    versions:
-      - bullseye
-  - name: Ubuntu
-    versions:
-      - focal
-      - jammy
+    - name: EL
+      versions:
+        - "8"
+    - name: Debian
+      versions:
+        - bullseye
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
   galaxy_tags: []
 dependencies: []
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,

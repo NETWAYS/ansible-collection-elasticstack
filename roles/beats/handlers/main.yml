@@ -22,5 +22,5 @@
     name: metricbeat
     state: restarted
   when:
-  - beats_metricbeat | bool
-  - metricbeat_enable | bool
+    - beats_metricbeat | bool
+    - metricbeat_enable | bool

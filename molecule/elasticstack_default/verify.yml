@@ -22,14 +22,15 @@
     wait_for:
       port: 514
 
-  - name: Get elastic password
+  - name: fetch Elastic password
     shell: |
       grep "PASSWORD elastic " /usr/share/elasticsearch/initial_passwords |
       awk {' print $4 '}
     register: elastic_pass
-    when: "'elasticsearch' in group_names"
+    changed_when: false
+    delegate_to: "{{ groups['elasticsearch'][0] }}"
 
-  - name: Query for Logstasch indices
+  - name: Query for Logstash indices
     shell: >
       curl -ks -uelastic:{{ elastic_pass.stdout }}
       https://localhost:{{ elastic_elasticsearch_http_port }}/_cat/indices |
@@ -54,3 +55,46 @@
     debug:
       msg: "Elasticsearch received {{ logstash_count.stdout }} events so far"
     when: "'elasticsearch' in group_names"
+
+  - name: fetch kibana.yml
+    command: cat /etc/kibana/kibana.yml
+    register: kibanayml
+
+  - name: Show kibana.yml
+    debug:
+      var: kibanayml.stdout_lines
+
+  - name: Check for Kibana port
+    wait_for:
+      port: 5601
+      timeout: 120
+
+  - name: Connect to Elasticsearch
+    command: 
+      curl
+      -s
+      --cacert /etc/kibana/certs/ca.crt
+      -u elastic:{{ elastic_pass.stdout }}
+      https://{{ groups['elasticsearch'][0] }}:{{ elastic_elasticsearch_http_port }}/_cat/indices"
+
+  - name: Connect to Kibana
+    command: 
+      curl
+      -s
+      -u elastic:{{ elastic_passw.stdout }}
+      http://{{ ansible_hostname }}:5601/api/status"
+    register: curl_out
+    failed_when:
+      - "'green' not in curl_out.stdout"
+      - "'Elasticsearch is available' not in curl_out.stdout"
+
+    # The following might be nicer but doesn't work
+    #- name: Connect to Kibana
+    #  uri:
+    #    url: http://ansible-role-kibana_full_stack:5601/api/status
+    #    user: elastic
+    #    password: "{{ elastic_password.stdout }}"
+    #    return_content: yes
+    #  register: kibana_status
+    #  #failed_when: "'"title": "Green"' not in kibana_status.content"
+    #  failed_when: "'Green' not in kibana_status.content"

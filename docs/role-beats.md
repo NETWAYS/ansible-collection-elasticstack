@@ -14,7 +14,6 @@ Role Variables
 --------------
 
 * *beats_filebeat*: Install and manage filebeat (Default: `true`)
-* *beats_filebeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
 * *filebeat_enable*: Automatically start Filebeat (Default: `true`)
 * *filebeat_output*: Set to `logstash` or `elasticsearch`. (default: `logstash`)
 * *filebeat_syslog_udp*: Use UDP Syslog input (Default: `false`)
@@ -66,14 +65,12 @@ filebeat_journald_inputs:
 * *filebeat_modules*: **EXPERIMENTAL**: Give a list of modules to enable. (default: none)
 
 * *beats_auditbeat*: Install and manage filebeat (Default: `false`)
-* *beats_auditbeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
 * *auditbeat_output*: Output for Auditbeat Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
 * *auditbeat_enable*: Automatically start Auditbeat (Default: `true`)
 * *auditbeat_setup*: Run Auditbeat Setup (Default: `true`) (Only works with Elasticsearch output)
 * *auditbeat_loadbalance*: Enable loadbalancing for Auditbeats Logstash output (default: `true`)
 
 * *beats_metricbeat*: Enable installation and management of Metricbeat (Default: `false`)
-* *beats_metricbeat_version*: Install specific version (Default: none. Possible values: e.g. `-7.10.1` for RedHat compatible systems or `=1:7.10.1-1` for Debian compatible systems or `latest`)
 * *metricbeat_enable*: Start Metricbeat automatically (Default: `true`)
 * *metricbeat_output*: Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
 * *metricbeat_modules*: List of modules to enable. (Default: `- system`)
@@ -82,7 +79,7 @@ filebeat_journald_inputs:
 * *beats_security*: Activate TLS for connections to targets. Can either be use with our other roles and `elastic_stack_full_stack` to automatically create certificates or `beats_tls*` variables for custom certificates. (default: `false`)
 * *beats_target_hosts*: Only use when this role is used standalone. When used in combination with our other roles, the target hosts will be determined automatically. Use a YAML list. (default: `- localhost`)
 * *elastic_elasticsearch_http_port*: Port of Elasticsearch to send events to (Default: `9200`)
-* *beats_logstash_output_port*: Port of Logstash to send events to (Default: `5400`)
+* *elastic_beats_port*: Port of Logstash to send events to (Default: `5044`)
 * *beats_logging*: Where to log (Default: `file`)
 * *beats_loglevel*: Level of logging (for all beats) (Default: `info`)
 * *beats_logpath*: If logging to file, where to put logfiles (Default: `/var/log/beats`)
@@ -96,6 +93,7 @@ The following variables only apply if you use this role together with our other 
 * *elastic_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 * *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elastic_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
+* *elastic_version*: Install specific version (Default: none. Possible values: e.g. `7.10.1` or `latest`)
 
 If you want to use this role with your own TLS certificates, use these variables.
 

@@ -6,7 +6,7 @@ beats_auditbeat: false
 beats_metricbeat: false
 beats_target_hosts:
   - localhost
-beats_logstash_output_port: 5044
+elastic_beats_port: 5044
 beats_logging: file
 beats_logpath: /var/log/beats
 beats_loglevel: info

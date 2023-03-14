@@ -56,6 +56,10 @@ We have known issues with the following Distributions.
 
 ## Usage
 
+* *elastic_version*: Version number of tools to install Only set if you don't want the latest. (default: none). For OSS version see `elastic_variant` below. **IMPORTANT** Do not change the version once you have set up the stack. There are unpredictable effects to be expected when using this for upgrades. And upgrade mechanism is already on it's way. (default: none. Example: `7.17.2`
+*elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
+*elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+
 Make sure all hosts that should be configured are part of your playbook. (See below for details on groups etc.). The collection is built to first collect all facts from all hosts (including those only running beats) and then use facts like hostnames or ip addresses to connect the tools to each other.
 
 You will want to have reliable DNS resolution or enter all hosts of the stack into your systems hosts files.

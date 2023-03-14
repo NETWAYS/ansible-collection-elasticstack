@@ -573,6 +573,9 @@
   changed_when: false
   no_log: true
   when: not elasticsearch_passwords_file.stat.exists | bool
+  until: es_cluster_status_bootstrap.stdout == "green"
+  retries: 5
+  delay: 10
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   shell: >
@@ -597,6 +600,9 @@
   no_log: true
   ignore_errors: "{{ ansible_check_mode }}"
   when: elasticsearch_passwords_file.stat.exists | bool
+  until: es_cluster_status.stdout == "green"
+  retries: 5
+  delay: 10
 
 - name: Check for open port tcp {{ elastic_elasticsearch_http_port }}
   wait_for:
@@ -605,20 +611,6 @@
     - certificates
     - renew_ca
     - renew_es_cert
-
-- name: Fail if cluster is not ready yet
-  fail:
-    msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status.stdout }} , yet. Please rerun again later."
-  when: es_cluster_status.stdout is defined and es_cluster_status.stdout != "green" and groups['elasticsearch'] | length > 1
-  tags:
-    - notest
-
-- name: Fail if cluster is not ready yet (bootstrap password)
-  fail:
-    msg: "Elasticsearch cluster is not ready (status: {{ es_cluster_status_bootstrap.stdout }}), yet. Please rerun again later."
-  when: es_cluster_status_bootstrap.stdout is defined and es_cluster_status_bootstrap.stdout != "green" and groups['elasticsearch'] | length > 1
-  tags:
-    - notest
 
 - name: Create initial passwords # noqa: risky-shell-pipe
   shell: >

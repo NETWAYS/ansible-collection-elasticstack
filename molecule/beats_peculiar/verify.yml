@@ -2,6 +2,8 @@
 
 - name: Check if Logstash configuration does what it should
   hosts: all
+  vars:
+    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
   - name: fetch Filebeat version
     command: "filebeat version | grep ^filebeat"
@@ -11,8 +13,16 @@
     debug:
       var: filebeat_version.stdout
 
-  #- name: Fail if Filebeat has the wrong version
-  #  fail:
-  #    msg: "Filebeat has the wrong version"
+  - name: Fail if Filebeat has the wrong version
+    fail:
+      msg: "Filebeat has the wrong version"
+    when:
+      - filebeat_version.stdout.find('7.17.1') == -1
+      - elastic_release == 7
 
-  #  when: filebeat_version.stdout.find('7.16.1') == -1
+  - name: Fail if Filebeat has the wrong version
+    fail:
+      msg: "Filebeat has the wrong version"
+    when:
+      - filebeat_version.stdout.find('8.4.1') == -1
+      - elastic_release == 8

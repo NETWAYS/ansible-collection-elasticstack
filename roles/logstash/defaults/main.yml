@@ -1,6 +1,5 @@
 ---
 # defaults file for logstash
-logstash_version: ""
 logstash_enable: true
 logstash_config_backup: no
 logstash_manage_yaml: true
@@ -78,6 +77,7 @@ elastic_stack_full_stack: true
 elastic_variant: elastic
 elastic_security: true
 elastic_elasticsearch_http_port: 9200
+elastic_beats_port: 5044
 
 # Variables for debugging and development
 

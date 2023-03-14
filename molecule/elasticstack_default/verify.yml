@@ -14,7 +14,7 @@
   - name: Run Logstash syntax check
     command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
     when: "'logstash' in group_names"
-  
+
   - name: Check for open port 5044/tcp
     wait_for:
       port: 5044
@@ -77,7 +77,7 @@
       timeout: 120
 
   - name: Connect to Elasticsearch
-    command: 
+    command:
       curl
       -s
       --cacert /etc/kibana/certs/ca.crt
@@ -85,7 +85,7 @@
       https://{{ groups['elasticsearch'][0] }}:{{ elastic_elasticsearch_http_port }}/_cat/indices"
 
   - name: Connect to Kibana
-    command: 
+    command:
       curl
       -s
       -u elastic:{{ elastic_passw.stdout }}

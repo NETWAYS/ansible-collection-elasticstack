@@ -4,7 +4,9 @@
   hosts: all
   vars:
     elastic_elasticsearch_http_port: 9200
+    elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
   tasks:
+
   - name: Give some time for tools to connect
     wait_for:
       timeout: 120
@@ -22,13 +24,18 @@
     wait_for:
       port: 514
 
+  - name: Set elasticsearch_ca variable if not already done by user
+    set_fact:
+      elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
+    when: elasticsearch_ca is undefined
+
   - name: fetch Elastic password
     shell: |
       grep "PASSWORD elastic " /usr/share/elasticsearch/initial_passwords |
       awk {' print $4 '}
     register: elastic_pass
     changed_when: false
-    delegate_to: "{{ groups['elasticsearch'][0] }}"
+    delegate_to: "{{ elasticsearch_ca }}"
 
   - name: Query for Logstash indices
     shell: >
@@ -98,3 +105,38 @@
     #  register: kibana_status
     #  #failed_when: "'"title": "Green"' not in kibana_status.content"
     #  failed_when: "'Green' not in kibana_status.content"
+
+  - name: Health check
+    uri:
+      url: https://localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health
+      method: GET
+      force_basic_auth: yes
+      user: elastic
+      password: "{{ elastic_pass.stdout }}"
+      return_content: yes
+      status_code: 200
+      validate_certs: false
+    register: result
+    until: result.json.status == "green"
+    retries: 6
+    delay: 10
+
+  - name: Node check
+    uri:
+      url: https://localhost:{{ elastic_elasticsearch_http_port }}/_cat/nodes
+      method: GET
+      force_basic_auth: yes
+      user: elastic
+      password: "{{ elastic_pass.stdout }}"
+      return_content: yes
+      status_code: 200
+      validate_certs: false
+    register: nodes
+
+  - name: Check if all Nodes see each other
+    ansible.builtin.assert:
+      that:
+        - "'{{ item }}' in nodes.content"
+      fail_msg: "'{{ item }}' was not found in nodes.content"
+      success_msg: "'{{ item }}' was found in nodes.content"
+    with_inventory_hostnames: all

@@ -70,7 +70,7 @@ jobs:
       max-parallel: 1
       matrix:
         distro: [ubuntu2204]
-        scenario: [elasticsearch_default, elasticsearch_cluster, elasticsearch_cluster-oss, elasticsearch_no-security]
+        scenario: [elasticsearch_default, elasticsearch_cluster-oss, elasticsearch_no-security]
         release: [7, 8]
 
     steps:

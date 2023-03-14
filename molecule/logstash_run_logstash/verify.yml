@@ -3,10 +3,12 @@
 
 - name: Check if Logstash configuration does what it should
   hosts: all
+  vars:
+    elastic_beats_port: 5044
   tasks:
   - name: Run syntax check
     command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
-  - name: Check for open port {{ elastic_beats_port }}/tcp
+  - name: Check for open port tcp {{ elastic_beats_port }}
     wait_for:
       port: {{ elastic_beats_port }}
   - name: Check for Logstash plugins

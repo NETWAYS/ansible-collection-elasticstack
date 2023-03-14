@@ -70,7 +70,7 @@ jobs:
       max-parallel: 1
       matrix:
         distro: [ubuntu2204]
-        scenario: [beats_default, beats_full_stack, beats_peculiar]
+        scenario: [beats_default, beats_peculiar]
         release: [ 7, 8 ]
 
     steps:

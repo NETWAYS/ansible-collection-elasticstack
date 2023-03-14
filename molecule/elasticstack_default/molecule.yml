@@ -4,7 +4,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: elasticsearch-cluster1
+  - name: elasticstack-cluster1
     groups:
       - beats
       - logstash
@@ -17,7 +17,7 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
-  - name: elasticsearch-cluster2
+  - name: elasticstack-cluster2
     groups:
       - beats
       - logstash

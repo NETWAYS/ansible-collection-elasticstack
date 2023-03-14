@@ -34,3 +34,7 @@
           - curl
           - iproute2
       when: ansible_os_family == "Debian"
+
+    - name: Install unzip for certificate handling
+      package:
+        name: unzip

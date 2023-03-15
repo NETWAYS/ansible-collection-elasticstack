@@ -2,13 +2,13 @@
 
 - name: Construct exact name of Filebeat package
   set_fact:
-    filebeat_package: >-
+    filebeat_package: >
       {{
-      'filebeat'
-      + (elastic_versionseparator + elastic_version
-      | string if elastic_version is defined else '')
-      | replace(' ','')
-      }}
+      'filebeat' +
+      (elastic_versionseparator +
+      elastic_version |
+      string if elastic_version is defined else '') |
+      replace(' ', '') }}
 
 - name: Install Filebeat - rpm
   package:

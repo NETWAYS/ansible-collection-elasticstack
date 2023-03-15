@@ -29,14 +29,14 @@
 
 - name: Construct exact name of Kibana package
   set_fact:
-    kibana_package: >-
+    kibana_package: >
       {{
-      'kibana'
-      + ('-oss' if elastic_variant == 'oss' else '')
-      + (elastic_versionseparator + elastic_version
-      | string if elastic_version is defined else '')
-      | replace(' ','')
-      }}
+      'kibana' +
+      ('-oss' if elastic_variant == 'oss' else '') +
+      (elastic_versionseparator +
+      elastic_version |
+      string if elastic_version is defined else '') |
+      replace(' ', '') }}
 
 - name: Install Kibana - rpm
   package:

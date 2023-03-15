@@ -586,7 +586,7 @@
   changed_when: false
   no_log: true
   delegate_to: "{{ elasticsearch_ca }}"
-  #when: elasticsearch_passwords_file.stat.exists
+  when: elasticsearch_passwords_file.stat.exists | bool
 
 - name: Check for cluster status with elastic password # noqa: risky-shell-pipe
   shell: >

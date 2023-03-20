@@ -15,31 +15,37 @@
   register: ca_exists
   when: inventory_hostname == elasticsearch_ca
 
-- name: Get the ca expiration date # noqa: risky-shell-pipe
-  shell: >-
-    if test -v BASH; then set -o pipefail; fi;
+# This pkcs12 store contains the CA
+# Therefore we need to extract the certificate with clcerts
+# not the CA cert with cacerts
+
+- name: Get CA certificate in PEM format
+  command: >-
     openssl pkcs12
     -in '{{ elastic_ca_dir }}/elastic-stack-ca.p12'
-    -nodes
-    -passin pass:'{{ elastic_ca_pass }}' |
-    openssl x509 -noout -enddate |
-    awk -F'=' '{print $2}'
-  register: ca_expiration_date
-  args:
-    executable: /bin/bash
+    -passin pass:'{{ elastic_ca_pass }}'
+    -clcerts
+    -nokeys
+  register: ca_pem
   changed_when: false
-  no_log: true
   when: inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
 
-- name: Set the ca expiration date in days
-  set_fact:
-    elastic_ca_expiration_days: "{{ ((ca_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
-  when: inventory_hostname == elasticsearch_ca and ca_expiration_date.skipped is not defined
+- name: Check CA expiration date
+  community.crypto.x509_certificate_info:
+    content: "{{ ca_pem.stdout }}"
+    valid_at:
+      expiration: "+{{ elastic_ca_expiration_buffer | int }}d"
+  register: ca_info
+  when:
+    - inventory_hostname == elasticsearch_ca
+    - ca_exists.stat.exists | bool
 
 - name: Set ca will expire soon to true
   set_fact:
     elastic_ca_will_expire_soon: true
-  when: inventory_hostname == elasticsearch_ca and elastic_ca_expiration_days is defined and elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
+  when:
+    - inventory_hostname == elasticsearch_ca
+    - not ca_info.valid_at.expiration | bool
 
 - name: Print the ca renew message
   debug:

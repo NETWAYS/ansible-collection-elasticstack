@@ -16,10 +16,10 @@
   when: inventory_hostname == elasticsearch_ca
 
 # It is important that `lc` and `enc` only will be
-# defined if a language code is found, else they need to
+# defined if a locale is found, else they need to
 # stay undefined, so the filter will receive a `None` and
 # not the string "None". That would result in an unknown
-# language code error, even if it would maybe possible to 
+# language code error, even if it would maybe possible to
 # convert it to a datetime object with default variables.
 
 # This will happen at systems which have as locale POSIX activated.
@@ -66,8 +66,8 @@
         enc: locale_encoding.stdout
       when: '"None" not in locale_encoding.stdout'
 
-# It is possible to set the language code as a fallback for the user, 
-# and the encoding manually with the `elasticsearch_ca_lc` or the 
+# It is possible to set the language code as a fallback for the user,
+# and the encoding manually with the `elasticsearch_ca_lc` or the
 # `elasticsearch_ca_encoding` variable. In case nothing works this
 # will always be a solution.
 

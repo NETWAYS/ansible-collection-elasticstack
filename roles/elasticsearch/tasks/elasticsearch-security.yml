@@ -27,11 +27,10 @@
 # possible to use characters like 'äöü' with this locale.
 
 - name: Set language code when default variables are undefined
-  block:
   when:
     - inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
     - elasticsearch_ca_lc is undefined
-
+  block:
     # The most convenient way to read the locale is with the locale
     # library and the locale.getlocale() function.
     # That has also been mentioned in the documentation for the
@@ -50,11 +49,10 @@
       when: '"None" not in locale_lc.stdout'
 
 - name: Set encoding when default variables are undefined
-  block:
   when:
     - inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
     - elasticsearch_ca_encoding is undefined
-
+  block:
     - name: Get encoding from locale of CA
       command: >-
         python -c "import locale; print(locale.getlocale()[1])"

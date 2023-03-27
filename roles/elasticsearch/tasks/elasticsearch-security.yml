@@ -15,6 +15,76 @@
   register: ca_exists
   when: inventory_hostname == elasticsearch_ca
 
+# It is important that `lc` and `enc` only will be
+# defined if a language code is found, else they need to
+# stay undefined, so the filter will receive a `None` and
+# not the string "None". That would result in an unknown
+# language code error, even if it would maybe possible to 
+# convert it to a datetime object with default variables.
+
+# This will happen at systems which have as locale POSIX activated.
+# The module will still convert it correctly, since it is not
+# possible to use characters like 'äöü' with this locale.
+
+- name: Set language code when default variables are undefined
+  block:
+  when:
+    - inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
+    - elasticsearch_ca_lc is undefined
+
+    # The most convenient way to read the locale is with the locale
+    # library and the locale.getlocale() function.
+    # That has also been mentioned in the documentation for the
+    # datetime.datetime.strptime() function under notes.
+    # https://docs.python.org/3/library/datetime.html
+
+    - name: Get language code from locale of CA
+      command: >-
+        python -c "import locale; print(locale.getlocale()[0])"
+      register: locale_lc
+      changed_when: false
+
+    - name: Set language_code for CA
+      set_fact:
+        lc: locale_lc.stdout
+      when: '"None" not in locale_lc.stdout'
+
+- name: Set encoding when default variables are undefined
+  block:
+  when:
+    - inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
+    - elasticsearch_ca_encoding is undefined
+
+    - name: Get encoding from locale of CA
+      command: >-
+        python -c "import locale; print(locale.getlocale()[1])"
+      register: locale_encoding
+      changed_when: false
+
+    - name: Set encoding for CA
+      set_fact:
+        enc: locale_encoding.stdout
+      when: '"None" not in locale_encoding.stdout'
+
+# It is possible to set the language code as a fallback for the user, 
+# and the encoding manually with the `elasticsearch_ca_lc` or the 
+# `elasticsearch_ca_encoding` variable. In case nothing works this
+# will always be a solution.
+
+- name: Set language_code of CA
+  set_fact:
+    lc: elasticsearch_ca_lc
+  when:
+    - inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
+    - elasticsearch_ca_lc is defined
+
+- name: Set encoding of CA
+  set_fact:
+    enc: elasticsearch_ca_encoding
+  when:
+    - inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
+    - elasticsearch_ca_encoding is defined
+
 # This pkcs12 store contains the CA
 # Therefore we need to extract the certificate with clcerts
 # not the CA cert with cacerts
@@ -30,15 +100,11 @@
   changed_when: false
   when: inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
 
-- name: Check CA expiration date
-  community.crypto.x509_certificate_info:
-    content: "{{ ca_pem.stdout }}"
-    valid_at:
-      expiration: "+{{ elastic_ca_expiration_buffer | int }}d"
-  register: ca_info
-  when:
-    - inventory_hostname == elasticsearch_ca
-    - ca_exists.stat.exists | bool
+- name: Set the ca expiration date in days
+  set_fact:
+    elastic_ca_expiration_days: >-
+      "{{ (( ca_expiration_date.stdout | to_datetime_by_locale('%b %d %H:%M:%S %Y %Z', lc, enc)) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  when: inventory_hostname == elasticsearch_ca and ca_expiration_date.skipped is not defined
 
 - name: Set ca will expire soon to true
   set_fact:

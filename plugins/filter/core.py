@@ -72,4 +72,4 @@ class FilterModule(object):
             result = datetime.datetime.strptime(string, format)
         except Exception as e:
             raise AnsibleFilterError("Exception: %s" % to_native(e))
-        return to_native(result)
+        return result

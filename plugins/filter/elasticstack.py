@@ -53,7 +53,7 @@ RETURN = '''
 '''
 
 
-def es_datetime(
+def es_to_datetime(
         string,
         format="%Y-%m-%d %H:%M:%S",
         language_code=locale.getlocale()[0],
@@ -72,5 +72,5 @@ def es_datetime(
 class FilterModule(object):
     def filters(self):
         return {  
-            'es_datetime': es_datetime
+            'es_to_datetime': es_to_datetime
         }

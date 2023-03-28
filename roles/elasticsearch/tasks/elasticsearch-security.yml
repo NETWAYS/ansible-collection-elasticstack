@@ -100,7 +100,7 @@
 
 - name: Set the ca expiration date in days
   set_fact:
-    elastic_ca_expiration_days: "{{ (( ca_expiration_date.stdout | netways.elasticstack.es_datetime('%b %d %H:%M:%S %Y %Z', lc, enc)) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    elastic_ca_expiration_days: "{{ (( ca_expiration_date.stdout | netways.elasticstack.es_to_datetime('%b %d %H:%M:%S %Y %Z', lc, enc)) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: inventory_hostname == elasticsearch_ca and ca_expiration_date.skipped is not defined
 
 - name: Set ca will expire soon to true

@@ -1,5 +1,4 @@
----
-name: Test Role elasticsearch
+name: Test Role repos
 on:
   workflow_dispatch:
     inputs:
@@ -18,9 +17,9 @@ on:
       - 'fix/**'
       - '!doc/**'
     paths:
-      - 'roles/elasticsearch/**'
-      - '.github/workflows/test_role_elasticsearch.yml'
-      - 'molecule/elasticsearch_**'
+      - 'roles/repos/**'
+      - '.github/workflows/test_role_repos.yml'
+      - 'molecule/repos_**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
   pull_request:
@@ -29,14 +28,14 @@ on:
       - 'fix/**'
       - '!doc/**'
     paths:
-      - 'roles/elasticsearch/**'
-      - '.github/workflows/test_role_elasticsearch.yml'
-      - 'molecule/elasticsearch_**'
+      - 'roles/repos/**'
+      - '.github/workflows/test_role_repos.yml'
+      - 'molecule/repos_**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
 
 jobs:
-  lint_elasticsearch:
+  lint_repos:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
@@ -54,11 +53,11 @@ jobs:
 
       - name: Lint code.
         run: |
-          yamllint roles/elasticsearch/
-          ansible-lint roles/elasticsearch/
+          yamllint roles/repos/
+          ansible-lint roles/repos/
 
-  molecule_elasticsearch:
-    needs: lint_elasticsearch
+  molecule_repos:
+    needs: lint_repos
     runs-on: ubuntu-latest
 
     env:
@@ -67,18 +66,19 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 4
       matrix:
-        distro: [ubuntu2204]
-        scenario: [elasticsearch_default, elasticsearch_cluster, elasticsearch_cluster-oss, elasticsearch_no-security]
-        release: [7, 8]
+
+        distro: [centos7, debian10, debian11, rockylinux8, rockylinux9, ubuntu2004, ubuntu2204]
+        scenario: [repos_default, repos_oss]
+        release: [ 7, 8 ]
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Python 3.8
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v2
         with:
           python-version: 3.8
 
@@ -86,6 +86,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements-test.txt
+          ansible-galaxy collection install community.general
 
       - name: Install collection
         run: |
@@ -98,5 +99,3 @@ jobs:
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
           ELASTIC_RELEASE: ${{ matrix.release }}
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'

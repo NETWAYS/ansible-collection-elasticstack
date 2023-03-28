@@ -1,42 +1,18 @@
 ---
-name: Test Role elasticsearch
+name: Test Collection Roles
 on:
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-          - info
-          - warning
-          - debug
-  push:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'roles/elasticsearch/**'
-      - '.github/workflows/test_role_elasticsearch.yml'
-      - 'molecule/elasticsearch_**'
-      - '.config/ansible-lint.yml'
-      - '.yamllint'
   pull_request:
     branches:
+      - 'main'
       - 'feature/**'
       - 'fix/**'
       - '!doc/**'
-    paths:
-      - 'roles/elasticsearch/**'
-      - '.github/workflows/test_role_elasticsearch.yml'
-      - 'molecule/elasticsearch_**'
-      - '.config/ansible-lint.yml'
-      - '.yamllint'
+
+  merge_group:
+    types: [checks_requested]
 
 jobs:
-  lint_elasticsearch:
+  lint_full:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
@@ -54,12 +30,11 @@ jobs:
 
       - name: Lint code.
         run: |
-          yamllint roles/elasticsearch/
-          ansible-lint roles/elasticsearch/
-
-  molecule_elasticsearch:
-    needs: lint_elasticsearch
+          yamllint .
+          ansible-lint roles/
+  molecule_full_stack:
     runs-on: ubuntu-latest
+    needs: lint_full
 
     env:
       COLLECTION_NAMESPACE: netways
@@ -69,16 +44,21 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        distro: [ubuntu2204]
-        scenario: [elasticsearch_default, elasticsearch_cluster, elasticsearch_cluster-oss, elasticsearch_no-security]
-        release: [7, 8]
+        distro:
+          - ubuntu2204
+          - rockylinux8
+        scenario:
+          - elasticstack_default
+        release:
+          - 7
+          - 8
 
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
       - name: Set up Python 3.8
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
@@ -97,6 +77,6 @@ jobs:
           molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
-          ELASTIC_RELEASE: ${{ matrix.release }}
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
+          ELASTIC_RELEASE: ${{ matrix.release }}

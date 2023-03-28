@@ -1,5 +1,5 @@
 ---
-name: Test Role elasticsearch
+name: Test Role beats
 on:
   workflow_dispatch:
     inputs:
@@ -18,9 +18,9 @@ on:
       - 'fix/**'
       - '!doc/**'
     paths:
-      - 'roles/elasticsearch/**'
-      - '.github/workflows/test_role_elasticsearch.yml'
-      - 'molecule/elasticsearch_**'
+      - 'roles/beats/**'
+      - '.github/workflows/test_role_beats.yml'
+      - 'molecule/beats_**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
   pull_request:
@@ -29,14 +29,14 @@ on:
       - 'fix/**'
       - '!doc/**'
     paths:
-      - 'roles/elasticsearch/**'
-      - '.github/workflows/test_role_elasticsearch.yml'
-      - 'molecule/elasticsearch_**'
+      - 'roles/beats/**'
+      - '.github/workflows/test_role_beats.yml'
+      - 'molecule/beats_**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
 
 jobs:
-  lint_elasticsearch:
+  lint_beats:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
@@ -54,11 +54,11 @@ jobs:
 
       - name: Lint code.
         run: |
-          yamllint roles/elasticsearch/
-          ansible-lint roles/elasticsearch/
+          yamllint roles/beats/
+          ansible-lint roles/beats/
 
-  molecule_elasticsearch:
-    needs: lint_elasticsearch
+  molecule_beats:
+    needs: lint_beats
     runs-on: ubuntu-latest
 
     env:
@@ -70,15 +70,15 @@ jobs:
       max-parallel: 1
       matrix:
         distro: [ubuntu2204]
-        scenario: [elasticsearch_default, elasticsearch_cluster, elasticsearch_cluster-oss, elasticsearch_no-security]
-        release: [7, 8]
+        scenario: [beats_default, beats_full_stack, beats_peculiar]
+        release: [ 7, 8 ]
 
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
       - name: Set up Python 3.8
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
@@ -97,6 +97,6 @@ jobs:
           molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
-          ELASTIC_RELEASE: ${{ matrix.release }}
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
+          ELASTIC_RELEASE: ${{ matrix.release }}

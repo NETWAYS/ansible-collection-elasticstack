@@ -15,6 +15,6 @@
     - name: Convert 'Mar 16 15:55:01 2026' with es_to_datetime() to test Default variables of function
       debug:
         msg: "{{ 'Mar 16 15:55:01 2026' | es_to_datetime('%b %d %H:%M:%S %Y') }}"
-    - name: Convert 'Mar 16 15:55:01 2026' with es_to_datetime() to the test if filter can handle 'None' as string returns
+    - name: Convert 'Mar 16 15:55:01 2026' with es_to_datetime() to test if filter can handle none
       debug:
         msg: "{{ 'Mar 16 15:55:01 2026' | es_to_datetime('%b %d %H:%M:%S %Y', none, none) }}"

@@ -81,14 +81,14 @@
 # generate the locale catalog e.g. en_US.UTF-8 of the remote node.
 # Check .github/workflows/test_plugins.yml for an example of that.
 
-- name: Set language_code of CA
+- name: Set language_code of CA with elasticsearch_ca_lc
   set_fact:
     lc: elasticsearch_ca_lc
   when:
     - inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
     - elasticsearch_ca_lc is defined
 
-- name: Set encoding of CA
+- name: Set encoding of CA with elasticsearch_ca_encoding
   set_fact:
     enc: elasticsearch_ca_encoding
   when:

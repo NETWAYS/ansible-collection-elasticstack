@@ -15,9 +15,9 @@
   register: ca_exists
   when: inventory_hostname == elasticsearch_ca
 
-# It is important that `lc` and `enc` will be set to none
+# It is important that `lc` and `enc` will be set to null
 # if the return of the Python command is "None". The date
-# filter plugin can only handle e.g. `lc: none` and not
+# filter plugin can only handle e.g. `lc: null` and not
 # `lc: "None"`
 # Note:
 # It would be possible to handle the return "None" by
@@ -48,9 +48,9 @@
         lc: locale_lc.stdout
       when: '"None" not in locale_lc.stdout'
 
-    - name: Set language code for plugin to none if "None" is returned
+    - name: Set language code for plugin to null if "None" is returned
       set_fact:
-        enc: none
+        enc: null
       when: '"None" in locale_ls.stdout'
 
 - name: Set encoding when default variables are undefined
@@ -69,26 +69,26 @@
         enc: locale_encoding.stdout
       when: '"None" not in locale_encoding.stdout'
 
-    - name: Set encoding for plugin to none if "None" is returned
+    - name: Set encoding for plugin to null if "None" is returned
       set_fact:
-        enc: none
+        enc: null
       when: '"None" in locale_encoding.stdout'
 
 # It is possible to set the language code as a fallback for the user,
 # and the encoding manually with the `elasticsearch_ca_lc` or the
-# `elasticsearch_ca_encoding` variable. In case nothing works this
+# `elasticsearch_ca_encoding` defaultvariable. In case nothing works this
 # should always be a solution. Maybe the controller node has to
 # generate the locale catalog e.g. en_US.UTF-8 of the remote node.
 # Check .github/workflows/test_plugins.yml for an example of that.
 
-- name: Set language_code of CA with elasticsearch_ca_lc
+- name: Set language_code of CA with default elasticsearch_ca_lc
   set_fact:
     lc: elasticsearch_ca_lc
   when:
     - inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
     - elasticsearch_ca_lc is defined
 
-- name: Set encoding of CA with elasticsearch_ca_encoding
+- name: Set encoding of CA with default elasticsearch_ca_encoding
   set_fact:
     enc: elasticsearch_ca_encoding
   when:

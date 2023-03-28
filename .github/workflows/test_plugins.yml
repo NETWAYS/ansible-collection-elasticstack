@@ -1,5 +1,5 @@
 ---
-name: Test Role elasticsearch
+name: Test Plugins
 on:
   workflow_dispatch:
     inputs:
@@ -81,6 +81,7 @@ jobs:
           apt install locales
           locale-gen de_DE.UTF-8
           locale-gen en_US.UTF-8
+          locale-gen es_ES.UTF-8
           dpkg-reconfigure locales
 
       - name: Test with molecule

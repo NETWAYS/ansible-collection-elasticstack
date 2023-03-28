@@ -5,6 +5,8 @@
   collections:
     - netways.elasticstack
   hosts: localhost
+  vars:
+    es_to_date_1: null
   tasks:
     - name: Test netways.elasticstack.es_to_datetime
       debug:
@@ -15,6 +17,9 @@
     - name: Convert 'Mar 16 15:55:01 2026' with es_to_datetime() to test Default variables of function
       debug:
         msg: "{{ 'Mar 16 15:55:01 2026' | es_to_datetime('%b %d %H:%M:%S %Y') }}"
-    - name: Convert 'Mar 16 15:55:01 2026' with es_to_datetime() to test if filter can handle none
+    - name: Convert 'Mar 16 15:55:01 2026' with es_to_datetime() to test if filter can handle null
       debug:
-        msg: "{{ 'Mar 16 15:55:01 2026' | es_to_datetime('%b %d %H:%M:%S %Y', none, none) }}"
+        msg: "{{ 'Mar 16 15:55:01 2026' | es_to_datetime('%b %d %H:%M:%S %Y', es_to_date_1, es_to_date_1) }}"
+    - name: Convert '31 de Enero del 2017' with es_to_datetime() to test if filter can spanish language code
+      debug:
+        msg: "{{ '31 de Enero del 2017' | es_to_datetime('%d de %B del %Y', 'es_ES', 'UTF-8') }}"

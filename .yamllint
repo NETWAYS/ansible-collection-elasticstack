@@ -3,3 +3,4 @@ extends: relaxed
 
 rules:
   line-length: disable
+  no-handler: disable

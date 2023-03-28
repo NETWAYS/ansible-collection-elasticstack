@@ -23,9 +23,9 @@
 # It would be possible to handle the return "None" by
 # implementing it in the Module and get rid of two tasks.
 
-# None will be returned by systems which have the locale POSIX configured.
-# The filter will still convert it correctly, since it is not
-# possible to use characters like 'äöü' with POSIX.
+# None will be returned by systems e.g which have the locale POSIX 
+# configured. The filter will still convert it correctly if the
+# controller has the same language code and encoding.
 
 - name: Set language code when default variables are undefined
   when:
@@ -76,7 +76,7 @@
 
 # It is possible to set the language code as a fallback for the user,
 # and the encoding manually with the `elasticsearch_ca_lc` or the
-# `elasticsearch_ca_encoding` defaultvariable. In case nothing works this
+# `elasticsearch_ca_encoding` default variable. In case nothing works this
 # should always be a solution. Maybe the controller node has to
 # generate the locale catalog e.g. en_US.UTF-8 of the remote node.
 # Check .github/workflows/test_plugins.yml for an example of that.

@@ -1,0 +1,20 @@
+---
+# The workaround for arbitrarily named role directory is important because the git repo has one name and the role within it another
+# Found at: https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+- name: Converge
+  collections:
+    - netways.elasticstack
+  hosts: localhost
+  tasks:
+    - name: Test netways.elasticstack.es_to_datetime
+      debug:
+        msg: "{{ 'Mär 16 15:55:01 2026' | es_to_datetime('%b %d %H:%M:%S %Y', 'de_DE', 'UTF-8') }}"
+    - name: Convert 'Mar 16 15:55:01 2026' with es_to_datetime()
+      debug:
+        msg: "{{ 'Mar 16 15:55:01 2026' | es_to_datetime('%b %d %H:%M:%S %Y', 'en_US', 'UTF-8') }}"
+    - name: Convert 'Mar 16 15:55:01 2026' with es_to_datetime() to test Default variables of function
+      debug:
+        msg: "{{ 'Mar 16 15:55:01 2026' | es_to_datetime('%b %d %H:%M:%S %Y') }}"
+    - name: Convert 'Mar 16 15:55:01 2026' with es_to_datetime() to the test if filter can handle 'None' as string returns
+      debug:
+        msg: "{{ 'Mar 16 15:55:01 2026' | es_to_datetime('%b %d %H:%M:%S %Y', none, none) }}"

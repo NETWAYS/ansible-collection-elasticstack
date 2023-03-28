@@ -1,0 +1,92 @@
+---
+name: Test Role elasticsearch
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+  push:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'plugins/**'
+      - 'molecule/plugins_**'
+      - '.config/ansible-lint.yml'
+  pull_request:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'plugins/**'
+      - '.github/workflows/test_plugins.yml'
+      - 'molecule/plugins_**'
+      - '.config/ansible-lint.yml'
+
+jobs:
+  molecule_plugins:
+    runs-on: ubuntu-latest
+
+    env:
+      COLLECTION_NAMESPACE: netways
+      COLLECTION_NAME: elasticstack
+
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        distro: [ubuntu2204]
+        scenario: [plugins_filter]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Install collection
+        run: |
+          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
+          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+
+      # For the netways.elasticstack.es_to_datetime filter test.
+      # Controller will execute filter. That why it has to be
+      # implemented here, since this runner is the controller.
+      #
+      # Current locale catalog of container (de_DE.UTF-8 missing):
+      # $ locale -a
+      # C
+      # C.utf8
+      # POSIX
+      - name: Make de_DE.UTF-8 in locale catalog available
+        run: |
+          apt update
+          apt install locales
+          locale-gen de_DE.UTF-8
+          locale-gen en_US.UTF-8
+          dpkg-reconfigure locales
+
+      - name: Test with molecule
+        run: |
+          molecule test -s ${{ matrix.scenario }}
+        env:
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'

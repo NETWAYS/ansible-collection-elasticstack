@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Copyright (c) 2023, Daniel Patrick <daniel.patrick@netways.de>
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
@@ -12,7 +13,7 @@ from ansible.errors import AnsibleFilterError
 from ansible.module_utils.common.text.converters import to_native
 
 DOCUMENTATION = '''
-  name: to_datetime_by_locale
+  name: es_datetime
   short_description: Convert datestring with custom defined locale
   description:
     - Converts date strings by custom defined locale to Python C(datetime)
@@ -37,12 +38,12 @@ DOCUMENTATION = '''
 '''
 
 EXAMPLES = '''
-- name: Convert 'Mär 16 15:55:01 2026' with to_datetime_by_locale()
+- name: Convert 'Mär 16 15:55:01 2026' with es_datetime()
   debug:
-    msg: "{{ 'Mär 16 15:55:01 2026' | to_datetime_by_locale( '%b %d %H:%M:%S %Y', 'de_DE', 'UTF-8') }}"
-- name: Convert 'Mar 16 15:55:01 2026' with to_datetime_by_locale()
+    msg: "{{ 'Mär 16 15:55:01 2026' | es_datetime( '%b %d %H:%M:%S %Y', 'de_DE', 'UTF-8') }}"
+- name: Convert 'Mar 16 15:55:01 2026' with es_datetime()
   debug:
-    msg: "{{ 'Mär 16 15:55:01 2026' | to_datetime_by_locale('%b %d %H:%M:%S %Y') }}"
+    msg: "{{ 'Mär 16 15:55:01 2026' | es_datetime('%b %d %H:%M:%S %Y') }}"
 '''
 
 RETURN = '''
@@ -52,24 +53,24 @@ RETURN = '''
 '''
 
 
+def es_datetime(
+        string,
+        format="%Y-%m-%d %H:%M:%S",
+        language_code=locale.getlocale()[0],
+        encoding=locale.getlocale()[1]
+        ):
+    try:
+        string = to_native(string)
+        sequence = (language_code, encoding)
+        locale.setlocale(locale.LC_ALL, sequence)
+        result = datetime.datetime.strptime(string, format)
+    except Exception as e:
+        raise AnsibleFilterError("Exception: %s" % to_native(e))
+    return result
+
+
 class FilterModule(object):
     def filters(self):
-        return {
-            'to_datetime_by_locale': self.to_datetime_by_locale
+        return {  
+            'es_datetime': es_datetime
         }
-
-    def to_datetime_by_locale(
-            self,
-            string,
-            format="%Y-%m-%d %H:%M:%S",
-            language_code=locale.getlocale()[0],
-            encoding=locale.getlocale()[1]
-            ):
-        try:
-            string = to_native(string)
-            sequence = (language_code, encoding)
-            locale.setlocale(locale.LC_ALL, sequence)
-            result = datetime.datetime.strptime(string, format)
-        except Exception as e:
-            raise AnsibleFilterError("Exception: %s" % to_native(e))
-        return result

@@ -15,16 +15,17 @@
   register: ca_exists
   when: inventory_hostname == elasticsearch_ca
 
-# It is important that `lc` and `enc` only will be
-# defined if a locale is found, else they need to
-# stay undefined, so the filter will receive a `None` and
-# not the string "None". That would result in an unknown
-# language code error, even if it would maybe possible to
-# convert it to a datetime object with default variables.
+# It is important that `lc` and `enc` will be set to none
+# if the return of the Python command is "None". The date
+# filter plugin can only handle e.g. `lc: none` and not
+# `lc: "None"`
+# Note:
+# It would be possible to handle the return "None" by
+# implementing it in the Module and get rid of two tasks.
 
-# This will happen at systems which have as locale POSIX activated.
-# The module will still convert it correctly, since it is not
-# possible to use characters like 'äöü' with this locale.
+# None will be returned by systems which have the locale POSIX configured.
+# The filter will still convert it correctly, since it is not
+# possible to use characters like 'äöü' with POSIX.
 
 - name: Set language code when default variables are undefined
   when:
@@ -36,7 +37,6 @@
     # That has also been mentioned in the documentation for the
     # datetime.datetime.strptime() function under notes.
     # https://docs.python.org/3/library/datetime.html
-
     - name: Get language code from locale of CA
       command: >-
         python -c "import locale; print(locale.getlocale()[0])"
@@ -47,6 +47,11 @@
       set_fact:
         lc: locale_lc.stdout
       when: '"None" not in locale_lc.stdout'
+
+    - name: Set language code for plugin to none if "None" is returned
+      set_fact:
+        enc: none
+      when: '"None" in locale_ls.stdout'
 
 - name: Set encoding when default variables are undefined
   when:
@@ -64,10 +69,17 @@
         enc: locale_encoding.stdout
       when: '"None" not in locale_encoding.stdout'
 
+    - name: Set encoding for plugin to none if "None" is returned
+      set_fact:
+        enc: none
+      when: '"None" in locale_encoding.stdout'
+
 # It is possible to set the language code as a fallback for the user,
 # and the encoding manually with the `elasticsearch_ca_lc` or the
 # `elasticsearch_ca_encoding` variable. In case nothing works this
-# will always be a solution.
+# should always be a solution. Maybe the controller node has to
+# generate the locale catalog e.g. en_US.UTF-8 of the remote node.
+# Check .github/workflows/test_plugins.yml for an example of that.
 
 - name: Set language_code of CA
   set_fact:
@@ -94,7 +106,7 @@
     -passin pass:'{{ elastic_ca_pass }}'
     -clcerts
     -nokeys
-  register: ca_pem
+  register: ca_expiration_date
   changed_when: false
   when: inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
 
@@ -106,9 +118,7 @@
 - name: Set ca will expire soon to true
   set_fact:
     elastic_ca_will_expire_soon: true
-  when:
-    - inventory_hostname == elasticsearch_ca
-    - not ca_info.valid_at.expiration | bool
+  when: elasticsearch_cert_expiration_days is defined and elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
 
 - name: Print the ca renew message
   debug:

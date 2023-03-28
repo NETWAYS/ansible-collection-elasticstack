@@ -48,8 +48,11 @@ EXAMPLES = '''
 
 RETURN = '''
   _value:
-    description: String converted to datetime
-    type: string
+    description: 
+      - Datetime object (Info: Do not return string for datetime 
+        plugins. It won't be possible to make calculations with
+        operators like '+' and '-' during Jinja expressions)
+    type: object
 '''
 
 

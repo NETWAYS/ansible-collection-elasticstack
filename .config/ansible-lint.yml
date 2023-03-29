@@ -7,6 +7,7 @@ warn_list:
   - key-order[task]  # Ensure specific order of keys in mappings.
   - name[casing]
   - 'risky-shell-pipe'
+  - no-handler # backup of old certificates
 skip_list:
   - '106'
   - 'command-instead-of-module'

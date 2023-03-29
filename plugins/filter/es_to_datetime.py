@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Copyright (c) 2023, Daniel Patrick <daniel.patrick@netways.de>
-# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or
+# https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import (absolute_import, division, print_function)
@@ -9,6 +10,7 @@ __metaclass__ = type
 
 import datetime
 import locale
+
 from ansible.errors import AnsibleFilterError
 from ansible.module_utils.common.text.converters import to_native
 
@@ -48,8 +50,8 @@ EXAMPLES = '''
 
 RETURN = '''
   _value:
-    description: 
-      - Datetime object (Info: Do not return string for datetime 
+    description:
+      - Datetime object (Info: Do not return string for datetime
         plugins. It won't be possible to make calculations with
         operators like '+' and '-' during Jinja expressions)
     type: object
@@ -74,6 +76,6 @@ def es_to_datetime(
 
 class FilterModule(object):
     def filters(self):
-        return {  
+        return {
             'es_to_datetime': es_to_datetime
         }

@@ -50,7 +50,7 @@ jobs:
           - debian10
         scenario:
           - elasticstack_default
-          - plugins_filter
+          - plugins
         release:
           - 7
           - 8

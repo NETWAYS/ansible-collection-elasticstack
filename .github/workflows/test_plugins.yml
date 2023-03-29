@@ -19,8 +19,9 @@ on:
       - '!doc/**'
     paths:
       - 'plugins/**'
-      - 'molecule/plugins_**'
-      - '.config/ansible-lint.yml'
+      - '.github/workflows/test_plugins.yml'
+      - 'molecule/plugins/**'
+      - '.config/pep8.yml'
   pull_request:
     branches:
       - 'feature/**'
@@ -29,11 +30,32 @@ on:
     paths:
       - 'plugins/**'
       - '.github/workflows/test_plugins.yml'
-      - 'molecule/plugins_**'
-      - '.config/ansible-lint.yml'
+      - 'molecule/plugins/**'
+      - '.config/pep8.yml'
 
 jobs:
-  molecule_plugins:
+  pep8:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pep8
+
+      - name: Lint code.
+        run: |
+          pep8 plugins/ --config=.config/pep8.cfg
+
+  python2_plugins:
+    needs: pep8
     runs-on: ubuntu-latest
 
     env:
@@ -44,17 +66,74 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        distro: [ubuntu2204]
-        scenario: [plugins_filter]
+        python_version: [ 2.7.18 ]
 
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.8
+      - name: Set up Python 2.7.18
         uses: actions/setup-python@v3
         with:
-          python-version: 3.8
+          python-version: ${{ matrix.python_version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-test-plugins.txt
+
+      - name: Install collection
+        run: |
+          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
+          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+
+      # For the netways.elasticstack.es_to_datetime filter test.
+      # Controller will execute filter. That why it has to be
+      # implemented here, since this runner is the controller.
+      #
+      # Current locale catalog of container (de_DE.UTF-8 missing):
+      # $ locale -a
+      # C
+      # C.utf8
+      # POSIX
+      - name: Make de_DE.UTF-8 in locale catalog available
+        run: |
+          apt update
+          apt install locales
+          locale-gen de_DE.UTF-8
+          locale-gen en_US.UTF-8
+          locale-gen es_ES.UTF-8
+          dpkg-reconfigure locales
+
+      - name: Test with ansible-playbook
+        run: |
+          ansible-playbook molecule/plugins/converge.yml
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+
+  python3_plugins:
+    needs: python2_plugins
+    runs-on: ubuntu-latest
+
+    env:
+      COLLECTION_NAMESPACE: netways
+      COLLECTION_NAME: elasticstack
+
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        python_version: [ 3.7.13 ]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.7.13
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python_version }}
 
       - name: Install dependencies
         run: |
@@ -84,10 +163,9 @@ jobs:
           locale-gen es_ES.UTF-8
           dpkg-reconfigure locales
 
-      - name: Test with molecule
+      - name: Test with ansible-playbook
         run: |
-          molecule test -s ${{ matrix.scenario }}
+          ansible-playbook molecule/plugins/converge.yml
         env:
-          MOLECULE_DISTRO: ${{ matrix.distro }}
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

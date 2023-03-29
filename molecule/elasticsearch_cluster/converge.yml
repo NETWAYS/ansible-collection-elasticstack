@@ -10,6 +10,9 @@
     elasticsearch_disable_systemcallfilterchecks: true
     elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticsearch_heap: "1"
+    elasticsearch_node_types:
+      - master
+      - data
   tasks:
     - name: Include Elastics repos role
       include_role:

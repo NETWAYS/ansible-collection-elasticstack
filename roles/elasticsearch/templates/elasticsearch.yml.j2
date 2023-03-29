@@ -2,6 +2,9 @@ node.name: "{{ ansible_hostname }}"
 path.data: {{ elasticsearch_datapath }}
 path.logs: /var/log/elasticsearch
 network.host: ["_local_","_site_"]
+{% if elasticsearch_node_types is defined %}
+node.roles: [ {% for type in elasticsearch_node_types %}{{ type }}{% if not loop.last %}, {% endif %}{% endfor %} ]
+{% endif %}
 {% if elastic_release | int < 8 or groups['elasticsearch'] | length > 1 %}
 discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
 "{{ hostvars[host].ansible_default_ipv4.address | default(hostvars[host].ansible_all_ipv4_addresses[0]) }}"{% if not loop.last %},{% endif %}

@@ -59,6 +59,29 @@
   when:
     - ansible_os_family == "Debian"
 
+- name: Check if master node count is correct
+  when:
+    - elasticsearch_node_types is defined
+  run_once: true
+  delegate_to: "{{ groups['elasticsearch'][0] }}"
+  block:
+
+    - name: Count master nodes
+      set_fact:
+        count_of_master_nodes: >-
+          {%- set count_of_master_nodes = 0 -%}
+          {%- for esnode in groups['elasticsearch'] -%}
+            {%- if "master" in hostvars[esnode].elasticsearch_node_types -%}
+              {%- set count_of_master_nodes = count_of_master_nodes | int + 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+    - name: Check count of master nodes
+      fail:
+        msg: "There must be an odd count of master nodes. You have {{ count_of_master_nodes }}"
+      when:
+        - count_of_master_nodes % 2  == 0
+
 - name: Configure Elasticsearch
   template:
     src: elasticsearch.yml.j2

@@ -62,14 +62,6 @@
       when:
         - count_of_master_nodes | int % 2  == 0
 
-    - name: Show master node count
-      debug:
-        msg: "You have {{ count_of_master_nodes }} master nodes"
-
-    - name: List group names of each host
-      debug:
-        var: group_names
-
 - name: Install openssl if security is activated
   package:
     name: openssl

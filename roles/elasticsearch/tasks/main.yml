@@ -55,7 +55,7 @@
 
     - name: Count master nodes
       set_fact:
-        count_of_master_nodes : "{{ groups['elasticsearch_role_master'] | length }}"
+        count_of_master_nodes: "{{ groups['elasticsearch_role_master'] | length }}"
 
     - name: Check count of master nodes
       fail:

@@ -7,10 +7,79 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from ansible.module_utils.basic import AnsibleModule, to_text, to_native
+from ansible.module_utils.basic import AnsibleModule, to_text, to_native, to_bytes
+from cryptography.hazmat.primitives.serialization import pkcs12
+from cryptography.x509.oid import NameOID
 
-import datetime
-import locale
+import re
+
+
+def analyze_ca_cert(result, path, __password=None):
+    # read the PKCS12 file
+    with open(path, 'rb') as f:
+        pkcs12_data = f.read()
+
+    # import the PKCS12 data using cryptography
+    privatekey, certificate, additional_certificates = pkcs12.load_key_and_certificates(
+        pkcs12_data,
+        to_bytes(__password)
+        )
+
+    # map objects to results
+    result['version'] = to_text(certificate.version)
+    result['serial_number'] = to_text(certificate.serial_number)
+    result['not_valid_before'] = to_text(certificate.not_valid_before)
+    result['not_valid_after'] = to_text(certificate.not_valid_after)
+    issuer = to_text(certificate.issuer.get_attributes_for_oid(
+        NameOID.COMMON_NAME)[0].value
+        )
+    subject = to_text(certificate.subject.get_attributes_for_oid(
+        NameOID.COMMON_NAME)[0].value
+        )
+    result['issuer'] = issuer
+    result['subject'] = to_text(subject)
+
+    for extension in certificate.extensions:
+        # map oid object
+        oid = to_text(extension.oid)
+        oid = re.split('\\(|\\)|=| ', oid)
+        extension_name = to_text(oid[4])
+        oid = to_text(oid[2])
+
+        # map critical object
+        critical = to_text(extension.critical)
+
+        # map value object
+        key_values = to_text(extension.value)
+        key_values = re.split('\\(|\\)', key_values)
+
+        # pop last and first item
+        key_values.pop(0)
+        key_values.pop(-1)
+
+        # one item left with values, separated with ","
+        # split and strip
+        key_values = re.split(',', to_text(key_values[0]))
+        key_values = [value.strip() for value in key_values]
+
+        # split all items by "="
+        key_values = [value.split('=') for value in key_values]
+
+        # create new dictionary for extensions name and its key values
+        result['extensions'][extension_name] = dict()
+        result['extensions'][extension_name]['values'] = dict()
+
+        # map key values to key and value
+        for key_value in key_values:
+            key = key_value[0]
+            value = key_value[1]
+            result['extensions'][extension_name]['values'][to_text(key)] = to_text(value)
+
+        # map to results
+        result['extensions'][extension_name]['oid'] = to_text(oid)
+        result['extensions'][extension_name]['critical'] = to_text(critical)
+
+    return result
 
 
 def run_module():
@@ -18,23 +87,19 @@ def run_module():
     # set password and ca_dir to no_log for security
     module_args = dict(
         ca_dir=dict(type='str', no_log=True, required=True),
-        password=dict(type='str', no_log=True, required=False, default=False),
-        format=dict(type='str', required=False, default='%b %d %H:%M:%S %Y %Z'),
-        language_code=dict(type='str', required=False, default=None),
-        encoding=dict(type='str', required=False, default=None)
-    )
-
-    # parameters required together
-    module = AnsibleModule(
-        argument_spec=module_args,
-        supports_check_mode=True,
-        required_together=[['language_code', 'encoding']]
+        password=dict(type='str', no_log=True, required=False, default=False)
     )
 
     # seed the result dict
     result = dict(
         changed=False,
-        enddate=''
+        extensions=dict(),
+        issuer='',
+        not_valid_after='',
+        not_valid_before='',
+        serial_number='',
+        subject='',
+        version=''
     )
 
     # the AnsibleModule object
@@ -43,75 +108,20 @@ def run_module():
         supports_check_mode=True
     )
 
-    # if the user is working with this module in only check mode we do not
-    # want to make any changes to the environment, just return the current
-    # state with no modifications
+    # check mode
     if module.check_mode:
         module.exit_json(**result)
 
-    # build openssl command to read certificate
-    openssl_cmd = "openssl pkcs12"
-    openssl_cmd += " -in '%s/elastic-stack-ca.p12'" % module.params['ca_dir']
-    openssl_cmd += " -passin pass:'%s'" % (module.params['password'])
-    openssl_cmd += " -clcerts"
-    openssl_cmd += " -nokeys"
+    path = module.params['ca_dir'] + '/elastic-stack-ca.p12'
 
-    # run command with the basic utils from AnsibleModules
-    # run_command() has three returns which are
-    # rc, stdout, and stderr
-    rc, stdout, stderr = module.run_command(openssl_cmd)
-
-    # check if command failed
-    if rc != 0:
-        result['stderr'] = to_text(stderr)
-        module.fail_json(msg='Error: openssl: ', **result)
-
-    cert_content = stdout
-
-    # new command build to get the notAfter date
-    # passed in last stdout to stdin
-    openssl_cmd = "openssl x509 -noout -enddate"
-    rc, stdout, stderr = module.run_command(openssl_cmd, data=cert_content)
-
-    # check if command failed
-    if rc != 0:
-        result['stderr'] = to_text(stderr)
-        module.fail_json(msg='Error: openssl: ', **result)
-
-    # formatting to remove 'notAfter=' with awk from last result
-    # passed in last stdout to stdin
-    openssl_cmd = "awk -F'=' '{print $2}'"
-    rc, stdout, stderr = module.run_command(openssl_cmd, data=stdout)
-
-    # New commands to get more information about the CA can be
-    # continued with the commented example code.
-
-    # new command build to get notBefore date
-    # openssl_cmd = "openssl x509 -noout -startdate"
-    # rc, stdout, stderr = module.run_command(openssl_cmd, data=cert_content)
-
-    # check if command failed
-    if rc != 0:
-        result['stderr'] = to_text(stderr)
-        module.fail_json(msg='Error: awk: ', **result)
-
-    # set locale, if given
     try:
-        if module.params['language_code'] or module.params['encoding']:
-            sequence = (module.params['language_code'], module.params['encoding'])
-            locale.setlocale(locale.LC_ALL, sequence)
+        result = analyze_ca_cert(result, path, module.params['password'])
+    except ValueError as e:
+        module.fail_json(msg='ValueError: %s' % to_native(e))
     except Exception as e:
         module.fail_json(msg='Exception: %s' % to_native(e))
 
-    # get datetime object and convert it to string for return
     try:
-        # use stdout from last command and the paramter
-        # format from the module
-        datetime_object = datetime.datetime.strptime(
-            to_text(stdout.strip()),
-            module.params['format']
-            )
-        result['enddate'] = to_native(datetime_object)
         module.exit_json(**result)
     except ValueError as e:
         module.fail_json(msg='ValueError: %s' % to_native(e))

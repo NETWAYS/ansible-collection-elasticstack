@@ -87,24 +87,6 @@ jobs:
           mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
           cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
 
-      # For the netways.elasticstack.es_to_datetime filter test.
-      # Controller will execute filter. That why it has to be
-      # implemented here, since this runner is the controller.
-      #
-      # Current locale catalog of container (de_DE.UTF-8 missing):
-      # $ locale -a
-      # C
-      # C.utf8
-      # POSIX
-      - name: Make de_DE.UTF-8 in locale catalog available
-        run: |
-          apt update
-          apt install locales
-          locale-gen de_DE.UTF-8
-          locale-gen en_US.UTF-8
-          locale-gen es_ES.UTF-8
-          dpkg-reconfigure locales
-
       - name: Test with ansible-playbook
         run: |
           ansible-playbook molecule/plugins/converge.yml
@@ -138,30 +120,12 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install -r requirements-test.txt
+          python3 -m pip install -r requirements-test-plugins.txt
 
       - name: Install collection
         run: |
           mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
           cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
-
-      # For the netways.elasticstack.es_to_datetime filter test.
-      # Controller will execute filter. That why it has to be
-      # implemented here, since this runner is the controller.
-      #
-      # Current locale catalog of container (de_DE.UTF-8 missing):
-      # $ locale -a
-      # C
-      # C.utf8
-      # POSIX
-      - name: Make de_DE.UTF-8 in locale catalog available
-        run: |
-          apt update
-          apt install locales
-          locale-gen de_DE.UTF-8
-          locale-gen en_US.UTF-8
-          locale-gen es_ES.UTF-8
-          dpkg-reconfigure locales
 
       - name: Test with ansible-playbook
         run: |

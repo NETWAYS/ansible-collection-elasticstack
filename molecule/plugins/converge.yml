@@ -9,59 +9,47 @@
     es_to_date_1: null
   tasks:
     #
-    # Test filter plugin
-    #
-    - name: netways.elasticstack.es_to_datetime - Test netways.elasticstack.es_to_datetime
-      debug:
-        msg: "{{ 'Mär 16 15:55:01 2026' | netways.elasticstack.es_to_datetime('%b %d %H:%M:%S %Y', 'de_DE', 'UTF-8') }}"
-    - name: netways.elasticstack.es_to_datetime - Convert 'Mar 16 15:55:01 2026' with es_to_datetime()
-      debug:
-        msg: "{{ 'Mar 16 15:55:01 2026' | netways.elasticstack.es_to_datetime('%b %d %H:%M:%S %Y', 'en_US', 'UTF-8') }}"
-    - name: netways.elasticstack.es_to_datetime - Convert 'Mar 16 15:55:01 2026' with es_to_datetime() to test Default variables of function
-      debug:
-        msg: "{{ 'Mar 16 15:55:01 2026' | netways.elasticstack.es_to_datetime('%b %d %H:%M:%S %Y') }}"
-    - name: netways.elasticstack.es_to_datetime - Convert 'Mar 16 15:55:01 2026' with es_to_datetime() to test if filter can handle null
-      debug:
-        msg: "{{ 'Mar 16 15:55:01 2026' | netways.elasticstack.es_to_datetime('%b %d %H:%M:%S %Y', es_to_date_1, es_to_date_1) }}"
-    - name: netways.elasticstack.es_to_datetime - Convert '31 de Enero del 2017' with es_to_datetime() to test if filter can spanish language code
-      debug:
-        msg: "{{ '31 de Enero del 2017' | netways.elasticstack.es_to_datetime('%d de %B del %Y', 'es_ES', 'UTF-8') }}"
-
-    #
     # Test modules
     #
-    - name: netways.elasticstack.ca_info - Test without format
-      netways.elasticstack.ca_info:
+    - name: Test
+      ca_info:
         ca_dir: es-ca/
         password: PleaseChangeMe
-        language_code: en_US
-        encoding: UTF-8
       register: test
     - name: Debug
       debug:
-        msg: "{{ test.enddate }}"
-    - name: netways.elasticstack.ca_info - Test path without / at end and without format
-      netways.elasticstack.ca_info:
+        msg: "{{ test }}"
+    - name: Test path without / at end
+      ca_info:
         ca_dir: es-ca
         password: PleaseChangeMe
-        format: '%b %d %H:%M:%S %Y %Z' # This is the default
-        language_code: en_US           # Default: None
-        encoding: UTF-8                # Default: None
-    - name: netways.elasticstack.ca_info - Test required parameters (missing ca_dir)
-      netways.elasticstack.ca_info:
+    - name: Test required parameters (missing ca_dir)
+      ca_info:
         password: PleaseChangeMe
-        format: '%b %d %H:%M:%S %Y %Z'
-        language_code: en_US
-        encoding: UTF-8
       ignore_errors: true
-    - name: netways.elasticstack.ca_info - Test required together parameters (only language code set)
-      netways.elasticstack.ca_info:
-        ca_dir: es-ca/
+    - name: Test required together parameters (only language code set)
+      ca_info:
+        ca_dir: es-ca
         password: PleaseChangeMe
-        format: '%b %d %H:%M:%S %Y %Z'
-        language_code: en_US
       ignore_errors: true
-    - name: Debug with to_datetime()
+    - name: Test wrong path
+      ca_info:
+        ca_dir: es-ca-wrong
+        password: PleaseChangeMe
+      ignore_errors: true
+    - name: Debug with to_datetime() - (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days
       debug:
         msg: >-
-          "{{ (( test.enddate | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+          "{{ (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    - name: Test wrong password
+      ca_info:
+        ca_dir: es-ca
+        password: PleaseChangeMe-wrong
+      ignore_errors: true
+    - name: Test no password
+      ca_info:
+        ca_dir: es-ca
+      ignore_errors: true
+    - name: Test no parameters
+      ca_info:
+      ignore_errors: true

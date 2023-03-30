@@ -20,19 +20,16 @@
 # not the CA cert with cacerts
 
 - name: Get CA informations
-  es_ca_info:
-    ca_dir: "{{ elastic_ca_dir | default(omit, true) }}"
+  ca_info:
+    ca_dir: "{{ elastic_ca_dir }}"
     password: "{{ elastic_ca_pass | default(omit, true) }}"
-    format: "{{ elasticsearch_ca_format | default(omit, true) }}"
-    language_code: "{{ elasticsearch_ca_language_code | default(omit, true) }}"
-    encoding: "{{ elasticsearch_ca_encoding | default(omit, true) }}"
   register: ca_infos
   changed_when: false
   when: inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
 
 - name: Set the ca expiration date in days
   set_fact:
-    elastic_ca_expiration_days: "{{ (( ca_infos.enddate | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    elastic_ca_expiration_days: "{{ (( ca_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: inventory_hostname == elasticsearch_ca and ca_infos.skipped is not defined
 
 - name: Set ca will expire soon to true

@@ -18,6 +18,54 @@
     - renew_ca
     - renew_es_cert
 
+- name: Check if master node count is correct
+  when:
+    - elasticsearch_node_types is defined
+  run_once: true
+  delegate_to: "{{ groups['elasticsearch'][0] }}"
+  block:
+
+    # the following is a way to simplify handling information
+    # about nodes. For some tasks it's only important if a node
+    # has a specific roles and the others are irrelevant
+    #
+    - name: Set node role variable - master
+      set_fact:
+        elasticsearch_role: "master"
+      when: "master" in elasticsearch_node_types
+
+    - name: Set node role variable - data
+      set_fact:
+        elasticsearch_role: "data"
+      when:
+        - "master" not in elasticsearch_node_types
+        - "data" in elasticsearch_node_types
+
+    - name: Set node role variable - other
+      set_fact:
+        elasticsearch_role: "other"
+      when:
+        - "master" not in elasticsearch_node_types
+        - "data" not in elasticsearch_node_types
+
+    - name: Create groups of nodes
+      group_by:
+        key: "elasticsearch_role_{{ elasticsearch_role }}"
+
+    - name: Count master nodes
+      set_fact:
+        count_of_master_nodes : "{{ groups['elasticsearch_role_master | length }}"
+
+    - name: Check count of master nodes
+      fail:
+        msg: "There must be an odd count of master nodes. You have {{ count_of_master_nodes }}"
+      when:
+        - count_of_master_nodes % 2  == 0
+
+    - name: Show master node count
+      debug:
+        msg: "You have {{ count_of_master_nodes }} master nodes"
+
 - name: Install openssl if security is activated
   package:
     name: openssl
@@ -58,29 +106,6 @@
     name: "{{ elasticsearch_package }}"
   when:
     - ansible_os_family == "Debian"
-
-- name: Check if master node count is correct
-  when:
-    - elasticsearch_node_types is defined
-  run_once: true
-  delegate_to: "{{ groups['elasticsearch'][0] }}"
-  block:
-
-    - name: Count master nodes
-      set_fact:
-        count_of_master_nodes: >-
-          {%- set count_of_master_nodes = 0 -%}
-          {%- for esnode in groups['elasticsearch'] -%}
-            {%- if "master" in hostvars[esnode].elasticsearch_node_types -%}
-              {%- set count_of_master_nodes = count_of_master_nodes | int + 1 -%}
-            {%- endif -%}
-          {%- endfor -%}
-
-    - name: Check count of master nodes
-      fail:
-        msg: "There must be an odd count of master nodes. You have {{ count_of_master_nodes }}"
-      when:
-        - count_of_master_nodes % 2  == 0
 
 - name: Configure Elasticsearch
   template:

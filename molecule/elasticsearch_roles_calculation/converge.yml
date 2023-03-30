@@ -9,7 +9,12 @@
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
     elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
-    elasticsearch_heap: "1"
+    elasticsearch_node_types:
+      - master
+      - data
+    elasticsearch_enable: false
+    elasticsearch_security: false
+    elasticsearch_http_security: false
   tasks:
     - name: Include Elastics repos role
       include_role:

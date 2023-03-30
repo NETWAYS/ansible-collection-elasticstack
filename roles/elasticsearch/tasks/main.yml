@@ -29,24 +29,25 @@
     # about nodes. For some tasks it's only important if a node
     # has a specific roles and the others are irrelevant
     #
-    - name: Set node role variable - master
+    - name: Set node role variable to master
       set_fact:
         elasticsearch_role: "master"
-      when: "master" in elasticsearch_node_types
+      when:
+        - "'master' in elasticsearch_node_types"
 
-    - name: Set node role variable - data
+    - name: Set node role variable to data
       set_fact:
         elasticsearch_role: "data"
       when:
-        - "master" not in elasticsearch_node_types
-        - "data" in elasticsearch_node_types
+        - "'master' not in elasticsearch_node_types"
+        - "'data' in elasticsearch_node_types"
 
-    - name: Set node role variable - other
+    - name: Set node role variable to other
       set_fact:
         elasticsearch_role: "other"
       when:
-        - "master" not in elasticsearch_node_types
-        - "data" not in elasticsearch_node_types
+        - "'master' not in elasticsearch_node_types"
+        - "'data' not in elasticsearch_node_types"
 
     - name: Create groups of nodes
       group_by:
@@ -54,7 +55,7 @@
 
     - name: Count master nodes
       set_fact:
-        count_of_master_nodes : "{{ groups['elasticsearch_role_master | length }}"
+        count_of_master_nodes : "{{ groups['elasticsearch_role_master'] | length }}"
 
     - name: Check count of master nodes
       fail:

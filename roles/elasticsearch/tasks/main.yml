@@ -52,6 +52,7 @@
     - name: Create groups of nodes
       group_by:
         key: "elasticsearch_role_{{ elasticsearch_role }}"
+      changed_when: false
 
     - name: Count master nodes
       set_fact:

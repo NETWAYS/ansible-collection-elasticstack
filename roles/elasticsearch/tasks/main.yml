@@ -21,8 +21,6 @@
 - name: Check if master node count is correct
   when:
     - elasticsearch_node_types is defined
-  run_once: true
-  delegate_to: "{{ groups['elasticsearch'][0] }}"
   block:
 
     # the following is a way to simplify handling information
@@ -67,6 +65,10 @@
     - name: Show master node count
       debug:
         msg: "You have {{ count_of_master_nodes }} master nodes"
+
+    - name: List group names of each host
+      debug:
+        var: group_names
 
 - name: Install openssl if security is activated
   package:

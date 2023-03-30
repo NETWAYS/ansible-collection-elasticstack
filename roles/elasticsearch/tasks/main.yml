@@ -61,7 +61,7 @@
       fail:
         msg: "There must be an odd count of master nodes. You have {{ count_of_master_nodes }}"
       when:
-        - count_of_master_nodes % 2  == 0
+        - count_of_master_nodes | int % 2  == 0
 
     - name: Show master node count
       debug:

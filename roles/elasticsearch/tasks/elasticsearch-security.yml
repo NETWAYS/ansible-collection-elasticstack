@@ -603,6 +603,18 @@
   retries: 5
   delay: 10
 
+- name: Leave a file showing that the cluster is set up
+  template:
+    dest: "{{ elasticsearch_initialized_file }}"
+    src: elasticsearch_initialized.j2
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Set var that cluster is set up
+  set_fact:
+    elaticsearch_cluster_set_up: true
+
 - name: Check for open port tcp {{ elastic_elasticsearch_http_port }}
   wait_for:
     port: "{{ elastic_elasticsearch_http_port }}"

@@ -12,6 +12,8 @@ discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
 "{{ hostvars[host].ansible_default_ipv4.address | default(hostvars[host].ansible_all_ipv4_addresses[0]) }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
 {% endif %}
+
+{% if not elaticsearch_cluster_set_up | bool %}
 {% if elasticsearch_node_types is defined %}
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch_role_master']  %}
 "{{ hostvars[host].ansible_hostname }}"{% if not loop.last %},{% endif %}
@@ -20,6 +22,7 @@ cluster.initial_master_nodes: [ {% for host in groups['elasticsearch_role_master
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
 "{{ hostvars[host].ansible_hostname }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
+{% endif %}
 {% endif %}
 
 {% if elastic_temperature is defined %}

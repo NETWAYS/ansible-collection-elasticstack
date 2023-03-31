@@ -12,7 +12,6 @@ Please note that setting `elasticsearch_bootstrap_pw` as variable will only take
 Role Variables
 --------------
 
-* *elasticsearch_enable*: Start and enable Elasticsearch (default: `true`)
 * *elasticsearch_node_types*: List of types of this very node. Please refer to [official docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html) for details. (default: not set. allowed value: array of types)
 * *elasticsearch_heap*: Heapsize for Elasticsearch. (Half of free memory on host. Maximum 30GB. (default: Half of hosts memory. Min 1GB, Max 30GB)
 * *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)

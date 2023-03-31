@@ -168,7 +168,6 @@
     name: elasticsearch
     state: started
     enabled: yes
-  when: elasticsearch_enable | bool
   failed_when: false
 
 - name: Show hint about passwords

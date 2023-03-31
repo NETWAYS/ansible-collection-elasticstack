@@ -4,7 +4,6 @@
   service:
     name: elasticsearch
     state: restarted
-  when: elasticsearch_enable | bool
 
 - name: Restart kibana if available for elasticsearch certificates
   include_tasks: handlers/restart_kibana.yml

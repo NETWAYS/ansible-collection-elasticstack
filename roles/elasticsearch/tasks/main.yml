@@ -27,7 +27,16 @@
 - name: Set var that cluster is set up
   set_fact:
     elaticsearch_cluster_set_up: true
-  when: cluster_setup_check.stat.exists
+  when:
+    - cluster_setup_check.stat.exists | bool
+    - cluster_setup_check is defined
+
+- name: Set var that cluster is not set up
+  set_fact:
+    elaticsearch_cluster_set_up: false
+  when:
+    - cluster_setup_check is undefined or
+      not cluster_setup_check.stat.exists | bool
 
 - name: Check if master node count is correct
   when:

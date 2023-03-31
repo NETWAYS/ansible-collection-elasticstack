@@ -54,9 +54,9 @@ jobs:
         run: |
           pep8 plugins/ --config=.config/pep8.cfg
 
-  python2_plugins:
+  python:
     needs: pep8
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     env:
       COLLECTION_NAMESPACE: netways
@@ -66,13 +66,13 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        python_version: [ 2.7.18 ]
+        python_version: [ 2.7.18, 3.5.10, 3.7.13 ]
 
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Set up Python 2.7.18
+      - name: Set up Python ${{ matrix.python_version }}
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python_version }}
@@ -80,47 +80,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements-test-plugins.txt
-
-      - name: Install collection
-        run: |
-          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
-          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
-
-      - name: Test with ansible-playbook
-        run: |
-          ansible-playbook molecule/plugins/converge.yml
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-
-  python3_plugins:
-    needs: python2_plugins
-    runs-on: ubuntu-latest
-
-    env:
-      COLLECTION_NAMESPACE: netways
-      COLLECTION_NAME: elasticstack
-
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        python_version: [ 3.7.13 ]
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Set up Python 3.7.13
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python_version }}
-
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install -r requirements-test-plugins.txt
+          python -m pip install install ansible
 
       - name: Install collection
         run: |

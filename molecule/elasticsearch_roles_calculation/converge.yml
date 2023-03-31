@@ -12,7 +12,7 @@
     elasticsearch_node_types:
       - master
       - data
-    elasticsearch_enable: false
+    elasticsearch_heap: 1
   tasks:
     - name: Include Elastics repos role
       include_role:

@@ -13,6 +13,7 @@
       - master
       - data
     elasticsearch_heap: 1
+    elasticsearch_check_calculation: true
   tasks:
     - name: Include Elastics repos role
       include_role:

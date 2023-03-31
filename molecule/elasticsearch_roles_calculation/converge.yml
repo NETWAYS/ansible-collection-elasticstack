@@ -13,8 +13,6 @@
       - master
       - data
     elasticsearch_enable: false
-    elasticsearch_security: false
-    elasticsearch_http_security: false
   tasks:
     - name: Include Elastics repos role
       include_role:

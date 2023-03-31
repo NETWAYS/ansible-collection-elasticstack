@@ -86,20 +86,66 @@ Our default configuration will collect filesystem logs placed by `rsyslog`. Ther
 
 There are some comments in the Playbook. Either fill them with the correct values (`remote_user`) or consider them as a hint to commonly used options.
 
-_Note_: The roles rely on hardcoded group names for placing services on hosts. Please make sure you have groups named `elasticsearch`, `logstash` and `kibana` in your Ansible inventory. Hosts in these groups will get the respective services. Restricting your plays to the appropriate hosts will not work because the roles interact with hosts from other groups e.g. for certificate generation.
+_Note_: The roles rely on hardcoded group names for placing services on hosts. Please make sure you have groups named `elasticsearch`, `logstash` and `kibana` in your Ansible inventory. Hosts in these groups will get the respective services. Just restricting your plays to the appropriate hosts will not work because the roles interact with hosts from other groups e.g. for certificate generation.
 
 The execution order of the roles is important! (see below)
 
 ```
 ---
 - hosts: all
-    # remote_user: my_username
+  # remote_user: my_username
+  become: true
+  collections:
+    - netways.elasticstack
+  vars:
+    elastic_variant: elastic #oss
+    #  elastic_release: 8 #7
+  roles:
+    - repos
+
+- hosts: elasticsearch
+  # remote_user: my_username
   become: true
   collections:
     - netways.elasticstack
   vars:
     elastic_variant: elastic #oss
     elasticsearch_jna_workaround: true
+    #  elastic_release: 8 #7
+  roles:
+    - elasticsearch
+
+- hosts: logstash
+  # remote_user: my_username
+  become: true
+  collections:
+    - netways.elasticstack
+  vars:
+    elastic_variant: elastic #oss
+    elastic_override_beats_tls: true
+    #  elastic_release: 8 #7
+  roles:
+    - geerlingguy.redis
+    - logstash
+
+- hosts: kibana
+  # remote_user: my_username
+  become: true
+  collections:
+    - netways.elasticstack
+  vars:
+    elastic_variant: elastic #oss
+    #  elastic_release: 8 #7
+  roles:
+    - kibana
+
+- hosts: all
+  # remote_user: my_username
+  become: true
+  collections:
+    - netways.elasticstack
+  vars:
+    elastic_variant: elastic #oss
     elastic_override_beats_tls: true
     #  elastic_release: 8 #7
   pre_tasks:
@@ -112,12 +158,8 @@ The execution order of the roles is important! (see below)
         state: started
         enabled: true
   roles:
-    - repos
-    - elasticsearch
-    - geerlingguy.redis
-    - logstash
-    - kibana
     - beats
+
 ```
 
 ## Contributing

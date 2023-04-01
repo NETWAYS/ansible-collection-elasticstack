@@ -24,7 +24,6 @@
     ca_dir: "{{ elastic_ca_dir }}"
     password: "{{ elastic_ca_pass | default(omit, true) }}"
   register: ca_infos
-  changed_when: false
   when: inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
 
 - name: Set the ca expiration date in days

@@ -601,7 +601,7 @@
   ignore_errors: "{{ ansible_check_mode }}"
   when: elasticsearch_passwords_file.stat.exists | bool
   until: es_cluster_status.stdout == "green"
-  retries: 5
+  retries: 20
   delay: 10
 
 - name: Check for open port tcp {{ elastic_elasticsearch_http_port }}

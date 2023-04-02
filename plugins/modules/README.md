@@ -1,7 +1,8 @@
 # Documentation: netways.elasticstack modules
 
 ## Overview
-- [`ca_info` module](#dependencies)
+- [`ca_info` module](#ca_info-module)
+  - [Dependencies](#dependencies)
   - [Tested python-cryptography versions >= 2.5](#tested-python-cryptography-versions--25)
   - [Tested python versions](#tested-python-versions)
   - [Tested ansible-core versions](#tested-ansible-core-versions)
@@ -159,3 +160,9 @@ ok: [localhost] => {
     }
 }
 ```
+
+### Security measures
+- Only supported extensions with its available values will be returned. The available keys and values are applied in the code with the `SUPPORTED_EXTENSIONS` dictionary. The module will loop through it, and only if found, it will save it to the `results` variable.
+- The paramters `ca_dir`, `password`, and `ca_cert` are set to no_log in the Ansible Module object.
+- The objects `__privatekey`, `__certificate`, and `__additional_certificates` are private and cannot be accessed globally.
+- The variable `__path` is private and cannot be accesed globally.

@@ -2,38 +2,13 @@
 - name: Prepare
   hosts: all
   tasks:
-
-    - name: Refresh apt cache
-      apt:
-        update_cache: yes
-      when: ansible_os_family == "Debian"
-
-    - name: Install packages for RHEL
-      package:
-        name:
-          - iproute
-          - NetworkManager
-      when: ansible_os_family == "RedHat"
-
-    - name: Start NetworkManager
-      service:
-        name: NetworkManager
-        state: started
-        enabled: yes
-      when: ansible_os_family == "RedHat"
-
     - name: Install packages for Debian
-      package:
+      apt:
         name:
           - gpg
           - gpg-agent
           - procps
           - curl
-          - iproute2
-      when: ansible_os_family == "Debian"
-
-    - name: Install common packages
-      package:
-        name:
           - git
           - openssl
+        update_cache: yes

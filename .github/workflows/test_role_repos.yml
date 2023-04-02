@@ -99,3 +99,6 @@ jobs:
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
           ELASTIC_RELEASE: ${{ matrix.release }}
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+

@@ -598,7 +598,7 @@
   register: es_cluster_status
   changed_when: false
   # no_log: true
-  ignore_errors: "{{ ansible_check_mode }}"
+  ignore_errors: true
   when: elasticsearch_passwords_file.stat.exists | bool
   until: es_cluster_status.stdout == "green"
   retries: 20

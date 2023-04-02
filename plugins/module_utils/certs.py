@@ -11,6 +11,7 @@ __metaclass__ = type
 from ansible.module_utils.basic import (
     missing_required_lib,
     to_text,
+    to_native,
     to_bytes
 )
 
@@ -71,116 +72,129 @@ def check_supported_keys(key, extension_name):
     return check_key
 
 
-# analyze pkcs12 cert created by Elastic stack cert util
-def analyze_cert(module, result, __path, __password=None):
-    loaded = False
+class AnalyzeCertificate():
+    def __init__(self, module, result):
+        self.module = module
+        self.result = result
+        self.ca_dir = self.module.params['ca_dir']
+        self.ca_cert = self.module.params['ca_cert']
+        self.__password = self.module.params['password']
+        self.__path = "%s/%s" % (self.ca_dir, self.ca_cert)
+        self.__cert = None
+        self.__private_key = None
+        self.__additional_certs = None
+        self.load_certificate()
+        self.load_info()
 
-    # check if cryptography library is missing
-    if not HAS_CRYPTOGRAPHY_PKCS12:
-        module.fail_json(msg=missing_required_lib('cryptography >= 2.5'))
-
-    # read the pkcs12 file
-    with open(__path, 'rb') as f:
-        pkcs12_data = f.read()
-
-    # try to load with 2 parameters
-    # for cryptography >= 3.1.x
-    try:
-        __privatekey, __certificate, __additional_certificates = pkcs12.load_key_and_certificates(
-            pkcs12_data,
-            to_bytes(__password),
-            )
-        loaded = True
-    except Exception:
-        pass
-
-    # try to load with 3 parameters for
-    # cryptography >= 2.5.x and <= 3.0.x
-    if not loaded:
-        # create backend object
-        backend = default_backend()
-        # call load_key_and_certificates with 3 paramters
-        __privatekey, __certificate, __additional_certificates = pkcs12.load_key_and_certificates(
-            pkcs12_data,
-            to_bytes(__password),
-            backend
-            )
-
-    # map object values to result dict
-    issuer = to_text(__certificate.issuer.get_attributes_for_oid(
-        NameOID.COMMON_NAME)[0].value
-        )
-    subject = to_text(__certificate.subject.get_attributes_for_oid(
-        NameOID.COMMON_NAME)[0].value
-        )
-    result['issuer'] = to_text(issuer)
-    result['not_valid_after'] = to_text(__certificate.not_valid_after)
-    result['not_valid_before'] = to_text(__certificate.not_valid_before)
-    result['serial_number'] = to_text(__certificate.serial_number)
-    result['subject'] = to_text(subject)
-    result['version'] = to_text(__certificate.version)
-
-    # read and map every extension in certificate.extensions
-    for extension in __certificate.extensions:
-        # skip variable in case some information can't be accessed
-        skip = False
-
-        # check if extension is supported bool
-        supported_extension = False
-
-        # skip if something unexpected happens
-        try:
-            # map oid/extension name to variables
-            _name = to_text(extension.oid._name)
-        except Exception:
-            module.warn(
-                "Name of extension couldn't be accessed. Skipping unknown extension."
+    def load_certificate(self):
+        # track if module can load pkcs12
+        loaded = False
+        # check if cryptography library is missing
+        if not HAS_CRYPTOGRAPHY_PKCS12:
+            self.module.fail_json(
+                msg=missing_required_lib('cryptography >= 2.5')
                 )
-            skip = True
+        # read the pkcs12 file
+        try:
+            with open(self.__path, 'rb') as f:
+                pkcs12_data = f.read()
+        except IOError as e:
+            self.module.fail_json(
+                msg='IOError: %s' % (to_native(e))
+                )
+        # try to load with 2 parameters
+        # for cryptography >= 3.1.x
+        try:
+            __pkcs12_tuple = pkcs12.load_key_and_certificates(
+                pkcs12_data,
+                to_bytes(self.__password),
+                )
+            loaded = True
+        except Exception:
+            self.module.log(
+                msg="Couldn't load certificate without backend. Trying with backend."
+                )
+        # try to load with 3 parameters for
+        # cryptography >= 2.5.x and <= 3.0.x
+        if not loaded:
+            # create backend object
+            backend = default_backend()
+            # call load_key_and_certificates with 3 paramters
+            __pkcs12_tuple = pkcs12.load_key_and_certificates(
+                pkcs12_data,
+                to_bytes(self.__password),
+                backend
+                )
+            self.module.log(
+                msg="Loaded certificate with backend."
+                )
+        # map loaded certificate to object
+        self.__private_key = __pkcs12_tuple[0]
+        self.__cert = __pkcs12_tuple[1]
+        self.__additional_certs = __pkcs12_tuple[2]
 
-        # check if extension is in supported extensions by name
-        if not skip:
-            supported_extension = check_supported_extensions(_name)
+    def load_info(self):
+        self.general_info()
+        self.extensions_info()
 
-        # skip if extension is not supported
-        if not supported_extension:
-            skip = True
+    def general_info(self):
+        # map object values to result dict
+        issuer = to_text(self.__cert.issuer.get_attributes_for_oid(
+            NameOID.COMMON_NAME)[0].value
+            )
+        subject = to_text(self.__cert.subject.get_attributes_for_oid(
+            NameOID.COMMON_NAME)[0].value
+            )
+        self.result['issuer'] = to_text(issuer)
+        self.result['subject'] = to_text(subject)
+        self.result['not_valid_after'] = to_text(self.__cert.not_valid_after)
+        self.result['not_valid_before'] = to_text(self.__cert.not_valid_before)
+        self.result['serial_number'] = to_text(self.__cert.serial_number)
+        self.result['version'] = to_text(self.__cert.version)
 
-        if not skip:
-            try:
-                # create dict if extension has been found
-                result['extensions'][to_text(_name)] = dict()
+    def extensions_info(self):
+        try:
+            # read and map every extension in certificate.extensions
+            for extension in self.__cert.extensions:
+                # check if extension is supported bool
+                supported_extension = False
+                # map oid/extension name to variables
+                name = to_text(extension.oid._name)
+                # check if extension is in supported extensions by name
+                supported_extension = check_supported_extensions(name)
+                if supported_extension:
+                    # create dict
+                    self.result['extensions'][name] = dict()
+                    # get dotted string
+                    dotted_string = extension.oid.dotted_string
+                    self.result['extensions'][name]['_dotted_string'] = to_text(dotted_string)
+                    # get critical value
+                    critical = to_text(extension.critical)
+                    self.result['extensions'][name]['_critical'] = to_text(critical)
+                self.extensions_values_info(name, extension)
+        except Exception as e:
+            # if something went wrong skip this extension and its key values and
+            # also create a warning
+            warning = "Please report this bug. Extension has been skipped: "
+            warning += "Error type: %s. Error message: %s" % (type(e), e)
+            self.module.warn(to_native(warning))
 
-                # skip if dotted_string is not available
-                try:
-                    result['extensions'][_name]['_dotted_string'] = extension.oid.dotted_string
-                except:
-                    module.warn('Couldn\'t find dotted_string. Skipping value.')
-                    skip = True
-
-                # get critical value
-                critical = to_text(extension.critical)
-                result['extensions'][_name]['_critical'] = to_text(critical)
-
-            except Exception as e:
-                # if something went wrong skip this extension and its key values and
-                # also create a warning
-                module.warn(
-                    "Extension %s has been skipped due to unparsable name or values." % _name
-                    )
-                skip = True
-
-        if not skip:
+    def extensions_values_info(self, name, extension):
+        try:
             # create new dictionary for extension and keys/values
-            result['extensions'][_name]['_values'] = dict()
-
+            self.result['extensions'][name]['_values'] = dict()
             # map with for loop key value in extension to results:
             for key, value in vars(extension.value).items():
                 # check if key is supported in specified extension
-                if check_supported_keys(key, _name):
+                if check_supported_keys(key, name):
                     # check if bytes and if true convert to hex
                     if isinstance(value, bytes):
                         value = bytes_to_hex(value)
-                    result['extensions'][_name]['_values'][to_text(key)] = to_text(value)
+                    self.result['extensions'][name]['_values'][to_text(key)] = to_text(value)
+        except Exception as e:
+            warning = "Please report this bug. Values of extension %s have been skipped: " % name
+            warning += "Error type: %s. Error message: %s" % (type(e), e)
+            self.module.warn(to_native(warning))
 
-    return result
+    def return_result(self):
+        return self.result

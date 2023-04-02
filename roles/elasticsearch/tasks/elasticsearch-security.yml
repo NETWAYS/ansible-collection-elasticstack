@@ -20,7 +20,7 @@
 # not the CA cert with cacerts
 
 - name: Get CA informations
-  ca_info:
+  cert_info:
     ca_dir: "{{ elastic_ca_dir }}"
     password: "{{ elastic_ca_pass | default(omit, true) }}"
   register: ca_infos

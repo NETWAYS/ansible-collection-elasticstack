@@ -12,7 +12,7 @@
     # Test modules
     #
     - name: Test
-      ca_info:
+      cert_info:
         ca_dir: es-ca/
         password: PleaseChangeMe
       register: test
@@ -20,20 +20,20 @@
       debug:
         msg: "{{ test }}"
     - name: Test path without / at end
-      ca_info:
+      cert_info:
         ca_dir: es-ca
         password: PleaseChangeMe
     - name: Test required parameters (missing ca_dir)
-      ca_info:
+      cert_info:
         password: PleaseChangeMe
       ignore_errors: true
     - name: Test required together parameters (only language code set)
-      ca_info:
+      cert_info:
         ca_dir: es-ca
         password: PleaseChangeMe
       ignore_errors: true
     - name: Test wrong path
-      ca_info:
+      cert_info:
         ca_dir: es-ca-wrong
         password: PleaseChangeMe
       ignore_errors: true
@@ -42,14 +42,14 @@
         msg: >-
           "{{ (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
     - name: Test wrong password
-      ca_info:
+      cert_info:
         ca_dir: es-ca
         password: PleaseChangeMe-wrong
       ignore_errors: true
     - name: Test no password
-      ca_info:
+      cert_info:
         ca_dir: es-ca
       ignore_errors: true
     - name: Test no parameters
-      ca_info:
+      cert_info:
       ignore_errors: true

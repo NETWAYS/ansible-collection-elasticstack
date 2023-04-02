@@ -14,9 +14,8 @@ from ansible.module_utils.basic import (
     to_native
 )
 
-
 from ansible_collections.netways.elasticstack.plugins.module_utils.certs import (
-    analyze_cert
+    AnalyzeCertificate
 )
 
 
@@ -49,14 +48,13 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
-    __path = module.params['ca_dir'] + '/' + module.params['ca_cert']
-
     try:
-        result = analyze_cert(module, result, __path, module.params['password'])
+        cert_info = AnalyzeCertificate(module, result)
+        result = cert_info.return_result()
     except ValueError as e:
         module.fail_json(msg='ValueError: %s' % to_native(e))
     except Exception as e:
-        module.fail_json(msg='Exception: %s' % to_native(e))
+        module.fail_json(msg='Exception: %s: %s' % (to_native(type(e)), to_native(e)))
 
     module.exit_json(**result)
 

@@ -18,11 +18,6 @@
     - renew_ca
     - renew_es_cert
 
-- name: Install openssl if security is activated
-  package:
-    name: openssl
-  when: elasticsearch_security | bool
-
 # the following should be done by the rpm but failed with 7.4
 - name: Set ulimits for Elasticsearch
   community.general.pam_limits:

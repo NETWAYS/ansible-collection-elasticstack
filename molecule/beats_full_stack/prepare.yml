@@ -11,4 +11,5 @@
           - curl
           - git
           - openssl
+          - iproute2
         update_cache: yes

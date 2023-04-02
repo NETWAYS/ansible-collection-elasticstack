@@ -11,17 +11,11 @@ __metaclass__ = type
 
 from ansible.module_utils.basic import (
     AnsibleModule,
-    missing_required_lib,
-    to_text,
-    to_native,
-    to_bytes
+    to_native
 )
 
 
 from ansible_collections.netways.elasticstack.plugins.module_utils.certs import (
-    bytes_to_hex,
-    check_supported_extensions,
-    check_supported_keys,
     analyze_cert
 )
 

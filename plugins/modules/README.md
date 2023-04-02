@@ -1,7 +1,8 @@
 # Documentation: netways.elasticstack modules
 
 ## Overview
-- [`ca_info` module](#dependencies)
+- [`ca_info` module](#ca_info-module)
+  - [Dependencies](#dependencies)
   - [Tested python-cryptography versions >= 2.5](#tested-python-cryptography-versions--25)
   - [Tested python versions](#tested-python-versions)
   - [Tested ansible-core versions](#tested-ansible-core-versions)

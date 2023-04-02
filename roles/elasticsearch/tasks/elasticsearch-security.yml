@@ -604,6 +604,10 @@
   retries: 20
   delay: 10
 
+- name: Print the cluster status command
+  debug:
+    var: es_cluster_status
+
 - name: Check for open port tcp {{ elastic_elasticsearch_http_port }}
   wait_for:
     port: "{{ elastic_elasticsearch_http_port }}"

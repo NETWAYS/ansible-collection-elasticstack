@@ -5,7 +5,6 @@ kibana_config_backup: true
 kibana_manage_yaml: true
 
 kibana_security: true
-
 kibana_tls: false
 kibana_tls_cert: /etc/kibana/certs/cert.pem
 kibana_tls_key: /etc/kibana/certs/key.pem

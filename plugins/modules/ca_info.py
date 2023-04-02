@@ -53,16 +53,32 @@ def check_supported_vars(var_name, extension_name):
 
 def analyze_ca_cert(result, __path, __password=None):
     warnings = []
+    loaded = False
 
     # read the pkcs12 file
     with open(__path, 'rb') as f:
         pkcs12_data = f.read()
 
-    # load pkcs12 with password in bytes
-    privatekey, certificate, additional_certificates = pkcs12.load_key_and_certificates(
-        pkcs12_data,
-        to_bytes(__password)
-        )
+    # try to load with 2 parameters
+    # for cryptography >= 3.1.x
+    try:
+        privatekey, certificate, additional_certificates = pkcs12.load_key_and_certificates(
+            pkcs12_data,
+            to_bytes(__password),
+            )
+        loaded = True
+    except Exception:
+        pass
+
+    # try to load with 3 parameters for
+    # cryptography >= 2.5.x and <= 3.0.x
+    if not loaded:
+        backend = default_backend()
+        privatekey, certificate, additional_certificates = pkcs12.load_key_and_certificates(
+            pkcs12_data,
+            to_bytes(__password),
+            backend
+            )
 
     # map object values to result dict
     issuer = to_text(certificate.issuer.get_attributes_for_oid(

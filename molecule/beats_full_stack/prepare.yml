@@ -8,10 +8,6 @@
         update_cache: yes
       when: ansible_os_family == "Debian"
 
-    - name: Install git
-      package:
-        name: git
-
     - name: Install packages for RHEL
       package:
         name:
@@ -40,3 +36,4 @@
       package:
         name:
           - git
+          - openssl

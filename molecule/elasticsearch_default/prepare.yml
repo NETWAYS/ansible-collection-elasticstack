@@ -7,15 +7,12 @@
         update_cache: yes
       when: ansible_os_family == "Debian"
 
-    - name: Install git
-      package:
-        name: git
-
     - name: Install packages for RHEL
       package:
         name:
           - iproute
           - NetworkManager
+          - openssl
       when: ansible_os_family == "RedHat"
 
     - name: Start NetworkManager
@@ -33,4 +30,11 @@
           - procps
           - curl
           - iproute2
+          - openssl
       when: ansible_os_family == "Debian"
+
+    - name: Install common packages
+      package:
+        name:
+          - git
+          - openssl

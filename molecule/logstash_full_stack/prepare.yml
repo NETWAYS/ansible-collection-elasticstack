@@ -6,9 +6,7 @@
       apt:
         update_cache: yes
       when: ansible_os_family == "Debian"
-    - name: Install git
-      package:
-        name: git
+
     - name: Install packages for Debian
       package:
         name:
@@ -17,6 +15,11 @@
           - procps
           - curl
       when: ansible_os_family == "Debian"
-    - name: Install unzip for certificate handling
+
+    - name: Install common packages
       package:
-        name: unzip
+        name:
+          - git
+          - openssl
+          - unzip
+

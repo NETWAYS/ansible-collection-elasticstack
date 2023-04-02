@@ -17,7 +17,3 @@
         update_cache: yes
       when: ansible_os_family == "Debian"
 
-    - name: Install common packages
-      package:
-        name:
-          - git

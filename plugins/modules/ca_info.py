@@ -62,7 +62,7 @@ def analyze_ca_cert(result, __path, __password=None):
     # try to load with 2 parameters
     # for cryptography >= 3.1.x
     try:
-        privatekey, certificate, additional_certificates = pkcs12.load_key_and_certificates(
+        __privatekey, __certificate, __additional_certificates = pkcs12.load_key_and_certificates(
             pkcs12_data,
             to_bytes(__password),
             )
@@ -74,28 +74,28 @@ def analyze_ca_cert(result, __path, __password=None):
     # cryptography >= 2.5.x and <= 3.0.x
     if not loaded:
         backend = default_backend()
-        privatekey, certificate, additional_certificates = pkcs12.load_key_and_certificates(
+        __privatekey, __certificate, __additional_certificates = pkcs12.load_key_and_certificates(
             pkcs12_data,
             to_bytes(__password),
             backend
             )
 
     # map object values to result dict
-    issuer = to_text(certificate.issuer.get_attributes_for_oid(
+    issuer = to_text(__certificate.issuer.get_attributes_for_oid(
         NameOID.COMMON_NAME)[0].value
         )
-    subject = to_text(certificate.subject.get_attributes_for_oid(
+    subject = to_text(__certificate.subject.get_attributes_for_oid(
         NameOID.COMMON_NAME)[0].value
         )
     result['issuer'] = to_text(issuer)
-    result['not_valid_after'] = to_text(certificate.not_valid_after)
-    result['not_valid_before'] = to_text(certificate.not_valid_before)
-    result['serial_number'] = to_text(certificate.serial_number)
+    result['not_valid_after'] = to_text(__certificate.not_valid_after)
+    result['not_valid_before'] = to_text(__certificate.not_valid_before)
+    result['serial_number'] = to_text(__certificate.serial_number)
     result['subject'] = to_text(subject)
-    result['version'] = to_text(certificate.version)
+    result['version'] = to_text(__certificate.version)
 
     # read and map every extension in certificate.extensions
-    for extension in certificate.extensions:
+    for extension in __certificate.extensions:
         # skip variable in case some information can't be accessed
         skip = False
 

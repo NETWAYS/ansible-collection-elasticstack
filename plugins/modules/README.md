@@ -7,7 +7,7 @@ The netways.elasticstack.ca_info module gathers information about the pkcs12 CA 
 ### Dependencies
 - python-cryptography >= 2.5.0 on the remote node
 
-### Supported python-cryptography versions >= 2.5
+### Tested python-cryptography versions >= 2.5
 - 2.5
 - 3.0
 - 3.1
@@ -19,7 +19,7 @@ The netways.elasticstack.ca_info module gathers information about the pkcs12 CA 
 - 38.0.0
 - 40.0.1
 
-### Supported python versions
+### Tested python versions
 - 2.7
 - 3.5
 - 3.6
@@ -27,7 +27,7 @@ The netways.elasticstack.ca_info module gathers information about the pkcs12 CA 
 - 3.8
 - 3.10
 
-### Supported ansible-core versions
+### Tested ansible-core versions
 - 2.11
 - 2.12
 - 2.13
@@ -36,20 +36,16 @@ The netways.elasticstack.ca_info module gathers information about the pkcs12 CA 
 ### Supported extensions and values
 Currently, the information of the following extensions and values will be returned (other extensions/values will be skipped):
 
-SubjectKeyIdentifier:
-- authority_cert_serial_number
-- authority_cert_issuer
-
-BasicConstraints:
+**BasicConstraints**:
 - _ca
 - _path_length
 
-AuthorityKeyIdentifier:
+**AuthorityKeyIdentifier**:
 - _key_identifier
 - _authority_cert_issuer
 - _authority_cert_serial_number
 
-SubjectKeyIdentifier:
+**SubjectKeyIdentifier**:
 - _digest
 
 ### Paramters
@@ -65,7 +61,7 @@ The password of the pkcs12 certificate. (**Default:** No default, optional)
 
 
 ### Returns
-All keys and values that will be returned with the results variable of the modul:
+All keys and values that will be returned with the results variable of the module:
 
 `issuer`:
 The issuer of the CA certificate as **str**.
@@ -92,7 +88,7 @@ The serial number of the certificate as **str** which represents an integer.
 
 ### Example
 
-Example:
+**Example**:
 ```
 - name: Test
   ca_info:
@@ -105,7 +101,7 @@ Example:
     msg: "{{ test }}"
 ```
 
-Output:
+**Output**:
 ```
 TASK [Debug] *******************************************************************
 ok: [localhost] => {
@@ -147,3 +143,9 @@ ok: [localhost] => {
     }
 }
 ```
+
+### Security measures
+- Only supported extensions with its available values will be returned. The available keys and values are applied in the code with the `SUPPORTED_EXTENSIONS` dictionary. The module will loop through it, and only if found, it will save it to the `results` variable.
+- The paramters `ca_dir`, `password`, and `ca_cert` are set to no_log in the Ansible Module object.
+- The variables `__privatekey`, `__certificate`, and `additional_certificates` are private and cannot be accessed globally.
+- The variable `__path` is private and cannot be accesed globally.

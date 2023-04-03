@@ -47,9 +47,9 @@ The netways.elasticstack.cert_info module gathers information about pkcs12 certi
 
 ### Security measures
 - Only supported extensions with its available values will be returned. The available keys and values are applied in the code with the `SUPPORTED_EXTENSIONS` dictionary. The module will loop through it, and only if found, it will save it to the `results` variable.
-- The paramters `ca_dir`, `password`, and `ca_cert` are set to no_log in the Ansible Module object.
-- The objects `__privatekey`, `__certificate`, and `__additional_certificates` are private and cannot be accessed globally.
-- The variable `__path` is private and cannot be accesed globally.
+- The paramters `path` and `passphrase` are set to no_log in the Ansible Module object.
+- The objects `__private_key`, `__cert`, and `__additional_certs` are private and cannot be accessed globally.
+- The object variables `__path` and `__passphrase` is private and cannot be accesed globally.
 
 ### Supported extensions and values
 Currently, the information of the following extensions and values will be returned (other extensions/values will be skipped):
@@ -68,11 +68,8 @@ Currently, the information of the following extensions and values will be return
 
 ### Paramters
 
-`ca_dir`:
-The directory of the CA certificate. (**Default:** "/opt/es-ca/", optional)
-
-`ca_cert`:
-The name of the pkcs12 certificate. (**Default:** "elastic-stack-ca.p12", optional)
+`path`:
+Absolute path to certificate. (**Default:** undefined, required)
 
 `password`:
 The password of the pkcs12 certificate. (**Default:** No default, optional)
@@ -108,8 +105,7 @@ The serial number of the certificate as **str** which represents an integer.
 ```
 - name: Test
   cert_info:
-    ca_dir: /opt/es-ca
-    ca_cert: elasticsearch-ca.pkcs12
+    path: /opt/es-ca/elasticsearch-ca.pkcs12
     password: PleaseChangeMe
   register: test
 

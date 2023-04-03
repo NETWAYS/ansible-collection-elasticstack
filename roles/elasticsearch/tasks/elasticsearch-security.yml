@@ -21,8 +21,8 @@
 
 - name: Get CA informations
   cert_info:
-    ca_dir: "{{ elastic_ca_dir }}"
-    password: "{{ elastic_ca_pass | default(omit, true) }}"
+    path: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
+    passphrase: "{{ elastic_ca_pass | default(omit, true) }}"
   register: ca_infos
   when: inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
 

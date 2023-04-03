@@ -20,7 +20,7 @@
 
 - name: Check if cluster is already set up
   stat:
-    path: "elasticsearch_initialized_file"
+    path: "{{ elasticsearch_initialized_file }}"
   register: cluster_setup_check
   failed_when: false
 

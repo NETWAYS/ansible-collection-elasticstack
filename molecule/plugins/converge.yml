@@ -13,42 +13,38 @@
     #
     - name: Test
       cert_info:
-        ca_dir: es-ca/
-        password: PleaseChangeMe
+        path: es-ca/elastic-stack-ca.p12
+        passphrase: PleaseChangeMe
       register: test
     - name: Debug
       debug:
         msg: "{{ test }}"
-    - name: Test path without / at end
+    - name: Test required parameters (missing path)
       cert_info:
-        ca_dir: es-ca
-        password: PleaseChangeMe
-    - name: Test required parameters (missing ca_dir)
-      cert_info:
-        password: PleaseChangeMe
+        passphrase: PleaseChangeMe
       ignore_errors: true
     - name: Test required together parameters (only language code set)
       cert_info:
-        ca_dir: es-ca
-        password: PleaseChangeMe
+        path: es-ca/elastic-stack-ca.p12
+        passphrase: PleaseChangeMe
       ignore_errors: true
     - name: Test wrong path
       cert_info:
-        ca_dir: es-ca-wrong
-        password: PleaseChangeMe
+        path: es-ca-wrong
+        passphrase: PleaseChangeMe
       ignore_errors: true
     - name: Debug with to_datetime() - (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days
       debug:
         msg: >-
           "{{ (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
-    - name: Test wrong password
+    - name: Test wrong passphrase
       cert_info:
-        ca_dir: es-ca
-        password: PleaseChangeMe-wrong
+        path: es-ca
+        passphrase: PleaseChangeMe-wrong
       ignore_errors: true
-    - name: Test no password
+    - name: Test no passphrase
       cert_info:
-        ca_dir: es-ca
+        path: es-ca
       ignore_errors: true
     - name: Test no parameters
       cert_info:

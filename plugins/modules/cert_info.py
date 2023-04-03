@@ -21,9 +21,8 @@ from ansible_collections.netways.elasticstack.plugins.module_utils.certs import 
 
 def run_module():
     module_args = dict(
-        ca_dir=dict(type='str', no_log=True, required=False, default='/opt/es-ca'),
-        ca_cert=dict(type='str', no_log=True, required=False, default='elastic-stack-ca.p12'),
-        password=dict(type='str', no_log=True, required=False, default=None)
+        path=dict(type='str', no_log=True, required=True),
+        passphrase=dict(type='str', no_log=True, required=False, default=None)
     )
 
     # seed the result dict

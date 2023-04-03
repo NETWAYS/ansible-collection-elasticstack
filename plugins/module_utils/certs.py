@@ -76,10 +76,8 @@ class AnalyzeCertificate():
     def __init__(self, module, result):
         self.module = module
         self.result = result
-        self.ca_dir = self.module.params['ca_dir']
-        self.ca_cert = self.module.params['ca_cert']
-        self.__password = self.module.params['password']
-        self.__path = "%s/%s" % (self.ca_dir, self.ca_cert)
+        self.__passphrase = self.module.params['passphrase']
+        self.__path = self.module.params['path']
         self.__cert = None
         self.__private_key = None
         self.__additional_certs = None
@@ -107,7 +105,7 @@ class AnalyzeCertificate():
         try:
             __pkcs12_tuple = pkcs12.load_key_and_certificates(
                 pkcs12_data,
-                to_bytes(self.__password),
+                to_bytes(self.__passphrase),
                 )
             loaded = True
         except Exception:
@@ -122,7 +120,7 @@ class AnalyzeCertificate():
             # call load_key_and_certificates with 3 paramters
             __pkcs12_tuple = pkcs12.load_key_and_certificates(
                 pkcs12_data,
-                to_bytes(self.__password),
+                to_bytes(self.__passphrase),
                 backend
                 )
             self.module.log(

@@ -32,7 +32,6 @@ elastic_ca_will_expire_soon: false
 elasticsearch_cert_will_expire_soon: false
 
 # "global" variables for all roles
-
 elastic_release: 8
 elastic_stack_full_stack: true
 elastic_variant: elastic

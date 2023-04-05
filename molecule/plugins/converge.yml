@@ -5,8 +5,6 @@
   collections:
     - netways.elasticstack
   hosts: localhost
-  vars:
-    es_to_date_1: null
   tasks:
     #
     # Test modules
@@ -39,12 +37,12 @@
           "{{ (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
     - name: Test wrong passphrase
       cert_info:
-        path: es-ca
+        path: es-ca/elastic-stack-ca.p12
         passphrase: PleaseChangeMe-wrong
       ignore_errors: true
     - name: Test no passphrase
       cert_info:
-        path: es-ca
+        path: es-ca/elastic-stack-ca.p12
       ignore_errors: true
     - name: Test no parameters
       cert_info:

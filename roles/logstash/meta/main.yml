@@ -7,16 +7,16 @@ galaxy_info:
   license: license (GPL-3.0-or-later)
   min_ansible_version: "2.4"
   platforms:
-  - name: EL
-    versions:
-      - "8"
-  - name: Debian
-    versions:
-      - bullseye
-  - name: Ubuntu
-    versions:
-      - focal
-      - jammy
+    - name: EL
+      versions:
+        - "8"
+    - name: Debian
+      versions:
+        - bullseye
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
   galaxy_tags:
     - elk
     - logstash

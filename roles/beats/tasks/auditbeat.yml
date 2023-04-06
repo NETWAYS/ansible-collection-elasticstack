@@ -2,14 +2,14 @@
 
 - name: Construct exact name of Auditbeat package
   set_fact:
-    auditbeat_package: >-
+    auditbeat_package: >
       {{
-      'auditbeat'
-      + (elastic_versionseparator + elastic_version
-      | string if elastic_version is defined else '')
-      | replace(' ','')
+      'auditbeat' +
+      (elastic_versionseparator +
+      elastic_version |
+      string if elastic_version is defined else '') |
+      replace(' ', '')
       }}
-
 - name: Install Auditbeat - rpm
   package:
     name: "{{ auditbeat_package }}"

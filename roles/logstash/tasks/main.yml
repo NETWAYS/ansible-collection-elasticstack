@@ -53,13 +53,14 @@
 
 - name: Construct exact name of Logstas package
   set_fact:
-    logstash_package: >-
+    logstash_package: >
       {{
-      'logstash'
-      + ('-oss' if elastic_variant == 'oss' else '')
-      + (elastic_versionseparator + elastic_version
-      | string if elastic_version is defined else '')
-      | replace(' ','')
+      'logstash' +
+      ('-oss' if elastic_variant == 'oss' else '') +
+      (elastic_versionseparator +
+      elastic_version |
+      string if elastic_version is defined else '') |
+      replace(' ', '')
       }}
 
 - name: Install Logstash - rpm

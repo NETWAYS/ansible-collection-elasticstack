@@ -2,12 +2,13 @@
 
 - name: Construct exact name of Metricbeat package
   set_fact:
-    metricbeat_package: >-
+    metricbeat_package: >
       {{
-      'metricbeat'
-      + (elastic_versionseparator + elastic_version
-      | string if elastic_version is defined else '')
-      | replace(' ','')
+      'metricbeat' +
+      (elastic_versionseparator +
+      elastic_version |
+      string if elastic_version is defined else '') |
+      replace(' ', '')
       }}
 
 - name: Install Metricbeat - rpm

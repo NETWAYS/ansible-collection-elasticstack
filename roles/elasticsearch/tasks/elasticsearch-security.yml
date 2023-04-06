@@ -615,14 +615,6 @@
   set_fact:
     elaticsearch_cluster_set_up: true
 
-- name: Check for open port tcp {{ elastic_elasticsearch_http_port }}
-  wait_for:
-    port: "{{ elastic_elasticsearch_http_port }}"
-  tags:
-    - certificates
-    - renew_ca
-    - renew_es_cert
-
 - name: Create initial passwords # noqa: risky-shell-pipe
   shell: >
     if test -v BASH; then set -o pipefail; fi;

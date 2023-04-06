@@ -571,7 +571,6 @@
     cut -d\" -f4
   register: es_cluster_status_bootstrap
   changed_when: false
-  no_log: true
   when: not elasticsearch_passwords_file.stat.exists | bool
   until: es_cluster_status_bootstrap.stdout == "green"
   retries: 5
@@ -597,7 +596,6 @@
     cut -d\" -f4
   register: es_cluster_status
   changed_when: false
-  no_log: true
   ignore_errors: "{{ ansible_check_mode }}"
   when: elasticsearch_passwords_file.stat.exists | bool
   until: es_cluster_status.stdout == "green"

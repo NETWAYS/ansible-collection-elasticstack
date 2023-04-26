@@ -11,7 +11,7 @@
     #
     - name: Test
       cert_info:
-        path: es-ca/elastic-stack-ca.p12
+        path: files/es-ca/elastic-stack-ca.p12
         passphrase: PleaseChangeMe
       register: test
     - name: Debug
@@ -19,11 +19,6 @@
         msg: "{{ test }}"
     - name: Test required parameters (missing path)
       cert_info:
-        passphrase: PleaseChangeMe
-      ignore_errors: true
-    - name: Test required together parameters (only language code set)
-      cert_info:
-        path: es-ca/elastic-stack-ca.p12
         passphrase: PleaseChangeMe
       ignore_errors: true
     - name: Test wrong path
@@ -37,12 +32,12 @@
           "{{ (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
     - name: Test wrong passphrase
       cert_info:
-        path: es-ca/elastic-stack-ca.p12
+        path: files/es-ca/elastic-stack-ca.p12
         passphrase: PleaseChangeMe-wrong
       ignore_errors: true
     - name: Test no passphrase
       cert_info:
-        path: es-ca/elastic-stack-ca.p12
+        path: files/es-ca/elastic-stack-ca.p12
       ignore_errors: true
     - name: Test no parameters
       cert_info:

@@ -85,13 +85,6 @@ jobs:
           mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
           cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
 
-      - name: Debug PWD
-        run: |
-          pwd
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-
       - name: Test `cert_info` module
         run: |
           python tests/unit/plugins/modules/test_cert_info.py

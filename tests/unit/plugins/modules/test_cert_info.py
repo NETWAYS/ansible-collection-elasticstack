@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils.common.text.converters import to_bytes
-sys.path.append('/root/.ansible/collections/')
+sys.path.append('/home/runner/.ansible/collections/')
 from ansible_collections.netways.elasticstack.plugins.modules import cert_info
 
 certificate = {

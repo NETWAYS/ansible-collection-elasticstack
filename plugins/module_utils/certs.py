@@ -173,8 +173,7 @@ class AnalyzeCertificate():
         except Exception as e:
             # if something went wrong skip this extension and its key values and
             # also create a warning
-            warning = "Please report this bug. Extension has been skipped: "
-            warning += "Error type: %s. Error message: %s" % (type(e), e)
+            warning = "Error type: %s. Error message: %s" % (type(e), e)
             self.module.warn(to_native(warning))
 
     def extensions_values_info(self, name, extension):
@@ -190,8 +189,7 @@ class AnalyzeCertificate():
                         value = bytes_to_hex(value)
                     self.result['extensions'][name]['_values'][to_text(key)] = to_text(value)
         except Exception as e:
-            warning = "Please report this bug. Values of extension %s have been skipped: " % name
-            warning += "Error type: %s. Error message: %s" % (type(e), e)
+            warning = "Error type: %s. Error message: %s" % (type(e), e)
             self.module.warn(to_native(warning))
 
     def return_result(self):

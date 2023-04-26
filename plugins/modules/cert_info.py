@@ -18,22 +18,13 @@ from ansible_collections.netways.elasticstack.plugins.module_utils.certs import 
     AnalyzeCertificate
 )
 
-argument_spec = dict(
-    # module function variables
-    path=dict(type='str', no_log=True, required=True),
-    passphrase=dict(type='str', no_log=True, required=False, default=None)
-)
 
-
-def setup_module_object():
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=True
+def run_module():
+    module_args = dict(
+        path=dict(type='str', no_log=True, required=True),
+        passphrase=dict(type='str', no_log=True, required=False, default=None)
     )
-    return module
 
-
-def run_module(module):
     # seed the result dict
     result = dict(
         changed=False,
@@ -44,6 +35,12 @@ def run_module(module):
         serial_number='',
         subject='',
         version=''
+    )
+
+    # the AnsibleModule object
+    module = AnsibleModule(
+        argument_spec=module_args,
+        supports_check_mode=True
     )
 
     # check mode
@@ -58,13 +55,11 @@ def run_module(module):
     except Exception as e:
         module.fail_json(msg='Exception: %s: %s' % (to_native(type(e)), to_native(e)))
 
-    return result
+    module.exit_json(**result)
 
 
 def main():
-    module = setup_module_object()
-    return_dict = run_module(module)
-    module.exit_json(**return_dict)
+    run_module()
 
 
 if __name__ == '__main__':

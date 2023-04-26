@@ -22,6 +22,7 @@ on:
       - '.github/workflows/test_plugins.yml'
       - 'molecule/plugins/**'
       - '.config/pep8.yml'
+      - 'tests/**'
   pull_request:
     branches:
       - 'feature/**'
@@ -32,6 +33,7 @@ on:
       - '.github/workflows/test_plugins.yml'
       - 'molecule/plugins/**'
       - '.config/pep8.yml'
+      - 'tests/**'
 
 jobs:
   pep8:

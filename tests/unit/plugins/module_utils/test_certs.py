@@ -36,7 +36,7 @@ class TestCerts(unittest.TestCase):
         self.assertEqual(result, True)
 
     def test_check_supported_keys_with_unknown_key(self):
-        result = check_supported_keys(key='_unknown_extension', extension_name='authorityKeyIdentifier')
+        result = check_supported_keys(key='_unknown', extension_name='authorityKeyIdentifier')
         #print("Key is supported: " + str(result))
         self.assertEqual(result, False)
 

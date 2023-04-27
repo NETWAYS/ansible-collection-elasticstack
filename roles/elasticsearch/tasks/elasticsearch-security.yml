@@ -34,14 +34,20 @@
 - name: Set ca will expire soon to true
   set_fact:
     elastic_ca_will_expire_soon: true
-  when: elasticsearch_cert_expiration_days is defined and elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
+  when:
+    inventory_hostname == elasticsearch_ca and
+    elasticsearch_cert_expiration_days is defined and 
+    elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
 
 - name: Print the ca renew message
   debug:
     msg: |
       Your ca will expire in {{ elastic_ca_expiration_days }}.
       Ansible will renew it and all elastic stack certificates
-  when: inventory_hostname == elasticsearch_ca and elastic_ca_expiration_days is defined and elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
+  when: 
+    inventory_hostname == elasticsearch_ca and
+    elastic_ca_expiration_days is defined and
+    elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
 
 - name: Stop Logstash
   service:

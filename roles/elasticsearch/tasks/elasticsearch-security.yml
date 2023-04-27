@@ -15,10 +15,6 @@
   register: ca_exists
   when: inventory_hostname == elasticsearch_ca
 
-# This pkcs12 store contains the CA
-# Therefore we need to extract the certificate with clcerts
-# not the CA cert with cacerts
-
 - name: Get CA informations
   cert_info:
     path: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"

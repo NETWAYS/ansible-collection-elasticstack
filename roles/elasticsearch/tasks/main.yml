@@ -71,6 +71,18 @@
     - Restart Elasticsearch
   when: elasticsearch_manage_yaml | bool
 
+- name: Create Elasticsearch directory
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    mode: "2750"
+  when: item.create | bool
+  loop:
+    - {create: "{{elasticsearch_create_logpath}}", path: "{{ elasticsearch_logpath }}" } 
+    - {create: "{{elasticsearch_create_datapath}}", path: "{{ elasticsearch_datapath }}" } 
+
 - name: Import Tasks elasticsearch-security.yml
   import_tasks: elasticsearch-security.yml
   when:
@@ -80,15 +92,6 @@
     - certificates
     - renew_ca
     - renew_es_cert
-
-- name: Create Elasticsearch data directory
-  file:
-    path: "{{ elasticsearch_datapath }}"
-    state: directory
-    owner: elasticsearch
-    group: elasticsearch
-    mode: "2750"
-  when: elasticsearch_create_datapath | bool
 
 - name: Activate JNA workaround (see README.md)
   lineinfile:

@@ -594,11 +594,11 @@
     cut -d\" -f4
   register: es_cluster_status
   changed_when: false
-  no_log: true
-  ignore_errors: "{{ ansible_check_mode }}"
+  # no_log: true
+  ignore_errors: true
   when: elasticsearch_passwords_file.stat.exists | bool
   until: es_cluster_status.stdout == "green"
-  retries: 5
+  retries: 20
   delay: 10
 
 - name: Create initial passwords # noqa: risky-shell-pipe

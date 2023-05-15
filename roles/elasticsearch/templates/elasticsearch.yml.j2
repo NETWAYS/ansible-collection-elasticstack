@@ -1,6 +1,6 @@
 node.name: "{{ ansible_hostname }}"
 path.data: {{ elasticsearch_datapath }}
-path.logs: /var/log/elasticsearch
+path.logs: {{ elasticsearch_logpath }}
 network.host: ["_local_","_site_"]
 {% if elastic_release | int < 8 or groups['elasticsearch'] | length > 1 %}
 discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}

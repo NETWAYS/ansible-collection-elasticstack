@@ -54,7 +54,6 @@ logstash_certs_dir: /etc/logstash/certs
 logstash_cert_expiration_buffer: 30
 logstash_cert_will_expire_soon: false
 logstash_legacy_monitoring: true
-
 logstash_logging_console: true
 logstash_logging_file: true
 logstash_logging_slow_console: true

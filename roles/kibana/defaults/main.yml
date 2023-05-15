@@ -3,7 +3,6 @@
 kibana_enable: true
 kibana_config_backup: true
 kibana_manage_yaml: true
-
 kibana_security: true
 
 kibana_tls: false

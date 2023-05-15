@@ -41,7 +41,6 @@ filebeat_journald_inputs:
 
 filebeat_docker: false
 filebeat_docker_ids: "*"
-
 filebeat_loadbalance: true
 
 filebeat_mysql_slowlog_input: false

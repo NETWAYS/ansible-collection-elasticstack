@@ -537,6 +537,15 @@
     state: started
   failed_when: false
 
+- name: Debug fetch log
+  command: cat /var/log/elasticsearch/elasticsearch.log
+  changed_when: false
+  register: elasticsearchlog
+
+- name: Debug show log
+  debug:
+    var: elasticsearchlog
+
 - name: Wait for all instances to start
   include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
@@ -555,6 +564,15 @@
     - certificates
     - renew_ca
     - renew_es_cert
+
+- name: Debug fetch log
+  command: cat /var/log/elasticsearch/elasticsearch.log
+  changed_when: false
+  register: elasticsearchlog
+
+- name: Debug show log
+  debug:
+    var: elasticsearchlog
 
 - name: Check for passwords being set
   stat:
@@ -637,6 +655,15 @@
 - name: Set var that cluster is set up
   set_fact:
     elaticsearch_cluster_set_up: true
+
+- name: Debug fetch log
+  command: cat /var/log/elasticsearch/elasticsearch.log
+  changed_when: false
+  register: elasticsearchlog
+
+- name: Debug show log
+  debug:
+    var: elasticsearchlog
 
 - name: Create initial passwords # noqa: risky-shell-pipe
   shell: >

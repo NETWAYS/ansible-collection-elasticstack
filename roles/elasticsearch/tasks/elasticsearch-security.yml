@@ -522,6 +522,14 @@
     - renew_es_cert
   ignore_errors: "{{ ansible_check_mode }}"
 
+- name: Debug get elasticsearchyml
+  command: cat /etc/elasticsearch/elasticsearch.yml
+  register: elasticsearchyaml
+
+- name: Debug show yaml
+  debug:
+    var: elasticsearchyaml
+
 - name: Start Elasticsearch
   service:
     name: elasticsearch
@@ -558,6 +566,10 @@
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
 
+- name: Debug protocol
+  debug:
+    var: elasticsearch_http_protocol
+
 - name: Check for cluster status with bootstrap password # noqa: risky-shell-pipe
   shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
@@ -568,7 +580,7 @@
   register: es_cluster_status_bootstrap
   changed_when: false
   #no_log: true #debug
-  failed_when: false #debug
+  ignore_errors: true
   when: not elasticsearch_passwords_file.stat.exists | bool
   until: es_cluster_status_bootstrap.stdout == "green"
   retries: 5

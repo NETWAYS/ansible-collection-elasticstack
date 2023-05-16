@@ -631,7 +631,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b >
     {{ elastic_initial_passwords }}
   when: inventory_hostname == elasticsearch_ca
-  no_log: true
+  #no_log: true # debug
   args:
     creates: "{{ elastic_initial_passwords }}"
 

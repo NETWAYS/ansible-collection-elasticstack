@@ -567,11 +567,24 @@
     cut -d\" -f4
   register: es_cluster_status_bootstrap
   changed_when: false
-  no_log: true
+  #no_log: true #debug
+  failed_when: false #debug
   when: not elasticsearch_passwords_file.stat.exists | bool
   until: es_cluster_status_bootstrap.stdout == "green"
   retries: 5
   delay: 10
+
+- name: Debug bootstrap_pw
+  debug:
+    var: elasticsearch_bootstrap_pw
+
+- name: Debug passwords file
+  debug:
+    var: elasticsearch_passwords_file
+
+- name: Debug output
+  debug:
+    var: es_cluster_status_bootstrap
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   shell: >

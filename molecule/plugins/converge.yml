@@ -1,0 +1,44 @@
+---
+# The workaround for arbitrarily named role directory is important because the git repo has one name and the role within it another
+# Found at: https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+- name: Converge
+  collections:
+    - netways.elasticstack
+  hosts: localhost
+  tasks:
+    #
+    # Test modules
+    #
+    - name: Test
+      cert_info:
+        path: files/es-ca/elastic-stack-ca.p12
+        passphrase: PleaseChangeMe
+      register: test
+    - name: Debug
+      debug:
+        msg: "{{ test }}"
+    - name: Test required parameters (missing path)
+      cert_info:
+        passphrase: PleaseChangeMe
+      ignore_errors: true
+    - name: Test wrong path
+      cert_info:
+        path: es-ca-wrong
+        passphrase: PleaseChangeMe
+      ignore_errors: true
+    - name: Debug with to_datetime() - (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days
+      debug:
+        msg: >-
+          "{{ (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    - name: Test wrong passphrase
+      cert_info:
+        path: files/es-ca/elastic-stack-ca.p12
+        passphrase: PleaseChangeMe-wrong
+      ignore_errors: true
+    - name: Test no passphrase
+      cert_info:
+        path: files/es-ca/elastic-stack-ca.p12
+      ignore_errors: true
+    - name: Test no parameters
+      cert_info:
+      ignore_errors: true

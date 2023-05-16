@@ -2,24 +2,15 @@
 - name: Prepare
   hosts: all
   tasks:
-
-    - name: Refresh apt cache
-      apt:
-        update_cache: yes
-      when: ansible_os_family == "Debian"
-
-    - name: Install git
-      package:
-        name: git
-
     - name: Install packages for Debian
-      package:
+      apt:
         name:
           - gpg
           - gpg-agent
           - procps
           - curl
-      when: ansible_os_family == "Debian"
+          - git
+        update_cache: yes
 
     #- name: Create Logstash directory
     #  file:

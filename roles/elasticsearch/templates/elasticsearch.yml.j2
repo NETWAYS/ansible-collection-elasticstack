@@ -1,6 +1,6 @@
 node.name: "{{ ansible_hostname }}"
 path.data: {{ elasticsearch_datapath }}
-path.logs: /var/log/elasticsearch
+path.logs: {{ elasticsearch_logpath }}
 network.host: ["_local_","_site_"]
 
 {% if elasticsearch_node_types is defined %}

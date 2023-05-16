@@ -2,7 +2,7 @@
 
 - name: Construct exact name of Auditbeat package
   set_fact:
-    auditbeat_package: >
+    beats_auditbeat_package: >
       {{
       'auditbeat' +
       (elastic_versionseparator +
@@ -12,7 +12,7 @@
       }}
 - name: Install Auditbeat - rpm
   package:
-    name: "{{ auditbeat_package }}"
+    name: "{{ beats_auditbeat_package }}"
     enablerepo:
       - 'elastic-{{ elastic_release }}.x'
   when:
@@ -20,7 +20,7 @@
 
 - name: Install Auditbeat - deb
   package:
-    name: "{{ auditbeat_package }}"
+    name: "{{ beats_auditbeat_package }}"
   when:
     - ansible_os_family == "Debian"
 

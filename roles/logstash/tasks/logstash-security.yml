@@ -388,7 +388,7 @@
     if test -v BASH; then set -o pipefail; fi;
     grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
     awk {' print $4 '}
-  register: elastic_password_logstash
+  register: logstash_elastic_password
   changed_when: false
   delegate_to: "{{ elasticsearch_ca }}"
   no_log: true
@@ -400,7 +400,7 @@
   shell: >
     if test -v BASH; then set -o pipefail; fi;
     curl --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
+    -u elastic:{{ logstash_elastic_password.stdout }}
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_security/role/logstash_writer
     | grep "enabled"
   delegate_to: "{{ elasticsearch_ca }}"
@@ -418,7 +418,7 @@
   command: >
     curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
     --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
+    -u elastic:{{ logstash_elastic_password.stdout }}
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_xpack/security/role/logstash_writer
   delegate_to: "{{ elasticsearch_ca }}"
   changed_when: false
@@ -432,7 +432,7 @@
   command: >
     curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
     --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
+    -u elastic:{{ logstash_elastic_password.stdout }}
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_security/role/logstash_writer
   delegate_to: "{{ elasticsearch_ca }}"
   changed_when: false
@@ -446,7 +446,7 @@
   shell: >
     if test -v BASH; then set -o pipefail; fi;
     curl --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
+    -u elastic:{{ logstash_elastic_password.stdout }}
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_security/user/{{ logstash_user }}
     | grep "enabled"
   delegate_to: "{{ elasticsearch_ca }}"
@@ -464,7 +464,7 @@
   command: >
     curl -T /root/logstash_writer_user --header 'Content-Type: application/json'
     --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
+    -u elastic:{{ logstash_elastic_password.stdout }}
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_xpack/security/user/{{ logstash_user }}
   delegate_to: "{{ elasticsearch_ca }}"
   changed_when: false
@@ -478,7 +478,7 @@
   command: >
     curl -T /root/logstash_writer_user --header 'Content-Type: application/json'
     --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
+    -u elastic:{{ logstash_elastic_password.stdout }}
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_security/user/{{ logstash_user }}
   delegate_to: "{{ elasticsearch_ca }}"
   run_once: true

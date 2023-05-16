@@ -2,7 +2,7 @@
 
 - name: Construct exact name of Filebeat package
   set_fact:
-    filebeat_package: >
+    beats_filebeat_package: >
       {{
       'filebeat' +
       (elastic_versionseparator +
@@ -12,7 +12,7 @@
 
 - name: Install Filebeat - rpm
   package:
-    name: "{{ filebeat_package }}"
+    name: "{{ beats_filebeat_package }}"
     enablerepo:
       - 'elastic-{{ elastic_release }}.x'
   when:
@@ -20,7 +20,7 @@
 
 - name: Install Filebeat - deb
   package:
-    name: "{{ filebeat_package }}"
+    name: "{{ beats_filebeat_package }}"
   when:
     - ansible_os_family == "Debian"
 

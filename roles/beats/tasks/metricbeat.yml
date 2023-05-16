@@ -2,7 +2,7 @@
 
 - name: Construct exact name of Metricbeat package
   set_fact:
-    metricbeat_package: >
+    beats_metricbeat_package: >
       {{
       'metricbeat' +
       (elastic_versionseparator +
@@ -13,7 +13,7 @@
 
 - name: Install Metricbeat - rpm
   package:
-    name: "{{ metricbeat_package }}"
+    name: "{{ beats_metricbeat_package }}"
     enablerepo:
       - 'elastic-{{ elastic_release }}.x'
   when:
@@ -21,7 +21,7 @@
 
 - name: Install Metricbeat - deb
   package:
-    name: "{{ metricbeat_package }}"
+    name: "{{ beats_metricbeat_package }}"
   when:
     - ansible_os_family == "Debian"
 

@@ -138,7 +138,7 @@
   command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
     --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
-    --ca-pass {{ elastic_ca_pass }}
+    --ca-pass {{ elasticstack_ca_pass }}
     --name {{ ansible_hostname }}
     --ip {{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}
     --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}

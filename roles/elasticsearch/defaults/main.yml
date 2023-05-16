@@ -26,11 +26,11 @@ elasticsearch_jna_workaround: false
 # elasticsearch_ca: First host in the `elasticsearch` group
 elastic_ca_dir: /opt/es-ca
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
-elastic_ca_pass: PleaseChangeMe
+elasticstack_ca_pass: PleaseChangeMe
 elasticsearch_tls_key_passphrase: PleaseChangeMeIndividually
 elastic_ca_expiration_buffer: 30
 elasticsearch_cert_expiration_buffer: 30
-elasticsearch_ca_will_expire_soon: false
+elasticstack_ca_will_expire_soon: false
 elasticsearch_cert_will_expire_soon: false
 
 # "global" variables for all roles

@@ -10,7 +10,7 @@ kibana_tls_cert: /etc/kibana/certs/cert.pem
 kibana_tls_key: /etc/kibana/certs/key.pem
 kibana_tls_key_passphrase: PleaseChangeMe
 elastic_ca_dir: /opt/es-ca
-elastic_ca_pass: PleaseChangeMe
+elasticstack_ca_pass: PleaseChangeMe
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
 kibana_cert_expiration_buffer: 30
 kibana_cert_will_expire_soon: false

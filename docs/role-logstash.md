@@ -58,7 +58,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_beats_input_congestion*: Optional congestion threshold for the beats input pipeline
 * *logstash_beats_tls*: Activate TLS for the beats input pipeline (default: none but `true` with full stack setup if not set)
 * *logstash_tls_key_passphrase*: Passphrase for Logstash certificates (default: `LogstashChangeMe`)
-* *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
+* *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *logstash_cert_expiration_buffer*: Ansible will renew the Logstash certificate if its validity is shorter than this value, which should be number of days. (default: 30)
 * *logstash_cert_will_expire_soon*: Set it to true to renew logstash certificate (default: `false`), Or run the playbook with `--tags renew_logstash_cert` to do that.
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)

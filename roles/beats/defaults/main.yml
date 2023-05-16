@@ -65,7 +65,7 @@ elastic_variant: elastic
 elastic_security: true
 
 elastic_ca_dir: /opt/es-ca
-elastic_ca_pass: PleaseChangeMe
+elasticstack_ca_pass: PleaseChangeMe
 elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elastic_elasticsearch_http_port: 9200
 beats_cert_expiration_buffer: 30

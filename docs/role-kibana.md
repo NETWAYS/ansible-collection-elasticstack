@@ -29,7 +29,7 @@ These variables are identical over all our elastic related roles, hence the diff
 * *elastic_kibana_port*: Port Kibana webinterface is listening on (default: `5601`)
 * *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
 * *elastic_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
-* *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
+* *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elastic_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
 * *elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
 * *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)

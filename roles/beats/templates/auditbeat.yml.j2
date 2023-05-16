@@ -32,10 +32,10 @@ setup.kibana:
 {% if auditbeat_output == "elasticsearch" %}
 output.elasticsearch:
 {% if elasticsearch_http_security | bool %}
-{% if elastic_stack_full_stack | bool %}
-  hosts: [ {% for host in groups['elasticsearch'] %}"https://{{ host }}:{{ elastic_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+{% if elasticstack_stack_full_stack | bool %}
+  hosts: [ {% for host in groups['elasticsearch'] %}"https://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% else %}
-  hosts: [ {% for host in beats_target_hosts %}"https://{{ host }}:{{ elastic_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+  hosts: [ {% for host in beats_target_hosts %}"https://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}
   username: "elastic"
   password: "{{ beats_writer_password.stdout }}"
@@ -43,19 +43,19 @@ output.elasticsearch:
   ssl.verification_mode: none
   ssl.certificate_authorities: ["/etc/beats/certs/ca.crt"]
 {% else %}
-{% if elastic_stack_full_stack | bool %}
-  hosts: [ {% for host in groups['elasticsearch'] %}"http://{{ host }}:{{ elastic_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+{% if elasticstack_stack_full_stack | bool %}
+  hosts: [ {% for host in groups['elasticsearch'] %}"http://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% else %}
-  hosts: [ {% for host in beats_target_hosts %}"http://{{ host }}:{{ elastic_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+  hosts: [ {% for host in beats_target_hosts %}"http://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}
 {% endif %}
 {% endif %}
 {% if auditbeat_output == "logstash" %}
 output.logstash:
-{% if elastic_stack_full_stack | bool %}
-  hosts: [ {% for host in groups['logstash'] %}"{{ host }}:{{ elastic_beats_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+{% if elasticstack_stack_full_stack | bool %}
+  hosts: [ {% for host in groups['logstash'] %}"{{ host }}:{{ elasticstack_beats_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% else %}
-  hosts: [ {% for host in beats_target_hosts %}"{{ host }}:{{ elastic_beats_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
+  hosts: [ {% for host in beats_target_hosts %}"{{ host }}:{{ elasticstack_beats_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}
   loadbalance: {{ auditbeat_loadbalance }}
 {% if beats_security | bool %}

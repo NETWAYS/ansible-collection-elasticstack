@@ -6,7 +6,7 @@ beats_auditbeat: false
 beats_metricbeat: false
 beats_target_hosts:
   - localhost
-elastic_beats_port: 5044
+elasticstack_beats_port: 5044
 beats_logging: file
 beats_logpath: /var/log/beats
 beats_loglevel: info
@@ -59,18 +59,18 @@ metricbeat_modules:
   - system
 metricbeat_loadbalance: true
 
-elastic_release: 8
-elastic_stack_full_stack: true
-elastic_variant: elastic
-elastic_security: true
+elasticstack_release: 8
+elasticstack_stack_full_stack: true
+elasticstack_variant: elastic
+elasticstack_security: true
 
-elastic_ca_dir: /opt/es-ca
+elasticstack_ca_dir: /opt/es-ca
 elasticstack_ca_pass: PleaseChangeMe
-elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
-elastic_elasticsearch_http_port: 9200
+elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
+elasticstack_elasticsearch_http_port: 9200
 beats_cert_expiration_buffer: 30
 beats_cert_will_expire_soon: false
 
 # Variables for debugging and development
 
-elastic_override_beats_tls: false
+elasticstack_override_beats_tls: false

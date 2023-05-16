@@ -31,7 +31,7 @@ If you want to use the default pipeline (or other pipelines communicating via Re
 Role Variables
 --------------
 
-* *elastic_version*: Version number of Logstash to install (e.g. `7.10.1`). Only set if you don't want the latest. (default: none). For OSS version see `elastic_variant` below.
+* *elasticstack_version*: Version number of Logstash to install (e.g. `7.10.1`). Only set if you don't want the latest. (default: none). For OSS version see `elasticstack_variant` below.
 * *logstash_enable*: Start and enable Logstash service (default: `true`)
 * *logstash_config_backup*: Keep backups of all changed configuration (default: `no`)
 * *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)
@@ -73,7 +73,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 
 
 
-* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elastic_stack_full_stack` is not set. (default: `true`)
+* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_stack_full_stack` is not set. (default: `true`)
 
 The following variables configure Log4j for Logstash. All default to `true` as this is the default after the installation.
 
@@ -90,15 +90,15 @@ The following variables configure extra fields in your events that help with ide
 
 The following variables are identical over all our elastic related roles, hence the different naming scheme.
 
-*elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
-*elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+*elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)
+*elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
 
 The following variables only apply if you use this role together with our Elasticsearch and Kibana roles.
 
-* *elastic_stack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
-* *elastic_ca_dir*: Directory where the CA and certificates lie on the main Elasticsearch host (default: `/opt/es-ca`)
-* *elastic_elasticsearch_http_port*: Port of Elasticsearch to send events to (Default: `9200`)
-* *elastic_initial_passwords*: File where initial passwords are stored on the main Elasticsearch host (default: `/usr/share/elasticsearch/initial_passwords`)
+* *elasticstack_stack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
+* *elasticstack_ca_dir*: Directory where the CA and certificates lie on the main Elasticsearch host (default: `/opt/es-ca`)
+* *elasticstack_elasticsearch_http_port*: Port of Elasticsearch to send events to (Default: `9200`)
+* *elasticstack_initial_passwords*: File where initial passwords are stored on the main Elasticsearch host (default: `/usr/share/elasticsearch/initial_passwords`)
 
 ## Usage
 

@@ -40,8 +40,8 @@
         output:
           - name: forwarder
             key: forwarder
-    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
-    elastic_stack_full_stack: false
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elasticstack_stack_full_stack: false
   tasks:
     - name: Include Elastics repos role
       include_role:

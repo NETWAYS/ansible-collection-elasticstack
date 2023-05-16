@@ -5,9 +5,9 @@
     beats_metricbeat_package: >
       {{
       'metricbeat' +
-      (elastic_versionseparator +
-      elastic_version |
-      string if elastic_version is defined else '') |
+      (elasticstack_versionseparator +
+      elasticstack_version |
+      string if elasticstack_version is defined else '') |
       replace(' ', '')
       }}
 
@@ -15,7 +15,7 @@
   package:
     name: "{{ beats_metricbeat_package }}"
     enablerepo:
-      - 'elastic-{{ elastic_release }}.x'
+      - 'elastic-{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
 
@@ -30,12 +30,12 @@
     name: metricbeat
     state: latest
     enablerepo:
-      - "elastic-{{ elastic_release }}.x"
+      - "elastic-{{ elasticstack_release }}.x"
   notify:
     - Restart Metricbeat
   when:
-    - elastic_version is defined
-    - elastic_version == "latest"
+    - elasticstack_version is defined
+    - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
 
 - name: Install Metricbeat latest version - deb
@@ -45,8 +45,8 @@
   notify:
     - Restart Metricbeat
   when:
-    - elastic_version is defined
-    - elastic_version == "latest"
+    - elasticstack_version is defined
+    - elasticstack_version == "latest"
     - ansible_os_family == "Debian"
 
 - name: Configure Metricbeat

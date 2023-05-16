@@ -8,9 +8,9 @@
 
 - name: Set common password for common certificates
   set_fact:
-    kibana_tls_key_passphrase: "{{ elastic_cert_pass }}"
+    kibana_tls_key_passphrase: "{{ elasticstack_cert_pass }}"
   when:
-    - elastic_cert_pass is defined
+    - elasticstack_cert_pass is defined
 
 - name: Set Elasticsearch hosts if used with other roles
   set_fact:
@@ -32,17 +32,17 @@
     kibana_package: >
       {{
       'kibana' +
-      ('-oss' if elastic_variant == 'oss' else '') +
-      (elastic_versionseparator +
-      elastic_version |
-      string if elastic_version is defined else '') |
+      ('-oss' if elasticstack_variant == 'oss' else '') +
+      (elasticstack_versionseparator +
+      elasticstack_version |
+      string if elasticstack_version is defined else '') |
       replace(' ', '') }}
 
 - name: Install Kibana - rpm
   package:
     name: "{{ kibana_package }}"
     enablerepo:
-      - 'elastic-{% if elastic_variant == "oss" %}oss-{% endif %}{{ elastic_release }}.x'
+      - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
 
@@ -55,10 +55,10 @@
 - name: Import security related tasks
   import_tasks: kibana-security.yml
   when:
-    - elastic_stack_full_stack is defined
-    - elastic_stack_full_stack | bool
+    - elasticstack_stack_full_stack is defined
+    - elasticstack_stack_full_stack | bool
     - kibana_security | bool
-    - elastic_variant == "elastic"
+    - elasticstack_variant == "elastic"
   tags:
     - certificates
     - renew_ca

@@ -1,5 +1,5 @@
 galaxy_info:
-  role_name: elastic_repos
+  role_name: elasticstack_repos
   namespace: netways
   description: Elastic Repositories
   author: Thomas Widhalm <thomas.widhalm@netways.de>

@@ -76,10 +76,10 @@ filebeat_journald_inputs:
 * *metricbeat_modules*: List of modules to enable. (Default: `- system`)
 * *metricbeat_loadbalance*: Enable loadbalancing for Metricbeats Logstash output (default: `true`)
 
-* *beats_security*: Activate TLS for connections to targets. Can either be use with our other roles and `elastic_stack_full_stack` to automatically create certificates or `beats_tls*` variables for custom certificates. (default: `false`)
+* *beats_security*: Activate TLS for connections to targets. Can either be use with our other roles and `elasticstack_stack_full_stack` to automatically create certificates or `beats_tls*` variables for custom certificates. (default: `false`)
 * *beats_target_hosts*: Only use when this role is used standalone. When used in combination with our other roles, the target hosts will be determined automatically. Use a YAML list. (default: `- localhost`)
-* *elastic_elasticsearch_http_port*: Port of Elasticsearch to send events to (Default: `9200`)
-* *elastic_beats_port*: Port of Logstash to send events to (Default: `5044`)
+* *elasticstack_elasticsearch_http_port*: Port of Elasticsearch to send events to (Default: `9200`)
+* *elasticstack_beats_port*: Port of Logstash to send events to (Default: `5044`)
 * *beats_logging*: Where to log (Default: `file`)
 * *beats_loglevel*: Level of logging (for all beats) (Default: `info`)
 * *beats_logpath*: If logging to file, where to put logfiles (Default: `/var/log/beats`)
@@ -88,12 +88,12 @@ filebeat_journald_inputs:
 
 The following variables only apply if you use this role together with our other Elastic Stack roles.
 
-* *elastic_stack_full_stack*: Use `elasticsearch` as well (default: `false`)
-* *elastic_variant*: Define which variant of elastic stack to use. (default: `elastic`)
-* *elastic_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
+* *elasticstack_stack_full_stack*: Use `elasticsearch` as well (default: `false`)
+* *elasticstack_variant*: Define which variant of elastic stack to use. (default: `elastic`)
+* *elasticstack_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
-* *elastic_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
-* *elastic_version*: Install specific version (Default: none. Possible values: e.g. `7.10.1` or `latest`)
+* *elasticstack_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
+* *elasticstack_version*: Install specific version (Default: none. Possible values: e.g. `7.10.1` or `latest`)
 
 If you want to use this role with your own TLS certificates, use these variables.
 

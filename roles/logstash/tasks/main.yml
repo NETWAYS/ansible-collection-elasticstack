@@ -8,7 +8,7 @@
 
 - name: Prepare for whole stack roles if used
   when:
-    - elastic_stack_full_stack | bool
+    - elasticstack_stack_full_stack | bool
   block:
 
     - name: Set Elasticsearch hosts if used with other roles
@@ -26,7 +26,7 @@
         logstash_beats_tls: true
       when:
         - logstash_beats_tls is undefined
-        - not elastic_override_beats_tls | bool
+        - not elasticstack_override_beats_tls | bool
 
 - name: Set Elasticsearch hosts to localhost if no other information available
   set_fact:
@@ -43,9 +43,9 @@
   set_fact:
     logstash_security: true
   when:
-    - logstash_security is undefined or elastic_security | bool
-    - elastic_stack_full_stack | bool
-    - elastic_variant == "elastic"
+    - logstash_security is undefined or elasticstack_security | bool
+    - elasticstack_stack_full_stack | bool
+    - elasticstack_variant == "elastic"
   tags:
     - certificates
     - renew_ca
@@ -56,10 +56,10 @@
     logstash_package: >
       {{
       'logstash' +
-      ('-oss' if elastic_variant == 'oss' else '') +
-      (elastic_versionseparator +
-      elastic_version |
-      string if elastic_version is defined else '') |
+      ('-oss' if elasticstack_variant == 'oss' else '') +
+      (elasticstack_versionseparator +
+      elasticstack_version |
+      string if elasticstack_version is defined else '') |
       replace(' ', '')
       }}
 
@@ -67,7 +67,7 @@
   package:
     name: "{{ logstash_package }}"
     enablerepo:
-      - 'elastic-{% if elastic_variant == "oss" %}oss-{% endif %}{{ elastic_release }}.x'
+      - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
 
@@ -80,9 +80,9 @@
 - name: Import Logstash Security tasks
   import_tasks: logstash-security.yml
   when:
-    - elastic_stack_full_stack | bool
+    - elasticstack_stack_full_stack | bool
     - logstash_security is defined and logstash_security | bool
-    - elastic_variant == "elastic"
+    - elasticstack_variant == "elastic"
   tags:
     - certificates
     - renew_ca

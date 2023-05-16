@@ -8,11 +8,11 @@
     - renew_ca
     - renew_kibana_cert
 
-- name: Set elasticsearch_ca variable if not already done by user
+- name: Set elasticstack_ca variable if not already done by user
   set_fact:
-    elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
+    elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
   when:
-    - elasticsearch_ca is undefined
+    - elasticstack_ca is undefined
     - groups['elasticsearch'] is defined
   tags:
     - certificates
@@ -82,22 +82,22 @@
         state: absent
       when: kibana_move_cert_directory.changed
 
-- name: Backup kibana certs on elasticsearch_ca host then remove
+- name: Backup kibana certs on elasticstack_ca host then remove
   when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or kibana_cert_will_expire_soon | bool"
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   tags:
     - renew_ca
     - renew_kibana_cert
   block:
     - name: Check if cert file exists
       stat:
-        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+        path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
       register: kibana_check_cert_file
 
     - name: Move cert file
       copy:
-        src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
-        dest: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+        dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
         remote_src: true
       when: kibana_check_cert_file.stat.exists
@@ -105,7 +105,7 @@
 
     - name: Remove cert file
       file:
-        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+        path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
         state: absent
       when: kibana_move_cert_file.changed
 
@@ -136,7 +136,7 @@
       when: kibana_move_cert_file.changed
 
 - name: Block for key generation
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   run_once: true
   tags:
     - certificates
@@ -147,13 +147,13 @@
       shell: >
         if test -v BASH; then set -o pipefail; fi;
         openssl rand -base64 36 >
-        {{ elastic_ca_dir }}/encryption_key
+        {{ elasticstack_ca_dir }}/encryption_key
       changed_when: false
       args:
-        creates: "{{ elastic_ca_dir }}/encryption_key"
+        creates: "{{ elasticstack_ca_dir }}/encryption_key"
 
     - name: Fetch encryption key
-      command: cat {{ elastic_ca_dir }}/encryption_key
+      command: cat {{ elasticstack_ca_dir }}/encryption_key
       changed_when: false
       register: kibana_encryption_key
 
@@ -162,13 +162,13 @@
         if test -v BASH; then set -o pipefail; fi;
         openssl rand
         -base64 36 >
-        {{ elastic_ca_dir }}/savedobjects_encryption_key
+        {{ elasticstack_ca_dir }}/savedobjects_encryption_key
       changed_when: false
       args:
-        creates: "{{ elastic_ca_dir }}/savedobjects_encryption_key"
+        creates: "{{ elasticstack_ca_dir }}/savedobjects_encryption_key"
 
     - name: Fetch saved objects encryption key
-      command: cat {{ elastic_ca_dir }}/savedobjects_encryption_key
+      command: cat {{ elasticstack_ca_dir }}/savedobjects_encryption_key
       changed_when: false
       register: kibana_savedobjects_encryption_key
 
@@ -187,17 +187,17 @@
 - name: Create individual certificates for Kibana
   command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
-    --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
+    --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
     --ca-pass {{ elasticstack_ca_pass }}
     --name {{ ansible_hostname }}
     --ip {{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}
     --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
     --pass {{ kibana_tls_key_passphrase }}
-    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12
-  delegate_to: "{{ elasticsearch_ca }}"
+    --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12
+  delegate_to: "{{ elasticstack_ca }}"
   no_log: true
   args:
-    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+    creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
   tags:
     - certificates
     - renew_ca
@@ -205,10 +205,10 @@
 
 - name: Fetch certificate from ca host to master
   fetch:
-    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+    src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
     dest: "/tmp/"
     flat: yes
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   tags:
     - certificates
     - renew_ca
@@ -236,14 +236,14 @@
   register: kibana_password
   changed_when: false
   no_log: true
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
 
 - name: Fetch ca certificate from ca host to master
   fetch:
-    src: "{{ elastic_ca_dir }}/ca.crt"
+    src: "{{ elasticstack_ca_dir }}/ca.crt"
     dest: /tmp/ca.crt
     flat: yes
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   tags:
     - certificates
     - renew_ca

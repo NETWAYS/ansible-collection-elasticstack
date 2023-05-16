@@ -8,7 +8,7 @@
   collections:
     - netways.elasticstack
   vars:
-    elastic_stack_full_stack: true
+    elasticstack_stack_full_stack: true
     filebeat_syslog_udp: true
     filebeat_syslog_tcp: true
     filebeat_modules:
@@ -17,7 +17,7 @@
       - "testbed: molecule"
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
-    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Include Elastics repos role
       include_role:

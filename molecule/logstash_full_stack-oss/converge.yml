@@ -14,14 +14,14 @@
   collections:
     - netways.elasticstack
   vars:
-    elastic_stack_full_stack: true
-    elastic_variant: oss
+    elasticstack_stack_full_stack: true
+    elasticstack_variant: oss
     logstash_security: false
-    elastic_security: false
+    elasticstack_security: false
     filebeat_syslog_udp: true
     filebeat_syslog_tcp: true
     logstash_beats_tls: false
-    elastic_release: 7
+    elasticstack_release: 7
   tasks:
     - name: "Include Elastics repos role"
       include_role:

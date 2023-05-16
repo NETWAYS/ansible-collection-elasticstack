@@ -1,9 +1,9 @@
 ---
 # defaults file for elastic-repos
-elastic_release: 8
-elastic_stack_full_stack: true
-elastic_variant: elastic
+elasticstack_release: 8
+elasticstack_stack_full_stack: true
+elasticstack_variant: elastic
 
-elastic_rpm_workaround: false
+elasticstack_rpm_workaround: false
 
-elastic_enable_repos: true
+elasticstack_enable_repos: true

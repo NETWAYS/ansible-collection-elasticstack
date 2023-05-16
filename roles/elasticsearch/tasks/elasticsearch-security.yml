@@ -1,9 +1,9 @@
 ---
 
-- name: Set elasticsearch_ca variable if not already done by user
+- name: Set elasticstack_ca variable if not already done by user
   set_fact:
-    elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
-  when: elasticsearch_ca is undefined
+    elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
+  when: elasticstack_ca is undefined
   tags:
     - certificates
     - renew_ca
@@ -11,39 +11,39 @@
 
 - name: Ensure ca exists
   stat:
-    path: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
-  register: elasticsearch_ca_exists
-  when: inventory_hostname == elasticsearch_ca
+    path: "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
+  register: elasticstack_ca_exists
+  when: inventory_hostname == elasticstack_ca
 
 - name: Get CA informations
   cert_info:
-    path: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
+    path: "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
     passphrase: "{{ elasticstack_ca_pass | default(omit, true) }}"
-  register: elasticsearch_ca_infos
-  when: inventory_hostname == elasticsearch_ca and elasticsearch_ca_exists.stat.exists | bool
+  register: elasticstack_ca_infos
+  when: inventory_hostname == elasticstack_ca and elasticstack_ca_exists.stat.exists | bool
 
 - name: Set the ca expiration date in days
   set_fact:
-    elasticsearch_ca_expiration_days: "{{ (( elasticsearch_ca_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
-  when: inventory_hostname == elasticsearch_ca and elasticsearch_ca_infos.skipped is not defined
+    elasticstack_ca_expiration_days: "{{ (( elasticstack_ca_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  when: inventory_hostname == elasticstack_ca and elasticstack_ca_infos.skipped is not defined
 
 - name: Set ca will expire soon to true
   set_fact:
     elasticstack_ca_will_expire_soon: true
   when: >
-    inventory_hostname == elasticsearch_ca and
+    inventory_hostname == elasticstack_ca and
     elasticsearch_cert_expiration_days is defined and
     elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
 
 - name: Print the ca renew message
   debug:
     msg: |
-      Your ca will expire in {{ elasticsearch_ca_expiration_days }}.
+      Your ca will expire in {{ elasticstack_ca_expiration_days }}.
       Ansible will renew it and all elastic stack certificates
   when: >
-    inventory_hostname == elasticsearch_ca and
-    elasticsearch_ca_expiration_days is defined and
-    elasticsearch_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
+    inventory_hostname == elasticstack_ca and
+    elasticstack_ca_expiration_days is defined and
+    elasticstack_ca_expiration_days | int <= elasticstack_ca_expiration_buffer | int
 
 - name: Stop Logstash
   service:
@@ -56,19 +56,19 @@
     - groups['logstash'] is defined
 
 - name: Backup ca directory on elasticsearch ca host then remove
-  when: (inventory_hostname == elasticsearch_ca) and ('renew_ca' in "ansible_run_tags" or elasticstack_ca_will_expire_soon | bool)
+  when: (inventory_hostname == elasticstack_ca) and ('renew_ca' in "ansible_run_tags" or elasticstack_ca_will_expire_soon | bool)
   tags:
     - renew_ca
   block:
     - name: Check if ca directory exists on elasticsearch ca host
       stat:
-        path: "{{ elastic_ca_dir }}"
+        path: "{{ elasticstack_ca_dir }}"
       register: elasticsearch_check_ca_path
 
     - name: Move the ca directory on elasticsearch ca host
       copy:
-        src: "{{ elastic_ca_dir }}"
-        dest: "{{ elastic_ca_dir }}_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ elasticstack_ca_dir }}"
+        dest: "{{ elasticstack_ca_dir }}_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
         remote_src: true
       when: elasticsearch_check_ca_path.stat.exists
@@ -76,7 +76,7 @@
 
     - name: Remove ca directory on elasticsearch ca host
       file:
-        path: "{{ elastic_ca_dir }}"
+        path: "{{ elasticstack_ca_dir }}"
         state: absent
       when: elasticsearch_move_ca_directory.changed
 
@@ -136,7 +136,7 @@
     msg: |
       Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }}.
       Ansible will renew it.
-  when: elasticsearch_cert_expiration_day is defined and elasticsearch_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
+  when: elasticsearch_cert_expiration_day is defined and elasticstack_ca_expiration_days | int <= elasticstack_ca_expiration_buffer | int
 
 - name: Backup elasticsearch certs on node then remove
   when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
@@ -164,30 +164,30 @@
         state: absent
       when: elasticsearch_move_cert_directory.changed
 
-- name: Backup elasticsearch certs on elasticsearch_ca host then remove
+- name: Backup elasticsearch certs on elasticstack_ca host then remove
   when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   tags:
     - renew_ca
     - renew_es_cert
   block:
-    - name: Check if cert file exists on elasticsearch_ca host
+    - name: Check if cert file exists on elasticstack_ca host
       stat:
-        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+        path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
       register: elasticsearch_check_cert_file
 
-    - name: Move cert file on elasticsearch_ca host
+    - name: Move cert file on elasticstack_ca host
       copy:
-        src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
-        dest: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
+        dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
         remote_src: true
       when: elasticsearch_check_cert_file.stat.exists
       register: elasticsearch_move_cert_file
 
-    - name: Remove cert file on elasticsearch_ca host
+    - name: Remove cert file on elasticstack_ca host
       file:
-        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+        path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
         state: absent
       when: elasticsearch_move_cert_file.changed
 
@@ -219,7 +219,7 @@
 
 - name: Create directory for Elasticsearch CA
   file:
-    path: "{{ elastic_ca_dir }}"
+    path: "{{ elasticstack_ca_dir }}"
     owner: root
     group: elasticsearch
     mode: 0700
@@ -415,53 +415,53 @@
   notify:
     - Restart Elasticsearch
 
-- name: Create ca and certificates on elasticsearch_ca host
-  when: inventory_hostname == elasticsearch_ca
+- name: Create ca and certificates on elasticstack_ca host
+  when: inventory_hostname == elasticstack_ca
   tags:
     - certificates
     - renew_ca
     - renew_es_cert
   block:
-    - name: Configure ca on elasticsearch_ca host
+    - name: Configure ca on elasticstack_ca host
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil ca
         --pass {{ elasticstack_ca_pass }}
-        --out {{ elastic_ca_dir }}/elastic-stack-ca.p12
+        --out {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
         --silent
       args:
-        creates: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
+        creates: "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
       no_log: true
 
-    - name: Create node certificates on elasticsearch_ca host
+    - name: Create node certificates on elasticstack_ca host
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil cert
-        --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
+        --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
         --ca-pass {{ elasticstack_ca_pass }}
         --name {{ hostvars[item].ansible_hostname }}
         --ip {{ hostvars[item].ansible_default_ipv4.address | default(hostvars[item].ansible_all_ipv4_addresses[0]) }}
         --dns {{ hostvars[item].ansible_hostname }},{{ hostvars[item].ansible_fqdn }},{{ hostvars[item].inventory_hostname }}
         --pass {{ elasticsearch_tls_key_passphrase }}
-        --out {{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
+        --out {{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
       loop: "{{ groups['elasticsearch'] }}"
       no_log: true
       args:
-        creates: "{{ elastic_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
+        creates: "{{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
 
-    - name: Extract CA certificate on elasticsearch_ca host
+    - name: Extract CA certificate on elasticstack_ca host
       command: >
-        openssl pkcs12 -in {{ elastic_ca_dir }}/{{ ansible_hostname }}.p12
-        -cacerts -nokeys -out {{ elastic_ca_dir }}/ca.crt
+        openssl pkcs12 -in {{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12
+        -cacerts -nokeys -out {{ elasticstack_ca_dir }}/ca.crt
         -password pass:{{ elasticsearch_tls_key_passphrase }}
       args:
-        creates: "{{ elastic_ca_dir }}/ca.crt"
+        creates: "{{ elasticstack_ca_dir }}/ca.crt"
       no_log: true
 
 - name: Fetch ca certificate from ca host to Ansible controller
   fetch:
-    src: "{{ elastic_ca_dir }}/ca.crt"
+    src: "{{ elasticstack_ca_dir }}/ca.crt"
     dest: /tmp/ca.crt
     flat: yes
-  when: inventory_hostname == elasticsearch_ca
+  when: inventory_hostname == elasticstack_ca
   tags:
     - certificates
     - renew_ca
@@ -469,10 +469,10 @@
 
 - name: Fetch certificate from ca host to Ansible controller
   fetch:
-    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}.p12"
+    src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
     dest: "/tmp/{{ ansible_hostname }}.p12"
     flat: yes
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   tags:
     - certificates
     - renew_ca
@@ -550,8 +550,8 @@
 
 - name: Check for passwords being set
   stat:
-    path: "{{ elastic_initial_passwords }}"
-  delegate_to: "{{ elasticsearch_ca }}"
+    path: "{{ elasticstack_initial_passwords }}"
+  delegate_to: "{{ elasticstack_ca }}"
   register: elasticsearch_passwords_file
 
 - name: Setting elasticsearch_http_protocol
@@ -563,7 +563,7 @@
   shell: >
     if test -v BASH; then set -o pipefail; fi;
     curl -ks
-    {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
+    {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty |
     grep status |
     cut -d\" -f4
   register: elasticsearch_cluster_status_bootstrap
@@ -577,19 +577,19 @@
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   shell: >
     if test -v BASH; then set -o pipefail; fi;
-    grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
+    grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
     awk {' print $4 '}
-  register: elastic_password
+  register: elasticstack_password
   changed_when: false
   no_log: true
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
 - name: Check for cluster status with elastic password # noqa: risky-shell-pipe
   shell: >
     if test -v BASH; then set -o pipefail; fi;
     curl -ks
-    {{ elasticsearch_http_protocol }}://elastic:{{ elastic_password.stdout }}@localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
+    {{ elasticsearch_http_protocol }}://elastic:{{ elasticstack_password.stdout }}@localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty |
     grep status |
     cut -d\" -f4
   register: elasticsearch_cluster_status
@@ -605,20 +605,20 @@
   shell: >
     if test -v BASH; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b >
-    {{ elastic_initial_passwords }}
-  when: inventory_hostname == elasticsearch_ca
+    {{ elasticstack_initial_passwords }}
+  when: inventory_hostname == elasticstack_ca
   no_log: true
   args:
-    creates: "{{ elastic_initial_passwords }}"
+    creates: "{{ elasticstack_initial_passwords }}"
 
 # It would be better to create and set the permissions before generating the passwords. But this would
 # break the logic that relies on the file being absent when no passwords are set
 - name: Set permissions on passwords file
   file:
-    path: "{{ elastic_initial_passwords }}"
+    path: "{{ elasticstack_initial_passwords }}"
     owner: root
     group: root
     mode: 0600
-  when: inventory_hostname == elasticsearch_ca
+  when: inventory_hostname == elasticstack_ca
 
 # Maybe make sure that Elasticsearch is using the right protocol http(s) to connect, even in newly setup clusters

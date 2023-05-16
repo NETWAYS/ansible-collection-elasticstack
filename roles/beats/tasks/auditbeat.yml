@@ -5,16 +5,16 @@
     beats_auditbeat_package: >
       {{
       'auditbeat' +
-      (elastic_versionseparator +
-      elastic_version |
-      string if elastic_version is defined else '') |
+      (elasticstack_versionseparator +
+      elasticstack_version |
+      string if elasticstack_version is defined else '') |
       replace(' ', '')
       }}
 - name: Install Auditbeat - rpm
   package:
     name: "{{ beats_auditbeat_package }}"
     enablerepo:
-      - 'elastic-{{ elastic_release }}.x'
+      - 'elastic-{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
 
@@ -29,12 +29,12 @@
     name: auditbeat
     state: latest
     enablerepo:
-      - "elastic-{{ elastic_release }}.x"
+      - "elastic-{{ elasticstack_release }}.x"
   notify:
     - Restart Auditbeat
   when:
-    - elastic_version is defined
-    - elastic_version == "latest"
+    - elasticstack_version is defined
+    - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
 
 - name: Install Auditbeat latest version - deb
@@ -44,8 +44,8 @@
   notify:
     - Restart Auditbeat
   when:
-    - elastic_version is defined
-    - elastic_version == "latest"
+    - elasticstack_version is defined
+    - elasticstack_version == "latest"
     - ansible_os_family == "Debian"
 
 - name: Configure Auditbeat

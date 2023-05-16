@@ -12,21 +12,21 @@
     logstash_logging_console: false
     logstash_logging_slow_file: false
     logstash_pipeline_identifier: false
-    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
-    elastic_stack_full_stack: false
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elasticstack_stack_full_stack: false
   tasks:
 
     - name: Set Filebeat version for 7.x
       set_fact:
-        elastic_version: "7.17.1"
+        elasticstack_version: "7.17.1"
       when:
-        - elastic_release == 7
+        - elasticstack_release == 7
 
     - name: Set Filebeat version for 8.x
       set_fact:
-        elastic_version: "8.4.1"
+        elasticstack_version: "8.4.1"
       when:
-        - elastic_release == 8
+        - elasticstack_release == 8
 
     - name: "Include Elastics repos role"
       include_role:

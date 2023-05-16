@@ -9,15 +9,15 @@ kibana_tls: false
 kibana_tls_cert: /etc/kibana/certs/cert.pem
 kibana_tls_key: /etc/kibana/certs/key.pem
 kibana_tls_key_passphrase: PleaseChangeMe
-elastic_ca_dir: /opt/es-ca
+elasticstack_ca_dir: /opt/es-ca
 elasticstack_ca_pass: PleaseChangeMe
-elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
 kibana_cert_expiration_buffer: 30
 kibana_cert_will_expire_soon: false
 
 # "global" variables for all roles
-elastic_release: 8
-elastic_stack_full_stack: true
-elastic_variant: elastic
-elastic_elasticsearch_http_port: 9200
-elastic_kibana_port: 5601
+elasticstack_release: 8
+elasticstack_stack_full_stack: true
+elasticstack_variant: elastic
+elasticstack_elasticsearch_http_port: 9200
+elasticstack_kibana_port: 5601

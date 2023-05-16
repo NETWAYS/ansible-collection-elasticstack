@@ -8,22 +8,22 @@
 
 - name: Prepare for whole stack roles if used
   when:
-    - elastic_stack_full_stack | bool
+    - elasticstack_stack_full_stack | bool
   block:
     - name: Enable security if enabled for whole stack
       set_fact:
         beats_security: true
       when:
-        - elastic_security | bool
-        - elastic_variant != "oss"
-        - not elastic_override_beats_tls | bool
+        - elasticstack_security | bool
+        - elasticstack_variant != "oss"
+        - not elasticstack_override_beats_tls | bool
 
-    - name: Set elasticsearch_ca variable if not already done by user
+    - name: Set elasticstack_ca variable if not already done by user
       set_fact:
-        elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
+        elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
       when:
         - beats_security | bool
-        - elasticsearch_ca is undefined
+        - elasticstack_ca is undefined
         - groups['elasticsearch'] is defined
       tags:
         - certificates
@@ -34,7 +34,7 @@
       set_fact:
         beats_ca_dir: "/etc/beats/certs"
       when:
-        - elastic_security | bool
+        - elasticstack_security | bool
         - beats_ca_dir is undefined
 
 # We need it for templating even when security is disabled
@@ -64,8 +64,8 @@
   import_tasks: beats-security.yml
   when:
     - beats_security | bool
-    - elastic_stack_full_stack | bool
-    - elastic_variant == "elastic"
+    - elasticstack_stack_full_stack | bool
+    - elasticstack_variant == "elastic"
   tags:
     - certificates
     - renew_ca

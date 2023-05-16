@@ -59,7 +59,7 @@
     - Restart Auditbeat
   tags:
     - configuration
-    - auditbeat_configuration
+    - beats_auditbeat_configuration
     - beats_configuration
 
 - name: Setup Auditbeat in Elasticsearch
@@ -72,12 +72,12 @@
   notify:
     - Restart Auditbeat
   when:
-    - auditbeat_setup | bool
-    - auditbeat_output == "elasticsearch"
+    - beats_auditbeat_setup | bool
+    - beats_auditbeat_output == "elasticsearch"
 
 - name: Start Auditbeat
   service:
     name: auditbeat
     state: started
     enabled: true
-  when: auditbeat_enable | bool
+  when: beats_auditbeat_enable | bool

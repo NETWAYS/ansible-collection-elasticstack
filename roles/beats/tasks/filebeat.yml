@@ -59,14 +59,14 @@
     - Restart Filebeat
   tags:
     - configuration
-    - filebeat_configuration
+    - beats_filebeat_configuration
     - beats_configuration
 
 - name: Configure modules
-  when: filebeat_modules is defined
+  when: beats_filebeat_modules is defined
   tags:
     - configuration
-    - filebeat_configuration
+    - beats_filebeat_configuration
     - beats_configuration
   block:
 
@@ -74,7 +74,7 @@
       command: "filebeat modules enable {{ item }}"
       args:
         creates: "/etc/filebeat/modules.d/{{ item }}.yml"
-      with_items: "{{ filebeat_modules }}"
+      with_items: "{{ beats_filebeat_modules }}"
 
     - name: Enable System module
       template:
@@ -92,7 +92,7 @@
         /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
       args:
         creates: "/etc/filebeat/{{ item }}_pipeline_created"
-      with_items: "{{ filebeat_modules }}"
+      with_items: "{{ beats_filebeat_modules }}"
       notify:
         - Restart Filebeat
       changed_when: false
@@ -102,4 +102,4 @@
     name: filebeat
     state: started
     enabled: true
-  when: filebeat_enable | bool
+  when: beats_filebeat_enable | bool

@@ -14,17 +14,17 @@ Role Variables
 --------------
 
 * *beats_filebeat*: Install and manage filebeat (Default: `true`)
-* *filebeat_enable*: Automatically start Filebeat (Default: `true`)
-* *filebeat_output*: Set to `logstash` or `elasticsearch`. (default: `logstash`)
-* *filebeat_syslog_udp*: Use UDP Syslog input (Default: `false`)
-* *filebeat_syslog_udp_port*: Port of UDP Syslog input (Default: `514`)
-* *filebeat_syslog_tcp*: Use TCP Syslog input (Default: `false`)
-* *filebeat_syslog_tcp_port*: Port of TCP Syslog input (Default: `514`)
-* *filebeat_log_input*: Enable Logfile reading (Default: `true`)
-* *filebeat_mysql_slowlog_input*: Enable MySQL/MariaDB slow query log collection incl. multiline (Default: `false`)
-* *filebeat_log_inputs*: Logfiles to read (Default: see below)
+* *beats_filebeat_enable*: Automatically start Filebeat (Default: `true`)
+* *beats_filebeat_output*: Set to `logstash` or `elasticsearch`. (default: `logstash`)
+* *beats_filebeat_syslog_udp*: Use UDP Syslog input (Default: `false`)
+* *beats_filebeat_syslog_udp_port*: Port of UDP Syslog input (Default: `514`)
+* *beats_filebeat_syslog_tcp*: Use TCP Syslog input (Default: `false`)
+* *beats_filebeat_syslog_tcp_port*: Port of TCP Syslog input (Default: `514`)
+* *beats_filebeat_log_input*: Enable Logfile reading (Default: `true`)
+* *beats_filebeat_mysql_slowlog_input*: Enable MySQL/MariaDB slow query log collection incl. multiline (Default: `false`)
+* *beats_filebeat_log_inputs*: Logfiles to read (Default: see below)
 
-Default of `filebeat_log_inputs`
+Default of `beats_filebeat_log_inputs`
 
 ```
   messages:
@@ -37,7 +37,7 @@ You can optionally add `fields` to every input as well. You can also add a `mult
 
 Here's a longer example for an input:
 ```
-filebeat_log_inputs:
+beats_filebeat_log_inputs:
   messages:
     name: messages
     paths:
@@ -50,31 +50,31 @@ filebeat_log_inputs:
       negate: false
       match: after
 ```
-* *filebeat_journald*: Enable collection of JournalD logs (default: `false`) - available since Filebeat 7.16
-* *filebeat_journald_inputs*: List of journald inputs. Use for different filters on events. You can add a list of `include_matches` entries for filtering.
-Default of `filebeat_journald_inputs`:
+* *beats_filebeat_journald*: Enable collection of JournalD logs (default: `false`) - available since Filebeat 7.16
+* *beats_filebeat_journald_inputs*: List of journald inputs. Use for different filters on events. You can add a list of `include_matches` entries for filtering.
+Default of `beats_filebeat_journald_inputs`:
 ```
-filebeat_journald_inputs:
+beats_filebeat_journald_inputs:
   everything:
     id: everything
 ```
-* *filebeat_docker*: Enable collection of Docker logs (default: `false`) **ONLY WORKS ON RELEASE 7 SO FAR**
-* *filebeat_docker_ids*: IDs of containers to collect. (default: `*`)
+* *beats_filebeat_docker*: Enable collection of Docker logs (default: `false`) **ONLY WORKS ON RELEASE 7 SO FAR**
+* *beats_filebeat_docker_ids*: IDs of containers to collect. (default: `*`)
 
-* *filebeat_loadbalance*: Enable loadbalancing for Filebeats Logstash output (default: `true`)
-* *filebeat_modules*: **EXPERIMENTAL**: Give a list of modules to enable. (default: none)
+* *beats_filebeat_loadbalance*: Enable loadbalancing for Filebeats Logstash output (default: `true`)
+* *beats_filebeat_modules*: **EXPERIMENTAL**: Give a list of modules to enable. (default: none)
 
 * *beats_auditbeat*: Install and manage filebeat (Default: `false`)
-* *auditbeat_output*: Output for Auditbeat Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
-* *auditbeat_enable*: Automatically start Auditbeat (Default: `true`)
-* *auditbeat_setup*: Run Auditbeat Setup (Default: `true`) (Only works with Elasticsearch output)
-* *auditbeat_loadbalance*: Enable loadbalancing for Auditbeats Logstash output (default: `true`)
+* *beats_auditbeat_output*: Output for Auditbeat Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
+* *beats_auditbeat_enable*: Automatically start Auditbeat (Default: `true`)
+* *beats_auditbeat_setup*: Run Auditbeat Setup (Default: `true`) (Only works with Elasticsearch output)
+* *beats_auditbeat_loadbalance*: Enable loadbalancing for Auditbeats Logstash output (default: `true`)
 
 * *beats_metricbeat*: Enable installation and management of Metricbeat (Default: `false`)
-* *metricbeat_enable*: Start Metricbeat automatically (Default: `true`)
-* *metricbeat_output*: Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
-* *metricbeat_modules*: List of modules to enable. (Default: `- system`)
-* *metricbeat_loadbalance*: Enable loadbalancing for Metricbeats Logstash output (default: `true`)
+* *beats_metricbeat_enable*: Start Metricbeat automatically (Default: `true`)
+* *beats_metricbeat_output*: Set to `logstash` or `elasticsearch`. (default: `elasticsearch`)
+* *beats_metricbeat_modules*: List of modules to enable. (Default: `- system`)
+* *beats_metricbeat_loadbalance*: Enable loadbalancing for Metricbeats Logstash output (default: `true`)
 
 * *beats_security*: Activate TLS for connections to targets. Can either be use with our other roles and `elasticstack_stack_full_stack` to automatically create certificates or `beats_tls*` variables for custom certificates. (default: `false`)
 * *beats_target_hosts*: Only use when this role is used standalone. When used in combination with our other roles, the target hosts will be determined automatically. Use a YAML list. (default: `- localhost`)

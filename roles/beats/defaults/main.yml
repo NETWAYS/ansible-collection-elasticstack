@@ -21,43 +21,43 @@ beats_tls_key_passphrase: BeatsChangeMe
 
 # Filebeat specific #
 
-filebeat_output: logstash
-filebeat_syslog_udp: false
-filebeat_syslog_udp_port: 514
-filebeat_syslog_tcp: false
-filebeat_syslog_tcp_port: 514
-filebeat_log_input: true
-filebeat_log_inputs:
+beats_filebeat_output: logstash
+beats_filebeat_syslog_udp: false
+beats_filebeat_syslog_udp_port: 514
+beats_filebeat_syslog_tcp: false
+beats_filebeat_syslog_tcp_port: 514
+beats_filebeat_log_input: true
+beats_filebeat_log_inputs:
   messages:
     name: messages
     paths:
       - /var/log/messages
       - /var/log/syslog
-filebeat_enable: true
-filebeat_journald: false
-filebeat_journald_inputs:
+beats_filebeat_enable: true
+beats_filebeat_journald: false
+beats_filebeat_journald_inputs:
   everything:
     id: everything
 
-filebeat_docker: false
-filebeat_docker_ids: "*"
+beats_filebeat_docker: false
+beats_filebeat_docker_ids: "*"
 
-filebeat_loadbalance: true
+beats_filebeat_loadbalance: true
 
-filebeat_mysql_slowlog_input: false
-#filebeat_modules:
+beats_filebeat_mysql_slowlog_input: false
+#beats_filebeat_modules:
 #  - system
 
-auditbeat_setup: true
-auditbeat_enable: true
-auditbeat_output: elasticsearch
-auditbeat_loadbalance: true
+beats_auditbeat_setup: true
+beats_auditbeat_enable: true
+beats_auditbeat_output: elasticsearch
+beats_auditbeat_loadbalance: true
 
-metricbeat_enable: true
-metricbeat_output: elasticsearch
-metricbeat_modules:
+beats_metricbeat_enable: true
+beats_metricbeat_output: elasticsearch
+beats_metricbeat_modules:
   - system
-metricbeat_loadbalance: true
+beats_metricbeat_loadbalance: true
 
 elasticstack_release: 8
 elasticstack_stack_full_stack: true

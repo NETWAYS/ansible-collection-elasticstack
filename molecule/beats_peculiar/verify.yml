@@ -7,22 +7,22 @@
   tasks:
     - name: fetch Filebeat version
       command: "filebeat version | grep ^filebeat"
-      register: filebeat_version
+      register: beats_filebeat_version
 
     - name: DEBUG show filebeat version output
       debug:
-        var: filebeat_version.stdout
+        var: beats_filebeat_version.stdout
 
     - name: Fail if Filebeat has the wrong version
       fail:
         msg: "Filebeat has the wrong version"
       when:
-        - filebeat_version.stdout.find('7.17.1') == -1
+        - beats_filebeat_version.stdout.find('7.17.1') == -1
         - elasticstack_release == 7
 
     - name: Fail if Filebeat has the wrong version
       fail:
         msg: "Filebeat has the wrong version"
       when:
-        - filebeat_version.stdout.find('8.4.1') == -1
+        - beats_filebeat_version.stdout.find('8.4.1') == -1
         - elasticstack_release == 8

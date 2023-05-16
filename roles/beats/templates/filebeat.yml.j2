@@ -1,45 +1,45 @@
 filebeat.inputs:
 
-{% if filebeat_log_input | bool %}
-{% for input in filebeat_log_inputs %}
+{% if beats_filebeat_log_input | bool %}
+{% for input in beats_filebeat_log_inputs %}
 - type: log
   enabled: true
   paths:
-{% for path in filebeat_log_inputs[input].paths %}
+{% for path in beats_filebeat_log_inputs[input].paths %}
     - {{ path }}
 {% endfor %}
-{% if beats_fields is defined or filebeat_log_inputs[input].fields is defined %}
+{% if beats_fields is defined or beats_filebeat_log_inputs[input].fields is defined %}
   fields:
 {% if beats_fields is defined %}
 {% for field in beats_fields %}
     {{ field }}
 {% endfor %}
 {% endif %}
-{% if filebeat_log_inputs[input].fields is defined %}
-{% for field in filebeat_log_inputs[input].fields %}
+{% if beats_filebeat_log_inputs[input].fields is defined %}
+{% for field in beats_filebeat_log_inputs[input].fields %}
     {{ field }}
 {% endfor %}
 {% endif %}
 {% endif %}
-{% if filebeat_log_inputs[input].multiline is defined %}
+{% if beats_filebeat_log_inputs[input].multiline is defined %}
   multiline:
-{% if filebeat_log_inputs[input].multiline.type is defined %}
-    type: {{ filebeat_log_inputs[input].multiline.type }}
+{% if beats_filebeat_log_inputs[input].multiline.type is defined %}
+    type: {{ beats_filebeat_log_inputs[input].multiline.type }}
 {% endif %}
-{% if filebeat_log_inputs[input].multiline.pattern is defined %}
-    pattern: '{{ filebeat_log_inputs[input].multiline.pattern }}'
+{% if beats_filebeat_log_inputs[input].multiline.pattern is defined %}
+    pattern: '{{ beats_filebeat_log_inputs[input].multiline.pattern }}'
 {% endif %}
-{% if filebeat_log_inputs[input].multiline.negate is defined %}
-    negate: {{ filebeat_log_inputs[input].multiline.negate }}
+{% if beats_filebeat_log_inputs[input].multiline.negate is defined %}
+    negate: {{ beats_filebeat_log_inputs[input].multiline.negate }}
 {% endif %}
-{% if filebeat_log_inputs[input].multiline.match is defined %}
-    match: {{ filebeat_log_inputs[input].multiline.match }}
+{% if beats_filebeat_log_inputs[input].multiline.match is defined %}
+    match: {{ beats_filebeat_log_inputs[input].multiline.match }}
 {% endif %}
 {% endif %}
 
 {% endfor %}
 {% endif %}
-{% if filebeat_mysql_slowlog_input | bool %}
+{% if beats_filebeat_mysql_slowlog_input | bool %}
 - type: log
   enabled: true
   paths:
@@ -52,7 +52,7 @@ filebeat.inputs:
       logtype: slowquery
   fields_under_root: true
 {% endif %}
-{% if filebeat_syslog_tcp | bool %}
+{% if beats_filebeat_syslog_tcp | bool %}
 - type: tcp
   enabled: true
   max_message_size: 10MiB
@@ -65,7 +65,7 @@ filebeat.inputs:
 {% endif %}
 
 {% endif %}
-{% if filebeat_syslog_udp | bool %}
+{% if beats_filebeat_syslog_udp | bool %}
 - type: udp
   enabled: true
   max_message_size: 10MiB
@@ -78,22 +78,22 @@ filebeat.inputs:
 {% endif %}
 
 {% endif %}
-{% if filebeat_journald | bool %}
-{% for journald in filebeat_journald_inputs %}
+{% if beats_filebeat_journald | bool %}
+{% for journald in beats_filebeat_journald_inputs %}
 - type: journald
-  id: {{ filebeat_journald_inputs[journald].id }}
-{% if filebeat_journald_inputs[journald].include_matches is defined %}
+  id: {{ beats_filebeat_journald_inputs[journald].id }}
+{% if beats_filebeat_journald_inputs[journald].include_matches is defined %}
   include_matches:
-{% for include_match in filebeat_journald_inputs[journald].include_matches %}
-    - {{ filebeat_journald_inputs[journald].include_matches[include_match] }}
+{% for include_match in beats_filebeat_journald_inputs[journald].include_matches %}
+    - {{ beats_filebeat_journald_inputs[journald].include_matches[include_match] }}
 {% endfor %}
 {% endif %}
 
 {% endfor %}
 {% endif %}
-{% if filebeat_docker | bool %}
+{% if beats_filebeat_docker | bool %}
 - type: docker
-  containers.ids: "{{ filebeat_docker_ids }}"
+  containers.ids: "{{ beats_filebeat_docker_ids }}"
   cri.parse_flags: true
   combine_partial: true
 
@@ -104,7 +104,7 @@ filebeat.config.modules:
 setup.template.settings:
   index.number_of_shards: 1
 setup.kibana:
-{% if filebeat_output == "elasticsearch" %}
+{% if beats_filebeat_output == "elasticsearch" %}
 output.elasticsearch:
 {% if beats_security | bool %}
 {% if elasticstack_stack_full_stack | bool %}
@@ -125,14 +125,14 @@ output.elasticsearch:
 {% endif %}
 {% endif %}
 {% endif %}
-{% if filebeat_output == "logstash" %}
+{% if beats_filebeat_output == "logstash" %}
 output.logstash:
 {% if elasticstack_stack_full_stack | bool %}
   hosts: [ {% for host in groups['logstash'] %}"{{ host }}:{{ elasticstack_beats_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% else %}
   hosts: [ {% for host in beats_target_hosts %}"{{ host }}:{{ elasticstack_beats_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}
-  loadbalance: {{ filebeat_loadbalance }}
+  loadbalance: {{ beats_filebeat_loadbalance }}
 {% if beats_security | bool %}
   ssl.enabled: true
   ssl.certificate_authorities: ["{{ beats_tls_cacert }}"]
@@ -156,6 +156,6 @@ logging.files:
 processors:
   - add_host_metadata: ~
   - add_cloud_metadata: ~
-{% if filebeat_docker | bool %}
+{% if beats_filebeat_docker | bool %}
   - add_docker_metadata: ~
 {% endif %}

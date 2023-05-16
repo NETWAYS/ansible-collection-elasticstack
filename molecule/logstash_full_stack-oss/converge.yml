@@ -18,8 +18,8 @@
     elasticstack_variant: oss
     logstash_security: false
     elasticstack_security: false
-    filebeat_syslog_udp: true
-    filebeat_syslog_tcp: true
+    beats_filebeat_syslog_udp: true
+    beats_filebeat_syslog_tcp: true
     logstash_beats_tls: false
     elasticstack_release: 7
   tasks:

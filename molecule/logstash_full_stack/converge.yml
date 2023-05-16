@@ -9,8 +9,8 @@
     - netways.elasticstack
   vars:
     elasticstack_stack_full_stack: true
-    filebeat_syslog_udp: true
-    filebeat_syslog_tcp: true
+    beats_filebeat_syslog_udp: true
+    beats_filebeat_syslog_tcp: true
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Include repos role

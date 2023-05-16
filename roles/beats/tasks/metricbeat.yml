@@ -63,8 +63,8 @@
   command: "metricbeat modules enable {{ item }}"
   args:
     creates: "/etc/metricbeat/modules.d/{{ item }}.yml"
-  with_items: "{{ metricbeat_modules }}"
-  when: metricbeat_modules is defined
+  with_items: "{{ beats_metricbeat_modules }}"
+  when: beats_metricbeat_modules is defined
 
 - name: Enable Ingest Pipelines
   command: >
@@ -74,14 +74,14 @@
     creates: "/etc/metricbeat/pipelines_created"
   notify:
     - Restart Metricbeat
-  with_items: "{{ metricbeat_modules }}"
+  with_items: "{{ beats_metricbeat_modules }}"
   when:
-    - metricbeat_modules is defined
-    - metricbeat_output == "elasticsearch"
+    - beats_metricbeat_modules is defined
+    - beats_metricbeat_output == "elasticsearch"
 
 - name: Start Metricbeat
   service:
     name: metricbeat
     state: started
     enabled: true
-  when: metricbeat_enable | bool
+  when: beats_metricbeat_enable | bool

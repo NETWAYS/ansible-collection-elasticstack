@@ -28,7 +28,7 @@
 
 - name: Get the logstash certificate expiration date # noqa: risky-shell-pipe
   shell: >-
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     openssl pkcs12
     -in '{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12'
     -nodes
@@ -385,7 +385,7 @@
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
     awk {' print $4 '}
   register: elastic_password_logstash
@@ -398,7 +398,7 @@
 
 - name: Check for logstash_writer role # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     curl --cacert {{ elastic_ca_dir }}/ca.crt
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_security/role/logstash_writer
@@ -444,7 +444,7 @@
 
 - name: Check for logstash_writer user # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     curl --cacert {{ elastic_ca_dir }}/ca.crt
     -u elastic:{{ elastic_password_logstash.stdout }}
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_security/user/{{ logstash_user }}

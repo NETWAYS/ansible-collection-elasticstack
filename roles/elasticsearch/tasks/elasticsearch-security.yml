@@ -109,7 +109,7 @@
 
 - name: Get the elasticsearch certificate expiration date # noqa: risky-shell-pipe
   shell: >-
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     openssl pkcs12
     -in "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
     -nodes
@@ -241,7 +241,7 @@
 
 - name: Set bootstrap password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     echo "{{ elasticsearch_bootstrap_pw }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -x 'bootstrap.password'
@@ -255,7 +255,7 @@
 
 - name: Get xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.http.ssl.keystore.secure_password'
   when:
@@ -268,7 +268,7 @@
 
 - name: Set xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.keystore.secure_password'
@@ -283,7 +283,7 @@
 
 - name: Remove xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.keystore.secure_password'
   changed_when: false
@@ -297,7 +297,7 @@
 
 - name: Get xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.http.ssl.truststore.secure_password'
   when:
@@ -310,7 +310,7 @@
 
 - name: Set xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.truststore.secure_password'
@@ -324,7 +324,7 @@
 
 - name: Remove xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.truststore.secure_password'
   changed_when: false
@@ -337,7 +337,7 @@
 
 - name: Get xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.transport.ssl.keystore.secure_password'
   when:
@@ -350,7 +350,7 @@
 
 - name: Set xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.keystore.secure_password'
@@ -364,7 +364,7 @@
 
 - name: Remove xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.keystore.secure_password'
   changed_when: false
@@ -377,7 +377,7 @@
 
 - name: Get xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.transport.ssl.truststore.secure_password'
   when:
@@ -390,7 +390,7 @@
 
 - name: Set xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.truststore.secure_password'
@@ -404,7 +404,7 @@
 
 - name: Remove xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.truststore.secure_password'
   changed_when: false
@@ -560,7 +560,7 @@
 
 - name: Check for cluster status with bootstrap password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     curl -ks
     {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
     grep status |
@@ -588,7 +588,7 @@
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
     awk {' print $4 '}
   register: elastic_password
@@ -599,7 +599,7 @@
 
 - name: Check for cluster status with elastic password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     curl -ks
     {{ elasticsearch_http_protocol }}://elastic:{{ elastic_password.stdout }}@localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
     grep status |
@@ -627,7 +627,7 @@
 
 - name: Create initial passwords # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b >
     {{ elastic_initial_passwords }}
   when: inventory_hostname == elasticsearch_ca

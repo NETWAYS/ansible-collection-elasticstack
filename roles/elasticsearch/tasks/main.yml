@@ -199,7 +199,7 @@
 
     - name: Check for cluster status without security # noqa: risky-shell-pipe
       shell: >
-        if test -v BASH; then set -o pipefail; fi;
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
         curl -s
         http://localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
         grep status |

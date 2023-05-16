@@ -524,6 +524,7 @@
 
 - name: Debug get elasticsearchyml
   command: cat /etc/elasticsearch/elasticsearch.yml
+  changed_when: false
   register: elasticsearchyaml
 
 - name: Debug show yaml

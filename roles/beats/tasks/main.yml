@@ -8,7 +8,7 @@
 
 - name: Prepare for whole stack roles if used
   when:
-    - elasticstack_stack_full_stack | bool
+    - elasticstack_full_stack | bool
   block:
     - name: Enable security if enabled for whole stack
       set_fact:
@@ -64,7 +64,7 @@
   import_tasks: beats-security.yml
   when:
     - beats_security | bool
-    - elasticstack_stack_full_stack | bool
+    - elasticstack_full_stack | bool
     - elasticstack_variant == "elastic"
   tags:
     - certificates

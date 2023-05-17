@@ -13,7 +13,7 @@
     logstash_logging_slow_file: false
     logstash_pipeline_identifier: false
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
-    elasticstack_stack_full_stack: false
+    elasticstack_full_stack: false
   tasks:
 
     - name: Set Filebeat version for 7.x

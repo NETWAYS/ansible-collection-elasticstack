@@ -73,7 +73,7 @@ elasticstack_ca_pass: PleaseChangeMe
 # "global" variables for all roles
 
 elasticstack_release: 8
-elasticstack_stack_full_stack: true
+elasticstack_full_stack: true
 elasticstack_variant: elastic
 elasticstack_security: true
 elasticstack_elasticsearch_http_port: 9200

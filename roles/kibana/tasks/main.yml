@@ -55,8 +55,8 @@
 - name: Import security related tasks
   import_tasks: kibana-security.yml
   when:
-    - elasticstack_stack_full_stack is defined
-    - elasticstack_stack_full_stack | bool
+    - elasticstack_full_stack is defined
+    - elasticstack_full_stack | bool
     - kibana_security | bool
     - elasticstack_variant == "elastic"
   tags:

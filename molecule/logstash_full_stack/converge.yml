@@ -8,7 +8,7 @@
   collections:
     - netways.elasticstack
   vars:
-    elasticstack_stack_full_stack: true
+    elasticstack_full_stack: true
     beats_filebeat_syslog_udp: true
     beats_filebeat_syslog_tcp: true
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"

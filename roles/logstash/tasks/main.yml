@@ -8,7 +8,7 @@
 
 - name: Prepare for whole stack roles if used
   when:
-    - elasticstack_stack_full_stack | bool
+    - elasticstack_full_stack | bool
   block:
 
     - name: Set Elasticsearch hosts if used with other roles
@@ -44,7 +44,7 @@
     logstash_security: true
   when:
     - logstash_security is undefined or elasticstack_security | bool
-    - elasticstack_stack_full_stack | bool
+    - elasticstack_full_stack | bool
     - elasticstack_variant == "elastic"
   tags:
     - certificates
@@ -80,7 +80,7 @@
 - name: Import Logstash Security tasks
   import_tasks: logstash-security.yml
   when:
-    - elasticstack_stack_full_stack | bool
+    - elasticstack_full_stack | bool
     - logstash_security is defined and logstash_security | bool
     - elasticstack_variant == "elastic"
   tags:

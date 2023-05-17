@@ -16,7 +16,7 @@ Role Variables
 * *kibana_tls_cert*: Path to the certificate Kibana should show to its clients (default: `/etc/kibana/certs/cert.pem`)
 * *kibana_tls_key*: Path to the key Kibana should use when communicating with clients (default: `/etc/kibana/certs/key.pem`)
 
-* *kibana_security*: Activate TLS and authentication when connecting to Elasticsearch. **Note**: Only works when `elasticstack_stack_full_stack` is enabled. (default: `true`)
+* *kibana_security*: Activate TLS and authentication when connecting to Elasticsearch. **Note**: Only works when `elasticstack_full_stack` is enabled. (default: `true`)
 
 These variables are identical over all our elastic related roles, hence the different naming scheme.
 
@@ -44,7 +44,7 @@ If you use `localhost` in `kibana_elasticsearch_hosts` , certificate verificatio
     - netways.elasticstack
   hosts: kibana-host
   vars:
-    elasticstack_stack_full_stack: true
+    elasticstack_full_stack: true
     elasticstack_variant: oss
   roles:
     - repos

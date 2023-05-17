@@ -5,7 +5,7 @@
     - netways.elasticstack
   vars:
     elasticstack_rpm_workaround: true
-    elasticstack_stack_full_stack: false
+    elasticstack_full_stack: false
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Include Elastic Repos

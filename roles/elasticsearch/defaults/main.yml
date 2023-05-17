@@ -36,6 +36,6 @@ elasticsearch_cert_will_expire_soon: false
 # "global" variables for all roles
 
 elasticstack_release: 8
-elasticstack_stack_full_stack: true
+elasticstack_full_stack: true
 elasticstack_variant: elastic
 elasticstack_elasticsearch_http_port: 9200

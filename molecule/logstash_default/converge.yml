@@ -6,7 +6,7 @@
 - name: Converge
   hosts: all
   vars:
-    elasticstack_stack_full_stack: false
+    elasticstack_full_stack: false
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   collections:
     - netways.elasticstack

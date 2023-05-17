@@ -44,7 +44,7 @@
 - name: Print the kibana certificate renew message
   debug:
     msg: |
-      Your kibana certificate will expire in {{ kibana_cert_expiration_days }}.
+      Your kibana certificate will expire in {{ kibana_cert_expiration_days }} days.
       Ansible will renew it.
   when: kibana_cert_expiration_days is defined and kibana_cert_expiration_days | int <= kibana_cert_expiration_buffer | int
 

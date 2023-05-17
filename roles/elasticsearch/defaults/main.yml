@@ -11,6 +11,8 @@ elasticsearch_http_security: true
 elasticsearch_http_protocol: http
 elasticsearch_datapath: /var/lib/elasticsearch
 elasticsearch_create_datapath: false
+elasticsearch_logpath: /var/log/elasticsearch
+elasticsearch_create_logpath: false
 elasticsearch_disable_systemcallfilterchecks: false
 elasticsearch_heap: "{{ [[(ansible_memtotal_mb // 1024) // 2, 30] | min, 1] | max }}"
 elasticsearch_pamlimits: true
@@ -21,19 +23,19 @@ elasticsearch_jna_workaround: false
 # They follow a different naming scheme to show that they are global
 # to our set of Elastic Stack related Ansible roles
 
-# elasticsearch_ca: First host in the `elasticsearch` group
-elastic_ca_dir: /opt/es-ca
-elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
-elastic_ca_pass: PleaseChangeMe
+# elasticstack_ca: First host in the `elasticsearch` group
+elasticstack_ca_dir: /opt/es-ca
+elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
+elasticstack_ca_pass: PleaseChangeMe
 elasticsearch_tls_key_passphrase: PleaseChangeMeIndividually
-elastic_ca_expiration_buffer: 30
+elasticstack_ca_expiration_buffer: 30
 elasticsearch_cert_expiration_buffer: 30
-elastic_ca_will_expire_soon: false
+elasticstack_ca_will_expire_soon: false
 elasticsearch_cert_will_expire_soon: false
 
 # "global" variables for all roles
 
-elastic_release: 8
-elastic_stack_full_stack: true
-elastic_variant: elastic
-elastic_elasticsearch_http_port: 9200
+elasticstack_release: 8
+elasticstack_full_stack: true
+elasticstack_variant: elastic
+elasticstack_elasticsearch_http_port: 9200

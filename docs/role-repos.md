@@ -16,9 +16,9 @@ Requirements
 Role Variables
 --------------
 
-* *elastic_release*: Major release version of Elastic stack to configure. (default: `7`). `7` and `8` are supported.
-* *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`).
-* *elastic_enable_repos*: Enable repositories after creating them. (default: `true`) Only works on RPM based distributions!
+* *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`). `7` and `8` are supported.
+* *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`).
+* *elasticstack_enable_repos*: Enable repositories after creating them. (default: `true`) Only works on RPM based distributions!
 
 Please note that no `oss` versions are available for Elastic Stack later than `7`. This role will fail if you try to install them.
 
@@ -28,7 +28,7 @@ Usage
 Upgrades
 ========
 
-If you want to be able to update your operating system without worrying about accidentally upgrading Elastic Stack, set `elastic_enable_repos` to `false`. The roles in this collection will enable the repository in case they need it. Keep in mind that this will only work on rpm based distributions.
+If you want to be able to update your operating system without worrying about accidentally upgrading Elastic Stack, set `elasticstack_enable_repos` to `false`. The roles in this collection will enable the repository in case they need it. Keep in mind that this will only work on rpm based distributions.
 
 Example playbook
 ================

@@ -8,10 +8,10 @@
   collections:
     - netways.elasticstack
   vars:
-    elastic_stack_full_stack: false
+    elasticstack_full_stack: false
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
-    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Include Elastics repos role
       include_role:

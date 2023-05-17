@@ -14,15 +14,13 @@ Role Variables
 
 * *elasticsearch_enable*: Start and enable Elasticsearch (default: `true`)
 * *elasticsearch_heap*: Heapsize for Elasticsearch. (Half of free memory on host. Maximum 30GB. (default: Half of hosts memory. Min 1GB, Max 30GB)
-* *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
-* *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
-* *elastic_ca_expiration_buffer*: Ansible will renew the CA if its validity is shorter than this value, which should be number of days. (default: 30)
-* *elastic_ca_will_expire_soon*: Set it to true to renew the CA and the certificate of all Elastic Stack components (default: `false`), Or run the playbook with `--tags renew_ca` to do that.
 * *elasticsearch_tls_key_passphrase*: Passphrase for elasticsearch certificates (default: `PleaseChangeMeIndividually`)
 * *elasticsearch_cert_expiration_buffer*: Ansible will renew the elasticsearch certificate if its validity is shorter than this value, which should be number of days. (default: 30)
 * *elasticsearch_cert_will_expire_soon*: Set it to true to renew elasticsearch certificate (default: `false`), Or run the playbook with `--tags renew_elasticsearch_cert` to do that.
 * *elasticsearch_datapath*: Path where Elasticsearch will store it's data. (default: `/var/lib/elasticsearch` - the packages default)
 * *elasticsearch_create_datapath*: Create the path for data to store if it doesn't exist. (default: `false` - only useful if you change `elasticsearch_datapath`)
+* *elasticsearch_logpath*: Path where Elasticsearch will store it's logs. (default: `/var/log/elasticsearch` - the packages default)
+* *elasticsearch_create_logpath*: Create the path for log to store if it doesn't exist. (default: `false` - only useful if you change `elasticsearch_datapath`)
 * *elasticsearch_fs_repo*: List of paths that should be registered as repository for snapshots (only filesystem supported so far). (default: none) Remember, that every node needs access to the same share under the same path.
 * *elasticsearch_bootstrap_pw*: Bootstrap password for Elasticsearch (Default: `PleaseChangeMe`)
 * *elasticsearch_disable_systemcallfilterchecks*: Disable system call filter checks. This has a security impact but is necessary on some systems. Please refer to the [docs](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/_system_call_filter_check.html) for details. (default: `false`)
@@ -36,9 +34,13 @@ This variable activates a workaround to start on systems that have certain harde
 
 These variables are identical over all our elastic related roles, hence the different naming schemes.
 
-* *elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
-* *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
-* *elastic_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
+* *elasticstack_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
+* *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
+* *elasticstack_ca_expiration_buffer*: Ansible will renew the CA if its validity is shorter than this value, which should be number of days. (default: 30)
+* *elasticstack_ca_will_expire_soon*: Set it to true to renew the CA and the certificate of all Elastic Stack components (default: `false`), Or run the playbook with `--tags renew_ca` to do that.
+* *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)
+* *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+* *elasticstack_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
 
 ```
 - name: Install Elasticsearch
@@ -46,7 +48,7 @@ These variables are identical over all our elastic related roles, hence the diff
     - netways.elasticstack
   hosts: elasticsearch-hosts
   vars:
-    elastic_variant: oss
+    elasticstack_variant: oss
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
   roles:

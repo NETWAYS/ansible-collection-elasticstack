@@ -2,26 +2,26 @@
 
 - name: Construct exact name of Metricbeat package
   set_fact:
-    metricbeat_package: >
+    beats_metricbeat_package: >
       {{
       'metricbeat' +
-      (elastic_versionseparator +
-      elastic_version |
-      string if elastic_version is defined else '') |
+      (elasticstack_versionseparator +
+      elasticstack_version |
+      string if elasticstack_version is defined else '') |
       replace(' ', '')
       }}
 
 - name: Install Metricbeat - rpm
   package:
-    name: "{{ metricbeat_package }}"
+    name: "{{ beats_metricbeat_package }}"
     enablerepo:
-      - 'elastic-{{ elastic_release }}.x'
+      - 'elastic-{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
 
 - name: Install Metricbeat - deb
   package:
-    name: "{{ metricbeat_package }}"
+    name: "{{ beats_metricbeat_package }}"
   when:
     - ansible_os_family == "Debian"
 
@@ -30,12 +30,12 @@
     name: metricbeat
     state: latest
     enablerepo:
-      - "elastic-{{ elastic_release }}.x"
+      - "elastic-{{ elasticstack_release }}.x"
   notify:
     - Restart Metricbeat
   when:
-    - elastic_version is defined
-    - elastic_version == "latest"
+    - elasticstack_version is defined
+    - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
 
 - name: Install Metricbeat latest version - deb
@@ -45,8 +45,8 @@
   notify:
     - Restart Metricbeat
   when:
-    - elastic_version is defined
-    - elastic_version == "latest"
+    - elasticstack_version is defined
+    - elasticstack_version == "latest"
     - ansible_os_family == "Debian"
 
 - name: Configure Metricbeat
@@ -63,8 +63,8 @@
   command: "metricbeat modules enable {{ item }}"
   args:
     creates: "/etc/metricbeat/modules.d/{{ item }}.yml"
-  with_items: "{{ metricbeat_modules }}"
-  when: metricbeat_modules is defined
+  with_items: "{{ beats_metricbeat_modules }}"
+  when: beats_metricbeat_modules is defined
 
 - name: Enable Ingest Pipelines
   command: >
@@ -74,14 +74,14 @@
     creates: "/etc/metricbeat/pipelines_created"
   notify:
     - Restart Metricbeat
-  with_items: "{{ metricbeat_modules }}"
+  with_items: "{{ beats_metricbeat_modules }}"
   when:
-    - metricbeat_modules is defined
-    - metricbeat_output == "elasticsearch"
+    - beats_metricbeat_modules is defined
+    - beats_metricbeat_output == "elasticsearch"
 
 - name: Start Metricbeat
   service:
     name: metricbeat
     state: started
     enabled: true
-  when: metricbeat_enable | bool
+  when: beats_metricbeat_enable | bool

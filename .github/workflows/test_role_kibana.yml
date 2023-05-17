@@ -75,10 +75,10 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
@@ -98,3 +98,5 @@ jobs:
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
           ELASTIC_RELEASE: ${{ matrix.release }}
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'

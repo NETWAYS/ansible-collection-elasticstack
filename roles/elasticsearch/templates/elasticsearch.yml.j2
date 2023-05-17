@@ -1,6 +1,6 @@
 node.name: "{{ ansible_hostname }}"
 path.data: {{ elasticsearch_datapath }}
-path.logs: /var/log/elasticsearch
+path.logs: {{ elasticsearch_logpath }}
 network.host: ["_local_","_site_"]
 {% if ealsticsearch_http_publish_host is defined %}
 http.publish_host: "{{ ealsticsearch_http_publish_host }}"
@@ -16,13 +16,13 @@ discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
 "{{ hostvars[host].ansible_hostname }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
-{% if elastic_temperature is defined %}
-node.attr.temp: "{{ elastic_temperature }}"
+{% if elasticstack_temperature is defined %}
+node.attr.temp: "{{ elasticstack_temperature }}"
 {% endif %}
-{% if elasticsearch_disable_systemcallfilterchecks | bool and elastic_release == 7 %}
+{% if elasticsearch_disable_systemcallfilterchecks | bool and elasticstack_release == 7 %}
 bootstrap.system_call_filter: false
 {% endif %}
-{% if elastic_variant == "elastic" %}
+{% if elasticstack_variant == "elastic" %}
 xpack.ml.enabled: {{ elasticsearch_ml_enabled }}
 xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}
 {% if elasticsearch_security | bool %}

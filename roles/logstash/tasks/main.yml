@@ -194,7 +194,7 @@
 
     - name: Create default Beats input pipeline output
       template:
-        src: redis-output.conf.j2 
+        src: redis-output.conf.j2
         dest: "/etc/logstash/conf.d/ansible-input/output.conf"
         owner: root
         group: root

@@ -38,7 +38,7 @@
 - name: Print the ca renew message
   debug:
     msg: |
-      Your ca will expire in {{ elastic_ca_expiration_days }} days.
+      Your ca will expire in {{ elasticstack_ca_expiration_days }} days.
       Ansible will renew it and all elastic stack certificates
   when: >
     inventory_hostname == elasticstack_ca and

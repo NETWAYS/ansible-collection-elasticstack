@@ -32,13 +32,13 @@
     elastic_ca_will_expire_soon: true
   when: >
     inventory_hostname == elasticsearch_ca and
-    elasticsearch_cert_expiration_days is defined and
-    elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
+    elastic_ca_expiration_days is defined and
+    elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
 
 - name: Print the ca renew message
   debug:
     msg: |
-      Your ca will expire in {{ elastic_ca_expiration_days }}.
+      Your ca will expire in {{ elastic_ca_expiration_days }} days.
       Ansible will renew it and all elastic stack certificates
   when: >
     inventory_hostname == elasticsearch_ca and
@@ -107,24 +107,17 @@
     path: "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
   register: elasticsearch_cert_exists
 
-- name: Get the elasticsearch certificate expiration date # noqa: risky-shell-pipe
-  shell: >-
-    if test -v BASH; then set -o pipefail; fi;
-    openssl pkcs12
-    -in "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
-    -nodes
-    -passin pass:"{{ elasticsearch_tls_key_passphrase }}" |
-    openssl x509 -noout -enddate |
-    awk -F'=' '{print $2}'
-  register: elasticsearch_cert_expiration_date
-  changed_when: false
-  no_log: true
+- name: Get the elasticsearch certificate expiration date
+  cert_info:
+    path: "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
+    passphrase: "{{ elasticsearch_tls_key_passphrase | default(omit, true) }}"
+  register: elasticsearch_cert_infos
   when: elasticsearch_cert_exists.stat.exists | bool
 
 - name: Set the elasticsearch certificate expiration date in days
   set_fact:
-    elasticsearch_cert_expiration_days: "{{ ((elasticsearch_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
-  when: elasticsearch_cert_expiration_date.skipped is not defined
+    elasticsearch_cert_expiration_days: "{{ ((elasticsearch_cert_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  when: elasticsearch_cert_infos.skipped is not defined
 
 - name: Set elasticsearch certificate will expire soon to true
   set_fact:

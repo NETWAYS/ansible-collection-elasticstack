@@ -24,24 +24,16 @@
     path: "/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12"
   register: kibana_cert_exists
 
-- name: Get the kibana certificate expiration date # noqa: risky-shell-pipe
-  shell: >-
-    if test -v BASH; then set -o pipefail; fi;
-    openssl pkcs12
-    -in '/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12'
-    -nodes -passin pass:'{{ kibana_tls_key_passphrase }}' |
-    openssl x509 -noout -enddate |
-    awk -F'=' '{print $2}'
+- name: Get the kibana certificate expiration date
+  cert_info:
+    path: "/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12"
+    passphrase: "{{ kibana_tls_key_passphrase | default(omit, true) }}"
   register: kibana_cert_expiration_date
-  args:
-    executable: /bin/bash
-  changed_when: false
-  no_log: true
   when: kibana_cert_exists.stat.exists | bool
 
 - name: Set the kibana certificate expiration date in days
   set_fact:
-    kibana_cert_expiration_days: "{{ ((kibana_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    kibana_cert_expiration_days: "{{ ((kibana_cert_expiration_date.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: kibana_cert_expiration_date.skipped is not defined
 
 - name: Set kibana certificate will expire soon to true

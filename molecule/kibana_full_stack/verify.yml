@@ -4,7 +4,7 @@
 - name: Verify
   hosts: all
   vars:
-    elastic_elasticsearch_http_port: 9200
+    elasticstack_elasticsearch_http_port: 9200
 
   tasks:
 
@@ -31,15 +31,15 @@
 
         - name: fetch Elastic password
           shell: grep "PASSWORD elastic " /usr/share/elasticsearch/initial_passwords | awk {' print $4 '}
-          register: elastic_password
+          register: elasticstack_password
           changed_when: false
           delegate_to: "{{ groups['elasticsearch'][0] }}"
 
         - name: Connect to Elasticsearch
-          command: "curl -s --cacert /etc/kibana/certs/ca.crt -u elastic:{{ elastic_password.stdout }} https://{{ groups['elasticsearch'][0] }}:{{ elastic_elasticsearch_http_port }}/_cat/indices"
+          command: "curl -s --cacert /etc/kibana/certs/ca.crt -u elastic:{{ elasticstack_password.stdout }} https://{{ groups['elasticsearch'][0] }}:{{ elasticstack_elasticsearch_http_port }}/_cat/indices"
 
         - name: Connect to Kibana
-          command: "curl -s -u elastic:{{ elastic_password.stdout }} http://{{ ansible_hostname }}:5601/api/status"
+          command: "curl -s -u elastic:{{ elasticstack_password.stdout }} http://{{ ansible_hostname }}:5601/api/status"
           register: curl_out
           failed_when:
             - "'green' not in curl_out.stdout"
@@ -51,7 +51,7 @@
       #  uri:
       #    url: http://ansible-role-kibana_full_stack:5601/api/status
       #    user: elastic
-      #    password: "{{ elastic_password.stdout }}"
+      #    password: "{{ elasticstack_password.stdout }}"
       #    return_content: yes
       #  register: kibana_status
       #  #failed_when: "'"title": "Green"' not in kibana_status.content"

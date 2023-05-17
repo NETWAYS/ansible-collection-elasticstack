@@ -3,7 +3,7 @@
 - name: Check if Logstash configuration does what it should
   hosts: all
   vars:
-    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Run syntax check
       command: "/usr/share/logstash/bin/logstash --version | grep ^logstash"
@@ -14,11 +14,11 @@
         msg: "Logstash has the wrong version"
       when:
         - logstash_version.stdout.find('7.17.1') == -1
-        - elastic_release == 7
+        - elasticstack_release == 7
 
     - name: Fail if Logstash has the wrong version
       fail:
         msg: "Logstash has the wrong version"
       when:
         - logstash_version.stdout.find('8.4.1') == -1
-        - elastic_release == 8
+        - elasticstack_release == 8

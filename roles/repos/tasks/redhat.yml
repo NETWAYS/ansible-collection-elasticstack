@@ -10,13 +10,13 @@
 
     - name: Show a warning
       ansible.builtin.debug:
-        msg: "For this workaround to work, please set elastic_rpm_workaround to true"
+        msg: "For this workaround to work, please set elasticstack_rpm_workaround to true"
       when:
-        - not elastic_rpm_workaround | bool
+        - not elasticstack_rpm_workaround | bool
 
     - name: Enable workaround for rpm keys
       when:
-        - elastic_rpm_workaround | bool
+        - elasticstack_rpm_workaround | bool
       block:
 
         - name: Install crypto-policies-scripts
@@ -36,22 +36,22 @@
 
 - name: Ensure Elastic Stack yum repository is configured (RedHat)
   ansible.builtin.yum_repository:
-    name: elastic-{{ elastic_release }}.x
-    description: Elastic Release {{ elastic_release }}.x
+    name: elastic-{{ elasticstack_release }}.x
+    description: Elastic Release {{ elasticstack_release }}.x
     file: elastic-release
-    baseurl: https://artifacts.elastic.co/packages/{{ elastic_release }}.x/yum
+    baseurl: https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/yum
     gpgcheck: yes
     gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-    enabled: "{{ elastic_enable_repos | bool }}"
-  when: elastic_variant == "elastic"
+    enabled: "{{ elasticstack_enable_repos | bool }}"
+  when: elasticstack_variant == "elastic"
 
 - name: Ensure Elastic Stack OSS yum repository is configured (RedHat)
   ansible.builtin.yum_repository:
-    name: elastic-oss-{{ elastic_release }}.x
-    description: Elastic OSS Release {{ elastic_release }}.x
+    name: elastic-oss-{{ elasticstack_release }}.x
+    description: Elastic OSS Release {{ elasticstack_release }}.x
     file: elastic-oss-release
-    baseurl: https://artifacts.elastic.co/packages/oss-{{ elastic_release }}.x/yum
+    baseurl: https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/yum
     gpgcheck: yes
     gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-    enabled: "{{ elastic_enable_repos | bool }}"
-  when: elastic_variant == "oss"
+    enabled: "{{ elasticstack_enable_repos | bool }}"
+  when: elasticstack_variant == "oss"

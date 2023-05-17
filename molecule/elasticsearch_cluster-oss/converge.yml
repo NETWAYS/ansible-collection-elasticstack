@@ -6,10 +6,10 @@
     - netways.elasticstack
   hosts: all
   vars:
-    elastic_variant: oss
+    elasticstack_variant: oss
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
-    elastic_release: 7
+    elasticstack_release: 7
     elasticsearch_heap: "1"
   tasks:
     - name: Include Elastics repos role

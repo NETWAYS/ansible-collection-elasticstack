@@ -4,15 +4,15 @@
 - name: Check if Logstash configuration does what it should
   hosts: all
   vars:
-    elastic_beats_port: 5044
+    elasticstack_beats_port: 5044
   tasks:
   - name: Run syntax check
     command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
     changed_when: false
 
-  - name: Check for open port tcp {{ elastic_beats_port }}
+  - name: Check for open port tcp {{ elasticstack_beats_port }}
     wait_for:
-      port: "{{ elastic_beats_port }}"
+      port: "{{ elasticstack_beats_port }}"
 
   - name: Create Syslog input
     copy:

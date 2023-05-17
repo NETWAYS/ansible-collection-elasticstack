@@ -10,9 +10,9 @@
 
 - name: Set common password for common certificates
   set_fact:
-    elasticsearch_tls_key_passphrase: "{{ elastic_cert_pass }}"
+    elasticsearch_tls_key_passphrase: "{{ elasticstack_cert_pass }}"
   when:
-    - elastic_cert_pass is defined
+    - elasticstack_cert_pass is defined
   tags:
     - certificates
     - renew_ca
@@ -33,10 +33,10 @@
     elasticsearch_package: >
       {{
       'elasticsearch' +
-      ('-oss' if elastic_variant == 'oss' else '') +
-      (elastic_versionseparator +
-      elastic_version |
-      string if elastic_version is defined else '') |
+      ('-oss' if elasticstack_variant == 'oss' else '') +
+      (elasticstack_versionseparator +
+      elasticstack_version |
+      string if elasticstack_version is defined else '') |
       replace(' ', '')
       }}
 
@@ -44,7 +44,7 @@
   package:
     name: "{{ elasticsearch_package }}"
     enablerepo:
-      - 'elastic-{% if elastic_variant == "oss" %}oss-{% endif %}{{ elastic_release }}.x'
+      - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
 
@@ -82,7 +82,7 @@
   import_tasks: elasticsearch-security.yml
   when:
     - elasticsearch_security | bool
-    - elastic_variant == "elastic"
+    - elasticstack_variant == "elastic"
   tags:
     - certificates
     - renew_ca
@@ -127,8 +127,8 @@
 
 - name: Show hint about passwords
   debug:
-    msg: "Remember, your temporary passwords can be found on {{ elasticsearch_ca }} in {{ elastic_initial_passwords }}"
+    msg: "Remember, your temporary passwords can be found on {{ elasticstack_ca }} in {{ elasticstack_initial_passwords }}"
   when:
     - elasticsearch_security | bool
-    - elastic_variant == "elastic"
-    - inventory_hostname == elasticsearch_ca
+    - elasticstack_variant == "elastic"
+    - inventory_hostname == elasticstack_ca

@@ -10,7 +10,7 @@
   include_tasks: handlers/restart_kibana.yml
   with_items: "{{ groups['kibana'] }}"
   when:
-    - elastic_stack_full_stack: true
+    - elasticstack_full_stack: true
     - "not 'renew_ca' in ansible_run_tags"
-    - "not elastic_ca_will_expire_soon | bool"
+    - "not elasticstack_ca_will_expire_soon | bool"
     - groups['kibana'] is defined

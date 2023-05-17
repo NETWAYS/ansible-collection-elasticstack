@@ -169,7 +169,7 @@ class AnalyzeCertificate():
                     # get critical value
                     critical = to_text(extension.critical)
                     self.result['extensions'][name]['_critical'] = to_text(critical)
-                self.extensions_values_info(name, extension)
+                    self.extensions_values_info(name, extension)
         except Exception as e:
             # if something went wrong skip this extension and its key values and
             # also create a warning

@@ -4,7 +4,7 @@
 - name: Check if Logstash configuration does what it should
   hosts: all
   vars:
-    elastic_elasticsearch_http_port: 9200
+    elasticstack_elasticsearch_http_port: 9200
   tasks:
   - name: Give some time for tools to connect
     wait_for:
@@ -12,20 +12,20 @@
   - name: Run syntax check
     command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
     when: "'logstash' in group_names"
-  #- name: Check for open port {{ elastic_beats_port }}/tcp
+  #- name: Check for open port {{ elasticstack_beats_port }}/tcp
   #  wait_for:
-  #    port: {{ elastic_beats_port }}
+  #    port: {{ elasticstack_beats_port }}
   #  when: "'logstash' in group_names"
   - name: Get elastic password
     shell: |
       grep "PASSWORD elastic " /usr/share/elasticsearch/initial_passwords |
       awk {' print $4 '}
-    register: elastic_pass
+    register: elasticstack_pass
     when: "'elasticsearch' in group_names"
   - name: Query for Logstasch indices
     shell: >
-      curl -ks -uelastic:{{ elastic_pass.stdout }}
-      https://localhost:{{ elastic_elasticsearch_http_port }}/_cat/indices |
+      curl -ks -uelastic:{{ elasticstack_pass.stdout }}
+      https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/indices |
       grep logstash |
       awk {' print $7 '} |
       sort -n |

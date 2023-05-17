@@ -8,6 +8,7 @@ warn_list:
   - name[casing]
   - 'risky-shell-pipe'
   - no-handler # backup of old certificates
+  - var-naming[no-role-prefix] # remove when https://github.com/ansible/ansible-lint/discussions/3451 is done
 skip_list:
   - '106'
   - 'command-instead-of-module'

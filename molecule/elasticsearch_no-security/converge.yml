@@ -7,11 +7,11 @@
   hosts: all
   vars:
     elasticsearch_security: false
-    elastic_security: false
+    elasticstack_security: false
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
     elasticsearch_heap: "1"
-    elastic_release: 7
+    elasticstack_release: 7
   tasks:
     - name: Include Elastics repos role
       include_role:

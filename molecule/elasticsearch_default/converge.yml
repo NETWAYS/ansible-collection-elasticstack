@@ -7,10 +7,10 @@
   hosts: all
   vars:
     #elasticsearch_security: true # needed for tests of > 7 releases
-    elastic_stack_full_stack: false
+    elasticstack_full_stack: false
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
-    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticsearch_heap: "1"
   tasks:
     - name: Include Elastics repos role

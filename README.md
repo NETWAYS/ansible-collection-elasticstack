@@ -36,6 +36,7 @@ You will need the following Ansible collections installed
 You may want the following Ansible roles installed. There other ways to achieve what they are doing but using them is easy and convenient.
 
 * geerlingguy.redis
+* openssl if you want to use Elastics Security
 
 ### Supported systems
 

@@ -9,8 +9,6 @@
           - curl
           - procps
           - gpg-agent
+          - git
+          - iproute2
         update_cache: yes
-      when: ansible_os_family == "Debian"
-    - name: Install git
-      package:
-        name: git

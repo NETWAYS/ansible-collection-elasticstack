@@ -2,15 +2,6 @@
 - name: Prepare
   hosts: all
   tasks:
-    - name: Refresh apt cache
-      apt:
-        update_cache: yes
-      when: ansible_os_family == "Debian"
-
-    - name: Install git
-      package:
-        name: git
-
     - name: Install packages for RHEL
       package:
         name:
@@ -26,15 +17,19 @@
       when: ansible_os_family == "RedHat"
 
     - name: Install packages for Debian
-      package:
+      apt:
         name:
           - gpg
           - gpg-agent
           - procps
           - curl
           - iproute2
+        update_cache: yes
       when: ansible_os_family == "Debian"
 
-    - name: Install unzip for certificate handling
+    - name: Install common packages
       package:
-        name: unzip
+        name:
+          - git
+          - openssl
+          - unzip

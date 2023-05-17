@@ -15,38 +15,35 @@
   register: ca_exists
   when: inventory_hostname == elasticsearch_ca
 
-- name: Get the ca expiration date # noqa: risky-shell-pipe
-  shell: >-
-    if test -v BASH; then set -o pipefail; fi;
-    openssl pkcs12
-    -in '{{ elastic_ca_dir }}/elastic-stack-ca.p12'
-    -nodes
-    -passin pass:'{{ elastic_ca_pass }}' |
-    openssl x509 -noout -enddate |
-    awk -F'=' '{print $2}'
-  register: ca_expiration_date
-  args:
-    executable: /bin/bash
-  changed_when: false
-  no_log: true
+- name: Get CA informations
+  cert_info:
+    path: "{{ elastic_ca_dir }}/elastic-stack-ca.p12"
+    passphrase: "{{ elastic_ca_pass | default(omit, true) }}"
+  register: ca_infos
   when: inventory_hostname == elasticsearch_ca and ca_exists.stat.exists | bool
 
 - name: Set the ca expiration date in days
   set_fact:
-    elastic_ca_expiration_days: "{{ ((ca_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
-  when: inventory_hostname == elasticsearch_ca and ca_expiration_date.skipped is not defined
+    elastic_ca_expiration_days: "{{ (( ca_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  when: inventory_hostname == elasticsearch_ca and ca_infos.skipped is not defined
 
 - name: Set ca will expire soon to true
   set_fact:
     elastic_ca_will_expire_soon: true
-  when: inventory_hostname == elasticsearch_ca and elastic_ca_expiration_days is defined and elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
+  when: >
+    inventory_hostname == elasticsearch_ca and
+    elasticsearch_cert_expiration_days is defined and
+    elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
 
 - name: Print the ca renew message
   debug:
     msg: |
       Your ca will expire in {{ elastic_ca_expiration_days }}.
       Ansible will renew it and all elastic stack certificates
-  when: inventory_hostname == elasticsearch_ca and elastic_ca_expiration_days is defined and elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
+  when: >
+    inventory_hostname == elasticsearch_ca and
+    elastic_ca_expiration_days is defined and
+    elastic_ca_expiration_days | int <= elastic_ca_expiration_buffer | int
 
 - name: Stop Logstash
   service:
@@ -597,11 +594,11 @@
     cut -d\" -f4
   register: es_cluster_status
   changed_when: false
-  no_log: true
-  ignore_errors: "{{ ansible_check_mode }}"
+  # no_log: true
+  ignore_errors: true
   when: elasticsearch_passwords_file.stat.exists | bool
   until: es_cluster_status.stdout == "green"
-  retries: 5
+  retries: 20
   delay: 10
 
 - name: Create initial passwords # noqa: risky-shell-pipe

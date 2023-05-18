@@ -6,12 +6,12 @@
 
 - name: Ensure Elastic Stack apt repository is configured (Debian)
   ansible.builtin.apt_repository:
-    repo: deb https://artifacts.elastic.co/packages/{{ elastic_release }}.x/apt stable main
+    repo: deb https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/apt stable main
     state: present
-  when: elastic_variant == "elastic"
+  when: elasticstack_variant == "elastic"
 
 - name: Ensure Elastic Stack OSS apt repository is configured (Debian)
   ansible.builtin.apt_repository:
-    repo: deb https://artifacts.elastic.co/packages/oss-{{ elastic_release }}.x/apt stable main
+    repo: deb https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/apt stable main
     state: present
-  when: elastic_variant == "oss"
+  when: elasticstack_variant == "oss"

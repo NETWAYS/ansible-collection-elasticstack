@@ -1,6 +1,6 @@
 input {
   beats {
-    port => {{ elastic_beats_port }}
+    port => {{ elasticstack_beats_port }}
 {% if logstash_beats_tls is defined and logstash_beats_tls | bool %}
     ssl => true
     ssl_certificate => "{{ logstash_certs_dir }}/{{ inventory_hostname }}-server.crt"

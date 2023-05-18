@@ -8,11 +8,11 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Set elasticsearch_ca variable if not already done by user
+- name: Set elasticstack_ca variable if not already done by user
   set_fact:
-    elasticsearch_ca: "{{ groups['elasticsearch'][0] }}"
+    elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
   when:
-    - elasticsearch_ca is undefined
+    - elasticstack_ca is undefined
     - groups['elasticsearch'] is defined
   tags:
     - certificates
@@ -88,51 +88,51 @@
         state: absent
       when: logstash_move_cert_directory.changed
 
-- name: Backup logstash certs on elasticsearch_ca host then remove
+- name: Backup logstash certs on elasticstack_ca host then remove
   when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   tags:
     - renew_ca
     - renew_logstash_cert
     - never
   block:
-    - name: Check if cert file exists on elasticsearch_ca host
+    - name: Check if cert file exists on elasticstack_ca host
       stat:
-        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
+        path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
       register: logstash_check_cert_file_ca_host
 
-    - name: Move cert file on elasticsearch_ca host
+    - name: Move cert file on elasticstack_ca host
       copy:
-        src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
-        dest: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
+        dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
         remote_src: true
       when: logstash_check_cert_file_ca_host.stat.exists
       register: logstash_move_cert_file_ca_host
 
-    - name: Remove cert file on elasticsearch_ca host
+    - name: Remove cert file on elasticstack_ca host
       file:
-        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
+        path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
         state: absent
       when: logstash_move_cert_file_ca_host.changed
 
-    - name: Check if cert zip file exists on elasticsearch_ca host
+    - name: Check if cert zip file exists on elasticstack_ca host
       stat:
-        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+        path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
       register: logstash_check_cert_zip_file_ca_host
 
-    - name: Move cert zip file on elasticsearch_ca host
+    - name: Move cert zip file on elasticstack_ca host
       copy:
-        src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
-        dest: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+        dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
         remote_src: true
       when: logstash_check_cert_zip_file_ca_host.stat.exists
       register: logstash_move_cert_zip_file_ca_host
 
-    - name: Remove cert zip file on elasticsearch_ca host
+    - name: Remove cert zip file on elasticstack_ca host
       file:
-        path: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+        path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
         state: absent
       when: logstash_move_cert_zip_file_ca_host.changed
 
@@ -185,17 +185,17 @@
 - name: Create individual certificates for Logstash
   command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
-    --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
-    --ca-pass {{ elastic_ca_pass }}
+    --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
+    --ca-pass {{ elasticstack_ca_pass }}
     --name {{ ansible_hostname }}
     --ip {{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}
     --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
     --pass {{ logstash_tls_key_passphrase }}
-    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12
-  delegate_to: "{{ elasticsearch_ca }}"
+    --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12
+  delegate_to: "{{ elasticstack_ca }}"
   no_log: true
   args:
-    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
+    creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
   tags:
     - certificates
     - renew_ca
@@ -203,10 +203,10 @@
 
 - name: Fetch certificate from ca host to Ansible controler
   fetch:
-    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.p12"
+    src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
     dest: "/tmp/{{ ansible_hostname }}-ls.p12"
     flat: yes
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   tags:
     - certificates
     - renew_ca
@@ -241,18 +241,18 @@
 - name: Create individual PEM certificates for Logstash
   command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
-    --ca {{ elastic_ca_dir }}/elastic-stack-ca.p12
-    --ca-pass {{ elastic_ca_pass }}
+    --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
+    --ca-pass {{ elasticstack_ca_pass }}
     --name {{ ansible_hostname }}
     --ip {{ ansible_default_ipv4.address }}
     --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
     --pass {{ logstash_tls_key_passphrase }}
     --pem
-    --out {{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip
-  delegate_to: "{{ elasticsearch_ca }}"
+    --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip
+  delegate_to: "{{ elasticstack_ca }}"
   no_log: true
   args:
-    creates: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+    creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
   tags:
     - certificates
     - renew_ca
@@ -260,10 +260,10 @@
 
 - name: Fetch PEM certificate from ca host to Ansible controler
   fetch:
-    src: "{{ elastic_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+    src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
     dest: "/tmp/{{ ansible_hostname }}-ls.zip"
     flat: yes
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   tags:
     - certificates
     - renew_ca
@@ -340,10 +340,10 @@
 
 - name: Fetch ca certificate from ca host to Ansible controler
   fetch:
-    src: "{{ elastic_ca_dir }}/ca.crt"
+    src: "{{ elasticstack_ca_dir }}/ca.crt"
     dest: /tmp/ca.crt
     flat: yes
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   tags:
     - certificates
     - renew_ca
@@ -370,7 +370,7 @@
     owner: root
     group: root
     mode: 0600
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   run_once: true
 
 - name: Place logstash_writer user configuration on ca node
@@ -380,17 +380,17 @@
     owner: root
     group: root
     mode: 0600
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   run_once: true
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    grep "PASSWORD elastic" {{ elastic_initial_passwords }} |
+    grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
     awk {' print $4 '}
-  register: elastic_password_logstash
+  register: logstash_elasticstack_password
   changed_when: false
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   no_log: true
   tags:
     - configuration
@@ -399,11 +399,11 @@
 - name: Check for logstash_writer role # noqa: risky-shell-pipe
   shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    curl --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_security/role/logstash_writer
+    curl --cacert {{ elasticstack_ca_dir }}/ca.crt
+    -u elastic:{{ logstash_elasticstack_password.stdout }}
+    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/role/logstash_writer
     | grep "enabled"
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   failed_when: false
   changed_when: false
   register: logstash_writer_role_present
@@ -417,39 +417,39 @@
 - name: Put logstash_writer role into Elasticsearch < 8
   command: >
     curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
-    --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_xpack/security/role/logstash_writer
-  delegate_to: "{{ elasticsearch_ca }}"
+    --cacert {{ elasticstack_ca_dir }}/ca.crt
+    -u elastic:{{ logstash_elasticstack_password.stdout }}
+    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/role/logstash_writer
+  delegate_to: "{{ elasticstack_ca }}"
   changed_when: false
   no_log: true
   run_once: true
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
-    - elastic_release | int < 8
+    - elasticstack_release | int < 8
 
 - name: Put logstash_writer role into Elasticsearch > 7
   command: >
     curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
-    --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_security/role/logstash_writer
-  delegate_to: "{{ elasticsearch_ca }}"
+    --cacert {{ elasticstack_ca_dir }}/ca.crt
+    -u elastic:{{ logstash_elasticstack_password.stdout }}
+    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/role/logstash_writer
+  delegate_to: "{{ elasticstack_ca }}"
   changed_when: false
   run_once: true
   no_log: true
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
-    - elastic_release | int > 7
+    - elasticstack_release | int > 7
 
 - name: Check for logstash_writer user # noqa: risky-shell-pipe
   shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    curl --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_security/user/{{ logstash_user }}
+    curl --cacert {{ elasticstack_ca_dir }}/ca.crt
+    -u elastic:{{ logstash_elasticstack_password.stdout }}
+    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/user/{{ logstash_user }}
     | grep "enabled"
-  delegate_to: "{{ elasticsearch_ca }}"
+  delegate_to: "{{ elasticstack_ca }}"
   failed_when: false
   changed_when: false
   no_log: true
@@ -463,27 +463,27 @@
 - name: Put logstash_writer user into Elasticsearch < 8
   command: >
     curl -T /root/logstash_writer_user --header 'Content-Type: application/json'
-    --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_xpack/security/user/{{ logstash_user }}
-  delegate_to: "{{ elasticsearch_ca }}"
+    --cacert {{ elasticstack_ca_dir }}/ca.crt
+    -u elastic:{{ logstash_elasticstack_password.stdout }}
+    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/user/{{ logstash_user }}
+  delegate_to: "{{ elasticstack_ca }}"
   changed_when: false
   no_log: true
   run_once: true
   when:
     - logstash_writer_user_present.rc > 0
-    - elastic_release | int < 8
+    - elasticstack_release | int < 8
 
 - name: Put logstash_writer user into Elasticsearch > 7
   command: >
     curl -T /root/logstash_writer_user --header 'Content-Type: application/json'
-    --cacert {{ elastic_ca_dir }}/ca.crt
-    -u elastic:{{ elastic_password_logstash.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elastic_elasticsearch_http_port }}/_security/user/{{ logstash_user }}
-  delegate_to: "{{ elasticsearch_ca }}"
+    --cacert {{ elasticstack_ca_dir }}/ca.crt
+    -u elastic:{{ logstash_elasticstack_password.stdout }}
+    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/user/{{ logstash_user }}
+  delegate_to: "{{ elasticstack_ca }}"
   run_once: true
   no_log: true
   changed_when: false
   when:
     - logstash_writer_user_present.rc > 0
-    - elastic_release | int > 7
+    - elasticstack_release | int > 7

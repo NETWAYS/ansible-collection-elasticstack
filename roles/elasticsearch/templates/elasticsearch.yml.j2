@@ -11,7 +11,7 @@ node.roles: [ {% for type in elasticsearch_node_types %}{{ type }}{% if not loop
 discovery.type: single-node
 {% endif %}
 
-{% if elastic_release | int < 8 or groups['elasticsearch'] | length > 1 %}
+{% if elasticstack_release | int < 8 or groups['elasticsearch'] | length > 1 %}
 discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
 "{{ hostvars[host].ansible_default_ipv4.address | default(hostvars[host].ansible_all_ipv4_addresses[0]) }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
@@ -26,6 +26,7 @@ cluster.initial_master_nodes: [ {% for host in groups['elasticsearch_role_master
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
 "{{ hostvars[host].ansible_hostname }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
+<<<<<<< HEAD
 {% endif %}
 {% endif %}
 
@@ -38,6 +39,15 @@ bootstrap.system_call_filter: false
 {% endif %}
 
 {% if elastic_variant == "elastic" %}
+=======
+{% if elasticstack_temperature is defined %}
+node.attr.temp: "{{ elasticstack_temperature }}"
+{% endif %}
+{% if elasticsearch_disable_systemcallfilterchecks | bool and elasticstack_release == 7 %}
+bootstrap.system_call_filter: false
+{% endif %}
+{% if elasticstack_variant == "elastic" %}
+>>>>>>> main
 xpack.ml.enabled: {{ elasticsearch_ml_enabled }}
 xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}
 {% if elasticsearch_security | bool %}

@@ -2,18 +2,18 @@
 
 - name: Ensure Elastic Stack yum repository is configured (SuSE)
   community.general.zypper_repository:
-    name: elastic-{{ elastic_release }}.x
-    description: Elastic Release {{ elastic_release }}.x
-    repo: https://artifacts.elastic.co/packages/{{ elastic_release }}.x/yum
+    name: elastic-{{ elasticstack_release }}.x
+    description: Elastic Release {{ elasticstack_release }}.x
+    repo: https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/yum
     auto_import_keys: true
-    enabled: "{{ elastic_enable_repos | bool }}"
-  when: elastic_variant == "elastic"
+    enabled: "{{ elasticstack_enable_repos | bool }}"
+  when: elasticstack_variant == "elastic"
 
 - name: Ensure Elastic Stack OSS yum repository is configured (SuSE)
   community.general.zypper_repository:
-    name: elastic-oss-{{ elastic_release }}.x
-    description: Elastic OSS Release {{ elastic_release }}.x
-    repo: https://artifacts.elastic.co/packages/oss-{{ elastic_release }}.x/yum
+    name: elastic-oss-{{ elasticstack_release }}.x
+    description: Elastic OSS Release {{ elasticstack_release }}.x
+    repo: https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/yum
     auto_import_keys: true
-    enabled: "{{ elastic_enable_repos | bool }}"
-  when: elastic_variant == "oss"
+    enabled: "{{ elasticstack_enable_repos | bool }}"
+  when: elasticstack_variant == "oss"

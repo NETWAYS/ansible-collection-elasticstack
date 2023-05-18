@@ -7,7 +7,7 @@
     state: restarted
   when:
     - beats_filebeat | bool
-    - filebeat_enable | bool
+    - beats_filebeat_enable | bool
 
 - name: Restart Auditbeat
   service:
@@ -15,7 +15,7 @@
     state: restarted
   when:
     - beats_auditbeat | bool
-    - auditbeat_enable | bool
+    - beats_auditbeat_enable | bool
 
 - name: Restart Metricbeat
   service:
@@ -23,4 +23,4 @@
     state: restarted
   when:
     - beats_metricbeat | bool
-    - metricbeat_enable | bool
+    - beats_metricbeat_enable | bool

@@ -6,9 +6,9 @@
   collections:
     - netways.elasticstack
   vars:
-    elastic_variant: oss
-    elastic_rpm_workaround: true
-    elastic_release: 7
+    elasticstack_variant: oss
+    elasticstack_rpm_workaround: true
+    elasticstack_release: 7
   tasks:
     - name: "Include Elastic Repos"
       ansible.builtin.include_role:

@@ -4,9 +4,9 @@
   collections:
     - netways.elasticstack
   vars:
-    elastic_rpm_workaround: true
-    elastic_stack_full_stack: false
-    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elasticstack_rpm_workaround: true
+    elasticstack_full_stack: false
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Include Elastic Repos
       ansible.builtin.include_role:

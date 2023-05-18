@@ -8,7 +8,7 @@
   collections:
     - netways.elasticstack
   vars:
-    beats_filebeat_log_inputs:
+    beats_beats_filebeat_log_inputs:
       messages:
         name: messages
         paths:
@@ -21,18 +21,18 @@
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
     elasticstack_full_stack: false
-    beats_filebeat_mysql_slowlog_input: true
+    beats_beats_filebeat_mysql_slowlog_input: true
     beats_auditbeat: true
     beats_auditbeat_output: logstash
     beats_auditbeat_enable: false # can't run on GitHub because of permissions
-    beats_filebeat_journald_inputs:
+    beats_beats_filebeat_journald_inputs:
       everything:
         id: service-vault
         include_matches:
           - _SYSTEMD_UNIT=vault.service
     beats_metricbeat: true
     beats_metricbeat_output: logstash
-    #beats_filebeat_docker: true
+    #beats_beats_filebeat_docker: true
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
 

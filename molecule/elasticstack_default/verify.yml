@@ -3,8 +3,8 @@
 - name: Verify outcome of collection
   hosts: all
   vars:
-    elastic_elasticsearch_http_port: 9200
-    elastic_initial_passwords: /usr/share/elasticsearch/initial_passwords
+    elasticstack_elasticsearch_http_port: 9200
+    elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
   tasks:
 
     - name: Give some time for tools to connect
@@ -40,7 +40,7 @@
     - name: Query for Logstash indices
       shell: >
         curl -ks -uelastic:{{ elastic_pass.stdout }}
-        https://localhost:{{ elastic_elasticsearch_http_port }}/_cat/indices |
+        https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/indices |
         grep logstash |
         awk {' print $7 '} |
         sort -n |
@@ -100,7 +100,7 @@
 
     - name: Health check
       uri:
-        url: https://localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health
+        url: https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health
         method: GET
         force_basic_auth: yes
         user: elastic
@@ -115,7 +115,7 @@
 
     - name: Node check
       uri:
-        url: https://localhost:{{ elastic_elasticsearch_http_port }}/_cat/nodes
+        url: https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes
         method: GET
         force_basic_auth: yes
         user: elastic

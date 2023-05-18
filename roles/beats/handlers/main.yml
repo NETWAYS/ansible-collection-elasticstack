@@ -7,7 +7,7 @@
     state: restarted
   when:
     - beats_filebeat | bool
-    - beats_filebeat_enable | bool
+    - beats_beats_filebeat_enable | bool
 
 - name: Restart Auditbeat
   service:

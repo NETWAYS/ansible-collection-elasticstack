@@ -1,4 +1,4 @@
 ---
 
 elasticsearch_sysconfig_file: /etc/sysconfig/elasticsearch
-elastic_versionseparator: "-"
+elasticstack_versionseparator: "-"

@@ -8,7 +8,7 @@
   collections:
     - netways.elasticstack
   vars:
-    filebeat_log_inputs:
+    beats_filebeat_log_inputs:
       messages:
         name: messages
         paths:
@@ -20,33 +20,33 @@
           match: after
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
-    elastic_stack_full_stack: false
-    filebeat_mysql_slowlog_input: true
+    elasticstack_full_stack: false
+    beats_filebeat_mysql_slowlog_input: true
     beats_auditbeat: true
-    auditbeat_output: logstash
-    auditbeat_enable: false # can't run on GitHub because of permissions
-    filebeat_journald_inputs:
+    beats_auditbeat_output: logstash
+    beats_auditbeat_enable: false # can't run on GitHub because of permissions
+    beats_filebeat_journald_inputs:
       everything:
         id: service-vault
         include_matches:
           - _SYSTEMD_UNIT=vault.service
     beats_metricbeat: true
-    metricbeat_output: logstash
-    #filebeat_docker: true
-    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    beats_metricbeat_output: logstash
+    #beats_filebeat_docker: true
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
 
     - name: Set Filebeat version for 7.x
       set_fact:
-        elastic_version: "7.17.1"
+        elasticstack_version: "7.17.1"
       when:
-        - elastic_release == 7
+        - elasticstack_release == 7
 
     - name: Set Filebeat version for 8.x
       set_fact:
-        elastic_version: "8.4.1"
+        elasticstack_version: "8.4.1"
       when:
-        - elastic_release == 8
+        - elasticstack_release == 8
 
     - name: "Include Elastics repos role"
       include_role:

@@ -14,10 +14,6 @@ Role Variables
 
 * *elasticsearch_enable*: Start and enable Elasticsearch (default: `true`)
 * *elasticsearch_heap*: Heapsize for Elasticsearch. (Half of free memory on host. Maximum 30GB. (default: Half of hosts memory. Min 1GB, Max 30GB)
-* *elasticsearch_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
-* *elastic_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
-* *elastic_ca_expiration_buffer*: Ansible will renew the CA if its validity is shorter than this value, which should be number of days. (default: 30)
-* *elastic_ca_will_expire_soon*: Set it to true to renew the CA and the certificate of all Elastic Stack components (default: `false`), Or run the playbook with `--tags renew_ca` to do that.
 * *elasticsearch_tls_key_passphrase*: Passphrase for elasticsearch certificates (default: `PleaseChangeMeIndividually`)
 * *elasticsearch_cert_expiration_buffer*: Ansible will renew the elasticsearch certificate if its validity is shorter than this value, which should be number of days. (default: 30)
 * *elasticsearch_cert_will_expire_soon*: Set it to true to renew elasticsearch certificate (default: `false`), Or run the playbook with `--tags renew_elasticsearch_cert` to do that.
@@ -36,9 +32,13 @@ This variable activates a workaround to start on systems that have certain harde
 
 These variables are identical over all our elastic related roles, hence the different naming schemes.
 
-* *elastic_release*: Major release version of Elastic stack to configure. (default: `7`)
-* *elastic_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
-* *elastic_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
+* *elasticstack_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
+* *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
+* *elasticstack_ca_expiration_buffer*: Ansible will renew the CA if its validity is shorter than this value, which should be number of days. (default: 30)
+* *elasticstack_ca_will_expire_soon*: Set it to true to renew the CA and the certificate of all Elastic Stack components (default: `false`), Or run the playbook with `--tags renew_ca` to do that.
+* *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)
+* *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+* *elasticstack_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
 
 ```
 - name: Install Elasticsearch
@@ -46,7 +46,7 @@ These variables are identical over all our elastic related roles, hence the diff
     - netways.elasticstack
   hosts: elasticsearch-hosts
   vars:
-    elastic_variant: oss
+    elasticstack_variant: oss
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
   roles:

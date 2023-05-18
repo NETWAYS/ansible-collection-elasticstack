@@ -3,6 +3,6 @@
   ansible.builtin.fail:
     msg: "Elasticsearch >= 8 requires enabled security. Set elasticsearch_security to true"
   when:
-    - elastic_release | int >= 8
-    - elastic_variant == 'elastic'
+    - elasticstack_release | int >= 8
+    - elasticstack_variant == 'elastic'
     - elasticsearch_security is not defined or not elasticsearch_security

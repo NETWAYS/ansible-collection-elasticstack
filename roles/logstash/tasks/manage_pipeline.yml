@@ -3,26 +3,26 @@
 - name: Check if Logstash pipeline already exists
   stat:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
-  register: "pipeline_stat"
+  register: "logstash_pipeline_stat"
 
 - name: Check who managed pipeline in last run # noqa: risky-shell-pipe
   shell: >
     if test -v BASH; then set -o pipefail; fi;
     grep -e '^# source:{{ pipelinename.name }}' /etc/logstash/pipelines.yml |
     cut -d: -f3
-  register: "pipeline_manager"
+  register: "logstash_pipeline_manager"
   changed_when: false
   when:
-    - pipeline_stat.stat.exists | bool
-    - pipeline_stat.stat.isdir | bool
+    - logstash_pipeline_stat.stat.exists | bool
+    - logstash_pipeline_stat.stat.isdir | bool
 
 - name: Delete directory if changing manager
   file:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
     state: absent
   when:
-    - pipeline_manager.stdout is defined
-    - pipeline_manager.stdout == "local"
+    - logstash_pipeline_manager.stdout is defined
+    - logstash_pipeline_manager.stdout == "local"
     - pipelinename.source is defined
 
 - name: Create Logstash pipeline directories

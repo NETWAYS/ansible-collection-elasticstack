@@ -8,8 +8,8 @@
   collections:
     - netways.elasticstack
   vars:
-    elastic_stack_full_stack: true
-    elastic_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elasticstack_full_stack: true
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: Include Elastic Repos
       include_role:

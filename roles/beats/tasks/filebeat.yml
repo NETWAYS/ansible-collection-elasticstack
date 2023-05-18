@@ -2,7 +2,7 @@
 
 - name: Construct exact name of Filebeat package
   set_fact:
-    beats_beats_filebeat_package: >
+    beats_filebeat_package: >
       {{
       'filebeat' +
       (elasticstack_versionseparator +
@@ -12,7 +12,7 @@
 
 - name: Install Filebeat - rpm
   package:
-    name: "{{ beats_beats_filebeat_package }}"
+    name: "{{ beats_filebeat_package }}"
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
   when:
@@ -20,7 +20,7 @@
 
 - name: Install Filebeat - deb
   package:
-    name: "{{ beats_beats_filebeat_package }}"
+    name: "{{ beats_filebeat_package }}"
   when:
     - ansible_os_family == "Debian"
 
@@ -59,14 +59,14 @@
     - Restart Filebeat
   tags:
     - configuration
-    - beats_beats_filebeat_configuration
+    - beats_filebeat_configuration
     - beats_configuration
 
 - name: Configure modules
-  when: beats_beats_filebeat_modules is defined
+  when: beats_filebeat_modules is defined
   tags:
     - configuration
-    - beats_beats_filebeat_configuration
+    - beats_filebeat_configuration
     - beats_configuration
   block:
 
@@ -74,7 +74,7 @@
       command: "filebeat modules enable {{ item }}"
       args:
         creates: "/etc/filebeat/modules.d/{{ item }}.yml"
-      with_items: "{{ beats_beats_filebeat_modules }}"
+      with_items: "{{ beats_filebeat_modules }}"
 
     - name: Enable System module
       template:
@@ -92,7 +92,7 @@
         /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
       args:
         creates: "/etc/filebeat/{{ item }}_pipeline_created"
-      with_items: "{{ beats_beats_filebeat_modules }}"
+      with_items: "{{ beats_filebeat_modules }}"
       notify:
         - Restart Filebeat
       changed_when: false
@@ -102,4 +102,4 @@
     name: filebeat
     state: started
     enabled: true
-  when: beats_beats_filebeat_enable | bool
+  when: beats_filebeat_enable | bool

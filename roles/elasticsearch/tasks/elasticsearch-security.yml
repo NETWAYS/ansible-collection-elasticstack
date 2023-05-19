@@ -127,7 +127,7 @@
 - name: Print the elasticsearch certificate renew message
   debug:
     msg: |
-      Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }}.
+      Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }} days.
       Ansible will renew it.
   when: elasticsearch_cert_expiration_days is defined and elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
 

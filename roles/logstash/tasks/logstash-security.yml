@@ -41,7 +41,7 @@
 - name: Set logstash certificate will expire soon to true
   set_fact:
     logstash_cert_will_expire_soon: true
-  when: kibana_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_cert_expiration_buffer | int
+  when: logstash_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_cert_expiration_buffer | int
 
 - name: Print the logstash certificate renew message
   debug:

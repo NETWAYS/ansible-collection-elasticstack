@@ -81,7 +81,7 @@
         curl
         -s
         -u elastic:{{ elastic_pass.stdout }}
-        http://{{ ansible_hostname }}:5601/api/status"
+        http://{{ ansible_hostname }}:5601/api/status
       register: curl_out
       failed_when:
         - "'green' not in curl_out.stdout"

@@ -1,4 +1,10 @@
 ---
+
+# The workaround for arbitrarily named role directory is important because the
+# git repo has one name and the role within it another
+# Found at:
+# https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+
 - name: Converge
   collections:
     - netways.elasticstack
@@ -8,7 +14,17 @@
     elasticsearch_disable_systemcallfilterchecks: true
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticsearch_heap: "1"
+    elasticstack_full_stack: true
+    beats_filebeat_syslog_udp: true
+    beats_filebeat_syslog_tcp: true
+    beats_filebeat_modules:
+      - system
+    beats_fields:
+      - "testbed: molecule"
   tasks:
+    - name: Include Redis
+      include_role:
+        name: geerlingguy.redis
     - name: Include Elastic Repos
       include_role:
         name: repos
@@ -18,6 +34,20 @@
     - name: Include logstash
       include_role:
         name: logstash
+    - name: Include Beats
+      include_role:
+        name: beats
+    - name: Install rsyslog
+      package:
+        name: rsyslog
+    - name: Configure rsyslog
+      lineinfile:
+        line: "*.* @@localhost:514"
+        path: /etc/rsyslog.conf
+    - name: Start rsyslog
+      service:
+        name: rsyslog
+        state: started
     - name: Include Kibana
       include_role:
         name: kibana

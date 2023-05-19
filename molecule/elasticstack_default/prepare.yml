@@ -32,3 +32,4 @@
         name:
           - git
           - openssl
+          - unzip

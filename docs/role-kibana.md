@@ -19,7 +19,7 @@ Role Variables
 
 These variables are identical over all our elastic related roles, hence the different naming scheme.
 
-* *elasticstack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`). If you set to `true`, you will be able to use the following varibales:
+* *elasticstack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`). If you set to `true`, you will be able to use the following variables:
     * *kibana_elasticsearch_hosts*: A list of DNS resolvable hostnames of Elasticsearch hosts to connect your Kibana instance to. (default: `- localhost`)
     * *elasticstack_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
     * *kibana_sniff_on_start*: Attempt to find other Elasticsearch nodes on startup (default: `false`)

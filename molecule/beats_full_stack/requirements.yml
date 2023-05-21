@@ -1,4 +1,0 @@
----
-roles:
-  - name: geerlingguy.redis
-    version: "1.6.0"

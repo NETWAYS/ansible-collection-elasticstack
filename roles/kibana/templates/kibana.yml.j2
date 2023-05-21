@@ -20,3 +20,13 @@ server.ssl.enabled: true
 server.ssl.certificate: "{{ kibana_tls_cert }}"
 server.ssl.key: "{{ kibana_tls_key }}"
 {% endif %}
+
+{% if elasticstack_full_stack is defined and elasticstack_full_stack | bool and elasticstack_variant == "elastic" and kibana_sniff_on_start | bool %}
+elasticsearch.sniffOnStart: true
+{% endif %}
+{% if elasticstack_full_stack is defined and elasticstack_full_stack | bool and elasticstack_variant == "elastic" and kibana_sniff_on_connection_fault | bool %}
+elasticsearch.sniffOnStart: true
+{% endif %}
+{% if elasticstack_full_stack is defined and elasticstack_full_stack | bool and elasticstack_variant == "elastic" and kibana_sniff_interval is defined %}
+elasticsearch.sniffInterval: {{ kibana_sniff_interval }}
+{% endif %}

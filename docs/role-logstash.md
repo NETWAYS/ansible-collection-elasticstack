@@ -64,12 +64,13 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
 * *logstash_user*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
-* *logstash_password*: Password of Elasticsearch user (Default: `password`)
-* *logstash_user_indices*: Indices the user has access to (Default: `'"ecs-logstash*", "logstash*", "logs*"'`)
-* *logstash_reset_writer_role*: Reset user and role with every run: (Default: `true`)
+* *logstash_password_hash*: Generate and use a hash from your `logstash_password` (default: `true`)
+* *logstash_password*: Password of Elasticsearch user (default: `password`)
+* *logstash_user_indices*: Indices the user has access to (default: `'"ecs-logstash*", "logstash*", "logs*"'`)
+* *logstash_reset_writer_role*: Reset user and role with every run: (default: `true`)
 * *logstash_validate_after_inactivity*: How long should logstash wait, before starting a new connection and leave the old one with elasticsearch, when the connection with elasticsearch get lost: (Default: `300`).
-* *logstash_queue_type*: What kind of queue should Logstash use per default: (Default: `persisted`, alternative: `memory`)
-* *logstash_queue_max_bytes*: The total capacity of ansible-forwarder queue in number of bytes: (Default: `2gb`)
+* *logstash_queue_type*: What kind of queue should Logstash use per default: (default: `persisted`, alternative: `memory`)
+* *logstash_queue_max_bytes*: The total capacity of ansible-forwarder queue in number of bytes: (default: `2gb`)
 
 
 

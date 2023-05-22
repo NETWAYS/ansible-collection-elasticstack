@@ -7,11 +7,6 @@
     - elasticstack_release | int > 7
     - elasticstack_variant == "oss"
 
-- name: Ensure gpg exists, for signing keys
-  ansible.builtin.package:
-    name: gpg
-    state: present
-
 - name: Import RedHat tasks
   import_tasks: redhat.yml
   when: ansible_os_family == 'RedHat'

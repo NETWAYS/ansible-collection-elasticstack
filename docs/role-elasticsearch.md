@@ -34,6 +34,7 @@ These variables are identical over all our elastic related roles, hence the diff
 
 * *elasticstack_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
+* *elasticstack_ca_validity_period*: number of days that the generated CA are valid (default: `not set`). When no value is set, the default of elastic, `1095` days, will be used.
 * *elasticstack_ca_expiration_buffer*: Ansible will renew the CA if its validity is shorter than this value, which should be number of days. (default: 30)
 * *elasticstack_ca_will_expire_soon*: Set it to true to renew the CA and the certificate of all Elastic Stack components (default: `false`), Or run the playbook with `--tags renew_ca` to do that.
 * *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)

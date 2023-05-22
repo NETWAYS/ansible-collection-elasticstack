@@ -137,6 +137,7 @@
 - name: Create individual certificates for Beats
   command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
+    --days {{ beats_cert_validity_period | default(omit) }}
     --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
     --ca-pass {{ elasticstack_ca_pass }}
     --name {{ ansible_hostname }}

@@ -425,6 +425,7 @@
     - name: Configure ca on elasticstack_ca host
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil ca
+        --days {{ elasticstack_ca_validity_period | default(omit) }}
         --pass {{ elasticstack_ca_pass }}
         --out {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
         --silent

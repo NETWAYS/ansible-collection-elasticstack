@@ -96,14 +96,16 @@
 - name: git kibana service status # noqa: risky-shell-pipe
   shell: systemctl status kibana
   register: kibana_status
+  changed_when: false
 
 - name: print kibana service status
   debug:
     var: kibana_status
 
-- name: Get logs
-  shell: journalctl -ax -u kibana --no-pager # noqa: risky-shell-pipe
+- name: Get logs # noqa: risky-shell-pipe
+  shell: journalctl -ax -u kibana --no-pager
   register: kibana_logs
+  changed_when: false
 
 - name: print kibana logs
   debug:

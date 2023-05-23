@@ -90,3 +90,4 @@
   wait_for:
     host: localhost
     port: 5601
+    timeout: 600

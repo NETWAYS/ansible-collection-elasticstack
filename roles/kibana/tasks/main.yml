@@ -102,11 +102,3 @@
   debug:
     var: kibana_status
 
-- name: Get logs # noqa 305
-  shell: journalctl -ax -u kibana --no-pager
-  register: kibana_logs
-  changed_when: false
-
-- name: print kibana logs
-  debug:
-    var: kibana_logs

@@ -21,10 +21,14 @@
   register: beats_cert_expiration_date
   when: beats_cert_exists.stat.exists | bool
 
+- debug:
+    var: beats_cert_expiration_date
+
 - name: Set beats certificate will expire soon to true
   set_fact:
     beats_cert_will_expire_soon: true
   when: not beats_cert_expiration_date.valid_at.check_period
+  changed_when: beats_cert_will_expire_soon == true
 
 - name: Print the beats certificate renew message
   debug:

@@ -93,7 +93,7 @@
     timeout: 300
   failed_when: false
 
-- name: git kibana service status # noqa: risky-shell-pipe
+- name: git kibana service status # noqa 305
   shell: systemctl status kibana
   register: kibana_status
   changed_when: false
@@ -102,7 +102,7 @@
   debug:
     var: kibana_status
 
-- name: Get logs # noqa: risky-shell-pipe
+- name: Get logs # noqa 305
   shell: journalctl -ax -u kibana --no-pager
   register: kibana_logs
   changed_when: false

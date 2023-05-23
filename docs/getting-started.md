@@ -47,11 +47,11 @@ Or refer to the role with the FQCN of the role.
 Roles
 -------
 
-* [Beats](docs/role-beats.md)
-* [Elasticsearch](docs/role-elasticsearch.md)
-* [Kibana](docs/role-kibana.md)
-* [Logstash](docs/role-logstash.md)
-* [Repos](docs/role-repos.md)
+* [Beats](role-beats.md)
+* [Elasticsearch](role-elasticsearch.md)
+* [Kibana](role-kibana.md)
+* [Logstash](role-logstash.md)
+* [Repos](role-repos.md)
 
 
 Variables

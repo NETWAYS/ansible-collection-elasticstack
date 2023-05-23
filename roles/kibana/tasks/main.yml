@@ -91,10 +91,10 @@
     host: localhost
     port: 5601
     timeout: 300
-  ignore_errors: true
+  failed_when: false
 
-- name: git kibana service status
-  command: systemctl status kibana
+- name: git kibana service status # noqa: risky-shell-pipe
+  shell: systemctl status kibana
   register: kibana_status
 
 - name: print kibana service status
@@ -102,7 +102,7 @@
     var: kibana_status
 
 - name: Get logs
-  command: journalctl -ax -u kibana --no-pager
+  shell: journalctl -ax -u kibana --no-pager # noqa: risky-shell-pipe
   register: kibana_logs
 
 - name: print kibana logs

@@ -216,6 +216,18 @@
 - name: Copy the certificate to logstash node
   copy:
     src: "/tmp/{{ ansible_hostname }}-ls.p12"
+    dest: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"
+    owner: root
+    group: logstash
+    mode: 0640
+  tags:
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
+
+- name: Put the certificate in keystore
+  copy:
+    src: "/tmp/{{ ansible_hostname }}-ls.p12"
     dest: "{{ logstash_certs_dir }}/keystore.pfx"
     owner: root
     group: logstash

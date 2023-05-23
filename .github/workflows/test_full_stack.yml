@@ -46,7 +46,7 @@ jobs:
         distro:
           - ubuntu2004
           - ubuntu2204
-          - rockylinux8
+          - centos8
           - debian10
         scenario:
           - elasticstack_default

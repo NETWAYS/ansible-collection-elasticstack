@@ -90,15 +90,6 @@
   package:
     name: net-tools
 
-- name: netstat # noqa 305
-  shell: netstat -taulpen
-  register: netstat_result
-  changed_when: false
-
-- name: print netstat
-  debug:
-    var: netstat_result
-
 - name: List hosts # noqa 305
   shell: cat /etc/hosts
   register: result_hosts
@@ -112,4 +103,14 @@
   wait_for:
     host: "{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}"
     port: 5601
-    timeout: 600
+    timeout: 300
+  failed_when: false
+
+- name: netstat # noqa 305
+  shell: netstat -taulpen
+  register: netstat_result
+  changed_when: false
+
+- name: print netstat
+  debug:
+    var: netstat_result

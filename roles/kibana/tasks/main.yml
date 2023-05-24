@@ -86,6 +86,15 @@
 # the following is useful when running tests or extra tasks that need to
 # have Kibana running
 
+- name: Get packages
+  package_facts:
+    manager: "auto"
+  changed_when: false
+
+- name: List packages
+  debug:
+    var: ansible_facts.packages
+
 - name: Install netstat
   package:
     name: net-tools

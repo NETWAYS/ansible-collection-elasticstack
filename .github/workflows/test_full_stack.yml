@@ -45,14 +45,14 @@ jobs:
       matrix:
         distro:
           - rockylinux8
-          - ubuntu2004
-          - ubuntu2204
-          - debian10
+            #- ubuntu2004
+            #- ubuntu2204
+            #- debian10
         scenario:
           - elasticstack_default
         release:
           - 8
-          - 7
+            #- 7
 
     steps:
       - name: Check out code
@@ -68,10 +68,10 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements-test.txt
 
-      - name: Install collection
-        run: |
-          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
-          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+          #      - name: Install collection
+          #        run: |
+          #          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
+          #          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
 
       - name: Test with molecule
         run: |

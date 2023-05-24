@@ -44,15 +44,15 @@ jobs:
       max-parallel: 1
       matrix:
         distro:
+          - rockylinux8
           - ubuntu2004
           - ubuntu2204
-          - rockylinux8
           - debian10
         scenario:
           - elasticstack_default
         release:
-          - 7
           - 8
+          - 7
 
     steps:
       - name: Check out code

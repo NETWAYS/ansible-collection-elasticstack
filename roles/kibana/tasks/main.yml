@@ -90,15 +90,4 @@
   wait_for:
     host: localhost
     port: 5601
-    timeout: 300
-  failed_when: false
-
-- name: git kibana service status # noqa 305
-  shell: systemctl status kibana
-  register: kibana_status
-  changed_when: false
-
-- name: print kibana service status
-  debug:
-    var: kibana_status
-
+    timeout: 600

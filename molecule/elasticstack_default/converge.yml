@@ -34,9 +34,9 @@
     - name: Include logstash
       include_role:
         name: logstash
-    - name: Include Beats
+    - name: Include Kibana
       include_role:
-        name: beats
+        name: kibana
     - name: Install rsyslog
       package:
         name: rsyslog
@@ -48,6 +48,7 @@
       service:
         name: rsyslog
         state: started
-    - name: Include Kibana
+    - name: Include Beats
       include_role:
-        name: kibana
+        name: beats
+

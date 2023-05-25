@@ -83,6 +83,10 @@
     enabled: yes
   when: kibana_enable | bool
 
+- name: wait some time
+  wait_for:
+    timeout: 120
+
 # the following is useful when running tests or extra tasks that need to
 # have Kibana running
 
@@ -108,12 +112,31 @@
   debug:
     var: result_hosts
 
-- name: Wait for Kibana to start
-  wait_for:
-    host: "{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}"
-    port: 5601
-    timeout: 300
+- name: Get kibana config # noqa 305
+  shell: cat /etc/kibana/kibana.yml
+  register: kibana_config
+
+- debug:
+    var: kibana_config
+
+- name: check kibana # noqa 305
+  shell: "curl -I http://localhost:5601"
+  register: kibana_state1
+
+- debug:
+    var: kibana_state1
+
+- name: install telnet
+  package:
+    name: telnet
+
+- name: check kibana # noqa 305
+  shell: "echo 'exit' | telnet localhost 5601"
+  register: kibana_port
   failed_when: false
+
+- debug:
+    var: kibana_port
 
 - name: netstat # noqa 305
   shell: netstat -taulpen
@@ -123,3 +146,19 @@
 - name: print netstat
   debug:
     var: netstat_result
+
+- name: git kibana service status # noqa 305
+  shell: systemctl status kibana
+  register: kibana_status
+  changed_when: false
+
+- name: print kibana service status
+  debug:
+    var: kibana_status
+
+- name: Wait for Kibana to start
+  wait_for:
+    host: localhost
+    port: 5601
+    timeout: 120
+  failed_when: false

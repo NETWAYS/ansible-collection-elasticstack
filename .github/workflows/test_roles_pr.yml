@@ -46,10 +46,12 @@ jobs:
       matrix:
         distro:
           - rockylinux8
+          - ubuntu2204
         scenario:
           - elasticstack_default
         release:
           - 8
+          - 7
 
     steps:
       - name: Check out code

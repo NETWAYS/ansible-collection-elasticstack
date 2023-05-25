@@ -115,6 +115,7 @@
 - name: Get kibana config # noqa 305
   shell: cat /etc/kibana/kibana.yml
   register: kibana_config
+  changed_when: false
 
 - debug:
     var: kibana_config
@@ -122,6 +123,7 @@
 - name: check kibana # noqa 305
   shell: "curl -I http://localhost:5601"
   register: kibana_state1
+  changed_when: false
 
 - debug:
     var: kibana_state1
@@ -134,6 +136,7 @@
   shell: "echo 'exit' | telnet localhost 5601"
   register: kibana_port
   failed_when: false
+  changed_when: false
 
 - debug:
     var: kibana_port

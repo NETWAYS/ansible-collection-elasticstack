@@ -83,85 +83,11 @@
     enabled: yes
   when: kibana_enable | bool
 
-- name: wait some time
-  wait_for:
-    timeout: 120
-
 # the following is useful when running tests or extra tasks that need to
 # have Kibana running
-
-- name: Get packages
-  package_facts:
-    manager: "auto"
-  changed_when: false
-
-- name: List packages
-  debug:
-    var: ansible_facts.packages
-
-- name: Install netstat
-  package:
-    name: net-tools
-
-- name: List hosts # noqa 305
-  shell: cat /etc/hosts
-  register: result_hosts
-  changed_when: false
-
-- name: print hosts
-  debug:
-    var: result_hosts
-
-- name: Get kibana config # noqa 305
-  shell: cat /etc/kibana/kibana.yml
-  register: kibana_config
-  changed_when: false
-
-- debug:
-    var: kibana_config
-
-- name: check kibana # noqa 305
-  shell: "curl -I http://localhost:5601"
-  register: kibana_state1
-  changed_when: false
-
-- debug:
-    var: kibana_state1
-
-- name: install telnet
-  package:
-    name: telnet
-
-- name: check kibana # noqa 305
-  shell: "echo 'exit' | telnet localhost 5601"
-  register: kibana_port
-  failed_when: false
-  changed_when: false
-
-- debug:
-    var: kibana_port
-
-- name: netstat # noqa 305
-  shell: netstat -taulpen
-  register: netstat_result
-  changed_when: false
-
-- name: print netstat
-  debug:
-    var: netstat_result
-
-- name: git kibana service status # noqa 305
-  shell: systemctl status kibana
-  register: kibana_status
-  changed_when: false
-
-- name: print kibana service status
-  debug:
-    var: kibana_status
 
 - name: Wait for Kibana to start
   wait_for:
     host: localhost
     port: 5601
-    timeout: 120
-  failed_when: false
+  tags: notest

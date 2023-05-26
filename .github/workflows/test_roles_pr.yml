@@ -3,7 +3,7 @@ name: Test Collection Roles
 on:
   pull_request:
     branches:
-      #- 'main'
+      - 'main'
       - 'feature/**'
       - 'fix/**'
       - '!doc/**'
@@ -46,9 +46,11 @@ jobs:
       matrix:
         distro:
           - rockylinux8
+          - ubuntu2204
         scenario:
           - elasticstack_default
         release:
+          - 7
           - 8
 
     steps:

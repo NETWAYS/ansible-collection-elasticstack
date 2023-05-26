@@ -88,5 +88,6 @@
 
 - name: Wait for Kibana to start
   wait_for:
-    host: {{ inventory_hostname }}
+    host: localhost
     port: 5601
+  tags: notest

@@ -525,6 +525,7 @@
 - name: Wait for all instances to start
   include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
+  tags: notest
 
 - name: Force all notified handlers to run at this point, not waiting for normal sync points
   ansible.builtin.meta: flush_handlers
@@ -537,6 +538,7 @@
   include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
   tags:
+    - notest
     - certificates
     - renew_ca
     - renew_es_cert

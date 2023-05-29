@@ -45,8 +45,8 @@ jobs:
       max-parallel: 1
       matrix:
         distro:
-          - rockylinux8
           - ubuntu2204
+          - rockylinux8
         scenario:
           - elasticstack_default
         release:

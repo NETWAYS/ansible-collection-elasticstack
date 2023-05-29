@@ -51,4 +51,3 @@
     - name: Include Beats
       include_role:
         name: beats
-

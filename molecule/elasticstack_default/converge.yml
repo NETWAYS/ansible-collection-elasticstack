@@ -48,6 +48,6 @@
       service:
         name: rsyslog
         state: started
-    - name: Include Kibana
+    - name: Include kibana
       include_role:
         name: kibana

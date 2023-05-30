@@ -34,7 +34,7 @@
           - openssl
           - unzip
           - systemd
-    
+
     - name: Update all installed packages RHEL
       yum:
         name: '*'

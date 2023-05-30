@@ -1,7 +1,10 @@
 ---
 # handlers file for elasticsearch
 - name: Restart Elasticsearch
-  service: "name=elasticsearch state=restarted"
+  service:
+    name: elasticsearch
+    state: restarted
+    daemon_reload: yes
   when: elasticsearch_enable | bool
 
 - name: Restart kibana if available for elasticsearch certificates

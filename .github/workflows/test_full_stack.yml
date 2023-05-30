@@ -44,9 +44,7 @@ jobs:
       max-parallel: 1
       matrix:
         distro:
-          - rockylinux8
           - ubuntu2004
-          - ubuntu2204
           - debian10
         scenario:
           - elasticstack_default

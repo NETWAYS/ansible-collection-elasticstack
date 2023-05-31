@@ -7,8 +7,8 @@ on:
       - 'fix/**'
       - '!doc/**'
 
-  merge_group:
-    types: [checks_requested]
+#  merge_group:
+#    types: [checks_requested]
 
 jobs:
   lint_full:

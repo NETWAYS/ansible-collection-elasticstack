@@ -1,12 +1,17 @@
 ---
-name: Test ElasticStack
+name: Test ElasticStack before release
 on:
-  push:
-    tags:
-      - '*'
-    branches:
-      - main
-  merge_group:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
 
 jobs:
 
@@ -46,6 +51,7 @@ jobs:
         distro:
           - ubuntu2004
           - debian10
+          - rockylinux9
         scenario:
           - elasticstack_default
         release:

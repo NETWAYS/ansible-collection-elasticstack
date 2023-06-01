@@ -26,6 +26,7 @@ elasticsearch_jna_workaround: false
 # elasticstack_ca: First host in the `elasticsearch` group
 elasticstack_ca_dir: /opt/es-ca
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
+elasticsearch_initialized_file: "{{ elasticstack_initial_passwords | dirname }}/cluster_initialized"
 elasticstack_ca_pass: PleaseChangeMe
 elasticsearch_tls_key_passphrase: PleaseChangeMeIndividually
 elasticstack_ca_expiration_buffer: 30

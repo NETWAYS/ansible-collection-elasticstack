@@ -26,20 +26,7 @@ cluster.initial_master_nodes: [ {% for host in groups['elasticsearch_role_master
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
 "{{ hostvars[host].ansible_hostname }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
-<<<<<<< HEAD
-{% endif %}
-{% endif %}
 
-{% if elastic_temperature is defined %}
-node.attr.temp: "{{ elastic_temperature }}"
-{% endif %}
-
-{% if elasticsearch_disable_systemcallfilterchecks | bool and elastic_release == 7 %}
-bootstrap.system_call_filter: false
-{% endif %}
-
-{% if elastic_variant == "elastic" %}
-=======
 {% if elasticstack_temperature is defined %}
 node.attr.temp: "{{ elasticstack_temperature }}"
 {% endif %}
@@ -47,7 +34,6 @@ node.attr.temp: "{{ elasticstack_temperature }}"
 bootstrap.system_call_filter: false
 {% endif %}
 {% if elasticstack_variant == "elastic" %}
->>>>>>> main
 xpack.ml.enabled: {{ elasticsearch_ml_enabled }}
 xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}
 {% if elasticsearch_security | bool %}

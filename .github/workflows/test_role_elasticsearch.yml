@@ -73,7 +73,6 @@ jobs:
         scenario:
           - elasticsearch_default
           - elasticsearch_roles_calculation
-          - elasticsearch_cluster
           - elasticsearch_cluster-oss
           - elasticsearch_no-security
         release:

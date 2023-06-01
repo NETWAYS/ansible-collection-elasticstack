@@ -26,6 +26,8 @@ cluster.initial_master_nodes: [ {% for host in groups['elasticsearch_role_master
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
 "{{ hostvars[host].ansible_hostname }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
+{% endif %}
+{% endif %}
 
 {% if elasticstack_temperature is defined %}
 node.attr.temp: "{{ elasticstack_temperature }}"

@@ -17,7 +17,7 @@ discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
 {% endfor %} ]
 {% endif %}
 
-{% if not elaticsearch_cluster_set_up | bool %}
+{% if not elaticsearch_cluster_set_up | bool and groups['elasticsearch'] | length > 1 %}
 {% if elasticsearch_node_types is defined %}
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch_role_master']  %}
 "{{ hostvars[host].ansible_hostname }}"{% if not loop.last %},{% endif %}

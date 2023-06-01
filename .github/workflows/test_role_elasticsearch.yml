@@ -67,11 +67,17 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 4
       matrix:
         distro: [ubuntu2204]
-        scenario: [elasticsearch_default, elasticsearch_cluster-oss, elasticsearch_no-security]
-        release: [7, 8]
+        scenario:
+          - elasticsearch_default
+          - elasticsearch_roles_calculation
+          - elasticsearch_cluster-oss
+          - elasticsearch_no-security
+        release:
+          - 7
+          - 8
 
     steps:
       - name: Check out code

@@ -19,6 +19,7 @@ Requirements
 ------------
 
 * `community.general` collection
+* `cryptography` >= 2.5
 
 You need to have the Elastic Repos configured on your system. You can use our [role](./role-repos.md)
 

@@ -13,35 +13,25 @@
     path: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
   register: beats_cert_exists
 
-- name: Get the beats certificate expiration date # noqa: risky-shell-pipe
-  shell: >-
-    if test -v BASH; then set -o pipefail; fi;
-    openssl x509
-    -in '/etc/beats/certs/{{ inventory_hostname }}-beats.crt'
-    -noout -enddate |
-    awk -F'=' '{print $2}'
+- name: Get the beats certificate expiration date
+  community.crypto.x509_certificate_info:
+    path: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
+    valid_at:
+      check_period: "{{ beats_cert_expiration_buffer }}"
   register: beats_cert_expiration_date
-  args:
-    executable: /bin/bash
-  changed_when: false
   when: beats_cert_exists.stat.exists | bool
-
-- name: Set the beats certificate expiration date in days
-  set_fact:
-    beats_cert_expiration_days: "{{ ((beats_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
-  when: beats_cert_expiration_date.skipped is not defined
 
 - name: Set beats certificate will expire soon to true
   set_fact:
     beats_cert_will_expire_soon: true
-  when: beats_cert_expiration_days is defined and beats_cert_expiration_days | int <= beats_cert_expiration_buffer | int
+  when: beats_cert_expiration_date.skipped is not defined and not beats_cert_expiration_date.valid_at.check_period
 
 - name: Print the beats certificate renew message
   debug:
     msg: |
-      Your beats certificate will expire in {{ beats_cert_expiration_days }}.
+      Your beats certificate will expire before {{ beats_cert_expiration_buffer }}.
       Ansible will renew it.
-  when: beats_cert_expiration_days is defined and beats_cert_expiration_days | int <= beats_cert_expiration_buffer | int
+  when: beats_cert_expiration_date.skipped is not defined and not beats_cert_expiration_date.valid_at.check_period
 
 - name: Backup beats certs then remove
   when: "'renew_beats_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or beats_cert_will_expire_soon | bool"
@@ -239,7 +229,7 @@
 
 - name: Fetch Beats password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
     awk {' print $4 '}
   register: beats_writer_password

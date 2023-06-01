@@ -1,5 +1,6 @@
 ---
 # defaults file for elasticsearch
+elasticsearch_enable: true
 elasticsearch_ml_enabled: true
 elasticsearch_config_backup: false
 elasticsearch_manage_yaml: true

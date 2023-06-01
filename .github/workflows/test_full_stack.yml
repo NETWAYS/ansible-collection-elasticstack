@@ -12,12 +12,8 @@ on:
           - info
           - warning
           - debug
-#  push:
-#    tags:
-#      - '*'
-#    branches:
-#      - main
-#  merge_group:
+  schedule:
+    - cron: "0 4 * * *"
 
 jobs:
 
@@ -52,13 +48,17 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 6
       matrix:
         distro:
           - rockylinux8
+          - rockylinux9
           - ubuntu2004
           - ubuntu2204
           - debian10
+          - debian11
+          - centos7
+          - centos8
         scenario:
           - elasticstack_default
         release:

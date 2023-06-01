@@ -51,3 +51,6 @@
     - name: Include kibana
       include_role:
         name: kibana
+    - name: Include Beats
+      include_role:
+        name: beats

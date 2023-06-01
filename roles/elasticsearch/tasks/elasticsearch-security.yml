@@ -245,7 +245,6 @@
     - Restart Elasticsearch
   ignore_errors: "{{ ansible_check_mode }}"
 
-
 - name: Get xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
@@ -273,7 +272,6 @@
   notify:
     - Restart Elasticsearch
 
-
 - name: Remove xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
   shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
@@ -286,7 +284,6 @@
     - not elasticsearch_http_security
   notify:
     - Restart Elasticsearch
-
 
 - name: Get xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
   shell: >
@@ -563,8 +560,9 @@
   register: elasticsearch_cluster_status_bootstrap
   changed_when: false
   no_log: true
-  ignore_errors: true
-  when: not elasticsearch_passwords_file.stat.exists | bool
+  when:
+    - not elasticsearch_passwords_file.stat.exists | bool
+    - groups['elasticsearch'] | length > 1
   until: elasticsearch_cluster_status_bootstrap.stdout == "green"
   retries: 5
   delay: 10
@@ -590,8 +588,9 @@
   register: elasticsearch_cluster_status
   changed_when: false
   no_log: true
-  ignore_errors: true
-  when: elasticsearch_passwords_file.stat.exists | bool
+  when:
+    - elasticsearch_passwords_file.stat.exists | bool
+    - groups['elasticsearch'] | length > 1
   until: elasticsearch_cluster_status.stdout == "green"
   retries: 20
   delay: 10

@@ -32,13 +32,13 @@
     elasticstack_ca_will_expire_soon: true
   when: >
     inventory_hostname == elasticstack_ca and
-    elasticsearch_cert_expiration_days is defined and
-    elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
+    elasticstack_ca_expiration_days is defined and
+    elasticstack_ca_expiration_days | int <= elasticstack_ca_expiration_buffer | int
 
 - name: Print the ca renew message
   debug:
     msg: |
-      Your ca will expire in {{ elasticstack_ca_expiration_days }}.
+      Your ca will expire in {{ elasticstack_ca_expiration_days }} days.
       Ansible will renew it and all elastic stack certificates
   when: >
     inventory_hostname == elasticstack_ca and
@@ -107,24 +107,17 @@
     path: "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
   register: elasticsearch_cert_exists
 
-- name: Get the elasticsearch certificate expiration date # noqa: risky-shell-pipe
-  shell: >-
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    openssl pkcs12
-    -in "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
-    -nodes
-    -passin pass:"{{ elasticsearch_tls_key_passphrase }}" |
-    openssl x509 -noout -enddate |
-    awk -F'=' '{print $2}'
-  register: elasticsearch_cert_expiration_date
-  changed_when: false
-  no_log: true
+- name: Get the elasticsearch certificate expiration date
+  cert_info:
+    path: "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
+    passphrase: "{{ elasticsearch_tls_key_passphrase | default(omit, true) }}"
+  register: elasticsearch_cert_infos
   when: elasticsearch_cert_exists.stat.exists | bool
 
 - name: Set the elasticsearch certificate expiration date in days
   set_fact:
-    elasticsearch_cert_expiration_days: "{{ ((elasticsearch_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
-  when: elasticsearch_cert_expiration_date.skipped is not defined
+    elasticsearch_cert_expiration_days: "{{ ((elasticsearch_cert_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  when: elasticsearch_cert_infos.skipped is not defined
 
 - name: Set elasticsearch certificate will expire soon to true
   set_fact:
@@ -134,9 +127,9 @@
 - name: Print the elasticsearch certificate renew message
   debug:
     msg: |
-      Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }}.
+      Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }} days.
       Ansible will renew it.
-  when: elasticsearch_cert_expiration_day is defined and elasticstack_ca_expiration_days | int <= elasticstack_ca_expiration_buffer | int
+  when: elasticsearch_cert_expiration_days is defined and elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
 
 - name: Backup elasticsearch certs on node then remove
   when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
@@ -549,6 +542,7 @@
 - name: Wait for all instances to start
   include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
+  tags: notest
 
 - name: Force all notified handlers to run at this point, not waiting for normal sync points
   ansible.builtin.meta: flush_handlers
@@ -561,6 +555,7 @@
   include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
   tags:
+    - notest
     - certificates
     - renew_ca
     - renew_es_cert

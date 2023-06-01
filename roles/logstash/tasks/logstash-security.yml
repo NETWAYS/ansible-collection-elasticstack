@@ -26,40 +26,29 @@
     path: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"
   register: logstash_cert_exists
 
-- name: Get the logstash certificate expiration date # noqa: risky-shell-pipe
-  shell: >-
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    openssl pkcs12
-    -in '{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12'
-    -nodes
-    -passin pass:'{{ logstash_tls_key_passphrase }}' |
-    openssl x509
-    -noout
-    -enddate |
-    awk -F'=' '{print $2}'
+- name: Get the logstash certificate expiration date
+  cert_info:
+    path: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"
+    passphrase: "{{ logstash_tls_key_passphrase | default(omit, true) }}"
   register: logstash_cert_expiration_date
-  args:
-    executable: /bin/bash
-  changed_when: false
-  no_log: true
   when: logstash_cert_exists.stat.exists | bool
 
 - name: Set the logstash certificate expiration date in days
   set_fact:
-    logstash_cert_expiration_days: "{{ ((logstash_cert_expiration_date.stdout | to_datetime('%b %d %H:%M:%S %Y %Z')) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    logstash_cert_expiration_days: "{{ ((logstash_cert_expiration_date.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: logstash_cert_expiration_date.skipped is not defined
 
 - name: Set logstash certificate will expire soon to true
   set_fact:
     logstash_cert_will_expire_soon: true
-  when: kiban_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_cert_expiration_buffer | int
+  when: logstash_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_cert_expiration_buffer | int
 
 - name: Print the logstash certificate renew message
   debug:
     msg: |
-      Your logstash certificate will expire in {{ logstash_cert_expiration_days }}.
+      Your logstash certificate will expire in {{ logstash_cert_expiration_days }} days.
       Ansible will renew it.
-  when: logstash_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_expiration_buffer | int
+  when: logstash_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_cert_expiration_buffer | int
 
 - name: Backup logstash certs then remove
   when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
@@ -225,6 +214,18 @@
     - renew_logstash_cert
 
 - name: Copy the certificate to logstash node
+  copy:
+    src: "/tmp/{{ ansible_hostname }}-ls.p12"
+    dest: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"
+    owner: root
+    group: logstash
+    mode: 0640
+  tags:
+    - certificates
+    - renew_ca
+    - renew_logstash_cert
+
+- name: Put the certificate in keystore
   copy:
     src: "/tmp/{{ ansible_hostname }}-ls.p12"
     dest: "{{ logstash_certs_dir }}/keystore.pfx"

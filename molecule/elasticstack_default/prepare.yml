@@ -32,3 +32,20 @@
         name:
           - git
           - openssl
+          - unzip
+          - systemd
+
+    - name: Update all installed packages RHEL
+      yum:
+        name: '*'
+        state: latest
+        update_cache: yes
+        update_only: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: Update all installed packages Debian
+      apt:
+        name: '*'
+        state: latest
+        update_cache: yes
+      when: ansible_os_family == "Debian"

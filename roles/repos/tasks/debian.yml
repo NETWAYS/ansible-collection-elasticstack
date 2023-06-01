@@ -1,4 +1,9 @@
 ---
+- name: Ensure gpg exists, for signing keys
+  ansible.builtin.apt:
+    name: gpg
+    state: present
+
 - name: Ensure Elastic Stack key is available (Debian)
   ansible.builtin.apt_key:
     url: https://artifacts.elastic.co/GPG-KEY-elasticsearch

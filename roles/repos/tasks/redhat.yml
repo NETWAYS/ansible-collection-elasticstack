@@ -3,6 +3,11 @@
 # See https://github.com/elastic/elasticsearch/issues/85876
 # for more information why this is needed
 
+- name: Ensure gpg exists, for signing keys
+  ansible.builtin.yum:
+    name: gnupg
+    state: present
+
 - name: Workaround for EL > 8
   when:
     - ansible_distribution_major_version >= "9"

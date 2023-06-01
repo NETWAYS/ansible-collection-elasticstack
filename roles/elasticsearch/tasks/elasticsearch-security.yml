@@ -515,29 +515,11 @@
     - renew_es_cert
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: Debug get elasticsearchyml
-  command: cat /etc/elasticsearch/elasticsearch.yml
-  changed_when: false
-  register: elasticsearchyaml
-
-- name: Debug show yaml
-  debug:
-    var: elasticsearchyaml
-
 - name: Start Elasticsearch
   service:
     name: elasticsearch
     state: started
   failed_when: false
-
-- name: Debug fetch log
-  command: cat /var/log/elasticsearch/elasticsearch.log
-  changed_when: false
-  register: elasticsearchlog
-
-- name: Debug show log
-  debug:
-    var: elasticsearchlog
 
 - name: Wait for all instances to start
   include_tasks: wait_for_instance.yml
@@ -560,15 +542,6 @@
     - renew_ca
     - renew_es_cert
 
-- name: Debug fetch log
-  command: cat /var/log/elasticsearch/elasticsearch.log
-  changed_when: false
-  register: elasticsearchlog
-
-- name: Debug show log
-  debug:
-    var: elasticsearchlog
-
 - name: Check for passwords being set
   stat:
     path: "{{ elasticstack_initial_passwords }}"
@@ -580,10 +553,6 @@
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
 
-- name: Debug protocol
-  debug:
-    var: elasticsearch_http_protocol
-
 - name: Check for cluster status with bootstrap password # noqa: risky-shell-pipe
   shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
@@ -593,24 +562,12 @@
     cut -d\" -f4
   register: elasticsearch_cluster_status_bootstrap
   changed_when: false
-  #no_log: true #debug
+  no_log: true
   ignore_errors: true
   when: not elasticsearch_passwords_file.stat.exists | bool
   until: elasticsearch_cluster_status_bootstrap.stdout == "green"
   retries: 5
   delay: 10
-
-- name: Debug bootstrap_pw
-  debug:
-    var: elasticsearch_bootstrap_pw
-
-- name: Debug passwords file
-  debug:
-    var: elasticsearch_passwords_file
-
-- name: Debug output
-  debug:
-    var: es_cluster_status_bootstrap
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   shell: >
@@ -632,7 +589,7 @@
     cut -d\" -f4
   register: elasticsearch_cluster_status
   changed_when: false
-  # no_log: true
+  no_log: true
   ignore_errors: true
   when: elasticsearch_passwords_file.stat.exists | bool
   until: elasticsearch_cluster_status.stdout == "green"
@@ -650,15 +607,6 @@
 - name: Set var that cluster is set up
   set_fact:
     elaticsearch_cluster_set_up: true
-
-- name: Debug fetch log
-  command: cat /var/log/elasticsearch/elasticsearch.log
-  changed_when: false
-  register: elasticsearchlog
-
-- name: Debug show log
-  debug:
-    var: elasticsearchlog
 
 - name: Create initial passwords # noqa: risky-shell-pipe
   shell: >

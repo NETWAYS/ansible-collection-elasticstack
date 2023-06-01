@@ -186,15 +186,6 @@
   notify:
     - Restart Elasticsearch
 
-- name: Debug fetch log
-  command: cat /var/log/elasticsearch/elasticsearch.log
-  changed_when: false
-  register: elasticsearchlog
-
-- name: Debug show log
-  debug:
-    var: elasticsearchlog
-
 - name: Start Elasticsearch
   service:
     name: elasticsearch

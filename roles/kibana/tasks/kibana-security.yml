@@ -137,7 +137,7 @@
   block:
     - name: Generate encryption key # noqa: risky-shell-pipe
       shell: >
-        if test -v BASH; then set -o pipefail; fi;
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
         openssl rand -base64 36 >
         {{ elasticstack_ca_dir }}/encryption_key
       changed_when: false
@@ -151,7 +151,7 @@
 
     - name: Generate saved objects encryption key # noqa: risky-shell-pipe
       shell: >
-        if test -v BASH; then set -o pipefail; fi;
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
         openssl rand
         -base64 36 >
         {{ elasticstack_ca_dir }}/savedobjects_encryption_key
@@ -222,7 +222,7 @@
 
 - name: Fetch Kibana password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep "PASSWORD kibana_system " /usr/share/elasticsearch/initial_passwords |
     awk {' print $4 '}
   register: kibana_password

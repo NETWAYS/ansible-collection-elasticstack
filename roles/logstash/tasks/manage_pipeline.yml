@@ -7,7 +7,7 @@
 
 - name: Check who managed pipeline in last run # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep -e '^# source:{{ pipelinename.name }}' /etc/logstash/pipelines.yml |
     cut -d: -f3
   register: "logstash_pipeline_manager"

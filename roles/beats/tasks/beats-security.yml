@@ -229,7 +229,7 @@
 
 - name: Fetch Beats password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
     awk {' print $4 '}
   register: beats_writer_password

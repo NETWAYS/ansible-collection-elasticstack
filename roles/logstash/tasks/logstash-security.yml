@@ -386,7 +386,7 @@
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
     awk {' print $4 '}
   register: logstash_elasticstack_password
@@ -399,7 +399,7 @@
 
 - name: Check for logstash_writer role # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     curl --cacert {{ elasticstack_ca_dir }}/ca.crt
     -u elastic:{{ logstash_elasticstack_password.stdout }}
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/role/logstash_writer
@@ -445,7 +445,7 @@
 
 - name: Check for logstash_writer user # noqa: risky-shell-pipe
   shell: >
-    if test -v BASH; then set -o pipefail; fi;
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     curl --cacert {{ elasticstack_ca_dir }}/ca.crt
     -u elastic:{{ logstash_elasticstack_password.stdout }}
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/user/{{ logstash_user }}

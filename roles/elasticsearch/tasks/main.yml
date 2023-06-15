@@ -13,7 +13,7 @@
     - name: Refresh apt cache if config dir is missing
       apt:
         refresh_cache: yes
-      when: not elasticsearch_configdir_stat.exists
+      when: not elasticsearch_configdir_stat.stat.exists
 
 - name: Check-set-parameters
   ansible.builtin.include_tasks: elasticsearch-parameters.yml

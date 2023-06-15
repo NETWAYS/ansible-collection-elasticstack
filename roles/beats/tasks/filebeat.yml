@@ -13,7 +13,7 @@
     - name: Refresh apt cache if config dir is missing
       apt:
         refresh_cache: yes
-      when: not beats_filebeat_configdir_stat.exists
+      when: not beats_filebeat_configdir_stat.stat.exists
 
 - name: Construct exact name of Filebeat package
   set_fact:

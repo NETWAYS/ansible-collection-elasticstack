@@ -13,7 +13,7 @@
     - name: Refresh apt cache if config dir is missing
       apt:
         refresh_cache: yes
-      when: not logstash_configdir_stat.exists
+      when: not logstash_configdir_stat.stat.exists
 
 - name: Include OS specific vars
   include_vars: '{{ item }}'

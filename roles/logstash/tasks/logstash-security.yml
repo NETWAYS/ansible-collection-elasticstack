@@ -437,7 +437,6 @@
     body_format: json
   register: result
   when: logstash_writer_role_present is not defined
-  ignore_errors: true
 
 - name: Check for logstash_writer user
   uri:
@@ -469,4 +468,3 @@
     body_format: json
   register: result
   when: logstash_writer_role_present is not defined
-  ignore_errors: true

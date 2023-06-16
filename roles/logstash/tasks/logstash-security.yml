@@ -398,7 +398,7 @@
     - logstash_configuration
 
 - name: Set elasticsearch security-api base url for elasticsearch > 7
-  set_fact: 
+  set_fact:
     security_api_base_url: "https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/"
   when: elasticstack_release | int > 7
 
@@ -420,7 +420,7 @@
   run_once: true
 
 - name: Set logstash_writer_role_present
-  set_fact: 
+  set_fact:
     logstash_writer_role_present: true
   when: 'logstash_writer_response.status == 200'
 
@@ -451,7 +451,7 @@
   run_once: true
 
 - name: Set logstash_writer_user_present
-  set_fact: 
+  set_fact:
     logstash_writer_user_present: true
   when: 'logstash_writer_user_response.status == 200'
 

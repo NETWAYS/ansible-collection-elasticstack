@@ -200,7 +200,7 @@
   when: not elasticsearch_security | bool
   block:
     - name: Check for cluster status without security
-      uri: 
+      uri:
         url: "http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
       register: result
       ignore_errors: "{{ ansible_check_mode }}"

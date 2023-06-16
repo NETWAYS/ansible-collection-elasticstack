@@ -397,51 +397,128 @@
     - configuration
     - logstash_configuration
 
-- name: Check for logstash_writer role # noqa: risky-shell-pipe
-  shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    curl --cacert {{ elasticstack_ca_dir }}/ca.crt
-    -u elastic:{{ logstash_elasticstack_password.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/role/logstash_writer
-    | grep "enabled"
+- name: Set elasticsearch security-api base url for elasticsearch > 7
+  set_fact: 
+    security_api_base_url: "https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/"
+  when: elasticstack_release | int > 7
+
+- name: Set elasticsearch security-api base url for elasticsearch < 8
+  set_fact:
+    security_api_base_url: "https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/"
+  when: elasticstack_release | int < 8
+
+- name: Check for logstash_writer role
+  uri:
+    url: "{{ security_api_base_url }}role/logstash_writer"
+    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
+    user: elastic
+    password: "{{ logstash_elasticstack_password.stdout }}"
+  register: logstash_writer_response
   delegate_to: "{{ elasticstack_ca }}"
   failed_when: false
   changed_when: false
-  register: logstash_writer_role_present
-  no_log: true
   run_once: true
+
+- name: Set logstash_writer_role_present
+  set_fact: 
+    logstash_writer_role_present: true
+  when: 'logstash_writer_response.status == 200'
+
+- name: Put logstash_writer role into Elasticsearch if not present
+  uri:
+    url: "{{ security_api_base_url }}role/logstash_writer"
+    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
+    user: elastic
+    password: "{{ logstash_elasticstack_password.stdout }}"
+    method: PUT
+    headers:
+      Content-Type: application/json
+    body: "{{ lookup('template', 'logstash_writer_role.j2') }}"
+    body_format: json
+  register: result
+  when: logstash_writer_role_present is not defined
+  ignore_errors: true
+
+- name: Check for logstash_writer user
+  uri:
+    url: "{{ security_api_base_url }}user/{{ logstash_user }}"
+    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
+    user: elastic
+    password: "{{ logstash_elasticstack_password.stdout }}"
+  register: logstash_writer_user_response
+  delegate_to: "{{ elasticstack_ca }}"
+  failed_when: false
+  changed_when: false
+  run_once: true
+
+- name: Set logstash_writer_user_present
+  set_fact: 
+    logstash_writer_user_present: true
+  when: 'logstash_writer_user_response.status == 200'
+
+- name: Put logstash_writer role into Elasticsearch if not present
+  uri:
+    url: "{{ security_api_base_url }}user/{{ logstash_user }}"
+    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
+    user: elastic
+    password: "{{ logstash_elasticstack_password.stdout }}"
+    method: PUT
+    headers:
+      Content-Type: application/json
+    body: "{{ lookup('template', 'logstash_writer_user.j2') }}"
+    body_format: json
+  register: result
+  when: logstash_writer_role_present is not defined
+  ignore_errors: true
+
+- name: end
+  meta: end_play
+
+# - name: Check for logstash_writer role # noqa: risky-shell-pipe
+#   shell: >
+#     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+#     curl --cacert {{ elasticstack_ca_dir }}/ca.crt
+#     -u elastic:{{ logstash_elasticstack_password.stdout }}
+#     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/role/logstash_writer
+#     | grep "enabled"
+#   delegate_to: "{{ elasticstack_ca }}"
+#   failed_when: false
+#   changed_when: false
+#   register: logstash_writer_role_present
+#   no_log: true
+#   run_once: true
 
 # we doubled the task and didn't use a more sophisticated way to just change
 # the URI because we expect this task to be removed when ES 7 is out of
 # support
 
-- name: Put logstash_writer role into Elasticsearch < 8
-  command: >
-    curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
-    --cacert {{ elasticstack_ca_dir }}/ca.crt
-    -u elastic:{{ logstash_elasticstack_password.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/role/logstash_writer
-  delegate_to: "{{ elasticstack_ca }}"
-  changed_when: false
-  no_log: true
-  run_once: true
-  when:
-    - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
-    - elasticstack_release | int < 8
+# - name: Put logstash_writer role into Elasticsearch < 8
+#   command: >
+#     curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
+#     --cacert {{ elasticstack_ca_dir }}/ca.crt
+#     -u elastic:{{ logstash_elasticstack_password.stdout }}
+#     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/role/logstash_writer
+#   delegate_to: "{{ elasticstack_ca }}"
+#   changed_when: false
+#   no_log: true
+#   run_once: true
+#   when:
+#     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
+#     - elasticstack_release | int < 8
 
-- name: Put logstash_writer role into Elasticsearch > 7
-  command: >
-    curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
-    --cacert {{ elasticstack_ca_dir }}/ca.crt
-    -u elastic:{{ logstash_elasticstack_password.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/role/logstash_writer
-  delegate_to: "{{ elasticstack_ca }}"
-  changed_when: false
-  run_once: true
-  no_log: true
-  when:
-    - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
-    - elasticstack_release | int > 7
+# - name: Put logstash_writer role into Elasticsearch > 7
+#   command: >
+#     curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
+#     --cacert {{ elasticstack_ca_dir }}/ca.crt
+#     -u elastic:{{ logstash_elasticstack_password.stdout }}
+#     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/role/logstash_writer
+#   delegate_to: "{{ elasticstack_ca }}"
+#   changed_when: false
+#   run_once: true
+#   no_log: true
+#   when:
+#     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
+#     - elasticstack_release | int > 7
 
 - name: Check for logstash_writer user # noqa: risky-shell-pipe
   shell: >

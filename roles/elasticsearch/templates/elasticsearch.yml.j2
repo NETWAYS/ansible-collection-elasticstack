@@ -51,6 +51,9 @@ xpack.security.http.ssl.keystore.path: certs/{{ ansible_hostname }}.p12
 xpack.security.http.ssl.truststore.path: certs/{{ ansible_hostname }}.p12
 {% endif %}
 {% endif %}
+{% if not elasticsearch_security | bool %}
+xpack.security.enabled: false
+{% endif %}
 {% endif %}
 
 {% if elasticsearch_fs_repo is defined %}

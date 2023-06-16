@@ -186,6 +186,24 @@
   notify:
     - Restart Elasticsearch
 
+- name: remove not needed keystore entries without security
+  when: not elasticsearch_security | bool
+  block:
+    - name: remove xpack.security.http.ssl.keystore.secure_password
+      shell: /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.http.ssl.keystore.secure_password
+      failed_when: false
+      changed_when: false
+    
+    - name: remove xpack.security.transport.ssl.keystore.secure_password
+      shell: /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.keystore.secure_password
+      failed_when: false
+      changed_when: false
+
+    - name: remove xpack.security.transport.ssl.truststore.secure_password
+      shell: /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.truststore.secure_password
+      failed_when: false
+      changed_when: false
+
 - name: Start Elasticsearch
   service:
     name: elasticsearch
@@ -196,19 +214,12 @@
 - name: Handle cluster setup without security
   when: not elasticsearch_security | bool
   block:
-
-    - name: Check for cluster status without security # noqa: risky-shell-pipe
-      shell: >
-        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-        curl -s
-        http://localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
-        grep status |
-        cut -d\" -f4
-      register: es_cluster_status
-      changed_when: false
-      no_log: true
+    - name: Check for cluster status without security
+      uri: 
+        url: http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty
+      register: result
       ignore_errors: "{{ ansible_check_mode }}"
-      until: es_cluster_status.stdout == "green"
+      until: result.json.status == "green"
       retries: 5
       delay: 10
 

@@ -151,6 +151,9 @@
     - {create: "{{elasticsearch_create_logpath}}", path: "{{ elasticsearch_logpath }}" }
     - {create: "{{elasticsearch_create_datapath}}", path: "{{ elasticsearch_datapath }}" }
 
+- name: Import Tasks elasticsearch-keystore.yml
+  import_tasks: elasticsearch-keystore.yml
+
 - name: Import Tasks elasticsearch-security.yml
   import_tasks: elasticsearch-security.yml
   when:
@@ -186,24 +189,6 @@
   notify:
     - Restart Elasticsearch
 
-- name: remove not needed keystore entries without security
-  when: not elasticsearch_security | bool
-  block:
-    - name: remove xpack.security.http.ssl.keystore.secure_password
-      shell: /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.http.ssl.keystore.secure_password
-      failed_when: false
-      changed_when: false
-    
-    - name: remove xpack.security.transport.ssl.keystore.secure_password
-      shell: /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.keystore.secure_password
-      failed_when: false
-      changed_when: false
-
-    - name: remove xpack.security.transport.ssl.truststore.secure_password
-      shell: /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.truststore.secure_password
-      failed_when: false
-      changed_when: false
-
 - name: Start Elasticsearch
   service:
     name: elasticsearch
@@ -216,7 +201,7 @@
   block:
     - name: Check for cluster status without security
       uri: 
-        url: http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty
+        url: "http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
       register: result
       ignore_errors: "{{ ansible_check_mode }}"
       until: result.json.status == "green"

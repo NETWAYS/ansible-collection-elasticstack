@@ -9,13 +9,18 @@ If you use the role to set up security you, can use its CA to create certificate
 
 Please note that setting `elasticsearch_bootstrap_pw` as variable will only take effect when initialising Elasticsearch. Changes after starting elasticsearch for the first time will not change the bootstrap password for the instance and will lead to breaking tests.
 
+Requirements
+------------
+
+* `cryptography` >= 2.5
+
 Role Variables
 --------------
 
-* *elasticsearch_enable*: Start and enable Elasticsearch (default: `true`)
+* *elasticsearch_node_types*: List of types of this very node. Please refer to [official docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html) for details. (default: not set. allowed value: array of types)
 * *elasticsearch_heap*: Heapsize for Elasticsearch. (Half of free memory on host. Maximum 30GB. (default: Half of hosts memory. Min 1GB, Max 30GB)
 * *elasticsearch_tls_key_passphrase*: Passphrase for elasticsearch certificates (default: `PleaseChangeMeIndividually`)
-* *elasticsearch_cert_expiration_buffer*: Ansible will renew the elasticsearch certificate if its validity is shorter than this value, which should be number of days. (default: 30)
+* *elasticsearch_cert_expiration_buffer*: Ansible will renew the elasticsearch certificate if its validity is shorter than this value, which should be number of days. (default: `30`)
 * *elasticsearch_cert_will_expire_soon*: Set it to true to renew elasticsearch certificate (default: `false`), Or run the playbook with `--tags renew_elasticsearch_cert` to do that.
 * *elasticsearch_datapath*: Path where Elasticsearch will store it's data. (default: `/var/lib/elasticsearch` - the packages default)
 * *elasticsearch_create_datapath*: Create the path for data to store if it doesn't exist. (default: `false` - only useful if you change `elasticsearch_datapath`)
@@ -25,6 +30,7 @@ Role Variables
 * *elasticsearch_bootstrap_pw*: Bootstrap password for Elasticsearch (Default: `PleaseChangeMe`)
 * *elasticsearch_disable_systemcallfilterchecks*: Disable system call filter checks. This has a security impact but is necessary on some systems. Please refer to the [docs](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/_system_call_filter_check.html) for details. (default: `false`)
 * *elasticsearch_pamlimits*: Set pam_limits neccessary for Elasticsearch. (Default: `true`)
+* *elasticsearch_check_calculation*: End play in checks (Default: `false`)
 
 This variable activates a workaround to start on systems that have certain hardening measures active. See [Stackoverflow](https://stackoverflow.com/questions/47824643/unable-to-load-jna-native-support-library-elasticsearch-6-x/50371992#50371992) for details and logmessages to look for. **WARNING**: This will change your `/etc/sysconfig/elasticseach`or `/etc/default/elasticsearch` file and overwrite `ES_JAVA_OPTS`. See this [issue](https://github.com/netways/ansible-role-elasticsearch/issues/79) for details.
 

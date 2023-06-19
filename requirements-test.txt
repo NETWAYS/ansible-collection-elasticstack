@@ -1,5 +1,5 @@
 ansible
 ansible-lint
 molecule
-molecule-docker
+molecule-plugins[docker]
 pytest

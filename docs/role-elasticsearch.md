@@ -32,6 +32,7 @@ Role Variables
 * *ealsticsearch_http_publish_host*: (String) The network address for HTTP clients to contact the node using sniffing. Accepts an IP address, a hostname, or a special value. (default: `not set`)
 * *ealsticsearch_http_publish_port*: (integer) The port of the HTTP publish address. Configure this setting only if you need the publish port to be different from http.port. (default: `not set`)
 * *elasticsearch_pamlimits*: Set pam_limits neccessary for Elasticsearch. (Default: `true`)
+* *elasticsearch_check_calculation*: End play in checks (Default: `false`)
 
 This variable activates a workaround to start on systems that have certain hardening measures active. See [Stackoverflow](https://stackoverflow.com/questions/47824643/unable-to-load-jna-native-support-library-elasticsearch-6-x/50371992#50371992) for details and logmessages to look for. **WARNING**: This will change your `/etc/sysconfig/elasticseach`or `/etc/default/elasticsearch` file and overwrite `ES_JAVA_OPTS`. See this [issue](https://github.com/netways/ansible-role-elasticsearch/issues/79) for details.
 

@@ -4,9 +4,9 @@ on:
   pull_request:
     branches:
       - 'main'
-      #- 'feature/**'
-      #- 'fix/**'
-      #- '!doc/**'
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
     paths:
       - 'roles/**'
       - '.github/workflows/test_roles_pr.yml'

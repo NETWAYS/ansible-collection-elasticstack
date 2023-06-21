@@ -7,7 +7,12 @@ on:
       - 'feature/**'
       - 'fix/**'
       - '!doc/**'
-
+    paths:
+      - 'roles/**'
+      - '.github/workflows/test_roles_pr.yml'
+      - 'molecule/elasticsearch_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
   merge_group:
     types: [checks_requested]
 

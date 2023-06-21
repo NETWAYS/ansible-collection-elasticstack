@@ -15,7 +15,17 @@ on:
   pull_request:
     branches:
       - 'main'
-
+  push:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'roles/**'
+      - '.github/workflows/test_roles_pr.yml'
+      - 'molecule/elasticstack_default/**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
   merge_group:
     types: [checks_requested]
 

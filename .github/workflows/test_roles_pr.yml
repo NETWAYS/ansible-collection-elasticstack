@@ -2,8 +2,8 @@
 name: Test Collection Roles
 on:
   pull_request:
-    #branches:
-      #- 'main'
+    branches:
+      - 'main'
       #- 'feature/**'
       #- 'fix/**'
       #- '!doc/**'

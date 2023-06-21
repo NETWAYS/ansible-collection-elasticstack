@@ -24,8 +24,8 @@ on:
       - '.config/ansible-lint.yml'
       - '.yamllint'
   pull_request:
-    branches:
-      - 'feature/**'
+    #branches:
+      #- 'feature/**'
       #- 'fix/**'
       #- '!doc/**'
     paths:

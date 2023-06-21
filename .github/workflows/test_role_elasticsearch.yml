@@ -27,7 +27,7 @@ on:
     branches:
       - 'feature/**'
       - 'fix/**'
-      - '!doc/**'
+      #- '!doc/**'
     paths:
       - 'roles/elasticsearch/**'
       - '.github/workflows/test_role_elasticsearch.yml'

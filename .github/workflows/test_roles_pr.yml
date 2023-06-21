@@ -3,7 +3,7 @@ name: Test Collection Roles
 on:
   pull_request:
     branches:
-    #  - 'main'
+      - 'main'
       - 'feature/**'
       - 'fix/**'
       - '!doc/**'

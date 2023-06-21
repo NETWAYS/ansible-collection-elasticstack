@@ -226,7 +226,7 @@
 
 # See https://github.com/NETWAYS/ansible-collection-elasticstack/issues/137
 # for details why we have this task again here
-#
+
 - name: Configure Elasticsearch
   template:
     src: elasticsearch.yml.j2

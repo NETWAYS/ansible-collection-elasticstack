@@ -34,8 +34,6 @@ on:
       - 'molecule/elasticstack_default/**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
-  merge_group:
-    types: [checks_requested]
 
 jobs:
   lint_full:

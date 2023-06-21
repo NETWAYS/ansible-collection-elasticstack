@@ -23,11 +23,11 @@ on:
       - 'molecule/elasticsearch_**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
-  pull_request:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
+  #pull_request:
+  #  branches:
+    #  - 'feature/**'
+    #  - 'fix/**'
+    #  - '!doc/**'
   #  paths:
     #  - 'roles/elasticsearch/**'
     #  - '.github/workflows/test_role_elasticsearch.yml'

@@ -3,7 +3,7 @@ name: Test Collection Roles
 on:
   pull_request:
     branches:
-      - 'main'
+    #  - 'main'
       - 'feature/**'
       - 'fix/**'
       - '!doc/**'
@@ -13,10 +13,8 @@ on:
       - 'molecule/elasticsearch_**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
-#  merge_group:
-#
-#
-#    types: [checks_requested]
+  merge_group:
+    types: [checks_requested]
 
 
 jobs:

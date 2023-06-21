@@ -13,7 +13,6 @@ Requirements
 Role Variables
 --------------
 
-* *kibana_elasticsearch_hosts*: A list of DNS resolvable hostnames of Elasticsearch hosts to connect your Kibana instance to. (default: `- localhost`)
 * *kibana_manage_yaml*: Change Kibanas main configuration file (default: `true`)
 * *kibana_config_backup*: Keep backups if we change any configuration file (default: `true`)
 * *kibana_tls*: Whether to offer `https` for clients or not (default: `false`)
@@ -24,8 +23,13 @@ Role Variables
 
 These variables are identical over all our elastic related roles, hence the different naming scheme.
 
-* *elasticstack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
-* *elasticstack_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
+* *elasticstack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`). If you set to `true`, you will be able to use the following variables:
+    * *kibana_elasticsearch_hosts*: A list of DNS resolvable hostnames of Elasticsearch hosts to connect your Kibana instance to. (default: `- localhost`)
+    * *elasticstack_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
+    * *kibana_sniff_on_start*: Attempt to find other Elasticsearch nodes on startup (default: `false`)
+    * *kibana_sniff_on_connection_fault* Update the list of Elasticsearch nodes immediately following a connection fault (default: `false`)
+    * *kibana_sniff_interval*: Time in milliseconds between requests to check Elasticsearch for an updated list of nodes (default: `not set`)
+
 * *kibana_tls_key_passphrase*: Passphrase for kibana certificates (default: `PleaseChangeMe`)
 * *kibana_cert_expiration_buffer*: Ansible will renew the kibana certificate if its validity is shorter than this value, which should be number of days. (default: `30`)
 * *kibana_cert_will_expire_soon*: Set it to true to renew kibana certificate (default: `false`), Or run the playbook with `--tags renew_kibana_cert` to do that.
@@ -36,7 +40,8 @@ These variables are identical over all our elastic related roles, hence the diff
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elasticstack_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
 * *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)
-* *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+* *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss` (default: `elastic`)
+
 
 If you use `localhost` in `kibana_elasticsearch_hosts` , certificate verification will skip hostname checks
 

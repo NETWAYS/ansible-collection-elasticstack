@@ -14,7 +14,15 @@ on:
           - debug
   pull_request:
     branches:
-      - 'main'
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'roles/**'
+      - '.github/workflows/test_roles_pr.yml'
+      - 'molecule/elasticsearch_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
   push:
     branches:
       - 'feature/**'

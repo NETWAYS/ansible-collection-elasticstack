@@ -26,7 +26,7 @@ on:
   pull_request:
     branches:
       - 'feature/**'
-      - 'fix/**'
+      #- 'fix/**'
       #- '!doc/**'
     paths:
       - 'roles/elasticsearch/**'

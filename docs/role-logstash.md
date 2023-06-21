@@ -71,10 +71,10 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_validate_after_inactivity*: How long should logstash wait, before starting a new connection and leave the old one with elasticsearch, when the connection with elasticsearch get lost: (Default: `300`).
 * *logstash_queue_type*: What kind of queue should Logstash use per default: (Default: `persisted`, alternative: `memory`)
 * *logstash_queue_max_bytes*: The total capacity of ansible-forwarder queue in number of bytes: (Default: `2gb`)
-
-
-
-* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_full_stack` is not set. (default: `true`)
+* *logstash_sniffing*: Enable sniffing (Default: `false`).
+* *logstash_sniffing_delay*: How long to wait, in seconds, between sniffing attempts (Default: `not set`).
+* *logstash_sniffing_path*: HTTP Path to be used for the sniffing requests (Default: `not set`).
+* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elastic_stack_full_stack` is not set. (default: `true`)
 
 The following variables configure Log4j for Logstash. All default to `true` as this is the default after the installation.
 

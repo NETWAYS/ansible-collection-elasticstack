@@ -20,7 +20,7 @@ on:
     paths:
       - 'roles/**'
       - '.github/workflows/test_roles_pr.yml'
-      - 'molecule/elasticsearch_**'
+      - 'molecule/elasticstack_default/**'
       - '.config/ansible-lint.yml'
       - '.yamllint'
   push:

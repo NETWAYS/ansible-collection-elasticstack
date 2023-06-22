@@ -74,7 +74,7 @@ jobs:
           - logstash_full_stack-oss
           - logstash_specific_version
           - logstash_pipelines
-        release: 
+        release:
           - 7
           - 8
 

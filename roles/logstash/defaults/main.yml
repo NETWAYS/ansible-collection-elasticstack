@@ -42,8 +42,10 @@ ansible_input_queue_type: memory
 ansible_input_queue_max_bytes: 1gb
 ansible_forwarder_queue_type: memory
 ansible_forwarder_queue_max_bytes: 1gb
+logstash_sniffing: false
 
 # logstash security
+logstash_password_hash: true
 logstash_user: logstash_writer
 logstash_password: password
 logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'

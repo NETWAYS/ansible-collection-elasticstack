@@ -96,24 +96,24 @@ jobs:
           mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
           cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
 
-#      - uses: nick-fields/retry@v2
-#        with:
-#          timeout_minutes: 20
-#          max_attempts: 3
-#          retry_on: timeout
-#          command: |
-#            molecule test -s ${{ matrix.scenario }}
-#        env:
-#          MOLECULE_DISTRO: ${{ matrix.distro }}
-#          PY_COLORS: '1'
-#          ANSIBLE_FORCE_COLOR: '1'
-#          ELASTIC_RELEASE: ${{ matrix.release }}
-
-      - name: Test with molecule
-        run: |
-          molecule test -s ${{ matrix.scenario }}
+      - uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 20
+          max_attempts: 3
+          retry_on: timeout
+          command: |
+            molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           ELASTIC_RELEASE: ${{ matrix.release }}
+
+#      - name: Test with molecule
+#        run: |
+#          molecule test -s ${{ matrix.scenario }}
+#        env:
+#          MOLECULE_DISTRO: ${{ matrix.distro }}
+#          PY_COLORS: '1'
+#          ANSIBLE_FORCE_COLOR: '1'
+#          ELASTIC_RELEASE: ${{ matrix.release }}

@@ -98,9 +98,9 @@ jobs:
 
       - uses: nick-fields/retry@v2
         with:
-          timeout_minutes: 20
+          timeout_minutes: 2
           max_attempts: 3
-          retry_on: timeout
+          retry_on: error
           command: |
             molecule test -s ${{ matrix.scenario }}
         env:

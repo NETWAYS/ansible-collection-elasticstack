@@ -100,7 +100,7 @@ jobs:
         with:
           timeout_minutes: 25
           max_attempts: 4
-          retry_on: error
+          retry_on: any
           command: |
             molecule test -s ${{ matrix.scenario }}
         env:

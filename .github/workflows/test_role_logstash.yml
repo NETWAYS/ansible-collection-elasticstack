@@ -21,8 +21,6 @@ on:
       - 'roles/logstash/**'
       - '.github/workflows/test_role_logstash.yml'
       - 'molecule/logstash_**'
-      - '.config/ansible-lint.yml'
-      - '.yamllint'
   pull_request:
     branches:
       - 'feature/**'
@@ -32,30 +30,12 @@ on:
       - 'roles/logstash/**'
       - '.github/workflows/test_role_logstash.yml'
       - 'molecule/logstash_**'
-      - '.config/ansible-lint.yml'
-      - '.yamllint'
 
 jobs:
   lint_logstash:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out the codebase.
-        uses: actions/checkout@v3
-
-      - name: Set up Python 3.
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install test dependencies.
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install -r requirements-test.txt
-
-      - name: Lint code.
-        run: |
-          yamllint roles/logstash/
-          ansible-lint roles/logstash/
+    uses: ./.github/workflows/test_linting.yml
+    with:
+      rolename: logstash
 
   molecule_logstash:
     runs-on: ubuntu-latest

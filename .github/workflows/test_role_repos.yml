@@ -1,10 +1,5 @@
 name: Test Role repos
 on:
-  workflow_run:
-    workflows:
-      - Test Linting
-    types:
-      - completed
   workflow_dispatch:
     inputs:
       logLevel:
@@ -25,6 +20,8 @@ on:
       - 'roles/repos/**'
       - '.github/workflows/test_role_repos.yml'
       - 'molecule/repos_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
   pull_request:
     branches:
       - 'feature/**'
@@ -34,9 +31,33 @@ on:
       - 'roles/repos/**'
       - '.github/workflows/test_role_repos.yml'
       - 'molecule/repos_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
 
 jobs:
+  lint_repos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Lint code.
+        run: |
+          yamllint roles/repos/
+          ansible-lint roles/repos/
+
   molecule_repos:
+    needs: lint_repos
     runs-on: ubuntu-latest
 
     env:

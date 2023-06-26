@@ -1,0 +1,75 @@
+---
+name: Test Linting
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+  push:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'roles/**'
+      - '.github/workflows/test_linting.yml'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
+  pull_request:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'roles/**'
+      - '.github/workflows/test_linting.yml'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Lint code (yamllint).
+        run: |
+          yamllint .
+
+      - name: Lint Role beats (ansible-lint).
+        run: |
+          ansible-lint roles/beats
+
+      - name: Lint Role elasticsearch (ansible-lint).
+        run: |
+          ansible-lint roles/elasticsearch
+
+      - name: Lint Role kibana (ansible-lint).
+        run: |
+          ansible-lint roles/kibana
+
+      - name: Lint Role logstash (ansible-lint).
+        run: |
+          ansible-lint roles/logstash
+
+      - name: Lint Role repos (ansible-lint).
+        run: |
+          ansible-lint roles/repos

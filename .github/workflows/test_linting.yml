@@ -60,9 +60,9 @@ jobs:
 
       - name: Lint Role (yamllint).
         run: |
-          ansible-lint roles/${{ inputs.rolename:-'' }}
+          ansible-lint roles/${{ inputs.rolename }}
         if: ${{ inputs.rolename != '' }}
 
       - name: Lint Role (ansible-lint).
         run: |
-          ansible-lint roles/${{ inputs.rolename:-'' }}
+          ansible-lint roles/${{ inputs.rolename }}

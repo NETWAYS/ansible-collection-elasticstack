@@ -22,8 +22,8 @@ jobs:
       rolename: ''
 
   molecule_full_stack_every_os:
-    runs-on: ubuntu-latest
     needs: lint_full
+    runs-on: ubuntu-latest
 
     env:
       COLLECTION_NAMESPACE: netways

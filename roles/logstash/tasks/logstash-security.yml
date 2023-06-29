@@ -459,7 +459,6 @@
 - name: debug
   debug:
     var: logstash_elasticstack_password
-    
 
 - name: Put logstash_writer user into Elasticsearch if not present
   uri:

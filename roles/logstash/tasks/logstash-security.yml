@@ -437,6 +437,7 @@
     body_format: json
   register: result
   when: logstash_writer_role_present is not defined
+  delegate_to: "{{ elasticstack_ca }}"
 
 - name: Check for logstash_writer user
   uri:
@@ -455,7 +456,7 @@
     logstash_writer_user_present: true
   when: 'logstash_writer_user_response.status == 200'
 
-- name: Put logstash_writer role into Elasticsearch if not present
+- name: Put logstash_writer user into Elasticsearch if not present
   uri:
     url: "{{ security_api_base_url }}user/{{ logstash_user }}"
     ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
@@ -468,3 +469,4 @@
     body_format: json
   register: result
   when: logstash_writer_role_present is not defined
+  delegate_to: "{{ elasticstack_ca }}"

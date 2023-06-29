@@ -457,7 +457,7 @@
   when: 'logstash_writer_user_response.status == 200'
 
 - name: debug
-  debug: 
+  debug:
     var: logstash_elasticstack_password
     
 

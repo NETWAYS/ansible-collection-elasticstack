@@ -392,7 +392,7 @@
   register: logstash_elasticstack_password
   changed_when: false
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  #no_log: true
   tags:
     - configuration
     - logstash_configuration
@@ -455,6 +455,11 @@
   set_fact:
     logstash_writer_user_present: true
   when: 'logstash_writer_user_response.status == 200'
+
+- name: debug
+  debug: 
+    var: logstash_elasticstack_password
+    
 
 - name: Put logstash_writer user into Elasticsearch if not present
   uri:

@@ -364,30 +364,10 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Place logstash_writer role configuration on ca node
-  template:
-    dest: /root/logstash_writer_role
-    src: logstash_writer_role.j2
-    owner: root
-    group: root
-    mode: 0600
-  delegate_to: "{{ elasticstack_ca }}"
-  run_once: true
-
 - name: Check the length of logstash user password
   fail:
     msg: logstash user password must be at least 6 characters long.
   when: logstash_password | length < 6
-
-- name: Place logstash_writer user configuration on ca node
-  template:
-    dest: /root/logstash_writer_user
-    src: logstash_writer_user.j2
-    owner: root
-    group: root
-    mode: 0600
-  delegate_to: "{{ elasticstack_ca }}"
-  run_once: true
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   shell: >

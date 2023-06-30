@@ -456,10 +456,6 @@
     logstash_writer_user_present: true
   when: 'logstash_writer_user_response.status == 200'
 
-- name: debug
-  debug:
-    var: logstash_elasticstack_password
-
 - name: Put logstash_writer user into Elasticsearch if not present
   uri:
     url: "{{ security_api_base_url }}user/{{ logstash_user }}"

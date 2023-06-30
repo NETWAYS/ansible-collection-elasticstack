@@ -2,6 +2,12 @@ node.name: "{{ ansible_hostname }}"
 path.data: {{ elasticsearch_datapath }}
 path.logs: {{ elasticsearch_logpath }}
 network.host: ["_local_","_site_"]
+{% if ealsticsearch_http_publish_host is defined %}
+http.publish_host: "{{ ealsticsearch_http_publish_host }}"
+{% endif %}
+{% if ealsticsearch_http_publish_port is defined %}
+http.publish_port: {{ ealsticsearch_http_publish_port }}
+{% endif %}
 
 {% if elasticsearch_node_types is defined %}
 node.roles: [ {% for type in elasticsearch_node_types %}{{ type }}{% if not loop.last %}, {% endif %}{% endfor %} ]

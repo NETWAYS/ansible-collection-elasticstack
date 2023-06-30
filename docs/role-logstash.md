@@ -65,16 +65,17 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
 * *logstash_user*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
-* *logstash_password*: Password of Elasticsearch user (Default: `password`)
-* *logstash_user_indices*: Indices the user has access to (Default: `'"ecs-logstash*", "logstash*", "logs*"'`)
-* *logstash_reset_writer_role*: Reset user and role with every run: (Default: `true`)
+* *logstash_password_hash*: Generate and use a hash from your `logstash_password` (default: `true`)
+* *logstash_password*: Password of Elasticsearch user. It must be at least 6 characters long (default: `password`)
+* *logstash_user_indices*: Indices the user has access to (default: `'"ecs-logstash*", "logstash*", "logs*"'`)
+* *logstash_reset_writer_role*: Reset user and role with every run: (default: `true`)
 * *logstash_validate_after_inactivity*: How long should logstash wait, before starting a new connection and leave the old one with elasticsearch, when the connection with elasticsearch get lost: (Default: `300`).
 * *logstash_queue_type*: What kind of queue should Logstash use per default: (Default: `persisted`, alternative: `memory`)
 * *logstash_queue_max_bytes*: The total capacity of ansible-forwarder queue in number of bytes: (Default: `2gb`)
-
-
-
-* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_full_stack` is not set. (default: `true`)
+* *logstash_sniffing*: Enable sniffing (Default: `false`).
+* *logstash_sniffing_delay*: How long to wait, in seconds, between sniffing attempts (Default: `not set`).
+* *logstash_sniffing_path*: HTTP Path to be used for the sniffing requests (Default: `not set`).
+* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elastic_stack_full_stack` is not set. (default: `true`)
 
 The following variables configure Log4j for Logstash. All default to `true` as this is the default after the installation.
 

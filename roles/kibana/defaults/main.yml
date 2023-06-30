@@ -14,6 +14,8 @@ elasticstack_ca_pass: PleaseChangeMe
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
 kibana_cert_expiration_buffer: 30
 kibana_cert_will_expire_soon: false
+kibana_sniff_on_start: false
+kibana_sniff_on_connection_fault: false
 
 # "global" variables for all roles
 elasticstack_release: 8

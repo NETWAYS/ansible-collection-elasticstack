@@ -76,7 +76,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_sniffing*: Enable sniffing (Default: `false`).
 * *logstash_sniffing_delay*: How long to wait, in seconds, between sniffing attempts (Default: `not set`).
 * *logstash_sniffing_path*: HTTP Path to be used for the sniffing requests (Default: `not set`).
-* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elastic_stack_full_stack` is not set. (default: `true`)
+* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_full_stack` is not set. (default: `true`)
 
 The following variables configure Log4j for Logstash. All default to `true` as this is the default after the installation.
 

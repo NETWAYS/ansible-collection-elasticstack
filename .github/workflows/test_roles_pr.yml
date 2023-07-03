@@ -8,33 +8,33 @@ on:
       - 'fix/**'
       - '!doc/**'
 
-        #  merge_group:
-        #    types: [checks_requested]
+  merge_group:
+    types: [checks_requested]
 
 jobs:
-  #  lint_full:
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - name: Check out the codebase.
-  #        uses: actions/checkout@v3
-  #
-  #      - name: Set up Python 3.
-  #        uses: actions/setup-python@v4
-  #        with:
-  #          python-version: '3.x'
-  #
-  #      - name: Install test dependencies.
-  #        run: |
-  #          python3 -m pip install --upgrade pip
-  #          python3 -m pip install -r requirements-test.txt
-  #
-  #      - name: Lint code.
-  #        run: |
-  #          yamllint .
-  #          ansible-lint roles/
+  lint_full:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Lint code.
+        run: |
+          yamllint .
+          ansible-lint roles/
   molecule_full_stack:
     runs-on: ubuntu-latest
-      #    needs: lint_full
+    needs: lint_full
 
     env:
       COLLECTION_NAMESPACE: netways
@@ -45,12 +45,12 @@ jobs:
       max-parallel: 4
       matrix:
         distro:
-          #          - ubuntu2204
+          - ubuntu2204
           - rockylinux8
         scenario:
           - elasticstack_default
         release:
-          #- 7
+          - 7
           - 8
 
     steps:
@@ -67,14 +67,14 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements-test.txt
 
-          #      - name: Install collection
-          #        run: |
-          #          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
-          #          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+      - name: Install collection
+        run: |
+          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
+          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
 
       - name: Test with molecule
         run: |
-          molecule converge -s ${{ matrix.scenario }}
+          molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}
           PY_COLORS: '1'

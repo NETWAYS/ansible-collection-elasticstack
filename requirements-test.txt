@@ -3,3 +3,4 @@ ansible-lint
 molecule
 molecule-plugins[docker]
 pytest
+passlib

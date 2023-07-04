@@ -393,14 +393,8 @@
   when: elasticstack_release | int < 8
 
 - name: install ccrypt
-  shell: apt install ccrypt -y
-  when: ansible_os_family == "Debian"
-  changed_when: false
-
-- name: install ccrypt
-  shell: yum install ccrypt -y
-  when: ansible_os_family == "RedHat"
-  changed_when: false
+  package: 
+    name: ccrypt
 
 - name: Chack crypt
   shell: apt list --installed | grep crypt

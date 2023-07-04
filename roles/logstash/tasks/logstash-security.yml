@@ -392,6 +392,24 @@
     security_api_base_url: "https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/"
   when: elasticstack_release | int < 8
 
+- name: Chack crypt
+  shell: apt list --installed | grep crypt
+  register: crypt_debian
+  when: ansible_os_family == "Debian"
+
+- name: Chack crypt
+  shell: yum list --installed | grep crypt
+  register: crypt_redhat
+  when: ansible_os_family == "RedHat"
+
+- name: print crypt packages debian
+  debug:
+    var: crypt_debian
+
+- name: print crypt packages redhat
+  debug:
+    var: crypt_redhat
+
 - name: Check for logstash_writer role
   uri:
     url: "{{ security_api_base_url }}role/logstash_writer"

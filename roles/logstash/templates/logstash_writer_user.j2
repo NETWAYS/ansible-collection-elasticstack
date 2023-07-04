@@ -1,6 +1,6 @@
 {
 {% if logstash_password_hash | bool %}
-  "password_hash" : "{{ logstash_password | password_hash('blowfish', ident='2b') }}",
+  "password_hash" : "{{ logstash_password | password_hash('blowfish', ident='2y') }}",
 {% else %}
   "password" : "{{ logstash_password }}",
 {% endif %}

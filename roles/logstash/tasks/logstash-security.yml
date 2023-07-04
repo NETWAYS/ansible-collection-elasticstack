@@ -396,11 +396,13 @@
   shell: apt list --installed | grep crypt
   register: crypt_debian
   when: ansible_os_family == "Debian"
+  changed_when: false
 
 - name: Chack crypt
   shell: yum list --installed | grep crypt
   register: crypt_redhat
   when: ansible_os_family == "RedHat"
+  changed_when: false
 
 - name: print crypt packages debian
   debug:

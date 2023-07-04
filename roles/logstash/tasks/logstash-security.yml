@@ -393,7 +393,7 @@
   when: elasticstack_release | int < 8
 
 - name: install ccrypt
-  package: 
+  package:
     name: ccrypt
 
 - name: Chack crypt

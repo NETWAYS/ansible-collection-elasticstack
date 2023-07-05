@@ -29,7 +29,9 @@ elasticstack_ca_dir: /opt/es-ca
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elasticsearch_initialized_file: "{{ elasticstack_initial_passwords | dirname }}/cluster_initialized"
 elasticstack_ca_pass: PleaseChangeMe
+elasticstack_ca_validity_period: 1095
 elasticsearch_tls_key_passphrase: PleaseChangeMeIndividually
+elasticsearch_cert_validity_period: 1095
 elasticstack_ca_expiration_buffer: 30
 elasticsearch_cert_expiration_buffer: 30
 elasticstack_ca_will_expire_soon: false

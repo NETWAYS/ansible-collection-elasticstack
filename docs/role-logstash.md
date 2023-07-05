@@ -60,6 +60,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_beats_tls*: Activate TLS for the beats input pipeline (default: none but `true` with full stack setup if not set)
 * *logstash_tls_key_passphrase*: Passphrase for Logstash certificates (default: `LogstashChangeMe`)
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
+* *logstash_cert_validity_period*: number of days that the generated certificates are valid (default: 1095).
 * *logstash_cert_expiration_buffer*: Ansible will renew the Logstash certificate if its validity is shorter than this value, which should be number of days. (default: 30)
 * *logstash_cert_will_expire_soon*: Set it to true to renew logstash certificate (default: `false`), Or run the playbook with `--tags renew_logstash_cert` to do that.
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
@@ -75,7 +76,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_sniffing*: Enable sniffing (Default: `false`).
 * *logstash_sniffing_delay*: How long to wait, in seconds, between sniffing attempts (Default: `not set`).
 * *logstash_sniffing_path*: HTTP Path to be used for the sniffing requests (Default: `not set`).
-* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elastic_stack_full_stack` is not set. (default: `true`)
+* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_full_stack` is not set. (default: `true`)
 
 The following variables configure Log4j for Logstash. All default to `true` as this is the default after the installation.
 

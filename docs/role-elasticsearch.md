@@ -20,7 +20,8 @@ Role Variables
 * *elasticsearch_node_types*: List of types of this very node. Please refer to [official docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html) for details. (default: not set. allowed value: array of types)
 * *elasticsearch_heap*: Heapsize for Elasticsearch. (Half of free memory on host. Maximum 30GB. (default: Half of hosts memory. Min 1GB, Max 30GB)
 * *elasticsearch_tls_key_passphrase*: Passphrase for elasticsearch certificates (default: `PleaseChangeMeIndividually`)
-* *elasticsearch_cert_expiration_buffer*: Ansible will renew the elasticsearch certificate if its validity is shorter than this value, which should be number of days. (default: `30`)
+* *elasticsearch_cert_validity_period*: number of days that the generated certificates are valid (default: 1095).
+* *elasticsearch_cert_expiration_buffer*: Ansible will renew the elasticsearch certificate if its validity is shorter than this value, which should be number of days. (default: 30)
 * *elasticsearch_cert_will_expire_soon*: Set it to true to renew elasticsearch certificate (default: `false`), Or run the playbook with `--tags renew_elasticsearch_cert` to do that.
 * *elasticsearch_datapath*: Path where Elasticsearch will store it's data. (default: `/var/lib/elasticsearch` - the packages default)
 * *elasticsearch_create_datapath*: Create the path for data to store if it doesn't exist. (default: `false` - only useful if you change `elasticsearch_datapath`)
@@ -42,6 +43,7 @@ These variables are identical over all our elastic related roles, hence the diff
 
 * *elasticstack_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
+* *elasticstack_ca_validity_period*: number of days that the generated CA are valid (default: 1095).
 * *elasticstack_ca_expiration_buffer*: Ansible will renew the CA if its validity is shorter than this value, which should be number of days. (default: 30)
 * *elasticstack_ca_will_expire_soon*: Set it to true to renew the CA and the certificate of all Elastic Stack components (default: `false`), Or run the playbook with `--tags renew_ca` to do that.
 * *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)

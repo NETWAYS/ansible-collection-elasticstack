@@ -21,7 +21,7 @@ Every role is documented with all variables, please refer to the documentation f
 You can easily install the collection with the `ansible-galaxy` command.
 
 ```
-ansible-galaxy collection install https://github.com/netways/ansible-collection-elasticstack.git
+ansible-galaxy collection install git+https://github.com/netways/ansible-collection-elasticstack.git
 ```
 
 Or if you are using Tower or AWX add the collection to your requirements file.

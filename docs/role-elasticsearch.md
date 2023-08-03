@@ -18,6 +18,7 @@ Role Variables
 --------------
 
 * *elasticsearch_node_types*: List of types of this very node. Please refer to [official docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html) for details. (default: not set. allowed value: array of types)
+* *elasticsearch_clustername*: Name the Elasticsearch Cluster (default: `elasticsearch`)
 * *elasticsearch_heap*: Heapsize for Elasticsearch. (Half of free memory on host. Maximum 30GB. (default: Half of hosts memory. Min 1GB, Max 30GB)
 * *elasticsearch_tls_key_passphrase*: Passphrase for elasticsearch certificates (default: `PleaseChangeMeIndividually`)
 * *elasticsearch_cert_validity_period*: number of days that the generated certificates are valid (default: 1095).

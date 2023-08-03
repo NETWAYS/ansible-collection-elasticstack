@@ -87,7 +87,7 @@
         - elasticstack_release | int > 7
 
     - name: Enable Ingest Pipelines
-      command: >
+      shell: >
         /usr/bin/filebeat setup --pipelines &&
         /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
       args:

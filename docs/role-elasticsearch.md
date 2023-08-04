@@ -9,11 +9,6 @@ If you use the role to set up security you, can use its CA to create certificate
 
 Please note that setting `elasticsearch_bootstrap_pw` as variable will only take effect when initialising Elasticsearch. Changes after starting elasticsearch for the first time will not change the bootstrap password for the instance and will lead to breaking tests.
 
-Requirements
-------------
-
-* `cryptography` >= 2.5
-
 Role Variables
 --------------
 

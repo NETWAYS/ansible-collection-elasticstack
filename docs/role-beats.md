@@ -10,7 +10,6 @@ Requirements
 
 You need to have the beats you want to install available in your software repositories. We provide a [role](./role-repos.md) for just that but if you have other ways of managing software, just make sure it's available. Alternatively you can install the Beats yourself.
 
-* `cryptography` >= 2.5 
 * `community.crypto` collection: ansible-galaxy collection install community.crypto
 
 Role Variables

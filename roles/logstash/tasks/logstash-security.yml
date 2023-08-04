@@ -1,5 +1,9 @@
 ---
 
+- name: Make sure cryptography Elasticsearch module is installed
+  package:
+    name: python-cryptography
+
 - name: Install unzip for certificate handling
   package:
     name: unzip

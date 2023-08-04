@@ -1,5 +1,9 @@
 ---
 
+- name: Make sure cryptography Elasticsearch module is installed
+  package:
+    name: python-cryptography
+
 - name: Set elasticstack_ca variable if not already done by user
   set_fact:
     elasticstack_ca: "{{ groups['elasticsearch'][0] }}"

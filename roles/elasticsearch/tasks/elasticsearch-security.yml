@@ -2,7 +2,7 @@
 
 - name: Make sure cryptography Elasticsearch module is installed
   package:
-    name: python-cryptography
+    name: "{{ elasticsearch_pythoncryptography_pkgname }}"
 
 - name: Set elasticstack_ca variable if not already done by user
   set_fact:

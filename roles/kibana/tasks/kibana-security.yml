@@ -1,9 +1,5 @@
 ---
 
-- name: Make sure cryptography Elasticsearch module is installed
-  package:
-    name: python-cryptography
-
 - name: Make sure openssl is installed
   package:
     name: openssl

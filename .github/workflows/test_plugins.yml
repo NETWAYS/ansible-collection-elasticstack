@@ -73,7 +73,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Python 3.9.14
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9.14
 
@@ -113,14 +113,14 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        python_version: [ 2.7.18, 3.5.10, 3.6.15, 3.7.13, 3.8.16, 3.10.10 ]
+        python_version: [ 3.5.10, 3.6.15, 3.7.13, 3.8.16, 3.10.10 ]
 
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python_version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python_version }}
 
@@ -160,7 +160,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Python 3.9.14
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9.14
 
@@ -200,7 +200,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Python 3.9.14
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9.14
 

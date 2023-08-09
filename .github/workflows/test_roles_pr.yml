@@ -1,15 +1,39 @@
 ---
 name: Test Collection Roles
 on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
   pull_request:
     branches:
-      - 'main'
       - 'feature/**'
       - 'fix/**'
       - '!doc/**'
-
-  merge_group:
-    types: [checks_requested]
+    paths:
+      - 'roles/**'
+      - '.github/workflows/test_roles_pr.yml'
+      - 'molecule/elasticstack_default/**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
+  push:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - 'roles/**'
+      - '.github/workflows/test_roles_pr.yml'
+      - 'molecule/elasticstack_default/**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
 
 jobs:
   lint_full:

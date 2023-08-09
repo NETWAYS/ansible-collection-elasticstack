@@ -232,6 +232,8 @@
     - name: Configure ca on elasticstack_ca host
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil ca
+        --ca-dn {{ elasticstack_ca_name }}
+        --days {{ elasticstack_ca_validity_period }}
         --pass {{ elasticstack_ca_pass }}
         --out {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
         --silent
@@ -243,6 +245,7 @@
       command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil cert
         --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
+        --days {{ elasticsearch_cert_validity_period }}
         --ca-pass {{ elasticstack_ca_pass }}
         --name {{ hostvars[item].ansible_hostname }}
         --ip {{ hostvars[item].ansible_default_ipv4.address | default(hostvars[item].ansible_all_ipv4_addresses[0]) }}

@@ -2,7 +2,11 @@ node.name: "{{ ansible_hostname }}"
 path.data: {{ elasticsearch_datapath }}
 path.logs: {{ elasticsearch_logpath }}
 cluster.name: "{{ elasticsearch_clustername }}"
-network.host: ["_local_","_site_"]
+{% if elasticsearch_network_host is defined %}
+network.host: [ {{ elasticsearch_network_host }} ]
+{% else %}
+network.host: [ "_local_", "_site_" ]
+{% endif %}
 {% if ealsticsearch_http_publish_host is defined %}
 http.publish_host: "{{ ealsticsearch_http_publish_host }}"
 {% endif %}

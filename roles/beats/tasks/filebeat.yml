@@ -95,7 +95,6 @@
       with_items: "{{ beats_filebeat_modules }}"
       notify:
         - Restart Filebeat
-      changed_when: false
 
 - name: Start Filebeat
   service:

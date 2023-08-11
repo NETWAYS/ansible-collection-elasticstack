@@ -10,7 +10,7 @@
       when: ansible_os_family == "RedHat"
 
     - name: Start NetworkManager
-       ansible.builtin.service:
+      ansible.builtin.service:
         name: NetworkManager
         state: started
         enabled: yes

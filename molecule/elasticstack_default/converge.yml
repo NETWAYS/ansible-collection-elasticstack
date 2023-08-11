@@ -49,7 +49,7 @@
         line: "*.* @@localhost:514"
         path: /etc/rsyslog.conf
     - name: Start rsyslog
-       ansible.builtin.service:
+      ansible.builtin.service:
         name: rsyslog
         state: started
     - name: Include kibana

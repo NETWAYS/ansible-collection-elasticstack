@@ -43,7 +43,7 @@
   ansible.builtin.yum_repository:
     name: elastic-{{ elasticstack_release }}.x
     description: Elastic Release {{ elasticstack_release }}.x
-    ansible.builtin.file: elastic-release
+    file: elastic-release
     baseurl: https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/yum
     gpgcheck: yes
     gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
@@ -54,7 +54,7 @@
   ansible.builtin.yum_repository:
     name: elastic-oss-{{ elasticstack_release }}.x
     description: Elastic OSS Release {{ elasticstack_release }}.x
-    ansible.builtin.file: elastic-oss-release
+    file: elastic-oss-release
     baseurl: https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/yum
     gpgcheck: yes
     gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch

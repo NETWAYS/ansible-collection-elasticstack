@@ -3,7 +3,7 @@
   hosts: all
   tasks:
     - name: Install packages needed for Debian
-       ansible.builtin.apt:
+      ansible.builtin.apt:
         name:
           - gpg
           - curl

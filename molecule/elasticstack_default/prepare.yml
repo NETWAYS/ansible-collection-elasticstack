@@ -17,7 +17,7 @@
       when: ansible_os_family == "RedHat"
 
     - name: Install packages for Debian
-       ansible.builtin.apt:
+      ansible.builtin.apt:
         name:
           - gpg
           - gpg-agent
@@ -44,7 +44,7 @@
       when: ansible_os_family == "RedHat"
 
     - name: Update all installed packages Debian
-       ansible.builtin.apt:
+      ansible.builtin.apt:
         name: '*'
         state: latest
         update_cache: yes

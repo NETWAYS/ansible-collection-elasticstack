@@ -76,7 +76,7 @@
     - beats_auditbeat_output == "elasticsearch"
 
 - name: Start Auditbeat
-   ansible.builtin.service:
+  ansible.builtin.service:
     name: auditbeat
     state: started
     enabled: true

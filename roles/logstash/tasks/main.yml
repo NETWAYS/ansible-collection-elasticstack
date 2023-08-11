@@ -225,7 +225,7 @@
   when: logstash_plugins is defined
 
 - name: Start Logstash
-   ansible.builtin.service:
+  ansible.builtin.service:
     name: logstash
     state: started
     enabled: yes

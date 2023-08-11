@@ -53,7 +53,7 @@
         name: repos
 
     - name: Refresh apt cache
-       ansible.builtin.apt:
+      ansible.builtin.apt:
         update_cache: yes
       changed_when: false
       when: ansible_os_family == "Debian"

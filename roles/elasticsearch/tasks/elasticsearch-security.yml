@@ -46,7 +46,7 @@
     elasticstack_ca_expiration_days | int <= elasticstack_ca_expiration_buffer | int
 
 - name: Stop Logstash
-   ansible.builtin.service:
+  ansible.builtin.service:
     name: logstash
     state: stopped
   with_items: "{{ groups['logstash'] }}"
@@ -516,7 +516,7 @@
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Start Elasticsearch
-   ansible.builtin.service:
+  ansible.builtin.service:
     name: elasticsearch
     state: started
   failed_when: false

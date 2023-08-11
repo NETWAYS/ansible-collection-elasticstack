@@ -80,7 +80,7 @@
     - beats_metricbeat_output == "elasticsearch"
 
 - name: Start Metricbeat
-   ansible.builtin.service:
+  ansible.builtin.service:
     name: metricbeat
     state: started
     enabled: true

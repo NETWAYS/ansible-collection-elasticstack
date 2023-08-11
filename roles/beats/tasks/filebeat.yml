@@ -97,7 +97,7 @@
         - Restart Filebeat
 
 - name: Start Filebeat
-   ansible.builtin.service:
+  ansible.builtin.service:
     name: filebeat
     state: started
     enabled: true

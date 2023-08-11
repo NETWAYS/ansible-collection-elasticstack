@@ -1,13 +1,13 @@
 ---
 # handlers file for logstash
 - name: Restart Logstash
-   ansible.builtin.service:
+  ansible.builtin.service:
     name: logstash
     state: restarted
   when: logstash_enable | bool
 
 - name: Restart Logstash noauto
-   ansible.builtin.service:
+  ansible.builtin.service:
     name: logstash
     state: restarted
   when: not logstash_config_autoreload and logstash_enable | bool

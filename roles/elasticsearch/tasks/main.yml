@@ -187,7 +187,7 @@
     - Restart Elasticsearch
 
 - name: Start Elasticsearch
-   ansible.builtin.service:
+  ansible.builtin.service:
     name: elasticsearch
     state: started
     enabled: yes

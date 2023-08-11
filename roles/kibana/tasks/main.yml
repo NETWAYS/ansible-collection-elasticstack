@@ -77,7 +77,7 @@
   when: kibana_manage_yaml | bool
 
 - name: Start Kibana
-   ansible.builtin.service:
+  ansible.builtin.service:
     name: kibana
     state: started
     enabled: yes

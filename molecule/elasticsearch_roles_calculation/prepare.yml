@@ -3,7 +3,7 @@
   hosts: all
   tasks:
     - name: Refresh apt cache
-       ansible.builtin.apt:
+      ansible.builtin.apt:
         update_cache: yes
       when: ansible_os_family == "Debian"
 
@@ -19,7 +19,7 @@
       when: ansible_os_family == "RedHat"
 
     - name: Start NetworkManager
-       ansible.builtin.service:
+      ansible.builtin.service:
         name: NetworkManager
         state: started
         enabled: yes

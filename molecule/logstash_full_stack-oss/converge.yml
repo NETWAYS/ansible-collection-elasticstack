@@ -30,7 +30,7 @@
       ansible.builtin.package:
         name: rsyslog
     - name: Start rsyslog
-       ansible.builtin.service:
+      ansible.builtin.service:
         name: rsyslog
         state: started
     - name: "Include Elasticsearch role"
@@ -50,7 +50,7 @@
         line: "*.* @@localhost:514"
         path: /etc/rsyslog.conf
     - name: Restart rsyslog
-       ansible.builtin.service:
+      ansible.builtin.service:
         name: rsyslog
         state: restarted
       changed_when: false

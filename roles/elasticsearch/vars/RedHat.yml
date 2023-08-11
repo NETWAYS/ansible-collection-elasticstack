@@ -1,5 +1,5 @@
 ---
 
 elasticsearch_sysconfig_file: /etc/sysconfig/elasticsearch
-elasticsearch_pythoncryptography_pkgname: python-cryptography
+elasticsearch_pythoncryptography_pkgname: python3-cryptography
 elasticstack_versionseparator: "-"

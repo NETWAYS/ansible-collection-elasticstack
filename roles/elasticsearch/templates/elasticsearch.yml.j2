@@ -7,11 +7,11 @@ network.host: [ {{ elasticsearch_network_host }} ]
 {% else %}
 network.host: [ "_local_", "_site_" ]
 {% endif %}
-{% if ealsticsearch_http_publish_host is defined %}
-http.publish_host: "{{ ealsticsearch_http_publish_host }}"
+{% if elasticsearch_http_publish_host is defined %}
+http.publish_host: "{{ elasticsearch_http_publish_host }}"
 {% endif %}
-{% if ealsticsearch_http_publish_port is defined %}
-http.publish_port: {{ ealsticsearch_http_publish_port }}
+{% if elasticsearch_http_publish_port is defined %}
+http.publish_port: {{ elasticsearch_http_publish_port }}
 {% endif %}
 
 {% if elasticsearch_node_types is defined %}

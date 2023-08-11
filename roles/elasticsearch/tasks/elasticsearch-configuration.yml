@@ -1,0 +1,42 @@
+---
+- name: Configure Elasticsearch
+  template:
+    src: elasticsearch.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ elasticsearch_config_backup }}"
+  notify:
+    - Restart Elasticsearch
+  when: elasticsearch_manage_yaml | bool
+
+- name: Create Elasticsearch directory
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    mode: "2750"
+  when: item.create | bool
+  loop:
+    - {create: "{{elasticsearch_create_logpath}}", path: "{{ elasticsearch_logpath }}" }
+    - {create: "{{elasticsearch_create_datapath}}", path: "{{ elasticsearch_datapath }}" }
+
+- name: Copy jvm.options File
+  become: yes
+  template:
+    src: "{{ elasticsearch_config_jvm }}"
+    dest: "{{ elasticsearch_conf_dir }}/jvm.options"
+    owner: root
+    group: "{{ elasticsearch_group }}"
+    mode: "660"
+    force: yes
+  notify: Restart Elasticsearch
+
+- name: Start Elasticsearch
+  service:
+    name: elasticsearch
+    state: started
+    enabled: yes
+  failed_when: false

@@ -23,6 +23,10 @@ elasticsearch_config_jvm: "jvm.options.j2"
 elasticsearch_user: elasticsearch
 elasticsearch_group: elasticsearch
 
+# elasticsearh security and api
+elasticsearch_api_basic_auth_username: 'elastic' #
+elasticsearch_api_basic_auth_password: '' # after starting the cluster for the first time you will find that password in /usr/share/elasticsearch/initial_passwords
+
 # JVM custom parameters
 elasticsearch_java_home: ''
 elasticsearch_jvm_custom_parameters: ''

@@ -21,6 +21,8 @@ on:
       - 'roles/elasticsearch/**'
       - '.github/workflows/test_role_elasticsearch.yml'
       - 'molecule/elasticsearch_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
   pull_request:
     branches:
       - 'feature/**'
@@ -30,6 +32,8 @@ on:
       - 'roles/elasticsearch/**'
       - '.github/workflows/test_role_elasticsearch.yml'
       - 'molecule/elasticsearch_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
 
 jobs:
   lint_elasticsearch:

@@ -20,6 +20,8 @@ on:
       - 'roles/repos/**'
       - '.github/workflows/test_role_repos.yml'
       - 'molecule/repos_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
   pull_request:
     branches:
       - 'feature/**'
@@ -29,6 +31,8 @@ on:
       - 'roles/repos/**'
       - '.github/workflows/test_role_repos.yml'
       - 'molecule/repos_**'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
 
 jobs:
   lint_repos:

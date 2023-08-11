@@ -3,21 +3,21 @@
   hosts: all
   tasks:
     - name: Install packages for RHEL
-      package:
+      ansible.builtin.package:
         name:
           - iproute
           - NetworkManager
       when: ansible_os_family == "RedHat"
 
     - name: Start NetworkManager
-      service:
+       ansible.builtin.service:
         name: NetworkManager
         state: started
         enabled: yes
       when: ansible_os_family == "RedHat"
 
     - name: Install packages for Debian
-      apt:
+       ansible.builtin.apt:
         name:
           - gpg
           - gpg-agent
@@ -28,7 +28,7 @@
       when: ansible_os_family == "Debian"
 
     - name: Install common packages
-      package:
+      ansible.builtin.package:
         name:
           - git
           - openssl
@@ -36,7 +36,7 @@
           - systemd
 
     - name: Update all installed packages RHEL
-      yum:
+      ansible.builtin.yum:
         name: '*'
         state: latest
         update_cache: yes
@@ -44,7 +44,7 @@
       when: ansible_os_family == "RedHat"
 
     - name: Update all installed packages Debian
-      apt:
+       ansible.builtin.apt:
         name: '*'
         state: latest
         update_cache: yes

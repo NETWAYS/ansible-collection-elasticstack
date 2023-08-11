@@ -1,6 +1,6 @@
 ---
 - name: Ensure gpg exists, for signing keys
-  ansible.builtin.apt:
+  ansible.builtin. ansible.builtin.apt:
     name: gpg
     state: present
 

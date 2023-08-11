@@ -23,38 +23,38 @@
       - "testbed: molecule"
   tasks:
     - name: Enable Elastic installation on RHEL 9
-      set_fact:
+      ansible.builtin.set_fact:
         elasticstack_rpm_workaround: true
       when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= "9"
     - name: Include Redis
-      include_role:
+      ansible.builtin.include_role:
         name: geerlingguy.redis
     - name: Include Elastic Repos
-      include_role:
+      ansible.builtin.include_role:
         name: repos
     - name: Include Elasticsearch role
-      include_role:
+      ansible.builtin.include_role:
         name: elasticsearch
     - name: Include logstash
-      include_role:
+      ansible.builtin.include_role:
         name: logstash
     - name: Include Beats
-      include_role:
+      ansible.builtin.include_role:
         name: beats
     - name: Install rsyslog
-      package:
+      ansible.builtin.package:
         name: rsyslog
     - name: Configure rsyslog
-      lineinfile:
+      ansible.builtin.lineinfile:
         line: "*.* @@localhost:514"
         path: /etc/rsyslog.conf
     - name: Start rsyslog
-      service:
+       ansible.builtin.service:
         name: rsyslog
         state: started
     - name: Include kibana
-      include_role:
+      ansible.builtin.include_role:
         name: kibana
     - name: Include Beats
-      include_role:
+      ansible.builtin.include_role:
         name: beats

@@ -37,27 +37,27 @@
   tasks:
 
     - name: Set Filebeat version for 7.x
-      set_fact:
+      ansible.builtin.set_fact:
         elasticstack_version: "7.17.1"
       when:
         - elasticstack_release == 7
 
     - name: Set Filebeat version for 8.x
-      set_fact:
+      ansible.builtin.set_fact:
         elasticstack_version: "8.4.1"
       when:
         - elasticstack_release == 8
 
     - name: "Include Elastics repos role"
-      include_role:
+      ansible.builtin.include_role:
         name: repos
 
     - name: Refresh apt cache
-      apt:
+       ansible.builtin.apt:
         update_cache: yes
       changed_when: false
       when: ansible_os_family == "Debian"
 
     - name: "Include Beats"
-      include_role:
+      ansible.builtin.include_role:
         name: beats

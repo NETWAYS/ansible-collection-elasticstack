@@ -1,7 +1,7 @@
 ---
 
 - name: Construct exact name of Metricbeat package
-  set_fact:
+  ansible.builtin.set_fact:
     beats_metricbeat_package: >
       {{
       'metricbeat' +
@@ -12,7 +12,7 @@
       }}
 
 - name: Install Metricbeat - rpm
-  package:
+  ansible.builtin.package:
     name: "{{ beats_metricbeat_package }}"
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
@@ -20,13 +20,13 @@
     - ansible_os_family == "RedHat"
 
 - name: Install Metricbeat - deb
-  package:
+  ansible.builtin.package:
     name: "{{ beats_metricbeat_package }}"
   when:
     - ansible_os_family == "Debian"
 
 - name: Install Metricbeat latest version - rpm
-  package:
+  ansible.builtin.package:
     name: metricbeat
     state: latest
     enablerepo:
@@ -39,7 +39,7 @@
     - ansible_os_family == "RedHat"
 
 - name: Install Metricbeat latest version - deb
-  package:
+  ansible.builtin.package:
     name: metricbeat
     state: latest
   notify:
@@ -50,7 +50,7 @@
     - ansible_os_family == "Debian"
 
 - name: Configure Metricbeat
-  template:
+  ansible.builtin.template:
     src: metricbeat.yml.j2
     dest: /etc/metricbeat/metricbeat.yml
     owner: root
@@ -60,14 +60,14 @@
     - Restart Metricbeat
 
 - name: Enable modules
-  command: "metricbeat modules enable {{ item }}"
+  ansible.builtin.command: "metricbeat modules enable {{ item }}"
   args:
     creates: "/etc/metricbeat/modules.d/{{ item }}.yml"
   with_items: "{{ beats_metricbeat_modules }}"
   when: beats_metricbeat_modules is defined
 
 - name: Enable Ingest Pipelines
-  command: >
+  ansible.builtin.command: >
     metricbeat setup &&
     metricbeat version > /etc/metricbeat/pipelines_created
   args:
@@ -80,7 +80,7 @@
     - beats_metricbeat_output == "elasticsearch"
 
 - name: Start Metricbeat
-  service:
+   ansible.builtin.service:
     name: metricbeat
     state: started
     enabled: true

@@ -1,6 +1,6 @@
 ---
 # handlers file for kibana
 - name: Restart Kibana
-  service:
+   ansible.builtin.service:
     name: kibana
     state: restarted

@@ -1,26 +1,26 @@
 ---
 
 - name: Include OS specific vars
-  include_vars: '{{ item }}'
+  ansible.builtin.include_vars: '{{ item }}'
   with_first_found:
     - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
     - '{{ ansible_os_family }}.yml'
 
 - name: Set common password for common certificates
-  set_fact:
+  ansible.builtin.set_fact:
     kibana_tls_key_passphrase: "{{ elasticstack_cert_pass }}"
   when:
     - elasticstack_cert_pass is defined
 
 - name: Set Elasticsearch hosts if used with other roles
-  set_fact:
+  ansible.builtin.set_fact:
     kibana_elasticsearch_hosts: "{{ groups['elasticsearch'] }}"
   when:
     - kibana_elasticsearch_hosts is undefined
     - groups['elasticsearch'] is defined
 
 - name: Set Elasticsearch hosts to localhost if no other info is available
-  set_fact:
+  ansible.builtin.set_fact:
     kibana_elasticsearch_hosts:
       - localhost
   when:
@@ -28,7 +28,7 @@
     - groups['elasticsearch'] is undefined
 
 - name: Construct exact name of Kibana package
-  set_fact:
+  ansible.builtin.set_fact:
     kibana_package: >
       {{
       'kibana' +
@@ -39,7 +39,7 @@
       replace(' ', '') }}
 
 - name: Install Kibana - rpm
-  package:
+  ansible.builtin.package:
     name: "{{ kibana_package }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
@@ -47,13 +47,13 @@
     - ansible_os_family == "RedHat"
 
 - name: Install Kibana - deb
-  package:
+  ansible.builtin.package:
     name: "{{ kibana_package }}"
   when:
     - ansible_os_family == "Debian"
 
 - name: Import security related tasks
-  import_tasks: kibana-security.yml
+  ansible.builtin.import_tasks: kibana-security.yml
   when:
     - elasticstack_full_stack is defined
     - elasticstack_full_stack | bool
@@ -65,7 +65,7 @@
     - renew_kibana_cert
 
 - name: Configure Kibana
-  template:
+  ansible.builtin.template:
     src: kibana.yml.j2
     dest: /etc/kibana/kibana.yml
     owner: root
@@ -77,7 +77,7 @@
   when: kibana_manage_yaml | bool
 
 - name: Start Kibana
-  service:
+   ansible.builtin.service:
     name: kibana
     state: started
     enabled: yes
@@ -87,7 +87,7 @@
 # have Kibana running. Escape it on Rocky8, because it gets time out with Elastic 8
 
 - name: Wait for Kibana to start
-  wait_for:
+  ansible.builtin.wait_for:
     host: localhost
     port: 5601
   tags: notest

@@ -1,7 +1,7 @@
 ---
 
 - name: Construct exact name of Filebeat package
-  set_fact:
+  ansible.builtin.set_fact:
     beats_filebeat_package: >
       {{
       'filebeat' +
@@ -11,7 +11,7 @@
       replace(' ', '') }}
 
 - name: Install Filebeat - rpm
-  package:
+  ansible.builtin.package:
     name: "{{ beats_filebeat_package }}"
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
@@ -19,13 +19,13 @@
     - ansible_os_family == "RedHat"
 
 - name: Install Filebeat - deb
-  package:
+  ansible.builtin.package:
     name: "{{ beats_filebeat_package }}"
   when:
     - ansible_os_family == "Debian"
 
 - name: Install Filebeat latest version - rpm
-  package:
+  ansible.builtin.package:
     name: filebeat
     state: latest
     enablerepo:
@@ -38,7 +38,7 @@
     - ansible_os_family == "RedHat"
 
 - name: Install Filebeat latest version - deb
-  package:
+  ansible.builtin.package:
     name: filebeat
     state: latest
   notify:
@@ -49,7 +49,7 @@
     - ansible_os_family == "Debian"
 
 - name: Configure Filebeat
-  template:
+  ansible.builtin.template:
     src: filebeat.yml.j2
     dest: /etc/filebeat/filebeat.yml
     owner: root
@@ -71,13 +71,13 @@
   block:
 
     - name: Enable modules
-      command: "filebeat modules enable {{ item }}"
+      ansible.builtin.command: "filebeat modules enable {{ item }}"
       args:
         creates: "/etc/filebeat/modules.d/{{ item }}.yml"
       with_items: "{{ beats_filebeat_modules }}"
 
     - name: Enable System module
-      template:
+      ansible.builtin.template:
         src: filebeat-system.yml.j2
         dest: /etc/filebeat/modules.d/system.yml
         owner: root
@@ -87,7 +87,7 @@
         - elasticstack_release | int > 7
 
     - name: Enable Ingest Pipelines
-      shell: >
+      ansible.builtin.shell: >
         /usr/bin/filebeat setup --pipelines &&
         /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
       args:
@@ -97,7 +97,7 @@
         - Restart Filebeat
 
 - name: Start Filebeat
-  service:
+   ansible.builtin.service:
     name: filebeat
     state: started
     enabled: true

@@ -22,6 +22,10 @@
     beats_fields:
       - "testbed: molecule"
   tasks:
+    - name: Enable Elastic installation on RHEL 9
+      set_fact:
+        elasticstack_rpm_workaround: true
+      when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= "9"
     - name: Include Redis
       include_role:
         name: geerlingguy.redis

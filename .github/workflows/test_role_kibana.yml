@@ -21,8 +21,6 @@ on:
       - 'roles/kibana/**'
       - '.github/workflows/test_role_kibana.yml'
       - 'molecule/kibana_**'
-      - '.config/ansible-lint.yml'
-      - '.yamllint'
   pull_request:
     branches:
       - 'feature/**'
@@ -32,8 +30,6 @@ on:
       - 'roles/kibana/**'
       - '.github/workflows/test_role_kibana.yml'
       - 'molecule/kibana_**'
-      - '.config/ansible-lint.yml'
-      - '.yamllint'
 
 jobs:
   lint_kibana:

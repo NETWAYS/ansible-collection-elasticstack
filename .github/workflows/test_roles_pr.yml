@@ -21,8 +21,6 @@ on:
       - 'roles/**'
       - '.github/workflows/test_roles_pr.yml'
       - 'molecule/elasticstack_default/**'
-      - '.config/ansible-lint.yml'
-      - '.yamllint'
   push:
     branches:
       - 'feature/**'
@@ -32,8 +30,6 @@ on:
       - 'roles/**'
       - '.github/workflows/test_roles_pr.yml'
       - 'molecule/elasticstack_default/**'
-      - '.config/ansible-lint.yml'
-      - '.yamllint'
 
 jobs:
   lint_full:

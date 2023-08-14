@@ -22,6 +22,7 @@ elasticsearch_conf_dir: "/etc/elasticsearch/"
 elasticsearch_config_jvm: "jvm.options.j2"
 elasticsearch_user: elasticsearch
 elasticsearch_group: elasticsearch
+elasticsearch_initial_setup: true
 
 # elasticsearh security and api
 elasticsearch_api_basic_auth_username: 'elastic' #

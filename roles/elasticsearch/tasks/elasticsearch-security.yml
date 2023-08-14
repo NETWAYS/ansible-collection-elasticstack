@@ -80,13 +80,13 @@
         state: absent
       when: elasticsearch_move_ca_directory.changed
 
-    - name: Check the existance of ca on Ansible controler
+    - name: Check the existance of ca on Ansible controller
       stat:
         path: /tmp/ca.crt
       register: elasticsearch_check_temporary_ca
       delegate_to: localhost
 
-    - name: Move temporary ca file on Ansible controler
+    - name: Move temporary ca file on Ansible controller
       copy:
         src: /tmp/ca.crt
         dest: "/tmp/ca.crt_{{ ansible_date_time.iso8601_micro }}"
@@ -95,7 +95,7 @@
       delegate_to: localhost
       register: elasticsearch_move_ca_file
 
-    - name: Remove temporary ca file on Ansible controler
+    - name: Remove temporary ca file on Ansible controller
       file:
         path: /tmp/ca.crt
         state: absent
@@ -521,7 +521,7 @@
     state: started
   failed_when: false
 
-- name: Wait for all instances to start
+- name: Wait for all instances to startelasticstack_initial_passwords
   include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
   tags: notest
@@ -542,7 +542,7 @@
     - renew_ca
     - renew_es_cert
 
-- name: Check for passwords being set
+- name: Check for if path for initial passwords being set
   stat:
     path: "{{ elasticstack_initial_passwords }}"
   delegate_to: "{{ elasticstack_ca }}"

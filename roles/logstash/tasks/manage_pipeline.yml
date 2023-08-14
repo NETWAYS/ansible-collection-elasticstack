@@ -34,7 +34,7 @@
     mode: 0755
 
 - name: Check out pipeline configuration
-  git:
+  ansible.builtin.git:
     repo: "{{ pipelinename.source }}"
     dest: "/etc/logstash/conf.d/{{ pipelinename.name }}"
     version: "{{ pipelinename.version | default('main') }}"

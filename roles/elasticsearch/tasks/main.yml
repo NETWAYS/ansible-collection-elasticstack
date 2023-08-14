@@ -68,7 +68,7 @@
         - "'data' not in elasticsearch_node_types"
 
     - name: Create groups of nodes
-      group_by:
+      ansible.builtin.group_by:
         key: "elasticsearch_role_{{ elasticsearch_role }}"
       changed_when: false
 

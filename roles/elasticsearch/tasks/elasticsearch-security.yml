@@ -593,7 +593,7 @@
   no_log: true
   when:
     - elasticsearch_passwords_file.stat.exists | bool
-    - groups['elasticsearch'] | length > 1
+    - groups['elasticsearch'] | length > 1 or elasticstack_release > 7
   until: elasticsearch_cluster_status.stdout == "green"
   retries: 20
   delay: 10
@@ -629,5 +629,39 @@
     group: root
     mode: 0600
   when: inventory_hostname == elasticstack_ca
+
+- name: Check for passwords being set
+  stat:
+    path: "{{ elasticstack_initial_passwords }}"
+  delegate_to: "{{ elasticstack_ca }}"
+  register: elasticsearch_passwords_file
+
+- name: Fetch Elastic password # noqa: risky-shell-pipe
+  shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
+    awk {' print $4 '}
+  register: elasticstack_password
+  changed_when: false
+  no_log: true
+  delegate_to: "{{ elasticstack_ca }}"
+  when: elasticsearch_passwords_file.stat.exists | bool
+
+- name: Check for cluster license with elastic password # noqa: risky-shell-pipe
+  shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    curl -ks
+    {{ elasticsearch_http_protocol }}://elastic:{{ elasticstack_password.stdout }}@localhost:{{ elasticstack_elasticsearch_http_port }}/_license?pretty |
+    grep status |
+    cut -d\" -f4
+  register: elasticsearch_cluster_license
+  changed_when: false
+#  no_log: true
+#  when:
+#    - elasticsearch_passwords_file.stat.exists | bool
+#    - groups['elasticsearch'] | length > 1 or elasticstack_release > 7
+  until: elasticsearch_cluster_license.stdout == "active"
+  retries: 20
+  delay: 10
 
 # Maybe make sure that Elasticsearch is using the right protocol http(s) to connect, even in newly setup clusters

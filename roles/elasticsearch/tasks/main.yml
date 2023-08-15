@@ -207,6 +207,21 @@
       retries: 5
       delay: 10
 
+    - name: Check for cluster license without security # noqa: risky-shell-pipe
+      shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        curl -s
+        http://localhost:{{ elastic_elasticsearch_http_port }}/_license?pretty |
+        grep status |
+        cut -d\" -f4
+      register: es_cluster_license
+      changed_when: false
+      no_log: true
+      ignore_errors: "{{ ansible_check_mode }}"
+      until: es_cluster_license.stdout == "active"
+      retries: 5
+      delay: 10
+
     - name: Leave a file showing that the cluster is set up
       template:
         dest: "{{ elasticsearch_initialized_file }}"

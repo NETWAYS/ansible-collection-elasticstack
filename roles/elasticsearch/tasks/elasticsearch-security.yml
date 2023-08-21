@@ -1,8 +1,16 @@
 ---
 
-- name: Make sure cryptography Elasticsearch module is installed
+- name: Install packages for security tasks
   package:
-    name: "{{ elasticsearch_pythoncryptography_pkgname }}"
+    name:
+      - unzip
+      - python3-cryptography
+      - openssl
+  tags:
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
+    - renew_es_cert
 
 - name: Set elasticstack_ca variable if not already done by user
   set_fact:

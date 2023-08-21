@@ -194,3 +194,13 @@ class AnalyzeCertificate():
 
     def return_result(self):
         return self.result
+
+class CheckCertificatePassphrase():
+    def __init__(self, module, result):
+        self.module = module
+        self.result = result
+        self.__passphrase = self.module.params['passphrase']
+        self.__path = self.module.params['path']
+        self.__cert = None
+        self.__private_key = None
+        self.__additional_certs = None

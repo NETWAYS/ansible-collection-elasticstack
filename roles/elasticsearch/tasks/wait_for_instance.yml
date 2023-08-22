@@ -1,7 +1,7 @@
 ---
 
 - name: Wait for instance
-  wait_for:
+  ansible.builtin.wait_for:
     host: "{{ hostvars[item].ansible_default_ipv4.address }}"
     port: "{{ elasticstack_elasticsearch_http_port }}"
     timeout: 600

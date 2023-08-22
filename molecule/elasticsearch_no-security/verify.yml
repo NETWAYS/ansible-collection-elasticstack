@@ -9,7 +9,7 @@
 
 # Remember, this is the no-security scenario. So no https
     - name: Health check
-      uri:
+      ansible.builtin.uri:
         url: http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health
         method: GET
         return_content: yes
@@ -22,7 +22,7 @@
       when: groups['elasticsearch'] | length > 1
 
     - name: Node check
-      uri:
+      ansible.builtin.uri:
         url: http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes
         method: GET
         return_content: yes

@@ -1,14 +1,14 @@
 ---
 # handlers file for elasticsearch
 - name: Restart Elasticsearch
-  service:
+  ansible.builtin.service:
     name: elasticsearch
     state: restarted
     daemon_reload: yes
   when: elasticsearch_enable | bool
 
 - name: Restart kibana if available for elasticsearch certificates
-  include_tasks: handlers/restart_kibana.yml
+  ansible.builtin.include_tasks: handlers/restart_kibana.yml
   with_items: "{{ groups['kibana'] }}"
   when:
     - elasticstack_full_stack: true

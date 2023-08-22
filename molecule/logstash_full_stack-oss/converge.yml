@@ -17,6 +17,7 @@
     elasticstack_full_stack: true
     elasticstack_variant: oss
     logstash_security: false
+    logstash_pipeline_unsafe_shutdown: true
     elasticstack_security: false
     beats_filebeat_syslog_udp: true
     beats_filebeat_syslog_tcp: true

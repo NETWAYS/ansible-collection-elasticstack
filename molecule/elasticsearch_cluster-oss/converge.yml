@@ -13,8 +13,8 @@
     elasticsearch_heap: "1"
   tasks:
     - name: Include Elastics repos role
-      include_role:
+      ansible.builtin.include_role:
         name: repos
     - name: Include Elasticsearch
-      include_role:
+      ansible.builtin.include_role:
         name: elasticsearch

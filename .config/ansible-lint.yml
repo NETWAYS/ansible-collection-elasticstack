@@ -14,6 +14,5 @@ skip_list:
   - 'command-instead-of-module'
   - 'role-name'
   - 'line-length'
-  - 'fqcn-builtins'
   - 'package-latest'
   - yaml  # Violations reported by yamllint.

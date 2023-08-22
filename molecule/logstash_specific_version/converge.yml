@@ -17,21 +17,21 @@
   tasks:
 
     - name: Set Filebeat version for 7.x
-      set_fact:
+      ansible.builtin.set_fact:
         elasticstack_version: "7.17.1"
       when:
         - elasticstack_release == 7
 
     - name: Set Filebeat version for 8.x
-      set_fact:
+      ansible.builtin.set_fact:
         elasticstack_version: "8.4.1"
       when:
         - elasticstack_release == 8
 
     - name: "Include Elastics repos role"
-      include_role:
+      ansible.builtin.include_role:
         name: repos
 
     - name: "Include Logstash"
-      include_role:
+      ansible.builtin.include_role:
         name: logstash

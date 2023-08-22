@@ -1,19 +1,10 @@
 ---
 
-- name: Update apt cache if package is not installed
-  when:
-    - ansible_os_family == "Debian"
-  block:
-
-    - name: Check for existence of elasticsearch configuration directory
-      stat:
-        path: "/etc/elasticsearch"
-      register: elasticsearch_configdir_stat
-
-    - name: Refresh apt cache if config dir is missing
-      apt:
-        update_cache: yes
-      when: not elasticsearch_configdir_stat.stat.exists
+- name: Update apt cache.
+  apt:
+    update_cache: yes
+    cache_valid_time: 600
+  when: ansible_os_family == 'Debian'
 
 - name: Check-set-parameters
   ansible.builtin.include_tasks: elasticsearch-parameters.yml

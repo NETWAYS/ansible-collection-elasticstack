@@ -1,20 +1,5 @@
 ---
 
-- name: Update apt cache if package is not installed
-  when:
-    - ansible_os_family == "Debian"
-  block:
-
-    - name: Check for existence of auditbeat configuration directory
-      stat:
-        path: "/etc/auditbeat"
-      register: auditbeat_configdir_stat
-
-    - name: Refresh apt cache if config dir is missing
-      apt:
-        update_cache: yes
-      when: not auditbeat_configdir_stat.stat.exists
-
 - name: Construct exact name of Auditbeat package
   set_fact:
     beats_auditbeat_package: >

@@ -1,20 +1,5 @@
 ---
 
-- name: Update apt cache if package is not installed
-  when:
-    - ansible_os_family == "Debian"
-  block:
-
-    - name: Check for existence of filebeat configuration directory
-      stat:
-        path: "/etc/filebeat"
-      register: beats_filebeat_configdir_stat
-
-    - name: Refresh apt cache if config dir is missing
-      apt:
-        update_cache: yes
-      when: not beats_filebeat_configdir_stat.stat.exists
-
 - name: Construct exact name of Filebeat package
   set_fact:
     beats_filebeat_package: >

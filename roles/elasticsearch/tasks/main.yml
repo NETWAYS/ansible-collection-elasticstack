@@ -186,6 +186,17 @@
   notify:
     - Restart Elasticsearch
 
+- name: Copy jvm.options File
+  become: yes
+  ansible.builtin.template:
+    src: "{{ elasticsearch_config_jvm }}"
+    dest: "{{ elasticsearch_conf_dir }}/jvm.options"
+    owner: root
+    group: "{{ elasticsearch_group }}"
+    mode: "660"
+    force: yes
+  notify: Restart Elasticsearch
+
 - name: Start Elasticsearch
   ansible.builtin.service:
     name: elasticsearch

@@ -18,6 +18,15 @@ elasticsearch_heap: "{{ [[(ansible_memtotal_mb // 1024) // 2, 30] | min, 1] | ma
 elasticsearch_pamlimits: true
 elasticsearch_check_calculation: false
 elasticsearch_clustername: elasticsearch
+elasticsearch_conf_dir: "/etc/elasticsearch/"
+elasticsearch_config_jvm: "jvm.options.j2"
+elasticsearch_user: elasticsearch
+elasticsearch_group: elasticsearch
+
+# JVM custom parameters
+elasticsearch_java_home: ''
+elasticsearch_jvm_custom_parameters: ''
+elasticsearch_heap_dump_path: "/var/lib/elasticsearch"
 
 elasticsearch_jna_workaround: false
 

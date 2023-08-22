@@ -179,10 +179,10 @@ The execution order of the roles is important! (see below)
     #  elasticstack_release: 8 #7
   pre_tasks:
     - name: Install Rsyslog
-      package:
+      ansible.builtin.package:
         name: rsyslog
     - name: Start rsyslog
-      service:
+       ansible.builtin.service:
         name: rsyslog
         state: started
         enabled: true

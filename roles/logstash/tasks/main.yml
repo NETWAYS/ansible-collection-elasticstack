@@ -1,7 +1,7 @@
 ---
 
 - name: Include OS specific vars
-  include_vars: '{{ item }}'
+  ansible.builtin.include_vars: '{{ item }}'
   with_first_found:
     - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
     - '{{ ansible_os_family }}.yml'
@@ -12,7 +12,7 @@
   block:
 
     - name: Set Elasticsearch hosts if used with other roles
-      set_fact:
+      ansible.builtin.set_fact:
         logstash_elasticsearch: "{{ groups['elasticsearch'] }}"
       when:
         - logstash_elasticsearch is undefined
@@ -22,14 +22,14 @@
         - logstash_configuration
 
     - name: Activate TLS for Beats for full stack
-      set_fact:
+      ansible.builtin.set_fact:
         logstash_beats_tls: true
       when:
         - logstash_beats_tls is undefined
         - not elasticstack_override_beats_tls | bool
 
 - name: Set Elasticsearch hosts to localhost if no other information available
-  set_fact:
+  ansible.builtin.set_fact:
     logstash_elasticsearch:
       - localhost
   when:
@@ -40,7 +40,7 @@
     - logstash_configuration
 
 - name: Enable security as default when in full stack mode
-  set_fact:
+  ansible.builtin.set_fact:
     logstash_security: true
   when:
     - logstash_security is undefined or elasticstack_security | bool
@@ -52,7 +52,7 @@
     - renew_logstash_cert
 
 - name: Construct exact name of Logstas package
-  set_fact:
+  ansible.builtin.set_fact:
     logstash_package: >
       {{
       'logstash' +
@@ -64,7 +64,7 @@
       }}
 
 - name: Install Logstash - rpm
-  package:
+  ansible.builtin.package:
     name: "{{ logstash_package }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
@@ -72,13 +72,13 @@
     - ansible_os_family == "RedHat"
 
 - name: Install Logstash - deb
-  package:
+  ansible.builtin.package:
     name: "{{ logstash_package }}"
   when:
     - ansible_os_family == "Debian"
 
 - name: Import Logstash Security tasks
-  import_tasks: logstash-security.yml
+  ansible.builtin.import_tasks: logstash-security.yml
   when:
     - elasticstack_full_stack | bool
     - logstash_security is defined and logstash_security | bool
@@ -89,7 +89,7 @@
     - renew_logstash_cert
 
 - name: Configure Logstash
-  template:
+  ansible.builtin.template:
     src: logstash.yml.j2
     dest: /etc/logstash/logstash.yml
     owner: root
@@ -104,7 +104,7 @@
     - logstash_configuration
 
 - name: Configure Logstash logging
-  template:
+  ansible.builtin.template:
     src: log4j2.properties.j2
     dest: /etc/logstash/log4j2.properties
     owner: root
@@ -120,7 +120,7 @@
 
 - name: Fetch pipelines from git repositories
   loop: "{{ logstash_pipelines }}"
-  include_tasks: manage_pipeline.yml
+  ansible.builtin.include_tasks: manage_pipeline.yml
   loop_control:
     loop_var: pipelinename
   when:
@@ -139,7 +139,7 @@
     - logstash_configuration
   block:
     - name: Create directory for default Elasticsearch output pipeline
-      file:
+      ansible.builtin.file:
         path: "/etc/logstash/conf.d/ansible-forwarder"
         state: directory
         owner: root
@@ -147,7 +147,7 @@
         mode: 0755
 
     - name: Create default Elasticsearch output pipeline inputs
-      template:
+      ansible.builtin.template:
         src: redis-input.conf.j2
         dest: "/etc/logstash/conf.d/ansible-forwarder/input.conf"
         owner: root
@@ -157,7 +157,7 @@
         - Restart Logstash noauto
 
     - name: Create default Elasticsearch output pipeline output
-      template:
+      ansible.builtin.template:
         src: elasticsearch-output.conf.j2
         dest: "/etc/logstash/conf.d/ansible-forwarder/output.conf"
         owner: root
@@ -175,7 +175,7 @@
     - logstash_configuration
   block:
     - name: Create directory for default beats input pipeline
-      file:
+      ansible.builtin.file:
         path: "/etc/logstash/conf.d/ansible-input"
         state: directory
         owner: root
@@ -183,7 +183,7 @@
         mode: 0755
 
     - name: Create default Beats input pipeline inputs
-      template:
+      ansible.builtin.template:
         src: beats-input.conf.j2
         dest: "/etc/logstash/conf.d/ansible-input/input.conf"
         owner: root
@@ -193,7 +193,7 @@
         - Restart Logstash noauto
 
     - name: Create default Beats input pipeline output
-      template:
+      ansible.builtin.template:
         src: redis-output.conf.j2
         dest: "/etc/logstash/conf.d/ansible-input/output.conf"
         owner: root
@@ -203,7 +203,7 @@
         - Restart Logstash noauto
 
 - name: Configure Logstash pipelines
-  template:
+  ansible.builtin.template:
     src: pipelines.yml.j2
     dest: /etc/logstash/pipelines.yml
     owner: root
@@ -225,7 +225,7 @@
   when: logstash_plugins is defined
 
 - name: Start Logstash
-  service:
+  ansible.builtin.service:
     name: logstash
     state: started
     enabled: yes

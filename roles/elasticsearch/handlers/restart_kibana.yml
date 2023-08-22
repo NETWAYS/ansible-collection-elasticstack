@@ -1,11 +1,11 @@
 ---
 - name: Check if kibana is installed
-  package_facts:
+  ansible.builtin.package_facts:
     manager: "auto"
   changed_when: false
 
 - name: Restart Kibana
-  service:
+  ansible.builtin.service:
     name: kibana
     state: restarted
   delegate_to: "{{ item }}"

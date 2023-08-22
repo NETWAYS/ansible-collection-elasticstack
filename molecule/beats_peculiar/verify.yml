@@ -6,22 +6,22 @@
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
   tasks:
     - name: fetch Filebeat version
-      command: "filebeat version | grep ^filebeat"
+      ansible.builtin.command: "filebeat version | grep ^filebeat"
       register: beats_filebeat_version
 
     - name: DEBUG show filebeat version output
-      debug:
+      ansible.builtin.debug:
         var: beats_filebeat_version.stdout
 
     - name: Fail if Filebeat has the wrong version
-      fail:
+      ansible.builtin.fail:
         msg: "Filebeat has the wrong version"
       when:
         - beats_filebeat_version.stdout.find('7.17.1') == -1
         - elasticstack_release == 7
 
     - name: Fail if Filebeat has the wrong version
-      fail:
+      ansible.builtin.fail:
         msg: "Filebeat has the wrong version"
       when:
         - beats_filebeat_version.stdout.find('8.4.1') == -1

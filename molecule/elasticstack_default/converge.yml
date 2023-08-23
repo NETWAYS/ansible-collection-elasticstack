@@ -16,6 +16,7 @@
     elasticsearch_heap: "2"
     elasticstack_full_stack: true
     logstash_pipeline_unsafe_shutdown: true
+    logstash_password_hash: false
     beats_filebeat_syslog_udp: true
     beats_filebeat_syslog_tcp: true
     beats_filebeat_modules:

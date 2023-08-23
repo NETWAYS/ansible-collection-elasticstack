@@ -19,14 +19,10 @@
 # Default beat input #
 # Autoconfigured Redis outputs: input
 
-- pipeline:
-    id: ansible-input
-    unsafe_shutdown: {{ ansible_input_unsafe_shutdown | default( logstash_pipeline_unsafe_shutdown ) }}
-  path:
-    config: "/etc/logstash/conf.d/ansible-input/*.conf"
-  queue:
-    type: {{ logstash_input_queue_type }}
-    max_bytes: {{ logstash_input_queue_max_bytes }}
+- pipeline.id: ansible-input
+  path.config: "/etc/logstash/conf.d/ansible-input/*.conf"
+  queue.type: {{ logstash_input_queue_type }}
+  queue.max_bytes: {{ logstash_input_queue_max_bytes }}
 
 {% endif %}
 {% if logstash_elasticsearch_output | bool %}
@@ -34,14 +30,10 @@
 # Default elasticsearch output #
 # Autoconfigured Redis input: forwarder
 
-- pipeline:
-    id: ansible-forwarder
-    unsafe_shutdown: {{ ansible_forwarder_unsafe_shutdown | default( logstash_pipeline_unsafe_shutdown ) }}
-  path:
-    config: "/etc/logstash/conf.d/ansible-forwarder/*.conf"
-  queue:
-    type: {{ logstash_forwarder_queue_type }}
-    max_bytes: {{ logstash_forwarder_queue_max_bytes }}
+- pipeline.id: ansible-forwarder
+  path.config: "/etc/logstash/conf.d/ansible-forwarder/*.conf"
+  queue.type: {{ logstash_forwarder_queue_type }}
+  queue.max_bytes: {{ logstash_forwarder_queue_max_bytes }}
 
 {% endif %}
 {% if logstash_pipelines is defined %}
@@ -72,14 +64,10 @@
 
 {% endif %}
 
-- pipeline:
-    id: {{ item.name }}
-    unsafe_shutdown: {{ item.unsafe_shutdown | default( logstash_pipeline_unsafe_shutdown ) }}
-  path:
-    config: "/etc/logstash/conf.d/{{ item.name }}/*.conf"
-  queue:
-    type: {{ item.queue_type | default('memory') }}
-    max_bytes: {{ item.queue_max_bytes | default('1gb') }}
+- pipeline.id: {{ item.name }}
+  path.config: "/etc/logstash/conf.d/{{ item.name }}/*.conf"
+  queue.type: {{ item.queue_type | default('memory') }}
+  queue.max_bytes: {{ item.queue_max_bytes | default('1gb') }}
 
 {% endfor %}
 {% endif %}

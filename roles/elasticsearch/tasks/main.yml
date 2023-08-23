@@ -156,8 +156,8 @@
     mode: "2750"
   when: item.create | bool
   loop:
-    - {create: "{{elasticsearch_create_logpath}}", path: "{{ elasticsearch_logpath }}" }
-    - {create: "{{elasticsearch_create_datapath}}", path: "{{ elasticsearch_datapath }}" }
+    - {create: "{{ elasticsearch_create_logpath }}", path: "{{ elasticsearch_logpath }}" }
+    - {create: "{{ elasticsearch_create_datapath }}", path: "{{ elasticsearch_datapath }}" }
 
 - name: Import Tasks elasticsearch-security.yml
   ansible.builtin.import_tasks: elasticsearch-security.yml

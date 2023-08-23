@@ -17,7 +17,6 @@ logstash_config_path_logs: /var/log/logstash
 # pipeline configuration #
 logstash_manage_pipelines: true
 logstash_queue_type: persisted
-logstash_pipeline_unsafe_shutdown: false
 
 # this will deactivate all pipeline management
 logstash_no_pipelines: false

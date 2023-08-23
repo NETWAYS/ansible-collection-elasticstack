@@ -7,10 +7,6 @@
     elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
   tasks:
 
-    - name: Give some time for tools to connect
-      ansible.builtin.wait_for:
-        timeout: 120
-
     - name: Run Logstash syntax check
       ansible.builtin.command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
       when: "'logstash' in group_names"

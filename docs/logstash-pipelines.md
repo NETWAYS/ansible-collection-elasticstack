@@ -205,7 +205,7 @@ Every Output can have a `congestion:` option with a numerical value. If the Redi
 
 ### Unsafe shutdown ###
 
-If you need unsafe Logstash shutdowns, e.g. for testing, you can set `logstash_pipeline_unsafe_shutdown` to `true`. If you want better controll over which pipeline is allowed to shutdown unsafely, there are `ansible_input_unsafe_shutdown`and `ansible_forwarder_unsafe_shutdown` for default pipelines. And every pipeline has it's own `unsafe_shutdown` setting. All three default to the value of `logstash_pipeline_unsafe_shutdown` which by itself defaults to `false`. 
+If you need unsafe Logstash shutdowns, e.g. for testing, you can set `logstash_pipeline_unsafe_shutdown` to `true`. The variable doesn't have a default so Logstash falls back to its internal default of `false`.
 
 ## Caveats ##
 

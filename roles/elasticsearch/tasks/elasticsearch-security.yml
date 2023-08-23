@@ -24,7 +24,7 @@
 
 - name: Set the ca expiration date in days
   ansible.builtin.set_fact:
-    elasticstack_ca_expiration_days: "{{ (( elasticstack_ca_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+    elasticstack_ca_expiration_days: "{{ ((elasticstack_ca_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: inventory_hostname == elasticstack_ca and elasticstack_ca_infos.skipped is not defined
 
 - name: Set ca will expire soon to true

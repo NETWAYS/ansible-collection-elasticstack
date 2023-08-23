@@ -29,6 +29,7 @@
             key: forwarder
     logstash_pipeline_identifier_field_name: "[mytest][pipelines]"
     logstash_pipeline_identifier_defaults: true
+    logstash_pipeline_unsafe_shutdown: true
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticstack_full_stack: false
   tasks:

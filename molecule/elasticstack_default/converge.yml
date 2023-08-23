@@ -15,6 +15,7 @@
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticsearch_heap: "1"
     elasticstack_full_stack: true
+    logstash_pipeline_unsafe_shutdown: true
     beats_filebeat_syslog_udp: true
     beats_filebeat_syslog_tcp: true
     beats_filebeat_modules:
@@ -26,6 +27,13 @@
       ansible.builtin.set_fact:
         elasticstack_rpm_workaround: true
       when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= "9"
+    - name: Update apt cache.
+      apt: update_cache=yes cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+    - name: Install dependencies
+      package:
+        name:
+          - curl
     - name: Include Redis
       ansible.builtin.include_role:
         name: geerlingguy.redis

@@ -203,6 +203,10 @@ Here the `default` output only receives the events that haven't already been sen
 
 Every Output can have a `congestion:` option with a numerical value. If the Redis key already holds more items than the value says, the output will stop.
 
+### Unsafe shutdown ###
+
+If you need unsafe Logstash shutdowns, e.g. for testing, you can set `logstash_pipeline_unsafe_shutdown` to `true`. If you want better controll over which pipeline is allowed to shutdown unsafely, there are `ansible_input_unsafe_shutdown`and `ansible_forwarder_unsafe_shutdown` for default pipelines. And every pipeline has it's own `unsafe_shutdown` setting. All three default to the value of `logstash_pipeline_unsafe_shutdown` which by itself defaults to `false`. 
+
 ## Caveats ##
 
 There are still some minor issues you need to keep in mind:

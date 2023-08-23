@@ -12,6 +12,7 @@
     logstash_logging_console: false
     logstash_logging_slow_file: false
     logstash_pipeline_identifier: false
+    logstash_pipeline_unsafe_shutdown: true
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticstack_full_stack: false
   tasks:

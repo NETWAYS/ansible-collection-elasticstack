@@ -17,6 +17,7 @@ logstash_config_path_logs: /var/log/logstash
 # pipeline configuration #
 logstash_manage_pipelines: true
 logstash_queue_type: persisted
+logstash_pipeline_unsafe_shutdown: false
 
 # this will deactivate all pipeline management
 logstash_no_pipelines: false
@@ -38,10 +39,10 @@ logstash_pipelines:
 logstash_elasticsearch_output: true
 logstash_validate_after_inactivity: '300'
 logstash_beats_input: true
-ansible_input_queue_type: memory
-ansible_input_queue_max_bytes: 1gb
-ansible_forwarder_queue_type: memory
-ansible_forwarder_queue_max_bytes: 1gb
+logstash_input_queue_type: memory
+logstash_input_queue_max_bytes: 1gb
+logstash_forwarder_queue_type: memory
+logstash_forwarder_queue_max_bytes: 1gb
 logstash_sniffing: false
 
 # logstash security

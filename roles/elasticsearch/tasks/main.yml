@@ -148,11 +148,11 @@
     mode: "2750"
   when: item.create | bool
   loop:
-    - {create: "{{elasticsearch_create_logpath}}", path: "{{ elasticsearch_logpath }}" }
-    - {create: "{{elasticsearch_create_datapath}}", path: "{{ elasticsearch_datapath }}" }
+    - {create: "{{ elasticsearch_create_logpath }}", path: "{{ elasticsearch_logpath }}" }
+    - {create: "{{ elasticsearch_create_datapath }}", path: "{{ elasticsearch_datapath }}" }
 
 - name: Import Tasks elasticsearch-keystore.yml
-  import_tasks: elasticsearch-keystore.yml
+  ansible.builtin.import_tasks: elasticsearch-keystore.yml
 
 - name: Import Tasks elasticsearch-security.yml
   ansible.builtin.import_tasks: elasticsearch-security.yml
@@ -211,7 +211,7 @@
   when: not elasticsearch_security | bool
   block:
     - name: Check for cluster status without security
-      uri:
+      ansible.builtin.uri:
         url: "http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
       register: result
       ignore_errors: "{{ ansible_check_mode }}"

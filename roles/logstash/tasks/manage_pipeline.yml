@@ -1,12 +1,12 @@
 ---
 
 - name: Check if Logstash pipeline already exists
-  stat:
+  ansible.builtin.stat:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
   register: "logstash_pipeline_stat"
 
 - name: Check who managed pipeline in last run # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep -e '^# source:{{ pipelinename.name }}' /etc/logstash/pipelines.yml |
     cut -d: -f3
@@ -17,7 +17,7 @@
     - logstash_pipeline_stat.stat.isdir | bool
 
 - name: Delete directory if changing manager
-  file:
+  ansible.builtin.file:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
     state: absent
   when:
@@ -26,7 +26,7 @@
     - pipelinename.source is defined
 
 - name: Create Logstash pipeline directories
-  file:
+  ansible.builtin.file:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
     state: directory
     owner: root
@@ -34,7 +34,7 @@
     mode: 0755
 
 - name: Check out pipeline configuration
-  git:
+  ansible.builtin.git:
     repo: "{{ pipelinename.source }}"
     dest: "/etc/logstash/conf.d/{{ pipelinename.name }}"
     version: "{{ pipelinename.version | default('main') }}"
@@ -43,7 +43,7 @@
     - Restart Logstash noauto
 
 - name: Create simple input
-  template:
+  ansible.builtin.template:
     src: simple-input.conf.j2
     dest: "/etc/logstash/conf.d/{{ pipelinename.name }}\
     /input.conf"
@@ -55,7 +55,7 @@
     - Restart Logstash noauto
 
 - name: Create simple output
-  template:
+  ansible.builtin.template:
     src: simple-output.conf.j2
     dest: "/etc/logstash/conf.d/{{ pipelinename.name }}\
     /output.conf"

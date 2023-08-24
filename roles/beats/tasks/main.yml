@@ -1,7 +1,7 @@
 ---
 
 - name: Include OS specific vars
-  include_vars: '{{ item }}'
+  ansible.builtin.include_vars: '{{ item }}'
   with_first_found:
     - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
     - '{{ ansible_os_family }}.yml'
@@ -11,7 +11,7 @@
     - elasticstack_full_stack | bool
   block:
     - name: Enable security if enabled for whole stack
-      set_fact:
+      ansible.builtin.set_fact:
         beats_security: true
       when:
         - elasticstack_security | bool
@@ -19,7 +19,7 @@
         - not elasticstack_override_beats_tls | bool
 
     - name: Set elasticstack_ca variable if not already done by user
-      set_fact:
+      ansible.builtin.set_fact:
         elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
       when:
         - beats_security | bool
@@ -31,7 +31,7 @@
         - renew_beats_cert
 
     - name: Set beats_ca_dir if whole stack is used
-      set_fact:
+      ansible.builtin.set_fact:
         beats_ca_dir: "/etc/beats/certs"
       when:
         - elasticstack_security | bool
@@ -42,7 +42,7 @@
 # independent "CA" Role
 
 - name: Set beats_ca_dir if whole stack is not used
-  set_fact:
+  ansible.builtin.set_fact:
     beats_ca_dir: "/opt/ca"
   when:
     - beats_ca_dir is undefined
@@ -52,7 +52,7 @@
     - renew_beats_cert
 
 - name: Create directory for logging if file logging is activated
-  file:
+  ansible.builtin.file:
     path: "{{ beats_logpath }}"
     state: directory
     owner: root
@@ -61,7 +61,7 @@
   when: beats_logging == "file"
 
 - name: Import security tasks
-  import_tasks: beats-security.yml
+  ansible.builtin.import_tasks: beats-security.yml
   when:
     - beats_security | bool
     - elasticstack_full_stack | bool
@@ -72,13 +72,13 @@
     - renew_beats_cert
 
 - name: Import Filebeat tasks
-  import_tasks: filebeat.yml
+  ansible.builtin.import_tasks: filebeat.yml
   when: beats_filebeat | bool
 
 - name: Import Auditbeat tasks
-  import_tasks: auditbeat.yml
+  ansible.builtin.import_tasks: auditbeat.yml
   when: beats_auditbeat | bool
 
 - name: Import Metricbeat tasks
-  import_tasks: metricbeat.yml
+  ansible.builtin.import_tasks: metricbeat.yml
   when: beats_metricbeat | bool

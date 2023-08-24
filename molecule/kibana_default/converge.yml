@@ -12,8 +12,8 @@
     - netways.elasticstack
   tasks:
     - name: Include Elastic Repos
-      include_role:
+      ansible.builtin.include_role:
         name: repos
     - name: Include Kibana
-      include_role:
+      ansible.builtin.include_role:
         name: kibana

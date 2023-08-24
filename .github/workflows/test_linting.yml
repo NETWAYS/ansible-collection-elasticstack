@@ -1,0 +1,68 @@
+---
+name: Test Linting
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+  workflow_call:
+    inputs:
+      rolename:
+        required: true
+        type: string
+  push:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - '.github/workflows/test_linting.yml'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
+  pull_request:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+      - '!doc/**'
+    paths:
+      - '.github/workflows/test_linting.yml'
+      - '.config/ansible-lint.yml'
+      - '.yamllint'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Lint code (yamllint).
+        run: |
+          yamllint .
+        if: ${{ inputs.rolename == '' }}
+
+      - name: Lint Role (yamllint).
+        run: |
+          ansible-lint roles/${{ inputs.rolename }}
+        if: ${{ inputs.rolename != '' }}
+
+      - name: Lint Role (ansible-lint).
+        run: |
+          ansible-lint roles/${{ inputs.rolename }}

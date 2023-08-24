@@ -1,7 +1,7 @@
 ---
 
 - name: Install unzip for certificate handling
-  package:
+  ansible.builtin.package:
     name: unzip
   tags:
     - certificates
@@ -9,7 +9,7 @@
     - renew_logstash_cert
 
 - name: Set elasticstack_ca variable if not already done by user
-  set_fact:
+  ansible.builtin.set_fact:
     elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
   when:
     - elasticstack_ca is undefined
@@ -22,7 +22,7 @@
     - renew_logstash_cert
 
 - name: Ensure logstash certificate exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"
   register: logstash_cert_exists
 
@@ -34,17 +34,17 @@
   when: logstash_cert_exists.stat.exists | bool
 
 - name: Set the logstash certificate expiration date in days
-  set_fact:
+  ansible.builtin.set_fact:
     logstash_cert_expiration_days: "{{ ((logstash_cert_expiration_date.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: logstash_cert_expiration_date.skipped is not defined
 
 - name: Set logstash certificate will expire soon to true
-  set_fact:
+  ansible.builtin.set_fact:
     logstash_cert_will_expire_soon: true
   when: logstash_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_cert_expiration_buffer | int
 
 - name: Print the logstash certificate renew message
-  debug:
+  ansible.builtin.debug:
     msg: |
       Your logstash certificate will expire in {{ logstash_cert_expiration_days }} days.
       Ansible will renew it.
@@ -58,12 +58,12 @@
     - never
   block:
     - name: Check if cert directory exists on logstash
-      stat:
+      ansible.builtin.stat:
         path: "{{ logstash_certs_dir }}"
       register: logstash_check_cert_path
 
     - name: Move cert directory on logstash
-      copy:
+      ansible.builtin.copy:
         src: "{{ logstash_certs_dir }}"
         dest: "{{ logstash_certs_dir }}_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -72,7 +72,7 @@
       register: logstash_move_cert_directory
 
     - name: Remove cert directory on logstash
-      file:
+      ansible.builtin.file:
         path: "{{ logstash_certs_dir }}"
         state: absent
       when: logstash_move_cert_directory.changed
@@ -86,12 +86,12 @@
     - never
   block:
     - name: Check if cert file exists on elasticstack_ca host
-      stat:
+      ansible.builtin.stat:
         path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
       register: logstash_check_cert_file_ca_host
 
     - name: Move cert file on elasticstack_ca host
-      copy:
+      ansible.builtin.copy:
         src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
         dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -100,18 +100,18 @@
       register: logstash_move_cert_file_ca_host
 
     - name: Remove cert file on elasticstack_ca host
-      file:
+      ansible.builtin.file:
         path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
         state: absent
       when: logstash_move_cert_file_ca_host.changed
 
     - name: Check if cert zip file exists on elasticstack_ca host
-      stat:
+      ansible.builtin.stat:
         path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
       register: logstash_check_cert_zip_file_ca_host
 
     - name: Move cert zip file on elasticstack_ca host
-      copy:
+      ansible.builtin.copy:
         src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
         dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -120,7 +120,7 @@
       register: logstash_move_cert_zip_file_ca_host
 
     - name: Remove cert zip file on elasticstack_ca host
-      file:
+      ansible.builtin.file:
         path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
         state: absent
       when: logstash_move_cert_zip_file_ca_host.changed
@@ -134,12 +134,12 @@
     - never
   block:
     - name: Check the existance of cert on Ansible controler
-      stat:
+      ansible.builtin.stat:
         path: /tmp/{{ ansible_hostname }}-ls.p12
       register: logstash_check_temporary_cert_ansible_controler
 
     - name: Move temporary cert file on Ansible controler
-      copy:
+      ansible.builtin.copy:
         src: /tmp/{{ ansible_hostname }}-ls.p12
         dest: "/tmp/{{ ansible_hostname }}-ls.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -147,18 +147,18 @@
       register: logstash_move_cert_file_ansible_controler
 
     - name: Remove temporary cert file on Ansible controler
-      file:
+      ansible.builtin.file:
         path: /tmp/{{ ansible_hostname }}-ls.p12
         state: absent
       when: logstash_move_cert_file_ansible_controler.changed
 
     - name: Check the existance of cert zip file on Ansible controler
-      stat:
+      ansible.builtin.stat:
         path: /tmp/{{ ansible_hostname }}-ls.zip
       register: logstash_check_temporary_cert_zip_ansible_controler
 
     - name: Move temporary cert zip file on Ansible controler
-      copy:
+      ansible.builtin.copy:
         src: /tmp/{{ ansible_hostname }}-ls.zip
         dest: "/tmp/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -166,13 +166,13 @@
       register: logstash_move_cert_zip_ansible_controler
 
     - name: Remove temporary cert zip file on Ansible controler
-      file:
+      ansible.builtin.file:
         path: /tmp/{{ ansible_hostname }}-ls.zip
         state: absent
       when: logstash_move_cert_zip_ansible_controler.changed
 
 - name: Create individual certificates for Logstash
-  command: >
+  ansible.builtin.command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
     --days {{ logstash_cert_validity_period }}
     --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
@@ -192,7 +192,7 @@
     - renew_logstash_cert
 
 - name: Fetch certificate from ca host to Ansible controler
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
     dest: "/tmp/{{ ansible_hostname }}-ls.p12"
     flat: yes
@@ -203,7 +203,7 @@
     - renew_logstash_cert
 
 - name: Create certificate directory
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ logstash_certs_dir }}"
     owner: root
@@ -215,7 +215,7 @@
     - renew_logstash_cert
 
 - name: Copy the certificate to logstash node
-  copy:
+  ansible.builtin.copy:
     src: "/tmp/{{ ansible_hostname }}-ls.p12"
     dest: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"
     owner: root
@@ -227,7 +227,7 @@
     - renew_logstash_cert
 
 - name: Put the certificate in keystore
-  copy:
+  ansible.builtin.copy:
     src: "/tmp/{{ ansible_hostname }}-ls.p12"
     dest: "{{ logstash_certs_dir }}/keystore.pfx"
     owner: root
@@ -241,7 +241,7 @@
     - renew_logstash_cert
 
 - name: Create individual PEM certificates for Logstash
-  command: >
+  ansible.builtin.command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
     --days {{ logstash_cert_validity_period }}
     --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
@@ -262,7 +262,7 @@
     - renew_logstash_cert
 
 - name: Fetch PEM certificate from ca host to Ansible controler
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
     dest: "/tmp/{{ ansible_hostname }}-ls.zip"
     flat: yes
@@ -273,7 +273,7 @@
     - renew_logstash_cert
 
 - name: Copy PEM certificate to logstash node
-  unarchive:
+  ansible.builtin.unarchive:
     src: "/tmp/{{ ansible_hostname }}-ls.zip"
     dest: "{{ logstash_certs_dir }}/"
     owner: root
@@ -285,7 +285,7 @@
     - renew_logstash_cert
 
 - name: Copy certificate locally
-  copy:
+  ansible.builtin.copy:
     src: "{{ logstash_certs_dir }}/\
           {{ ansible_hostname }}/\
           {{ ansible_hostname }}.crt"
@@ -300,7 +300,7 @@
     - renew_logstash_cert
 
 - name: Copy key locally
-  copy:
+  ansible.builtin.copy:
     src: "{{ logstash_certs_dir }}/\
           {{ ansible_hostname }}/\
           {{ ansible_hostname }}.key"
@@ -315,7 +315,7 @@
     - renew_logstash_cert
 
 - name: Create unencrypted Logstash compatible key
-  command: >
+  ansible.builtin.command: >
     openssl pkcs8
     -in {{ logstash_certs_dir }}/{{ inventory_hostname }}.key
     -topk8
@@ -331,7 +331,7 @@
     - renew_logstash_cert
 
 - name: Set permissions on Logstash key
-  file:
+  ansible.builtin.file:
     path: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
     owner: root
     group: logstash
@@ -342,7 +342,7 @@
     - renew_logstash_cert
 
 - name: Fetch ca certificate from ca host to Ansible controler
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/ca.crt"
     dest: /tmp/ca.crt
     flat: yes
@@ -353,7 +353,7 @@
     - renew_logstash_cert
 
 - name: Copy the ca certificate to logstash node
-  copy:
+  ansible.builtin.copy:
     src: /tmp/ca.crt
     dest: "{{ logstash_certs_dir }}"
     owner: root
@@ -367,12 +367,12 @@
     - renew_logstash_cert
 
 - name: Check the length of logstash user password
-  fail:
+  ansible.builtin.fail:
     msg: logstash user password must be at least 6 characters long.
   when: logstash_password | length < 6
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
     awk {' print $4 '}

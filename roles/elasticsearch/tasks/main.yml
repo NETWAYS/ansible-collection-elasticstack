@@ -3,13 +3,13 @@
   ansible.builtin.include_tasks: elasticsearch-parameters.yml
 
 - name: Include OS specific vars
-  include_vars: '{{ item }}'
+  ansible.builtin.include_vars: '{{ item }}'
   with_first_found:
     - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
     - '{{ ansible_os_family }}.yml'
 
 - name: Set common password for common certificates
-  set_fact:
+  ansible.builtin.set_fact:
     elasticsearch_tls_key_passphrase: "{{ elasticstack_cert_pass }}"
   when:
     - elasticstack_cert_pass is defined
@@ -19,20 +19,20 @@
     - renew_es_cert
 
 - name: Check if cluster is already set up
-  stat:
+  ansible.builtin.stat:
     path: "{{ elasticsearch_initialized_file }}"
   register: cluster_setup_check
   failed_when: false
 
 - name: Set var that cluster is set up
-  set_fact:
+  ansible.builtin.set_fact:
     elaticsearch_cluster_set_up: true
   when:
     - cluster_setup_check.stat.exists | bool
     - cluster_setup_check is defined
 
 - name: Set var that cluster is not set up
-  set_fact:
+  ansible.builtin.set_fact:
     elaticsearch_cluster_set_up: false
   when:
     - cluster_setup_check is undefined or
@@ -48,36 +48,36 @@
     # has a specific roles and the others are irrelevant
     #
     - name: Set node role variable to master
-      set_fact:
+      ansible.builtin.set_fact:
         elasticsearch_role: "master"
       when:
         - "'master' in elasticsearch_node_types"
 
     - name: Set node role variable to data
-      set_fact:
+      ansible.builtin.set_fact:
         elasticsearch_role: "data"
       when:
         - "'master' not in elasticsearch_node_types"
         - "'data' in elasticsearch_node_types"
 
     - name: Set node role variable to other
-      set_fact:
+      ansible.builtin.set_fact:
         elasticsearch_role: "other"
       when:
         - "'master' not in elasticsearch_node_types"
         - "'data' not in elasticsearch_node_types"
 
     - name: Create groups of nodes
-      group_by:
+      ansible.builtin.group_by:
         key: "elasticsearch_role_{{ elasticsearch_role }}"
       changed_when: false
 
     - name: Count master nodes
-      set_fact:
+      ansible.builtin.set_fact:
         count_of_master_nodes: "{{ groups['elasticsearch_role_master'] | length }}"
 
     - name: Check count of master nodes
-      fail:
+      ansible.builtin.fail:
         msg: "There must be an odd count of master nodes. You have {{ count_of_master_nodes }}"
       when:
         - count_of_master_nodes | int % 2  == 0
@@ -87,7 +87,7 @@
       when: elasticsearch_check_calculation | bool
 
 - name: Install openssl if security is activated
-  package:
+  ansible.builtin.package:
     name: openssl
   when: elasticsearch_security | bool
 
@@ -102,7 +102,7 @@
     - elasticsearch_pamlimits | bool
 
 - name: Construct exact name of Elasticsearch package
-  set_fact:
+  ansible.builtin.set_fact:
     elasticsearch_package: >
       {{
       'elasticsearch' +
@@ -114,7 +114,7 @@
       }}
 
 - name: Install Elasticsearch - rpm
-  package:
+  ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
@@ -122,13 +122,13 @@
     - ansible_os_family == "RedHat"
 
 - name: Install Elasticsearch - deb
-  package:
+  ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
   when:
     - ansible_os_family == "Debian"
 
 - name: Configure Elasticsearch
-  template:
+  ansible.builtin.template:
     src: elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
     owner: root
@@ -140,7 +140,7 @@
   when: elasticsearch_manage_yaml | bool
 
 - name: Create Elasticsearch directory
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     owner: elasticsearch
@@ -155,7 +155,7 @@
   import_tasks: elasticsearch-keystore.yml
 
 - name: Import Tasks elasticsearch-security.yml
-  import_tasks: elasticsearch-security.yml
+  ansible.builtin.import_tasks: elasticsearch-security.yml
   when:
     - elasticsearch_security | bool
     - elasticstack_variant == "elastic"
@@ -165,7 +165,7 @@
     - renew_es_cert
 
 - name: Activate JNA workaround (see README.md)
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ elasticsearch_sysconfig_file }}"
     regexp: 'ES_JAVA_OPTS='
     line: 'ES_JAVA_OPTS="-Djna.tmpdir={{ elasticsearch_datapath }}/tmp"'
@@ -174,7 +174,7 @@
   when: elasticsearch_jna_workaround | bool
 
 - name: Set initial heap
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/elasticsearch/jvm.options
     regexp: '^-Xms'
     line: '-Xms{{ elasticsearch_heap }}g'
@@ -182,15 +182,26 @@
     - Restart Elasticsearch
 
 - name: Set maximum heap
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/elasticsearch/jvm.options
     regexp: '^-Xmx'
     line: '-Xmx{{ elasticsearch_heap }}g'
   notify:
     - Restart Elasticsearch
 
+- name: Copy jvm.options File
+  become: yes
+  ansible.builtin.template:
+    src: "{{ elasticsearch_config_jvm }}"
+    dest: "{{ elasticsearch_conf_dir }}/jvm.options"
+    owner: root
+    group: "{{ elasticsearch_group }}"
+    mode: "660"
+    force: yes
+  notify: Restart Elasticsearch
+
 - name: Start Elasticsearch
-  service:
+  ansible.builtin.service:
     name: elasticsearch
     state: started
     enabled: yes
@@ -209,7 +220,7 @@
       delay: 10
 
     - name: Leave a file showing that the cluster is set up
-      template:
+      ansible.builtin.template:
         dest: "{{ elasticsearch_initialized_file }}"
         src: elasticsearch_initialized.j2
         owner: root
@@ -217,14 +228,14 @@
         mode: "0600"
 
     - name: Set var that cluster is set up
-      set_fact:
+      ansible.builtin.set_fact:
         elaticsearch_cluster_set_up: true
 
 # See https://github.com/NETWAYS/ansible-collection-elasticstack/issues/137
 # for details why we have this task again here
 #
 - name: Configure Elasticsearch
-  template:
+  ansible.builtin.template:
     src: elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
     owner: root
@@ -236,11 +247,11 @@
   when: elasticsearch_manage_yaml | bool
 
 - name: Show Info about heap
-  debug:
+  ansible.builtin.debug:
     msg: "Using {{ elasticsearch_heap | int * 1024 }} of {{ ansible_memtotal_mb }} MB as heap for Elasticsearch"
 
 - name: Show hint about passwords
-  debug:
+  ansible.builtin.debug:
     msg: "Remember, your temporary passwords can be found on {{ elasticstack_ca }} in {{ elasticstack_initial_passwords }}"
   when:
     - elasticsearch_security | bool

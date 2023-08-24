@@ -554,7 +554,7 @@
   when: elasticsearch_http_security
 
 - name: Check for cluster status with bootstrap password
-  uri:
+  ansible.builtin.uri:
     url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
     user: elastic
     password: "{{ elasticsearch_bootstrap_pw }}"
@@ -581,7 +581,7 @@
   when: elasticsearch_passwords_file.stat.exists | bool
 
 - name: Check for cluster status with elastic password
-  uri:
+  ansible.builtin.uri:
     url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
     user: elastic
     password: "{{ elasticstack_password.stdout }}"

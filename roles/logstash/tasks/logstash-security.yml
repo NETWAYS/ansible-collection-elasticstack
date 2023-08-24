@@ -481,4 +481,3 @@
   register: result
   #when: logstash_writer_user_present is not defined
   delegate_to: "{{ elasticstack_ca }}"
-  

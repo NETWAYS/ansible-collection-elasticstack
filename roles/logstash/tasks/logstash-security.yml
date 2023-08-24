@@ -385,41 +385,41 @@
     - logstash_configuration
 
 - name: Set elasticsearch security-api base url for elasticsearch > 7
-  set_fact:
+  ansible.builtin.set_fact:
     security_api_base_url: "https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/"
   when: elasticstack_release | int > 7
 
 - name: Set elasticsearch security-api base url for elasticsearch < 8
-  set_fact:
+  ansible.builtin.set_fact:
     security_api_base_url: "https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/"
   when: elasticstack_release | int < 8
 
 - name: install ccrypt
-  package:
+  ansible.builtin.package:
     name: ccrypt
 
 - name: Chack crypt
-  shell: apt list --installed | grep crypt
+  ansible.builtin.shell: apt list --installed | grep crypt
   register: crypt_debian
   when: ansible_os_family == "Debian"
   changed_when: false
 
 - name: Chack crypt
-  shell: yum list --installed | grep crypt
+  ansible.builtin.shell: yum list --installed | grep crypt
   register: crypt_redhat
   when: ansible_os_family == "RedHat"
   changed_when: false
 
 - name: print crypt packages debian
-  debug:
+  ansible.builtin.debug:
     var: crypt_debian
 
 - name: print crypt packages redhat
-  debug:
+  ansible.builtin.debug:
     var: crypt_redhat
 
 - name: Check for logstash_writer role
-  uri:
+  ansible.builtin.uri:
     url: "{{ security_api_base_url }}role/logstash_writer"
     ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
     user: elastic
@@ -431,12 +431,12 @@
   run_once: true
 
 - name: Set logstash_writer_role_present
-  set_fact:
+  ansible.builtin.set_fact:
     logstash_writer_role_present: true
   when: 'logstash_writer_response.status == 200'
 
 - name: Put logstash_writer role into Elasticsearch if not present
-  uri:
+  ansible.builtin.uri:
     url: "{{ security_api_base_url }}role/logstash_writer"
     ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
     user: elastic
@@ -451,7 +451,7 @@
   delegate_to: "{{ elasticstack_ca }}"
 
 - name: Check for logstash_writer user
-  uri:
+  ansible.builtin.uri:
     url: "{{ security_api_base_url }}user/{{ logstash_user }}"
     ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
     user: elastic
@@ -463,12 +463,12 @@
   run_once: true
 
 - name: Set logstash_writer_user_present
-  set_fact:
+  ansible.builtin.set_fact:
     logstash_writer_user_present: true
   when: 'logstash_writer_user_response.status == 200'
 
 - name: Put logstash_writer user into Elasticsearch if not present
-  uri:
+  ansible.builtin.uri:
     url: "{{ security_api_base_url }}user/{{ logstash_user }}"
     ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
     user: elastic
@@ -481,11 +481,3 @@
   register: result
   #when: logstash_writer_user_present is not defined
   delegate_to: "{{ elasticstack_ca }}"
-
-- name: template
-  template:
-    src: logstash_writer_user.j2
-    dest: /etc/logstash/logstash_writer_user.json
-    owner: root
-    group: root
-    mode: 0644

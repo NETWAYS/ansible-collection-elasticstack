@@ -151,9 +151,6 @@
     - {create: "{{ elasticsearch_create_logpath }}", path: "{{ elasticsearch_logpath }}" }
     - {create: "{{ elasticsearch_create_datapath }}", path: "{{ elasticsearch_datapath }}" }
 
-- name: Import Tasks elasticsearch-keystore.yml
-  ansible.builtin.import_tasks: elasticsearch-keystore.yml
-
 - name: Import Tasks elasticsearch-security.yml
   ansible.builtin.import_tasks: elasticsearch-security.yml
   when:

@@ -46,6 +46,7 @@
       cert_info:
         path: files/es-ca/elastic-stack-ca.p12
         passphrase: PleaseChangeMe-wrong
+        passphrase_check: True
       register: pass_check
     - name: Debug
       debug:

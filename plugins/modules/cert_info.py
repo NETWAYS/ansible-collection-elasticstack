@@ -23,7 +23,6 @@ def run_module():
     module_args = dict(
         path=dict(type='str', no_log=True, required=True),
         passphrase=dict(type='str', no_log=True, required=False, default=None),
-        passphrase_check=dict(type='bool', required=False, default=False)
     )
 
     # seed the result dict
@@ -48,28 +47,13 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
-    if not module.params['passphrase_check']:
-        try:
-            cert_info = AnalyzeCertificate(module, result)
-            result = cert_info.return_result()
-        except ValueError as e:
-            module.fail_json(msg='ValueError: %s' % to_native(e))
-        except Exception as e:
-            module.fail_json(msg='Exception: %s: %s' % (
-                to_native(type(e)),
-                to_native(e))
-                )
-    else:
-        try:
-            passphrase_check = CheckCertificatePassphrase(module, result)
-            result = passphrase_check.return_result()
-        except ValueError as e:
-            module.fail_json(msg='ValueError: %s' % to_native(e))
-        except Exception as e:
-            module.fail_json(msg='Exception: %s: %s' % (
-                to_native(type(e)),
-                to_native(e))
-                )
+    try:
+        cert_info = AnalyzeCertificate(module, result)
+        result = cert_info.return_result()
+    except ValueError as e:
+        module.fail_json(msg='ValueError: %s' % to_native(e))
+    except Exception as e:
+        module.fail_json(msg='Exception: %s: %s' % (to_native(type(e)), to_native(e)))
 
     module.exit_json(**result)
 

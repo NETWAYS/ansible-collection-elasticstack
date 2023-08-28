@@ -133,14 +133,16 @@ class AnalyzeCertificate():
                 self.module.log(
                     msg="Loaded certificate with backend."
                     )
+                loaded = True
             except ValueError as e:
                 if self.passphrase_check:
                     self.result["passphrase_check"] = False
                     self.module.exit_json(**self.result)
-        # map loaded certificate to object
-        self.__private_key = __pkcs12_tuple[0]
-        self.__cert = __pkcs12_tuple[1]
-        self.__additional_certs = __pkcs12_tuple[2]
+        if loaded:
+            # map loaded certificate to object
+            self.__private_key = __pkcs12_tuple[0]
+            self.__cert = __pkcs12_tuple[1]
+            self.__additional_certs = __pkcs12_tuple[2]
 
     def load_info(self):
         self.general_info()

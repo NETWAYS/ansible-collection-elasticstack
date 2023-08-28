@@ -36,7 +36,7 @@ def run_module():
         serial_number='',
         subject='',
         version='',
-        passphrase_check=''
+        passphrase_check=True
     )
 
     # the AnsibleModule object

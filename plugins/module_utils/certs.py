@@ -97,7 +97,7 @@ class AnalyzeCertificate():
         # read the pkcs12 file
         try:
             with open(self.__path, 'rb') as f:
-                pkcs12_data = f.read()
+                __pkcs12_data = f.read()
         except IOError as e:
             self.module.fail_json(
                 msg='IOError: %s' % (to_native(e))
@@ -106,7 +106,7 @@ class AnalyzeCertificate():
         # for cryptography >= 3.1.x
         try:
             __pkcs12_tuple = pkcs12.load_key_and_certificates(
-                pkcs12_data,
+                __pkcs12_data,
                 to_bytes(self.__passphrase),
                 )
             loaded = True
@@ -128,7 +128,7 @@ class AnalyzeCertificate():
                 backend = default_backend()
                 # call load_key_and_certificates with 3 paramters
                 __pkcs12_tuple = pkcs12.load_key_and_certificates(
-                    pkcs12_data,
+                    __pkcs12_data,
                     to_bytes(self.__passphrase),
                     backend
                     )

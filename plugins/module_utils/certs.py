@@ -76,6 +76,7 @@ class AnalyzeCertificate():
     def __init__(self, module, result):
         self.module = module
         self.result = result
+        self.passphrase_check = self.module.params['passphrase_check']
         self.__passphrase = self.module.params['passphrase']
         self.__path = self.module.params['path']
         self.__cert = None
@@ -108,6 +109,9 @@ class AnalyzeCertificate():
                 to_bytes(self.__passphrase),
                 )
             loaded = True
+        except ValueError as e:
+            if self.passphrase_check:
+                self.result["passphrase_check"] = False
         except Exception:
             self.module.log(
                 msg="Couldn't load certificate without backend. Trying with backend."
@@ -115,17 +119,21 @@ class AnalyzeCertificate():
         # try to load with 3 parameters for
         # cryptography >= 2.5.x and <= 3.0.x
         if not loaded:
-            # create backend object
-            backend = default_backend()
-            # call load_key_and_certificates with 3 paramters
-            __pkcs12_tuple = pkcs12.load_key_and_certificates(
-                pkcs12_data,
-                to_bytes(self.__passphrase),
-                backend
-                )
-            self.module.log(
-                msg="Loaded certificate with backend."
-                )
+            try:
+                # create backend object
+                backend = default_backend()
+                # call load_key_and_certificates with 3 paramters
+                __pkcs12_tuple = pkcs12.load_key_and_certificates(
+                    pkcs12_data,
+                    to_bytes(self.__passphrase),
+                    backend
+                    )
+                self.module.log(
+                    msg="Loaded certificate with backend."
+                    )
+            except ValueError as e:
+                if self.passphrase_check:
+                    self.result["passphrase_check"] = False
         # map loaded certificate to object
         self.__private_key = __pkcs12_tuple[0]
         self.__cert = __pkcs12_tuple[1]

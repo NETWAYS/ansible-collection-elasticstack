@@ -144,7 +144,7 @@ class AnalyzeCertificate():
                 else:
                     self.result["passphrase_check"] = False
                     self.module.fail_json(msg='ValueError: %s' % to_native(e))
-        if loaded:
+        if loaded and not self.__passphrase_check:
             # map loaded certificate to object
             self.__private_key = __pkcs12_tuple[0]
             self.__cert = __pkcs12_tuple[1]

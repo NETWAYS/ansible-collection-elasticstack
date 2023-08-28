@@ -111,11 +111,10 @@ class AnalyzeCertificate():
                 )
             loaded = True
         except ValueError as e:
+            self.result["passphrase_check"] = False
             if self.__passphrase_check:
-                self.result["passphrase_check"] = False
                 self.module.exit_json(**self.result)
             else:
-                self.result["passphrase_check"] = False
                 self.module.fail_json(msg='ValueError: %s' % to_native(e))
         except Exception:
             self.module.log(
@@ -138,11 +137,10 @@ class AnalyzeCertificate():
                     )
                 loaded = True
             except ValueError as e:
+                self.result["passphrase_check"] = False
                 if self.__passphrase_check:
-                    self.result["passphrase_check"] = False
                     self.module.exit_json(**self.result)
                 else:
-                    self.result["passphrase_check"] = False
                     self.module.fail_json(msg='ValueError: %s' % to_native(e))
         if loaded and not self.__passphrase_check:
             # map loaded certificate to object

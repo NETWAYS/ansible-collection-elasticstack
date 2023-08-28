@@ -83,7 +83,8 @@ class AnalyzeCertificate():
         self.__private_key = None
         self.__additional_certs = None
         self.load_certificate()
-        self.load_info()
+        if not self.passphrase_check:
+            self.load_info()
 
     def load_certificate(self):
         # track if module can load pkcs12

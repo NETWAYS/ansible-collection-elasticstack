@@ -76,14 +76,14 @@ class AnalyzeCertificate():
     def __init__(self, module, result):
         self.module = module
         self.result = result
-        self.passphrase_check = self.module.params['passphrase_check']
+        self.__passphrase_check = self.module.params['passphrase_check']
         self.__passphrase = self.module.params['passphrase']
         self.__path = self.module.params['path']
         self.__cert = None
         self.__private_key = None
         self.__additional_certs = None
         self.load_certificate()
-        if not self.passphrase_check:
+        if not self.__passphrase_check:
             self.load_info()
 
     def load_certificate(self):
@@ -111,7 +111,7 @@ class AnalyzeCertificate():
                 )
             loaded = True
         except ValueError as e:
-            if self.passphrase_check:
+            if self.__passphrase_check:
                 self.result["passphrase_check"] = False
                 self.module.exit_json(**self.result)
             else:
@@ -137,7 +137,7 @@ class AnalyzeCertificate():
                     )
                 loaded = True
             except ValueError as e:
-                if self.passphrase_check:
+                if self.__passphrase_check:
                     self.result["passphrase_check"] = False
                     self.module.exit_json(**self.result)
                 else:

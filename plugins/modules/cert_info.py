@@ -22,7 +22,8 @@ from ansible_collections.netways.elasticstack.plugins.module_utils.certs import 
 def run_module():
     module_args = dict(
         path=dict(type='str', no_log=True, required=True),
-        passphrase=dict(type='str', no_log=True, required=False, default=None)
+        passphrase=dict(type='str', no_log=True, required=False, default=None),
+        passphrase_check=dict(type='bool', required=False, default=False)
     )
 
     # seed the result dict

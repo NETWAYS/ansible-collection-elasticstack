@@ -112,6 +112,7 @@ class AnalyzeCertificate():
         except ValueError as e:
             if self.passphrase_check:
                 self.result["passphrase_check"] = False
+                self.module.exit_json(**self.result)
         except Exception:
             self.module.log(
                 msg="Couldn't load certificate without backend. Trying with backend."
@@ -134,6 +135,7 @@ class AnalyzeCertificate():
             except ValueError as e:
                 if self.passphrase_check:
                     self.result["passphrase_check"] = False
+                    self.module.exit_json(**self.result)
         # map loaded certificate to object
         self.__private_key = __pkcs12_tuple[0]
         self.__cert = __pkcs12_tuple[1]

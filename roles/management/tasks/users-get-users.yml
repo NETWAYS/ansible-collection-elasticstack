@@ -1,0 +1,15 @@
+---
+
+- name: Get user information from Elasticsearch
+  uri:
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/"
+    method: GET
+    user: "{{ elastic_username }}"
+    password: "{{ elastic_password }}"
+    return_content: yes
+    validate_certs: no
+  register: user_info
+
+- name: Debug - Print user information
+  debug:
+    msg: "User Information: {{ user_info }}"

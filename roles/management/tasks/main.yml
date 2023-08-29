@@ -9,38 +9,14 @@
     file: "{{ role_path }}/files/users.yml"
     name: users
 
-- name: Get user information from Elasticsearch
-  uri:
-    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/"
-    method: GET
-    user: "{{ elastic_username }}"
-    password: "{{ elastic_password }}"
-    return_content: yes
-    validate_certs: no
-  register: user_info
+- name: Get current users
+  ansible.builtin.include_tasks: users-get-users.yml
 
-- name: Debug - Print user information
-  debug:
-    msg: "User Information: {{ user_info }}"
+- name: Create new users
+  ansible.builtin.include_tasks: users-create-users.yml
 
-- name: Send user data to Elasticsearch
-  uri:
-    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/{{ item.username }}?pretty"
-    method: POST  
-    user: "{{ elastic_username }}"
-    password: "{{ elastic_password }}"
-    body_format: json
-    headers:
-      Content-Type: "application/json"
-    body: "{{ item }}"
-    validate_certs: no
-  loop: "{{ users.users }}"  
-  register: response
-  failed_when: response.status not in [200, 201]
-- name: Print response
-  debug:
-    msg: "User {{ item.item.username }} - Status Code: {{ item.status }} - Response: {{ item.json | to_nice_json }}"  # Pretty-print here
-  loop: "{{ response.results }}"
+- name: Delete users
+  ansible.builtin.include_tasks: users-delete-users.yml
 
 
 #bin/elasticsearch-users list

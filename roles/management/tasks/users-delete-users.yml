@@ -1,0 +1,17 @@
+---
+
+- name: Delete Users from Elasticsearch
+  uri:
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/{{ item.username }}?pretty"
+    method: DELETE 
+    user: "{{ elastic_username }}"
+    password: "{{ elastic_password }}"
+    validate_certs: no
+  loop: "{{ users.users }}"
+  register: response
+  failed_when: "response.status not in [200, 201]"
+
+- name: Print response
+  debug:
+    msg: "User {{ item.item.username }} - Status Code: {{ item.status }} - Response: {{ item.json | to_nice_json }}"  # Pretty-print here
+  loop: "{{ response.results }}"

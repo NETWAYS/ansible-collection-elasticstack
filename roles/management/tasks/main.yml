@@ -1,14 +1,17 @@
 ---
 
-- name: Include Ansible vault secrets
+- name: Include Elasticsearch_User Ansible vault secrets
   include_vars:
     file: "{{ role_path }}/vars/secret_vars.yml"
+
+- name: Include User vault secrets
+  include_vars:
+    file: "{{ role_path }}/files/users.yml"
 
 - name: Include users from users.yml
   include_vars:
     file: "{{ role_path }}/files/users.yml"
     name: users
-
 
 - name: Create new users
   ansible.builtin.include_tasks: users-create-users.yml

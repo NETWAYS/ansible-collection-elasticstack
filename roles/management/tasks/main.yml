@@ -13,7 +13,7 @@
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/"
     method: GET
-    user: "elastic"
+    user: "{{ elastic_username }}"
     password: "{{ elastic_password }}"
     return_content: yes
     validate_certs: no
@@ -27,7 +27,7 @@
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/{{ item.username }}?pretty"
     method: POST
-    user: "elastic"
+    user: "{{ elastic_username }}"
     password: "{{ elastic_password }}"
     body_format: json
     headers:

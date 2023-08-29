@@ -5,6 +5,7 @@ elastic_variant: elastic
 
 elastic_rpm_workaround: false
 
+elastic_username: "elastic"
 elasticsearch_http_protocol: "https"
 elasticsearch_host: "10.77.14.90"
 elasticsearch_port: "9200"

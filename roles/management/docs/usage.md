@@ -1,4 +1,4 @@
-# 1 Create Ansible-Vault as such
+# 1 Create an Ansible-Vault for the Elasticsearch_Password as such:
 
 ```
 ansible-vault create management/vars/secret_vars.yml
@@ -9,12 +9,10 @@ ansible-vault edit management/vars/secret_vars.yml
 - add Elasticsearch Host
 - Add Elasticsearch Port
 - Add Protocol
-- Add Username
-- User-Passwort unlocks via Vault
+- Add Elasticsearch-Username
+- Info: Elasticsearch-Password via Vault
 
-
-# 3 Adapt your elasticsearch.yml for the role-selection
-
+# 3 Adapt your `elasticsearch.yml` for the role-selection
 ```
 ---
 - hosts: els

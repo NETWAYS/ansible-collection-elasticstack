@@ -1,5 +1,19 @@
 ---
 
+- name: List Elasticsearch users
+  ansible.builtin.command:
+    cmd: "bin/elasticsearch-users list"
+    chdir: "{{elasticsearch_binary_directory}}" 
+ # delegate_to: "{{ elasticsearch_host }}"
+  register: elasticsearch_users_list
+ # become: true
+ # become_user: elasticsearch
+
+- name: Print Elasticsearch users
+  debug:
+    msg: "{{ elasticsearch_users_list.stdout }}"
+
+
 - name: Get user information from Elasticsearch
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/"
@@ -13,3 +27,32 @@
 - name: Debug - Print user information
   debug:
     msg: "User Information: {{ user_info }}"
+
+# Information stored output
+
+- name: Write Elasticsearch Users and User Information to File on Ansible-Controller's home directory
+  delegate_to: localhost
+  run_once: true
+  become: false
+  copy:
+    content: |
+      Elasticsearch Users:
+      ---------------------
+      {{ elasticsearch_users_list.stdout | regex_replace('\n', '\n      ') }}
+      Elasticsearch User Information:
+      ------------------------------------------------
+      {% for username, user_data in user_info.json.items() %}
+      User: {{ username }}
+      - Email: {{ user_data.email | default("N/A") }}
+      - Enabled: {{ user_data.enabled }}
+      - Full Name: {{ user_data.full_name | default("N/A") }}
+      - Roles: {{ user_data.roles | join(", ") }}
+      - Reserved: {{ user_data.metadata._reserved | default("N/A") }}
+      {% if user_data.metadata._deprecated is defined %}
+      - Deprecated: {{ user_data.metadata._deprecated }}
+      - Deprecated Reason: {{ user_data.metadata._deprecated_reason }}
+      {% endif %}
+      ------------------------------
+      {% endfor %}
+    dest: "{{ lookup('env', 'HOME') }}/elasticsearch_users_and_info.txt"
+    force: true

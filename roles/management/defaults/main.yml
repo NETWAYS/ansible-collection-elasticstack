@@ -2,11 +2,12 @@
 # defaults file for elastic-repos
 elastic_release: 8
 elastic_variant: elastic
-
 elastic_rpm_workaround: false
 
+elasticsearch_binary_directory: "/usr/share/elasticsearch/"
 elastic_username: "elastic"
 elasticsearch_http_protocol: "https"
 elasticsearch_host: "10.77.14.90"
 elasticsearch_port: "9200"
 
+user-get-users-file-path :

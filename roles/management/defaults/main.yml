@@ -1,0 +1,11 @@
+---
+# defaults file for elastic-repos
+elastic_release: 8
+elastic_variant: elastic
+
+elastic_rpm_workaround: false
+
+elasticsearch_http_protocol: "https"
+elasticsearch_host: "10.77.14.90"
+elasticsearch_port: "9200"
+

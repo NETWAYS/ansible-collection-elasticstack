@@ -1,3 +1,4 @@
 .cache
 *.swp
 __pycache__*
+roles/management/vars/secret_vars.yml

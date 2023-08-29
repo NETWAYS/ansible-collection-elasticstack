@@ -1,0 +1,42 @@
+users:
+  - username: "woody"
+    password: "password1"
+    roles: ["admin"]
+  - username: "buzz"
+    password: "password2"
+    roles: ["user"]
+  - username: "woody"
+    password: "p@ssw00dy"
+    roles: ["admin", "cowboy"]
+    full_name: "Woody Pride"
+    email: "woody@toystory.com"
+    metadata:
+      intelligence: 7
+  - username: "buzz"
+    password: "Lightyear$21"
+    roles: ["user", "space_ranger"]
+    full_name: "Buzz Lightyear"
+    email: "buzz@toystory.com"
+    metadata:
+      intelligence: 8
+  - username: "jessie"
+    password: "Y33-H@w"
+    roles: ["user", "cowgirl"]
+    full_name: "Jessie"
+    email: "jessie@toystory.com"
+    metadata:
+      intelligence: 7
+  - username: "rex"
+    password: "r3xT-R3x"
+    roles: ["user", "dinosaur"]
+    full_name: "Rex"
+    email: "rex@toystory.com"
+    metadata:
+      intelligence: 6
+  - username: "slinky"
+    password: "sl1nkD0g"
+    roles: ["user", "dog"]
+    full_name: "Slinky Dog"
+    email: "slinky@toystory.com"
+    metadata:
+      intelligence: 6

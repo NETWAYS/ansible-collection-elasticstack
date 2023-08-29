@@ -131,6 +131,23 @@ class TestCertInfo(unittest.TestCase):
             })
             cert_info.main()
 
+    def test_module_exit_when_password_wrong_with_passphrase_check(self):
+        with self.assertRaises(AnsibleExitJson):
+            set_module_args({
+                'path': 'molecule/plugins/files/es-ca/elastic-stack-ca.p12',
+                'passphrase': 'PleaseChangeMe-Wrong',
+                'passphrase_check': True
+            })
+            cert_info.main()
+
+    def test_module_exit_when_password_correct_with_passphrase_check(self):
+        with self.assertRaises(AnsibleExitJson):
+            set_module_args({
+                'path': 'molecule/plugins/files/es-ca/elastic-stack-ca.p12',
+                'passphrase': 'PleaseChangeMe',
+                'passphrase_check': True
+            })
+            cert_info.main()
 
 if __name__ == '__main__':
     unittest.main()

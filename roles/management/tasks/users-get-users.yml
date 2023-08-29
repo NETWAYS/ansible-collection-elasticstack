@@ -13,7 +13,6 @@
   debug:
     msg: "{{ elasticsearch_users_list.stdout }}"
 
-
 - name: Get user information from Elasticsearch
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/"
@@ -42,12 +41,16 @@
       Elasticsearch User Information:
       ------------------------------------------------
       {% for username, user_data in user_info.json.items() %}
-      User: {{ username }}
+            User: {{ username }}
+      - Full Name: {{ user_data.full_name | default("N/A") }}
       - Email: {{ user_data.email | default("N/A") }}
       - Enabled: {{ user_data.enabled }}
-      - Full Name: {{ user_data.full_name | default("N/A") }}
       - Roles: {{ user_data.roles | join(", ") }}
       - Reserved: {{ user_data.metadata._reserved | default("N/A") }}
+      - Metadata:
+        {% for key, value in user_data.metadata.items() if key != "_reserved" and key != "_deprecated" and key != "_deprecated_reason" %}
+          - {{ key }}: {{ value }}
+        {% endfor %}
       {% if user_data.metadata._deprecated is defined %}
       - Deprecated: {{ user_data.metadata._deprecated }}
       - Deprecated Reason: {{ user_data.metadata._deprecated_reason }}
@@ -55,4 +58,4 @@
       ------------------------------
       {% endfor %}
     dest: "{{ lookup('env', 'HOME') }}/elasticsearch_users_and_info.txt"
-    force: true
+    force: yes

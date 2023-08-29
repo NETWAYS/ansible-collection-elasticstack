@@ -1,11 +1,5 @@
 users:
   - username: "woody"
-    password: "password1"
-    roles: ["admin"]
-  - username: "buzz"
-    password: "password2"
-    roles: ["user"]
-  - username: "woody"
     password: "p@ssw00dy"
     roles: ["admin", "cowboy"]
     full_name: "Woody Pride"

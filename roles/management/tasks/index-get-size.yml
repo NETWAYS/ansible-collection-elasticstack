@@ -1,0 +1,28 @@
+---
+- name: Get index information
+  uri:
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_cat/indices?v"
+    method: GET
+    user: "{{ elastic_username }}"
+    password: "{{ elastic_password }}"
+    return_content: yes
+    validate_certs: no
+  register: index_info
+
+- name: Debug - Print index information
+  debug:
+    msg: "Index_info: {{ index_info }}"
+
+- name: Write Elasticsearch Index Information to File on Ansible-Controller's home directory
+  delegate_to: localhost
+  run_once: true
+  become: false
+  copy:
+    content: |
+      Elasticsearch Indices:
+      ---------------------
+      {{ index_info.content | regex_replace('\n', '\n      ') }}
+
+    dest: "{{ lookup('env', 'HOME') }}/elasticsearch_index_info.txt"
+    force: yes
+

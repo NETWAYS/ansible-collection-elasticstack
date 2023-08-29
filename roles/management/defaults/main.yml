@@ -10,4 +10,3 @@ elasticsearch_http_protocol: "https"
 elasticsearch_host: "10.77.14.90"
 elasticsearch_port: "9200"
 
-user-get-users-file-path :

@@ -9,14 +9,15 @@
     file: "{{ role_path }}/files/users.yml"
     name: users
 
+
+- name: Create new users
+  ansible.builtin.include_tasks: users-create-users.yml
+
 - name: Get current users
   ansible.builtin.include_tasks: users-get-users.yml
 
-#- name: Create new users
-#  ansible.builtin.include_tasks: users-create-users.yml
-#
+- name: Get index size
+  ansible.builtin.include_tasks: index-get-size.yml
+
 #- name: Delete users
 #  ansible.builtin.include_tasks: users-delete-users.yml
-
-
-#bin/elasticsearch-users list

@@ -67,6 +67,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
 * *logstash_user*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
 * *logstash_password_hash*: Generate and use a hash from your `logstash_password` (default: `true`)
+* *logstash_password_hash_salt*: Salt for hashing the password. We need a fixed salt for idempotency. (default: `PleaseChangeMe`)
 * *logstash_password*: Password of Elasticsearch user. It must be at least 6 characters long (default: `password`)
 * *logstash_user_indices*: Indices the user has access to (default: `'"ecs-logstash*", "logstash*", "logs*"'`)
 * *logstash_reset_writer_role*: Reset user and role with every run: (default: `true`)

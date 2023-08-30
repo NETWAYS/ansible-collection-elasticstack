@@ -70,12 +70,22 @@ def exit_json(*args, **kwargs):
 
     checks_passed = True
 
-    # check every item in certificate if it matches with the result
-    # and if that fails, don't catch the Exception, so the test will fail
-    for item in certificate:
-        if certificate[item] != kwargs[item]:
+    # only if passphrase_check mode is disabled
+    if args['passphrase_check'] is False:
+        # check every item in certificate if it matches with the result
+        # and if that fails, don't catch the Exception, so the test will fail
+        for item in certificate:
+            if certificate[item] != kwargs[item]:
+                checks_passed = False
+    # if passphrase_check mode is enabled
+    else:
+        # fail checks, if passphrase is wrong and passphrase_check kwarg is not False
+        if args['passphrase'] is 'PleaseChangeMe-Wrong' and kwargs['passphrase_check'] is not False:
             checks_passed = False
-    
+        # fail checks, if passphrase is correct and passphrase_check kwarg is not True
+        if args['passphrase'] is 'PleaseChangeMe' and kwargs['passphrase_check'] is not True:
+            checks_passed = False
+
     if checks_passed:
         raise AnsibleExitJson(kwargs)
 
@@ -128,6 +138,24 @@ class TestCertInfo(unittest.TestCase):
             set_module_args({
                 'path': 'molecule/plugins/files/es-ca/elastic-stack-ca.p12',
                 'passphrase': 'PleaseChangeMe'
+            })
+            cert_info.main()
+
+    def test_module_exit_when_password_wrong_with_passphrase_check(self):
+        with self.assertRaises(AnsibleExitJson):
+            set_module_args({
+                'path': 'molecule/plugins/files/es-ca/elastic-stack-ca.p12',
+                'passphrase': 'PleaseChangeMe-Wrong',
+                'passphrase_check': True
+            })
+            cert_info.main()
+
+    def test_module_exit_when_password_correct_with_passphrase_check(self):
+        with self.assertRaises(AnsibleExitJson):
+            set_module_args({
+                'path': 'molecule/plugins/files/es-ca/elastic-stack-ca.p12',
+                'passphrase': 'PleaseChangeMe',
+                'passphrase_check': True
             })
             cert_info.main()
 

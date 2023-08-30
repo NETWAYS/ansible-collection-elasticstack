@@ -1,0 +1,201 @@
+# Ansible
+# 
+# Rolling Upgrade of Elasticsearch with security on
+# Source from: author: Jeff Steinmetz, @jeffsteinmetz; Bin Li, @holysoros
+# Modifications: author: Daniel Neuberger @netways.de
+# latest tested with Ansible 2.9 and later
+
+---
+- name: Elasticsearch rolling upgrade
+  hosts: elasticsearch_{{ env }}
+  become: true
+  serial: 1
+  vars_files:
+    - vars/elasticsearch/elasticsearch-{{ env }}_secrets.yml
+  vars:
+    es_disable_allocation:  '{ "persistent": { "cluster.routing.allocation.enable": "none" }}'
+    es_enable_allocation: '{ "persistent": { "cluster.routing.allocation.enable": null }}'
+    es_http_port: 9200
+    es_transport_port: 9300
+    #desired version to upgrade to: 7.10.2
+    es_version: '8.5.3'
+
+  tasks:
+      # this first step is a overkill, but here
+      # in case the upgrade was cancelled by user mid playbook run
+    - name: make sure elasticsearch service is running
+      service: name=elasticsearch enabled=yes state=started
+      register: response
+      become: true
+
+    - name: Wait for elasticsearch node to come back up if it was stopped
+      wait_for: 
+        host: "{{ ansible_default_ipv4.address }}" 
+        port: "{{ es_transport_port }}"
+        delay: 45
+      when: response.changed == true
+
+    - name: check current version
+      uri: 
+        url: https://localhost:{{ es_http_port }}
+        method: GET
+        user: elastic
+        password: "{{ es_api_basic_auth_password }}"
+        validate_certs: no
+      register: version_found
+      retries: 10
+      delay: 10
+
+    - name: Display Current Elasticsearch Version
+      debug: var=version_found.json.version.number
+
+      # this step is key!!!  Don't restart more nodes
+      # until all shards have completed recovery
+    - name: Wait for cluster health to return to green
+      uri: 
+        url: https://localhost:{{ es_http_port }}/_cluster/health 
+        method: GET
+        user: elastic
+        password: "{{ es_api_basic_auth_password }}"
+        validate_certs: no
+      register: response
+      until: "response.json.status == 'green'"
+      retries: 50
+      delay: 30
+      # when: version_found.json.version.number !=  '{{ es_version }}'
+
+
+    - name: Disable shard allocation for the cluster
+      uri: 
+        url: https://localhost:{{ es_http_port }}/_cluster/settings 
+        method: PUT
+        body: '{{ es_disable_allocation }}' 
+        body_format: json
+        user: elastic
+        password: "{{ es_api_basic_auth_password }}"
+        validate_certs: no
+      #when: version_found.json.version.number != '{{ es_version }}'
+
+    - name: stop non essential indexing to speed up shard recovery
+      uri:
+        url: https://localhost:{{ es_http_port }}/_flush
+        method: POST
+        user: elastic
+        password: "{{ es_api_basic_auth_password }}"
+        validate_certs: no
+      ignore_errors: yes
+
+
+    - name: Shutdown elasticsearch service
+      service: name=elasticsearch enabled=yes state=stopped
+      become: true
+
+    # do an "apt-get update", to ensure latest package lists 
+    - name: apt-get update
+      apt:                    
+        update-cache: yes 
+      changed_when: 0
+                                                                                                                      
+    # get a list of packages that have updates
+    - name: get list of pending upgrades                                                                              
+      command: apt-get --simulate dist-upgrade
+      args:                                                                                                           
+        warn: false # don't warn us about apt having its own plugin
+      register: apt_simulate 
+      changed_when: 0 
+                                                            
+    # pick out list of pending updates from command output. This essentially
+    # takes the above output from "apt-get --simulate dist-upgrade", and
+    # pipes it through "cut -f2 -d' ' | sort"                                                                         
+    - name: parse apt-get output to get list of changed packages
+      set_fact:     
+        updates: '{{ apt_simulate.stdout_lines | select("match", "^Inst ") | list | splitpart(1, " ") | list | sort }}'
+      changed_when: 0
+                                                            
+    # tell user about packages being updated
+    - name: show pending updates                                                                                      
+      debug:                                        
+        var: updates
+      when: updates.0 is defined            
+                                                            
+   # request manual ack before proceeding with package upgrade
+    - pause:      
+      when: updates.0 is defined                    
+  
+  # if a new kernel is incoming, remove old ones to avoid full /boot
+    - name: apt-get autoremove
+      command: apt-get -y autoremove                                                                                  
+      args:             
+        warn: false          
+      when: '"Inst linux-image-" in apt_simulate.stdout'
+      changed_when: 0            
+                                                            
+  # do the actual apt-get dist-upgrade
+    - name: apt-get dist-upgrade                                                                                      
+      apt:                                                  
+        upgrade: dist # upgrade all packages to latest version
+  
+  # REBOOT machine after Upgrade
+    - name: check if reboot is required
+      register: reboot_required_file
+      stat:
+        path: /var/run/reboot-required
+
+    - name: restart machine
+      reboot:
+        msg: "Reboot initiated by Ansible to update system libs/kernel as needed"
+      when: reboot_required_file.stat.exists == true
+
+    - name: waiting for machine to come back
+      wait_for_connection:
+        delay: 10
+        connect_timeout: 300
+      when: reboot_required_file.stat.exists == true
+
+    - name: Start elasticsearch
+      service: name=elasticsearch enabled=yes state=started
+        #when: version_found.json.version.number != '{{ es_version }}'
+      become: true
+
+    - name: Wait for elasticsearch node to come back up if it was stopped
+      wait_for: 
+        host: "{{ ansible_default_ipv4.address }}" 
+        port: "{{ es_transport_port }}"
+        delay: 30
+
+    - name: Confirm the node joins the cluster
+      shell: "curl -k -u elastic:{{ es_api_basic_auth_password }} -s -m 2 'https://localhost:9200/_cat/nodes?h=name' | grep -E '^{{ ansible_fqdn }}$'"
+      register: result
+      until: result.rc == 0
+      retries: 200
+      delay: 3
+      #when: version_found.json.version.number != '{{ es_version }}'
+
+    - name: Enable shard allocation for the cluster
+      uri: 
+        url: https://localhost:{{ es_http_port }}/_cluster/settings 
+        method: PUT 
+        body: '{{ es_enable_allocation }}' 
+        body_format: json
+        user: elastic
+        password: "{{ es_api_basic_auth_password }}"
+        validate_certs: no
+      register: response
+      # next line is boolean not string, so no quotes around true
+      # use python truthiness
+      until: "response.json.acknowledged == true"
+      retries: 5
+      delay: 30
+      #when: version_found.json.version.number != es_version
+
+    - name: Wait for cluster health to return to yellow or green
+      uri: 
+        url: https://localhost:{{ es_http_port }}/_cluster/health 
+        method: GET
+        user: elastic
+        password: "{{ es_api_basic_auth_password }}"
+        validate_certs: no
+      register: response
+      until: "response.json.status == 'yellow' or response.json.status == 'green'"
+      retries: 5
+      delay: 30

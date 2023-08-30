@@ -82,10 +82,10 @@ def exit_json(*args, **kwargs):
     # if passphrase_check mode is enabled
     else:
         # fail checks, if passphrase is wrong and passphrase_check kwarg is not False
-        if args['passphrase'] is 'PleaseChangeMe-Wrong' and kwargs['passphrase_check'] is not False:
+        if args['passphrase'] == 'PleaseChangeMe-Wrong' and kwargs['passphrase_check'] is not False:
             checks_passed = False
         # fail checks, if passphrase is correct and passphrase_check kwarg is not True
-        if args['passphrase'] is 'PleaseChangeMe' and kwargs['passphrase_check'] is not True:
+        if args['passphrase'] == 'PleaseChangeMe' and kwargs['passphrase_check'] is not True:
             checks_passed = False
 
     if checks_passed:

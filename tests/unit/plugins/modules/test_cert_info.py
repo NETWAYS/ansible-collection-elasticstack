@@ -71,7 +71,7 @@ def exit_json(*args, **kwargs):
 
     checks_passed = True
 
-    print(args)
+    print(args[0])
     # only if passphrase_check mode is disabled
     if args['passphrase_check'] is False:
         # check every item in certificate if it matches with the result

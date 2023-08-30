@@ -1,7 +1,7 @@
 {
 {% if logstash_password_hash | bool %}
 {# using a fixed salt is neccessary for idempotency, will be created on elasticstack CA host #}
-  "password_hash" : "{{ logstash_password | password_hash(hashtype='sha256', salt=lookup('password', 'elasticstack_ca_dir/logstash_hash_salt chars=ascii_letters,digits length=16') }}",
+  "password_hash" : "{{ logstash_password | password_hash(hashtype='bcrypt', salt=lookup('password', 'elasticstack_ca_dir/logstash_hash_salt chars=ascii_letters,digits length=16') ) }}",
 {% else %}
   "password" : "{{ logstash_password }}",
 {% endif %}

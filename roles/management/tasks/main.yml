@@ -27,3 +27,6 @@
 
 - name: Get current roles
   ansible.builtin.include_tasks: roles-get-roles.yml
+
+- name: Edit roles
+  ansible.builtin.include_tasks: roles-edit-roles.yml

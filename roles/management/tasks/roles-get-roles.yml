@@ -1,30 +1,68 @@
 ---
-- name: Get role information from Elasticsearch in YAML
+
+- name: Get role information from Elasticsearch
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/role/"
     method: GET
     user: "{{ elastic_username }}"
     password: "{{ elastic_password }}"
     return_content: yes
-    headers:
-      Accept: "application/x-yaml"
     validate_certs: no
   register: role_info
 
-# Convert the JSON content to a Python dictionary
+# Convert the JSON content to a dictionary
 - set_fact:
-    role_info_dict: "{{ role_info.content | from_json }}"
+    role_info_dict: "{{ role_info.json }}"
 
-# Convert the dictionary back to YAML and write it to a file
-- name: Write Elasticsearch Roles and Role Information to a YAML file on Ansible-Controller's home directory
+# Write the roles to a local file
+- name: Write Roles to a Local File
   delegate_to: localhost
-  run_once: true
   become: false
   copy:
     content: "{{ role_info_dict | to_yaml }}"
     dest: "{{ lookup('env', 'HOME') }}/elasticsearch_roles_and_info.yml"
     force: yes
 
+# Read the content from the local file
+- name: Read Modified Roles from Local File
+  become: false
+  delegate_to: localhost
+  slurp:
+    src: "{{ lookup('env', 'HOME') }}/elasticsearch_roles_and_info.yml"
+  register: updated_role_content
+
+# Convert the slurped YAML content to a dictionary
+- set_fact:
+    updated_role_info_dict: "{{ updated_role_content['content'] | b64decode | from_yaml }}"
+
+#---------------------
+# v2 
+#- name: Get role information from Elasticsearch in YAML
+#  uri:
+#    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/role/"
+#    method: GET
+#    user: "{{ elastic_username }}"
+#    password: "{{ elastic_password }}"
+#    return_content: yes
+#    headers:
+#      Accept: "application/x-yaml"
+#    validate_certs: no
+#  register: role_info
+#
+## Convert the JSON content to a Python dictionary
+#- set_fact:
+#    role_info_dict: "{{ role_info.content | from_json }}"
+#
+## Convert the dictionary back to YAML and write it to a file
+#- name: Write Elasticsearch Roles and Role Information to a YAML file on Ansible-Controller's home directory
+#  delegate_to: localhost
+#  run_once: true
+#  become: false
+#  copy:
+#    content: "{{ role_info_dict | to_yaml }}"
+#    dest: "{{ lookup('env', 'HOME') }}/elasticsearch_roles_and_info.yml"
+#    force: yes
+# ---
 # v1: Non-Yml-version
 #- name: Get role information from Elasticsearch
 #  uri:

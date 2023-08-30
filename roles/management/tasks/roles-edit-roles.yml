@@ -1,0 +1,41 @@
+---
+
+- name: Update Roles in Elasticsearch
+  uri:
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/role/{{ item.key }}"
+    method: PUT
+    user: "{{ elastic_username }}"
+    password: "{{ elastic_password }}"
+    body: "{{ item.value | to_json }}"
+    headers:
+      Content-Type: "application/json"
+    validate_certs: no
+    status_code: 200,201  # 200 means updated, 201 means created
+  loop: "{{ updated_role_info_dict.items() }}"
+
+#v2 
+## Read existing roles and their information from the YAML file
+#- name: Read the roles from the YAML file
+#  include_vars:
+#    file: "{{ lookup('env', 'HOME') }}/elasticsearch_roles_and_info.yml"
+#    name: existing_roles
+#
+## Loop over the roles and update them in Elasticsearch
+#- name: Update Roles in Elasticsearch
+#  uri:
+#    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/role/{{ item.key }}"
+#    method: PUT
+#    user: "{{ elastic_username }}"
+#    password: "{{ elastic_password }}"
+#    body: "{{ item.value | to_json }}"
+#    headers:
+#      Content-Type: "application/json"
+#    validate_certs: no
+#    status_code: 201,200 # 201 means created, 200 means updated
+#  loop: "{{ existing_roles | dict2items }}"
+#  register: update_results
+#  
+## Print the result
+#- name: Show Update Results
+#  debug:
+#    var: update_results.results

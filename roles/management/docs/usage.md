@@ -31,14 +31,17 @@ elastic_users_delete_path: "/files/elastic-users-delete.yml"
 c) Adapt your user-secret-vault
 
 - I. create second vault with *all user secrets*, this is the storage of the variable of the file of:
+
 ```
 elastic_users_add_path: "/files/elastic-users-add.yml"
-
+```
 - You can create it as such:
+
 ```
 ansible-vault create management/files/users.yml
 ansible-vault edit management/files/users.yml 
 ```
+
 II. It should have the yaml format of `users-toystory-tesfile.yml` 
 III. adapt the variable via the `defaults/main.yml`
 
@@ -59,6 +62,7 @@ III. adapt the variable via the `defaults/main.yml`
 ```
 
 # 3 Run the playbook
+
 ```
 ansible-playbook /home/$(id -un)/NW/ansible-nps/elasticsearch.yml -i /home/$(id -un)/NW/ansible-nps/hosts --vault-id user@prompt --vault-id elastic@prompt
 ```
@@ -67,10 +71,9 @@ ansible-playbook /home/$(id -un)/NW/ansible-nps/elasticsearch.yml -i /home/$(id 
 
 Currently to make it convenient to track changes the `get`-Tasks store on Disk. You essentially only need to place the `get`-Tasks where you want, to see changes, but they are overwriting previous results as of now, which is open to debate, also if everything should be separate files or one full one.
 
-
-- `elasticsearch_index_info.txt`
-- `elasticsearch_users_and_info.txt`
-- `elasticsearch_roles_and_info.yml`
+ `elasticsearch_index_info.txt`
+ `elasticsearch_users_and_info.txt`
+ `elasticsearch_roles_and_info.yml`
 
 # 5 "Updating" items
 

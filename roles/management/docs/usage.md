@@ -1,4 +1,4 @@
-# 1 Create an Ansible-Vault for the Elasticsearch_Password as such:
+# 1 Create elastic vault, create users-secretrs-vault, adapt variables
 
 a)
 - first create a vault with new Elastic management password, to unlock the vault:
@@ -12,31 +12,37 @@ ansible-vault edit management/vars/secret_vars.yml
 elastic_password: "password_from_initial_elastic_password"
 ```
 
-b)
-- I. create second vault with *all user secrets* as such via ansible-vault.
+b) Adapt your variables: `/defauls/main.yml`
+
+```
+elasticsearch_binary_directory: "/usr/share/elasticsearch/"
+elastic_username: "elastic"
+elasticsearch_http_protocol: "https"
+elasticsearch_host: "10.77.14.90"
+elasticsearch_port: "9200"
+
+elastic_roles_add_path: "/files/elastic-roles-add.yml"
+elastic_roles_delete_path: "/files/elastic-roles-delete.yml"
+
+elastic_users_add_path: "/files/elastic-users-add.yml"
+elastic_users_delete_path: "/files/elastic-users-delete.yml"
+```
+
+c) Adapt your user-secret-vault
+
+- I. create second vault with *all user secrets*, this is the storage of the variable of the file of:
+```
+elastic_users_add_path: "/files/elastic-users-add.yml"
+
+- You can create it as such:
 ```
 ansible-vault create management/files/users.yml
 ansible-vault edit management/files/users.yml 
 ```
-II Then place all your user secrets inside in the demo format of `users-toystory-tesfile.yml` inside.
-III adapt the variable via the `defaults/main.yml`
+II. It should have the yaml format of `users-toystory-tesfile.yml` 
+III. adapt the variable via the `defaults/main.yml`
 
-Testing-Mode: In this case deletion and installation is the *same file* for users, and another one for roles. In Production you just add different files.
-Trick: One trick I thought to update roles would be to run the delete task first -> then the add task. This allows updating. (because on th API there are different Request methods for adding & deleting).
-
-c) 
-- unlock both vaults at runtime with:
-```
-ansible-playbook /home/$(id -un)/NW/ansible-nps/elasticsearch.yml -i /home/$(id -un)/NW/ansible-nps/hosts --vault-id user@prompt --vault-id elastic@prompt
-```
-
-# 2 Add variables to `/defauls/main.yml`
-- add Elasticsearch Host
-- Add Elasticsearch Port
-- Add Protocol
-- Add Elasticsearch-Username
-
-# 3 Adapt your `elasticsearch.yml` for the role-selection
+# 2 Adapt your `elasticsearch.yml` for the role-selection
 ```
 ---
 - hosts: els
@@ -68,13 +74,11 @@ ansible-playbook /home/$(id -un)/NW/ansible-nps/elasticsearch.yml -i /home/$(id 
     #          - beats
 
 ```
-# 4 Run the Playbook
 
+# 3 Run the playbook
 ```
-ansible-playbook /home/px/NW/ansible-nps/elasticsearch.yml -i /home/px/NW/ansible-nps/hosts --ask-vault-pass
-
+ansible-playbook /home/$(id -un)/NW/ansible-nps/elasticsearch.yml -i /home/$(id -un)/NW/ansible-nps/hosts --vault-id user@prompt --vault-id elastic@prompt
 ```
+# 5 "Updating" items
 
-# 5 Info: Saving Files on Disk
-
-I decided for some tasks like index-size, current users, current roles -> to store them on disk, as this makes creating decisions easier and provides current states without having to search through runtime logs.
+A trick is to get the current state, run a deletion, then run an adding. The background is that only delete requests can delete, and only add methods can add.

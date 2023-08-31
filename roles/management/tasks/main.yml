@@ -1,15 +1,25 @@
 ---
 
-- name: Include elastic management iser from vars/secret_vars.yml 
+- name: Vault Elastic management user from filelocation 
   include_vars:
     file: "{{ role_path }}/vars/secret_vars.yml"
   no_log: true
 
-- name: Include users secrets from files/users.yml
+# Adding users
+- name: Vault Include users secrets from filelocation
   include_vars:
-    file: "{{ role_path }}/files/users.yml"
+    file: "{{ role_path }}{{elastic_users_add_path}}"
     name: users
   no_log: true
+
+
+## Extra-File for deleting users
+#- name: Include users secrets from files/users.yml
+#  include_vars:
+#    file: "{{ role_path }}/files/elastic-users.yml"
+#    name: delete-users
+#  no_log: true
+
 
 - name: Create new users
   ansible.builtin.include_tasks: users-create-users.yml
@@ -26,5 +36,8 @@
 - name: Get current roles
   ansible.builtin.include_tasks: roles-get-roles.yml
 
-- name: Edit roles
-  ansible.builtin.include_tasks: roles-edit-roles.yml
+- name: Delete roles
+  ansible.builtin.include_tasks: roles-delete-roles.yml
+
+- name: Add roles
+  ansible.builtin.include_tasks: roles-add-roles.yml

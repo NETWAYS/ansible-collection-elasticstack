@@ -10,3 +10,8 @@ elasticsearch_http_protocol: "https"
 elasticsearch_host: "10.77.14.90"
 elasticsearch_port: "9200"
 
+elastic_roles_add_path: "/files/elastic-roles.yml"
+elastic_roles_delete_path: "/files/elastic-roles.yml"
+
+elastic_users_add_path: "/files/elastic-users.yml"
+elastic_users_delete_path: "/files/elastic-users.yml"

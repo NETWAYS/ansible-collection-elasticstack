@@ -12,22 +12,23 @@ ansible-vault edit management/vars/secret_vars.yml
 elastic_password: "password_from_initial_elastic_password"
 ```
 
-
 b)
-- create second vault with all user secrets
+- I. create second vault with *all user secrets* as such via ansible-vault.
 ```
 ansible-vault create management/files/users.yml
 ansible-vault edit management/files/users.yml 
 ```
+II Then place all your user secrets inside in the demo format of `users-toystory-tesfile.yml` inside.
+III adapt the variable via the `defaults/main.yml`
 
-info: find the fileformat on `users-toystory-testfile.yml`
+Testing-Mode: In this case deletion and installation is the *same file* for users, and another one for roles. In Production you just add different files.
+Trick: One trick I thought to update roles would be to run the delete task first -> then the add task. This allows updating. (because on th API there are different Request methods for adding & deleting).
 
 c) 
 - unlock both vaults at runtime with:
 ```
 ansible-playbook /home/$(id -un)/NW/ansible-nps/elasticsearch.yml -i /home/$(id -un)/NW/ansible-nps/hosts --vault-id user@prompt --vault-id elastic@prompt
 ```
-
 
 # 2 Add variables to `/defauls/main.yml`
 - add Elasticsearch Host
@@ -73,3 +74,7 @@ ansible-playbook /home/$(id -un)/NW/ansible-nps/elasticsearch.yml -i /home/$(id 
 ansible-playbook /home/px/NW/ansible-nps/elasticsearch.yml -i /home/px/NW/ansible-nps/hosts --ask-vault-pass
 
 ```
+
+# 5 Info: Saving Files on Disk
+
+I decided for some tasks like index-size, current users, current roles -> to store them on disk, as this makes creating decisions easier and provides current states without having to search through runtime logs.

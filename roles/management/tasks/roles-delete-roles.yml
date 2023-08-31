@@ -1,1 +1,22 @@
 ---
+
+- name: Include roles from {{elastic_roles_delete_path}}
+  include_vars:
+    file: "{{ role_path }}{{elastic_roles_delete_path}}"
+    name: roles
+
+- name: Delete Roles from Elasticsearch
+  uri:
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/role/{{ item }}?pretty"
+    method: DELETE 
+    user: "{{ elastic_username }}"
+    password: "{{ elastic_password }}"
+    validate_certs: no
+  loop: "{{ roles.roles.keys() | list }}"
+  register: response
+  failed_when: "response.status not in [200, 201, 404]"
+
+- name: Print response
+  debug:
+    msg: "Role {{ item.item }} - Status Code: {{ item.status }} - Response: {{ item.json | to_nice_json }}" 
+  loop: "{{ response.results }}"

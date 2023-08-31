@@ -43,8 +43,9 @@ II. It should have the yaml format of `users-toystory-tesfile.yml`
 III. adapt the variable via the `defaults/main.yml`
 
 # 2 Adapt your `elasticsearch.yml` for the role-selection
-```
 
+```
+---
 - hosts: els
   # remote_user:
   become: true
@@ -72,9 +73,7 @@ III. adapt the variable via the `defaults/main.yml`
     #          - logstash
     #          - kibana
     #          - beats
-
 ```
-
 # 3 Run the playbook
 ```
 ansible-playbook /home/$(id -un)/NW/ansible-nps/elasticsearch.yml -i /home/$(id -un)/NW/ansible-nps/hosts --vault-id user@prompt --vault-id elastic@prompt

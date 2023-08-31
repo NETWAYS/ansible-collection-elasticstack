@@ -18,13 +18,8 @@
 
 # Xms represents the initial size of total heap space
 # Xmx represents the maximum size of total heap space
-{% if elasticsearch_heap is defined %}
--Xms{{ elasticsearch_heap }}
--Xmx{{ elasticsearch_heap }}
-{% else %}
--Xms2g
--Xmx2g
-{% endif %}
+-Xms{{ elasticsearch_heap }}g
+-Xmx{{ elasticsearch_heap }}g
 
 {% if elasticstack_release is version('8', '>=') %}
 ################################################################
@@ -78,15 +73,15 @@
 ################################################################
 
 ## GC configuration
-{% if elasticstack_release is version('7.6.0', '<') %}
--XX:+UseConcMarkSweepGC
--XX:CMSInitiatingOccupancyFraction=75
--XX:+UseCMSInitiatingOccupancyOnly
-{% else %}
-8-13:-XX:+UseConcMarkSweepGC
-8-13:-XX:CMSInitiatingOccupancyFraction=75
-8-13:-XX:+UseCMSInitiatingOccupancyOnly
-{% endif %}
+#{% if elasticstack_release is version('7.6.0', '<') %}
+##-XX:+UseConcMarkSweepGC
+##-XX:CMSInitiatingOccupancyFraction=75
+##-XX:+UseCMSInitiatingOccupancyOnly
+#{% else %}
+#8-13:-XX:+UseConcMarkSweepGC
+#8-13:-XX:CMSInitiatingOccupancyFraction=75
+#8-13:-XX:+UseCMSInitiatingOccupancyOnly
+#{% endif %}
 
 ## G1GC Configuration
 # NOTE: G1 GC is only supported on JDK version 10 or later

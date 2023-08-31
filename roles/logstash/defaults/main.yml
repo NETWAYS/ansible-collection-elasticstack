@@ -38,10 +38,10 @@ logstash_pipelines:
 logstash_elasticsearch_output: true
 logstash_validate_after_inactivity: '300'
 logstash_beats_input: true
-ansible_input_queue_type: memory
-ansible_input_queue_max_bytes: 1gb
-ansible_forwarder_queue_type: memory
-ansible_forwarder_queue_max_bytes: 1gb
+logstash_input_queue_type: memory
+logstash_input_queue_max_bytes: 1gb
+logstash_forwarder_queue_type: memory
+logstash_forwarder_queue_max_bytes: 1gb
 logstash_sniffing: false
 
 # logstash security

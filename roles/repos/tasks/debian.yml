@@ -1,7 +1,9 @@
 ---
 - name: Ensure gpg exists, for signing keys
   ansible.builtin.apt:
-    name: gpg
+    name:
+      - gpg
+      - gpg-agent
     state: present
 
 - name: Ensure Elastic Stack key is available (Debian)

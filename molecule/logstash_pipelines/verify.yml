@@ -7,15 +7,15 @@
     elasticstack_beats_port: 5044
   tasks:
   - name: Run syntax check
-    command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
+    ansible.builtin.command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
     changed_when: false
 
   - name: Check for open port tcp {{ elasticstack_beats_port }}
-    wait_for:
+    ansible.builtin.wait_for:
       port: "{{ elasticstack_beats_port }}"
 
   - name: Create Syslog input
-    copy:
+    ansible.builtin.copy:
       dest: /etc/logstash/conf.d/syslog/input.conf
       content: >
         "input {
@@ -28,7 +28,7 @@
         "
 
   - name: Create Syslog output
-    copy:
+    ansible.builtin.copy:
       dest: /etc/logstash/conf.d/syslog/output.conf
       content: >
         "output {
@@ -40,7 +40,7 @@
          }
         "
   - name: Update Pipeline code
-    git:
+    ansible.builtin.git:
       repo: https://github.com/widhalmt/syslog-logstash-pipeline.git
       dest: /etc/logstash/conf.d/syslog/
       version: master

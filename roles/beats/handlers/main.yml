@@ -2,7 +2,7 @@
 # handlers file for beats
 #
 - name: Restart Filebeat
-  service:
+  ansible.builtin.service:
     name: filebeat
     state: restarted
   when:
@@ -10,7 +10,7 @@
     - beats_filebeat_enable | bool
 
 - name: Restart Auditbeat
-  service:
+  ansible.builtin.service:
     name: auditbeat
     state: restarted
   when:
@@ -18,7 +18,7 @@
     - beats_auditbeat_enable | bool
 
 - name: Restart Metricbeat
-  service:
+  ansible.builtin.service:
     name: metricbeat
     state: restarted
   when:

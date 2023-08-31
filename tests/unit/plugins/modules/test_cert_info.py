@@ -73,7 +73,7 @@ def exit_json(*args, **kwargs):
     checks_passed = True
 
     # only if passphrase_check mode is disabled
-    if args[0].params['passphrase_check'] is False:
+    if args[0].params['passphrase_check'] is not True:
         # check every item in certificate if it matches with the result
         # and if that fails, don't catch the Exception, so the test will fail
         for item in certificate:
@@ -82,10 +82,10 @@ def exit_json(*args, **kwargs):
     # if passphrase_check mode is enabled
     else:
         # fail checks, if passphrase is wrong and passphrase_check kwarg is not False
-        if args[0].params['passphrase'] == 'PleaseChangeMe-Wrong' and kwargs['passphrase_check'] is not False:
+        if args[0].params['passphrase'] == 'PleaseChangeMe-Wrong' and kwargs['passphrase_check'] is True:
             checks_passed = False
         # fail checks, if passphrase is correct and passphrase_check kwarg is not True
-        if args[0].params['passphrase'] == 'PleaseChangeMe' and kwargs['passphrase_check'] is not True:
+        if args[0].params['passphrase'] == 'PleaseChangeMe' and kwargs['passphrase_check'] is not False:
             checks_passed = False
 
     if checks_passed:

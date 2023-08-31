@@ -25,4 +25,3 @@
 
     dest: "{{ lookup('env', 'HOME') }}/elasticsearch_index_info.txt"
     force: yes
-

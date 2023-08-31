@@ -1,6 +1,6 @@
 ---
 # Import Elastic Vault
-- name: Vault Elastic management user from filelocation 
+- name: Vault Elastic management user from filelocation
   include_vars:
     file: "{{ role_path }}/vars/secret_vars.yml"
   no_log: true

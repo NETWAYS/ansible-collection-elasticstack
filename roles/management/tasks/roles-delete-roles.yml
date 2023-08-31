@@ -8,7 +8,7 @@
 - name: Delete from Elasticsearch roles via {{elastic_roles_delete_path}}
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/role/{{ item }}?pretty"
-    method: DELETE 
+    method: DELETE
     user: "{{ elastic_username }}"
     password: "{{ elastic_password }}"
     validate_certs: no
@@ -18,5 +18,5 @@
 
 - name: Print response
   debug:
-    msg: "Role {{ item.item }} - Status Code: {{ item.status }} - Response: {{ item.json | to_nice_json }}" 
+    msg: "Role {{ item.item }} - Status Code: {{ item.status }} - Response: {{ item.json | to_nice_json }}"
   loop: "{{ response.results }}"

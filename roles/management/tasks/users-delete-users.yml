@@ -3,7 +3,7 @@
 - name: Delete Users from Elasticsearch
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/{{ item.username }}?pretty"
-    method: DELETE 
+    method: DELETE
     user: "{{ elastic_username }}"
     password: "{{ elastic_password }}"
     validate_certs: no

@@ -3,7 +3,7 @@
 - name: Send user data to Elasticsearch
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/{{ item.username }}?pretty"
-    method: POST  
+    method: POST
     user: "{{ elastic_username }}"
     password: "{{ elastic_password }}"
     body_format: json
@@ -11,11 +11,10 @@
       Content-Type: "application/json"
     body: "{{ item }}"
     validate_certs: no
-  loop: "{{ users.users }}"  
+  loop: "{{ users.users }}"
   register: response
   failed_when: response.status not in [200, 201]
 - name: Print response
   debug:
     msg: "User {{ item.item.username }} - Status Code: {{ item.status }} - Response: {{ item.json | to_nice_json }}"  # Pretty-print here
   loop: "{{ response.results }}"
-

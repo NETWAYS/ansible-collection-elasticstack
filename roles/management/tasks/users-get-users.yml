@@ -1,19 +1,19 @@
 ---
 
-- name: List Elasticsearch users
+- name: File Realm Check Elasticsearch users
   ansible.builtin.command:
     cmd: "bin/elasticsearch-users list"
-    chdir: "{{elasticsearch_binary_directory}}" 
+    chdir: "{{elasticsearch_binary_directory}}"
  # delegate_to: "{{ elasticsearch_host }}"
   register: elasticsearch_users_list
  # become: true
  # become_user: elasticsearch
 
-- name: Print Elasticsearch users
-  debug:
-    msg: "{{ elasticsearch_users_list.stdout }}"
+#- name: Print file realm users
+#  debug:
+#    msg: "{{ elasticsearch_users_list.stdout }}"
 
-- name: Get user information from Elasticsearch
+- name: Native API Realm Check Elasticsearch users
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/user/"
     method: GET
@@ -23,7 +23,7 @@
     validate_certs: no
   register: user_info
 
-- name: Debug - Print user information
+- name: Debug - Print native realm user information
   debug:
     msg: "User Information: {{ user_info }}"
 

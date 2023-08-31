@@ -390,6 +390,15 @@
     mode: 0600
   delegate_to: "{{ elasticstack_ca }}"
 
+- name: Read password hash salt
+  ansible.builtin.slurp:
+    src: /root/logstash_password_hash_salt
+  register: logstash_password_hash_salt_file
+
+- name: Set password hash salt as a fact
+  ansible.builtin.set_fact: 
+    logstash_password_hash_salt: "{{ logstash_password_hash_salt_file['content'] | b64decode }}"
+
 - name: Place logstash_writer user configuration on ca node
   ansible.builtin.template:
     dest: /root/logstash_writer_user

@@ -1,11 +1,11 @@
 ---
 
-- name: Include roles from {{elastic_roles_add_path}}
+- name: Adding to roles via file from {{elastic_roles_add_path}}
   include_vars:
     file: "{{ role_path }}{{elastic_roles_add_path}}"
     name: roles
 
-- name: Update Roles in Elasticsearch
+- name: Add to Elasticsearch roles via {{elastic_roles_add_path}}
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/role/{{ item.key }}"
     method: PUT

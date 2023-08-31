@@ -1,11 +1,11 @@
 ---
 
-- name: Include roles from {{elastic_roles_delete_path}}
+- name: Deleting from roles via file from {{elastic_roles_delete_path}}
   include_vars:
     file: "{{ role_path }}{{elastic_roles_delete_path}}"
     name: roles
 
-- name: Delete Roles from Elasticsearch
+- name: Delete from Elasticsearch roles via {{elastic_roles_delete_path}}
   uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_host }}:{{ elasticsearch_port }}/_security/role/{{ item }}?pretty"
     method: DELETE 

@@ -1,25 +1,16 @@
 ---
-
+# Import Elastic Vault
 - name: Vault Elastic management user from filelocation 
   include_vars:
     file: "{{ role_path }}/vars/secret_vars.yml"
   no_log: true
 
-# Adding users
+# Import User Vault
 - name: Vault Include users secrets from filelocation
   include_vars:
     file: "{{ role_path }}{{elastic_users_add_path}}"
     name: users
   no_log: true
-
-
-## Extra-File for deleting users
-#- name: Include users secrets from files/users.yml
-#  include_vars:
-#    file: "{{ role_path }}/files/elastic-users.yml"
-#    name: delete-users
-#  no_log: true
-
 
 - name: Create new users
   ansible.builtin.include_tasks: users-create-users.yml

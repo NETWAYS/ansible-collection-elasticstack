@@ -4,14 +4,14 @@ roles:
     indices:
       - names: ['.logstash*']
         privileges: ['create', 'delete', 'index', 'manage', 'read']
-    metadata: {} 
+    metadata: {}
     run_as: []
   bugs_bunny:
     cluster: ['manage_logstash_pipelines']
     indices:
       - names: ['.logstash*']
         privileges: ['index', 'manage', 'read']
-    metadata: {} 
+    metadata: {}
     run_as: []
   editor_like:
     applications:

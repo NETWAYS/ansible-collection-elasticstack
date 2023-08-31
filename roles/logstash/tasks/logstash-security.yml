@@ -396,7 +396,7 @@
   register: logstash_password_hash_salt_file
 
 - name: Set password hash salt as a fact
-  ansible.builtin.set_fact: 
+  ansible.builtin.set_fact:
     logstash_password_hash_salt: "{{ logstash_password_hash_salt_file['content'] | b64decode }}"
 
 - name: Place logstash_writer user configuration on ca node

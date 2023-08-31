@@ -50,6 +50,7 @@ III. adapt the variable via the `defaults/main.yml`
 ```
 ---
 - hosts: elasticsearch_host
+  # remote_user:
   become: true
   collections:
     - netways.elasticstack
@@ -57,8 +58,25 @@ III. adapt the variable via the `defaults/main.yml`
     elastic_variant: elastic #oss
     elasticsearch_jna_workaround: true
     elastic_override_beats_tls: true
+    #  elastic_release: 8 #7
+    # pre_tasks:
+    #   - name: Install Rsyslog
+    #     package:
+    #       name: rsyslog
+    #   - name: Start rsyslog
+    #     service:
+    #       name: rsyslog
+    #       state: started
+    #       enabled: true
   roles:
-    - management
+               - management
+    #          - repos
+    #          - elasticsearch
+    #          - geerlingguy.redis
+    #          - logstash
+    #          - kibana
+    #          - beats
+
 ```
 
 # 3 Run the playbook

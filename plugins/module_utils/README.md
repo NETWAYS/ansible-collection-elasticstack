@@ -1,9 +1,6 @@
 # Documentation: netways.elasticstack module_utils
 
-## Overview
-- [`certs` module_util](#cert_info-module)
-
-## `netways.elasticstack.certs` function
+## `netways.elasticstack.certs` functions
 
 ### `bytes_to_hex()` function
 

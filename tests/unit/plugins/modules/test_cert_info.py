@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils.common.text.converters import to_bytes
+
 sys.path.append('/home/runner/.ansible/collections/')
 from ansible_collections.netways.elasticstack.plugins.modules import cert_info
 
@@ -73,7 +74,7 @@ def exit_json(*args, **kwargs):
 
     print(args[0])
     # only if passphrase_check mode is disabled
-    if args['passphrase_check'] is False:
+    if args[0].params['passphrase_check'] is False:
         # check every item in certificate if it matches with the result
         # and if that fails, don't catch the Exception, so the test will fail
         for item in certificate:
@@ -82,10 +83,10 @@ def exit_json(*args, **kwargs):
     # if passphrase_check mode is enabled
     else:
         # fail checks, if passphrase is wrong and passphrase_check kwarg is not False
-        if args['passphrase'] == 'PleaseChangeMe-Wrong' and kwargs['passphrase_check'] is not False:
+        if args[0].params['passphrase'] == 'PleaseChangeMe-Wrong' and kwargs['passphrase_check'] is not False:
             checks_passed = False
         # fail checks, if passphrase is correct and passphrase_check kwarg is not True
-        if args['passphrase'] == 'PleaseChangeMe' and kwargs['passphrase_check'] is not True:
+        if args[0].params['passphrase'] == 'PleaseChangeMe' and kwargs['passphrase_check'] is not True:
             checks_passed = False
 
     if checks_passed:

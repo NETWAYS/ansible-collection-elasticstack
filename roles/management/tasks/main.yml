@@ -1,15 +1,11 @@
 ---
 
-- name: Include Elasticsearch_User Ansible vault secrets
+- name: Include elastic management iser from vars/secret_vars.yml 
   include_vars:
     file: "{{ role_path }}/vars/secret_vars.yml"
   no_log: true
 
-- name: Include User vault secrets
-  include_vars:
-    file: "{{ role_path }}/files/users.yml"
-
-- name: Include users from users.yml
+- name: Include users secrets from files/users.yml
   include_vars:
     file: "{{ role_path }}/files/users.yml"
     name: users

@@ -79,6 +79,16 @@ III. adapt the variable via the `defaults/main.yml`
 ```
 ansible-playbook /home/$(id -un)/NW/ansible-nps/elasticsearch.yml -i /home/$(id -un)/NW/ansible-nps/hosts --vault-id user@prompt --vault-id elastic@prompt
 ```
+
+# 4 Some Outputs stored on disk of the host controller
+
+Currently to make it convenient to track changes the `get`-Tasks store on Disk. You essentially only need to place the `get`-Tasks where you want, to see changes, but they are overwriting previous results as of now, which is open to debate, also if everything should be separate files or one full one.
+
+
+- `elasticsearch_index_info.txt`
+- `elasticsearch_users_and_info.txt`
+- `elasticsearch_roles_and_info.yml`
+
 # 5 "Updating" items
 
 A trick is to get the current state, run a deletion, then run an adding. The background is that only delete requests can delete, and only add methods can add.

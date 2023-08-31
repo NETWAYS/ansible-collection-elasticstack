@@ -45,11 +45,8 @@ III. adapt the variable via the `defaults/main.yml`
 # 2 Adapt your `elasticsearch.yml` for the role-selection
 
 ```
-
 ---
-
-- hosts: els
-  # remote_user:
+- hosts: elasticsearch_host
   become: true
   collections:
     - netways.elasticstack
@@ -57,25 +54,10 @@ III. adapt the variable via the `defaults/main.yml`
     elastic_variant: elastic #oss
     elasticsearch_jna_workaround: true
     elastic_override_beats_tls: true
-    #  elastic_release: 8 #7
-    # pre_tasks:
-    #   - name: Install Rsyslog
-    #     package:
-    #       name: rsyslog
-    #   - name: Start rsyslog
-    #     service:
-    #       name: rsyslog
-    #       state: started
-    #       enabled: true
   roles:
-               - management
-    #          - repos
-    #          - elasticsearch
-    #          - geerlingguy.redis
-    #          - logstash
-    #          - kibana
-    #          - beats
+    - management
 ```
+
 # 3 Run the playbook
 ```
 ansible-playbook /home/$(id -un)/NW/ansible-nps/elasticsearch.yml -i /home/$(id -un)/NW/ansible-nps/hosts --vault-id user@prompt --vault-id elastic@prompt

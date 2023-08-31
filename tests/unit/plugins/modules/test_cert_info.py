@@ -85,7 +85,7 @@ def exit_json(*args, **kwargs):
         if args[0].params['passphrase'] == 'PleaseChangeMe-Wrong' and kwargs['passphrase_check'] is True:
             checks_passed = False
         # fail checks, if passphrase is correct and passphrase_check kwarg is not True
-        if args[0].params['passphrase'] == 'PleaseChangeMe' and kwargs['passphrase_check'] is not False:
+        if args[0].params['passphrase'] == 'PleaseChangeMe' and kwargs['passphrase_check'] is False:
             checks_passed = False
 
     if checks_passed:

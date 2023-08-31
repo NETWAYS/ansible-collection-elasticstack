@@ -381,6 +381,15 @@
     msg: logstash user password must be at least 6 characters long.
   when: logstash_password | length < 6
 
+- name: Create logstash password hash salt
+  ansible.builtin.copy:
+    content: "{{ lookup('password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=logstash_password_hash_salt_length, seed=logstash_password_hash_salt_seed)}}"
+    dest: /root/logstash_password_hash_salt
+    owner: root
+    group: root
+    mode: 0600
+  delegate_to: "{{ elasticstack_ca }}"
+
 - name: Place logstash_writer user configuration on ca node
   ansible.builtin.template:
     dest: /root/logstash_writer_user

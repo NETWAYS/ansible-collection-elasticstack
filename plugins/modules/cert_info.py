@@ -49,13 +49,8 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
-    try:
-        cert_info = AnalyzeCertificate(module, result)
-        result = cert_info.return_result()
-    except ValueError as e:
-        module.fail_json(msg='ValueError: %s' % to_native(e))
-    except Exception as e:
-        module.fail_json(msg='Exception: %s: %s' % (to_native(type(e)), to_native(e)))
+    cert_info = AnalyzeCertificate(module, result)
+    result = cert_info.return_result()
 
     module.exit_json(**result)
 

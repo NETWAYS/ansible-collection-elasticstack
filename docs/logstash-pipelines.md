@@ -203,6 +203,10 @@ Here the `default` output only receives the events that haven't already been sen
 
 Every Output can have a `congestion:` option with a numerical value. If the Redis key already holds more items than the value says, the output will stop.
 
+### Unsafe shutdown ###
+
+If you need unsafe Logstash shutdowns, e.g. for testing, you can set `logstash_pipeline_unsafe_shutdown` to `true`. The variable doesn't have a default so Logstash falls back to its internal default of `false`.
+
 ## Caveats ##
 
 There are still some minor issues you need to keep in mind:

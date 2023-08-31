@@ -1,4 +1,4 @@
-# Collections Plugins Directory
+# `netways.elasticstack` Plugins Directory
 
 ## Overview
 - [module_utils](https://github.com/NETWAYS/ansible-collection-elasticstack/tree/main/plugins/module_utils)

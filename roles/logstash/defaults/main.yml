@@ -46,6 +46,7 @@ logstash_sniffing: false
 
 # logstash security
 logstash_password_hash: true
+logstash_password_hash_algorithm: bcrypt
 logstash_user: logstash_writer
 logstash_password: password
 logstash_password_hash_salt_length: 22

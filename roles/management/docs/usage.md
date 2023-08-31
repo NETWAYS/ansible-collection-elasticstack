@@ -45,7 +45,9 @@ III. adapt the variable via the `defaults/main.yml`
 # 2 Adapt your `elasticsearch.yml` for the role-selection
 
 ```
+
 ---
+
 - hosts: els
   # remote_user:
   become: true

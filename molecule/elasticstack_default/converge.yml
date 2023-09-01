@@ -15,6 +15,7 @@
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticsearch_heap: "1"
     elasticstack_full_stack: true
+    elasticstack_no_log: false
     logstash_pipeline_unsafe_shutdown: true
     beats_filebeat_syslog_udp: true
     beats_filebeat_syslog_tcp: true

@@ -200,7 +200,7 @@
         cut -d\" -f4
       register: es_cluster_status
       changed_when: false
-      no_log: true
+      no_log: {{ elasticstack_no_log }}
       ignore_errors: "{{ ansible_check_mode }}"
       until: es_cluster_status.stdout == "green"
       retries: 5

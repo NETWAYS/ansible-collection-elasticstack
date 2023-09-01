@@ -183,7 +183,7 @@
     --pass {{ logstash_tls_key_passphrase }}
     --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: {{ elasticstack_no_log }}
   args:
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
   tags:
@@ -253,7 +253,7 @@
     --pem
     --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: {{ elasticstack_no_log }}
   args:
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
   tags:
@@ -324,7 +324,7 @@
     -nocrypt
   args:
     creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
-  no_log: true
+  no_log: {{ elasticstack_no_log }}
   tags:
     - certificates
     - renew_ca
@@ -422,7 +422,7 @@
   register: logstash_elasticstack_password
   changed_when: false
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: {{ elasticstack_no_log }}
   tags:
     - configuration
     - logstash_configuration
@@ -438,7 +438,7 @@
   failed_when: false
   changed_when: false
   register: logstash_writer_role_present
-  no_log: true
+  no_log: {{ elasticstack_no_log }}
   run_once: true
 
 # we doubled the task and didn't use a more sophisticated way to just change
@@ -453,7 +453,7 @@
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/role/logstash_writer
   delegate_to: "{{ elasticstack_ca }}"
   changed_when: false
-  no_log: true
+  no_log: {{ elasticstack_no_log }}
   run_once: true
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
@@ -468,7 +468,7 @@
   delegate_to: "{{ elasticstack_ca }}"
   changed_when: false
   run_once: true
-  no_log: true
+  no_log: {{ elasticstack_no_log }}
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
     - elasticstack_release | int > 7
@@ -483,7 +483,7 @@
   delegate_to: "{{ elasticstack_ca }}"
   failed_when: false
   changed_when: false
-  no_log: true
+  no_log: {{ elasticstack_no_log }}
   register: logstash_writer_user_present
   run_once: true
 
@@ -499,7 +499,7 @@
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/user/{{ logstash_user }}
   delegate_to: "{{ elasticstack_ca }}"
   changed_when: false
-  no_log: true
+  no_log: {{ elasticstack_no_log }}
   run_once: true
   when:
     - logstash_writer_user_present.rc > 0
@@ -513,7 +513,7 @@
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/user/{{ logstash_user }}
   delegate_to: "{{ elasticstack_ca }}"
   run_once: true
-  no_log: true
+  no_log: {{ elasticstack_no_log }}
   changed_when: false
   when:
     - logstash_writer_user_present.rc > 0

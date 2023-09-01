@@ -579,7 +579,7 @@
   delegate_to: "{{ elasticstack_ca }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
-- name: Check for nodes seeing each other
+- name: Check for nodes being connected
   ansible.builtin.uri:
     url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes"
     method: GET
@@ -592,8 +592,10 @@
   register: elasticsearch_nodes_output
   no_log: "{{ elasticstack_no_log }}"
   until: "'{{ item }}' in elasticsearch_nodes_output.content"
-  with_items: "{{ groups[elasticsearch] }}"
-  when: groups['elasticsearch'] | length > 1
+  with_items: "{{ groups['elasticsearch'] }}"
+  when:
+    - elasticsearch_passwords_file.stat.exists | bool
+    - groups['elasticsearch'] | length > 1
   retries: 20
   delay: 10
 

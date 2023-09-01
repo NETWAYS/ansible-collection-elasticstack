@@ -151,15 +151,16 @@
     - {create: "{{ elasticsearch_create_logpath }}", path: "{{ elasticsearch_logpath }}" }
     - {create: "{{ elasticsearch_create_datapath }}", path: "{{ elasticsearch_datapath }}" }
 
-- name: Import Tasks elasticsearch-security.yml
-  ansible.builtin.import_tasks: elasticsearch-security.yml
-  when:
-    - elasticsearch_security | bool
-    - elasticstack_variant == "elastic"
-  tags:
-    - certificates
-    - renew_ca
-    - renew_es_cert
+- name: Copy jvm.options File
+  become: yes
+  ansible.builtin.template:
+    src: "{{ elasticsearch_config_jvm }}"
+    dest: "{{ elasticsearch_conf_dir }}/jvm.options"
+    owner: root
+    group: "{{ elasticsearch_group }}"
+    mode: "660"
+    force: yes
+  notify: Restart Elasticsearch
 
 - name: Activate JNA workaround (see README.md)
   ansible.builtin.lineinfile:
@@ -169,6 +170,16 @@
   notify:
     - Restart Elasticsearch
   when: elasticsearch_jna_workaround | bool
+
+- name: Import Tasks elasticsearch-security.yml
+  ansible.builtin.import_tasks: elasticsearch-security.yml
+  when:
+    - elasticsearch_security | bool
+    - elasticstack_variant == "elastic"
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert
 
 - name: Set initial heap
   ansible.builtin.lineinfile:
@@ -185,17 +196,6 @@
     line: '-Xmx{{ elasticsearch_heap }}g'
   notify:
     - Restart Elasticsearch
-
-- name: Copy jvm.options File
-  become: yes
-  ansible.builtin.template:
-    src: "{{ elasticsearch_config_jvm }}"
-    dest: "{{ elasticsearch_conf_dir }}/jvm.options"
-    owner: root
-    group: "{{ elasticsearch_group }}"
-    mode: "660"
-    force: yes
-  notify: Restart Elasticsearch
 
 - name: Start Elasticsearch
   ansible.builtin.service:

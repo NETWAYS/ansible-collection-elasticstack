@@ -579,6 +579,24 @@
   delegate_to: "{{ elasticstack_ca }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
+- name: Check for nodes seeing each other
+  ansible.builtin.uri:
+    url: {{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes
+    method: GET
+    force_basic_auth: yes
+    user: elastic
+    password: "{{ elasticstack_password.stdout }}"
+    return_content: yes
+    status_code: 200
+    validate_certs: false
+  register: elasticsearch_nodes_output
+  no_log: "{{ elasticstack_no_log }}"
+  until: "'{{ item }}' in elasticsearch_nodes_output.content"
+  with_items: "{{ groups[elasticsearch] }}"
+  when: groups['elasticsearch'] | length > 1
+  retries: 20
+  delay: 10
+
 - name: Check for cluster status with elastic password # noqa: risky-shell-pipe
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;

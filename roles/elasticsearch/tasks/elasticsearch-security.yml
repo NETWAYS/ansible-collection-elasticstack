@@ -581,7 +581,7 @@
 
 - name: Check for nodes seeing each other
   ansible.builtin.uri:
-    url: {{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes
+    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes"
     method: GET
     force_basic_auth: yes
     user: elastic

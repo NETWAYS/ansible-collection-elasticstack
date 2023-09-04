@@ -585,7 +585,7 @@
     du -hs /*
   register: elasticstack_disk_space
   changed_when: false
-  
+
 - name: Print disk space
   debug:
     var: elasticstack_disk_space.stdout_lines

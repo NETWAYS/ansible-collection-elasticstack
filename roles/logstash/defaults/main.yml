@@ -38,16 +38,19 @@ logstash_pipelines:
 logstash_elasticsearch_output: true
 logstash_validate_after_inactivity: '300'
 logstash_beats_input: true
-ansible_input_queue_type: memory
-ansible_input_queue_max_bytes: 1gb
-ansible_forwarder_queue_type: memory
-ansible_forwarder_queue_max_bytes: 1gb
+logstash_input_queue_type: memory
+logstash_input_queue_max_bytes: 1gb
+logstash_forwarder_queue_type: memory
+logstash_forwarder_queue_max_bytes: 1gb
 logstash_sniffing: false
 
 # logstash security
 logstash_password_hash: true
+logstash_password_hash_algorithm: bcrypt
 logstash_user: logstash_writer
 logstash_password: password
+logstash_password_hash_salt_length: 22
+logstash_password_hash_salt_seed: SeedChangeMe
 logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'
 logstash_reset_writer_role: true
 

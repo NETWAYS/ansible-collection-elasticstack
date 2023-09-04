@@ -11,10 +11,11 @@
     elasticsearch_disable_systemcallfilterchecks: true
     elasticstack_release: 7
     elasticsearch_heap: "1"
+    elasticstack_no_log: false
   tasks:
     - name: Include Elastics repos role
-      include_role:
+      ansible.builtin.include_role:
         name: repos
     - name: Include Elasticsearch
-      include_role:
+      ansible.builtin.include_role:
         name: elasticsearch

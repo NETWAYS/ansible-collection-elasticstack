@@ -14,10 +14,11 @@
       - data
     elasticsearch_heap: 1
     elasticsearch_check_calculation: true
+    elasticstack_no_log: false
   tasks:
     - name: Include Elastics repos role
-      include_role:
+      ansible.builtin.include_role:
         name: repos
     - name: Include Elasticsearch
-      include_role:
+      ansible.builtin.include_role:
         name: elasticsearch

@@ -13,7 +13,7 @@
     - renew_beats_cert
 
 - name: Ensure beats certificate exists
-  stat:
+  ansible.builtin.stat:
     path: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
   register: beats_cert_exists
 
@@ -26,12 +26,12 @@
   when: beats_cert_exists.stat.exists | bool
 
 - name: Set beats certificate will expire soon to true
-  set_fact:
+  ansible.builtin.set_fact:
     beats_cert_will_expire_soon: true
   when: beats_cert_expiration_date.skipped is not defined and not beats_cert_expiration_date.valid_at.check_period
 
 - name: Print the beats certificate renew message
-  debug:
+  ansible.builtin.debug:
     msg: |
       Your beats certificate will expire before {{ beats_cert_expiration_buffer }}.
       Ansible will renew it.
@@ -44,12 +44,12 @@
     - renew_beats_cert
   block:
     - name: Check if cert directory exists
-      stat:
+      ansible.builtin.stat:
         path: /etc/beats/certs
       register: beats_check_cert_path
 
     - name: Move cert directory
-      copy:
+      ansible.builtin.copy:
         src: /etc/beats/certs
         dest: "/etc/beats/certs_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -58,7 +58,7 @@
       register: beats_move_cert_directory
 
     - name: Remove cert directory
-      file:
+      ansible.builtin.file:
         path: /etc/beats/certs
         state: absent
       when: beats_move_cert_directory.changed
@@ -71,12 +71,12 @@
     - renew_beats_cert
   block:
     - name: Check if cert file exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip"
       register: beats_check_cert_file
 
     - name: Move cert file
-      copy:
+      ansible.builtin.copy:
         src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip"
         dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -85,7 +85,7 @@
       register: beats_move_cert_file
 
     - name: Remove cert file
-      file:
+      ansible.builtin.file:
         path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip"
         state: absent
       when: beats_move_cert_file.changed
@@ -98,12 +98,12 @@
     - renew_beats_cert
   block:
     - name: Check the existance of cert on localhost
-      stat:
+      ansible.builtin.stat:
         path: /tmp/{{ ansible_hostname }}-beats.zip
       register: beats_check_temporary_cert
 
     - name: Move temporary zip file
-      copy:
+      ansible.builtin.copy:
         src: /tmp/{{ ansible_hostname }}-beats.zip
         dest: "/tmp/{{ ansible_hostname }}-beats.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -111,13 +111,13 @@
       register: beats_move_cert_file
 
     - name: Remove temporary cert file
-      file:
+      ansible.builtin.file:
         path: /tmp/{{ ansible_hostname }}-beats.zip
         state: absent
       when: beats_move_cert_file.changed
 
 - name: Create certificate directory
-  file:
+  ansible.builtin.file:
     path: /etc/beats/certs
     state: directory
     owner: root
@@ -129,7 +129,7 @@
     - renew_beats_cert
 
 - name: Create individual certificates for Beats
-  command: >
+  ansible.builtin.command: >
     /usr/share/elasticsearch/bin/elasticsearch-certutil cert
     --days {{ beats_cert_validity_period }}
     --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
@@ -149,7 +149,7 @@
     - renew_beats_cert
 
 - name: Fetch certificate from ca host to master
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip"
     dest: "/tmp/{{ ansible_hostname }}-beats.zip"
     flat: yes
@@ -160,7 +160,7 @@
     - renew_beats_cert
 
 - name: Copy the certificate to actual node
-  unarchive:
+  ansible.builtin.unarchive:
     src: "/tmp/{{ ansible_hostname }}-beats.zip"
     dest: "/etc/beats/certs/"
     owner: root
@@ -172,7 +172,7 @@
     - renew_beats_cert
 
 - name: Copy certificate locally
-  copy:
+  ansible.builtin.copy:
     src: "/etc/beats/certs/{{ ansible_hostname }}/{{ ansible_hostname }}.crt"
     dest: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
     owner: root
@@ -189,7 +189,7 @@
     - renew_beats_cert
 
 - name: Copy key locally
-  copy:
+  ansible.builtin.copy:
     src: "/etc/beats/certs/{{ ansible_hostname }}/{{ ansible_hostname }}.key"
     dest: "/etc/beats/certs/{{ inventory_hostname }}-beats.key"
     owner: root
@@ -206,7 +206,7 @@
     - renew_beats_cert
 
 - name: Fetch ca certificate from ca host to master
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/ca.crt"
     dest: /tmp/ca.crt
     flat: yes
@@ -217,7 +217,7 @@
     - renew_beats_cert
 
 - name: Copy the ca certificate to actual node
-  copy:
+  ansible.builtin.copy:
     src: /tmp/ca.crt
     dest: /etc/beats/certs
     owner: root
@@ -233,11 +233,11 @@
     - renew_beats_cert
 
 - name: Fetch Beats password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
     awk {' print $4 '}
   register: beats_writer_password
   changed_when: false
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   delegate_to: "{{ elasticstack_ca }}"

@@ -69,6 +69,8 @@ Make sure all hosts that should be configured are part of your playbook. (See be
 
 You will want to have reliable DNS resolution or enter all hosts of the stack into your systems hosts files.
 
+The variable `elasticstack_no_log` can be set to `false` if you want to see the output of all tasks. It defaults to `true` because some tasks could reveal passwords in production.
+
 ### Versioning
 
 *elasticstack_version*: Version number of tools to install. Only set if you don't want the latest. (default: none).
@@ -179,10 +181,10 @@ The execution order of the roles is important! (see below)
     #  elasticstack_release: 8 #7
   pre_tasks:
     - name: Install Rsyslog
-      package:
+      ansible.builtin.package:
         name: rsyslog
     - name: Start rsyslog
-      service:
+       ansible.builtin.service:
         name: rsyslog
         state: started
         enabled: true

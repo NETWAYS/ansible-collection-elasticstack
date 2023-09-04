@@ -13,7 +13,7 @@
     - renew_es_cert
 
 - name: Set elasticstack_ca variable if not already done by user
-  set_fact:
+  ansible.builtin.set_fact:
     elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
   when: elasticstack_ca is undefined
   tags:
@@ -22,7 +22,7 @@
     - renew_es_cert
 
 - name: Ensure ca exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
   register: elasticstack_ca_exists
   when: inventory_hostname == elasticstack_ca
@@ -35,12 +35,12 @@
   when: inventory_hostname == elasticstack_ca and elasticstack_ca_exists.stat.exists | bool
 
 - name: Set the ca expiration date in days
-  set_fact:
-    elasticstack_ca_expiration_days: "{{ (( elasticstack_ca_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
+  ansible.builtin.set_fact:
+    elasticstack_ca_expiration_days: "{{ ((elasticstack_ca_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: inventory_hostname == elasticstack_ca and elasticstack_ca_infos.skipped is not defined
 
 - name: Set ca will expire soon to true
-  set_fact:
+  ansible.builtin.set_fact:
     elasticstack_ca_will_expire_soon: true
   when: >
     inventory_hostname == elasticstack_ca and
@@ -48,7 +48,7 @@
     elasticstack_ca_expiration_days | int <= elasticstack_ca_expiration_buffer | int
 
 - name: Print the ca renew message
-  debug:
+  ansible.builtin.debug:
     msg: |
       Your ca will expire in {{ elasticstack_ca_expiration_days }} days.
       Ansible will renew it and all elastic stack certificates
@@ -58,7 +58,7 @@
     elasticstack_ca_expiration_days | int <= elasticstack_ca_expiration_buffer | int
 
 - name: Stop Logstash
-  service:
+  ansible.builtin.service:
     name: logstash
     state: stopped
   with_items: "{{ groups['logstash'] }}"
@@ -73,12 +73,12 @@
     - renew_ca
   block:
     - name: Check if ca directory exists on elasticsearch ca host
-      stat:
+      ansible.builtin.stat:
         path: "{{ elasticstack_ca_dir }}"
       register: elasticsearch_check_ca_path
 
     - name: Move the ca directory on elasticsearch ca host
-      copy:
+      ansible.builtin.copy:
         src: "{{ elasticstack_ca_dir }}"
         dest: "{{ elasticstack_ca_dir }}_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -87,19 +87,19 @@
       register: elasticsearch_move_ca_directory
 
     - name: Remove ca directory on elasticsearch ca host
-      file:
+      ansible.builtin.file:
         path: "{{ elasticstack_ca_dir }}"
         state: absent
       when: elasticsearch_move_ca_directory.changed
 
     - name: Check the existance of ca on Ansible controler
-      stat:
+      ansible.builtin.stat:
         path: /tmp/ca.crt
       register: elasticsearch_check_temporary_ca
       delegate_to: localhost
 
     - name: Move temporary ca file on Ansible controler
-      copy:
+      ansible.builtin.copy:
         src: /tmp/ca.crt
         dest: "/tmp/ca.crt_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -108,14 +108,14 @@
       register: elasticsearch_move_ca_file
 
     - name: Remove temporary ca file on Ansible controler
-      file:
+      ansible.builtin.file:
         path: /tmp/ca.crt
         state: absent
       when: elasticsearch_move_ca_file.changed
       delegate_to: localhost
 
 - name: Ensure elasticsearch certificate exists
-  stat:
+  ansible.builtin.stat:
     path: "/etc/elasticsearch/certs/{{ ansible_hostname }}.p12"
   register: elasticsearch_cert_exists
 
@@ -127,17 +127,17 @@
   when: elasticsearch_cert_exists.stat.exists | bool
 
 - name: Set the elasticsearch certificate expiration date in days
-  set_fact:
+  ansible.builtin.set_fact:
     elasticsearch_cert_expiration_days: "{{ ((elasticsearch_cert_infos.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
   when: elasticsearch_cert_infos.skipped is not defined
 
 - name: Set elasticsearch certificate will expire soon to true
-  set_fact:
+  ansible.builtin.set_fact:
     elasticsearch_cert_will_expire_soon: true
   when: elasticsearch_cert_expiration_days is defined and elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
 
 - name: Print the elasticsearch certificate renew message
-  debug:
+  ansible.builtin.debug:
     msg: |
       Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }} days.
       Ansible will renew it.
@@ -150,12 +150,12 @@
     - renew_es_cert
   block:
     - name: Check if cert directory exists on elasticsearch node
-      stat:
+      ansible.builtin.stat:
         path: /etc/elasticsearch/certs
       register: elasticsearch_check_cert_path
 
     - name: Move cert directory on elasticsearch node
-      copy:
+      ansible.builtin.copy:
         src: /etc/elasticsearch/certs
         dest: "/etc/elasticsearch/certs_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -164,7 +164,7 @@
       register: elasticsearch_move_cert_directory
 
     - name: Remove cert directory on elasticsearch node
-      file:
+      ansible.builtin.file:
         path: /etc/elasticsearch/certs
         state: absent
       when: elasticsearch_move_cert_directory.changed
@@ -177,12 +177,12 @@
     - renew_es_cert
   block:
     - name: Check if cert file exists on elasticstack_ca host
-      stat:
+      ansible.builtin.stat:
         path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
       register: elasticsearch_check_cert_file
 
     - name: Move cert file on elasticstack_ca host
-      copy:
+      ansible.builtin.copy:
         src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
         dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -191,7 +191,7 @@
       register: elasticsearch_move_cert_file
 
     - name: Remove cert file on elasticstack_ca host
-      file:
+      ansible.builtin.file:
         path: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
         state: absent
       when: elasticsearch_move_cert_file.changed
@@ -204,12 +204,12 @@
     - renew_ca
   block:
     - name: Check the existance of cert on Ansible controler
-      stat:
+      ansible.builtin.stat:
         path: /tmp/{{ ansible_hostname }}.p12
       register: elasticsearch_check_temporary_cert
 
     - name: Move temporary cert on Ansible controler
-      copy:
+      ansible.builtin.copy:
         src: /tmp/{{ ansible_hostname }}.p12
         dest: "/tmp/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
@@ -217,13 +217,13 @@
       register: elasticsearch_move_cert_file
 
     - name: Remove temporary cert on Ansible controler
-      file:
+      ansible.builtin.file:
         path: /tmp/{{ ansible_hostname }}.p12
         state: absent
       when: elasticsearch_move_cert_file.changed
 
 - name: Create directory for Elasticsearch CA
-  file:
+  ansible.builtin.file:
     path: "{{ elasticstack_ca_dir }}"
     owner: root
     group: elasticsearch
@@ -235,30 +235,30 @@
     - renew_es_cert
 
 - name: Create keystore
-  command: /usr/share/elasticsearch/bin/elasticsearch-keystore create
+  ansible.builtin.command: /usr/share/elasticsearch/bin/elasticsearch-keystore create
   args:
     creates: /etc/elasticsearch/elasticsearch.keystore
 
 - name: Check for bootstrap password
-  command: /usr/share/elasticsearch/bin/elasticsearch-keystore list
+  ansible.builtin.command: /usr/share/elasticsearch/bin/elasticsearch-keystore list
   changed_when: false
   register: elasticsearch_keystore
 
 - name: Set bootstrap password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     echo "{{ elasticsearch_bootstrap_pw }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -x 'bootstrap.password'
   when: "'bootstrap.password' not in elasticsearch_keystore.stdout_lines"
   changed_when: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   notify:
     - Restart Elasticsearch
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Get xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.http.ssl.keystore.secure_password'
@@ -267,17 +267,17 @@
     - elasticsearch_http_security
   register: elasticsearch_http_ssl_keystore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   changed_when: false
 
 - name: Set xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.keystore.secure_password'
   changed_when: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_http_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != elasticsearch_http_ssl_keystore_secure_password.stdout
     - elasticsearch_http_security
@@ -285,12 +285,12 @@
     - Restart Elasticsearch
 
 - name: Remove xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.keystore.secure_password'
   changed_when: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - "'xpack.security.http.ssl.keystore.secure_password' in elasticsearch_keystore.stdout_lines"
     - not elasticsearch_http_security
@@ -298,7 +298,7 @@
     - Restart Elasticsearch
 
 - name: Get xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.http.ssl.truststore.secure_password'
@@ -307,17 +307,17 @@
     - elasticsearch_http_security
   register: elasticsearch_http_ssl_truststore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   changed_when: false
 
 - name: Set xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.http.ssl.truststore.secure_password'
   changed_when: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_http_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != elasticsearch_http_ssl_truststore_secure_password.stdout
     - elasticsearch_http_security
@@ -325,12 +325,12 @@
     - Restart Elasticsearch
 
 - name: Remove xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.http.ssl.truststore.secure_password'
   changed_when: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - "'xpack.security.http.ssl.truststore.secure_password' in elasticsearch_keystore.stdout_lines"
     - not elasticsearch_http_security
@@ -338,7 +338,7 @@
     - Restart Elasticsearch
 
 - name: Get xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.transport.ssl.keystore.secure_password'
@@ -347,17 +347,17 @@
     - elasticsearch_security
   register: elasticsearch_transport_ssl_keystore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   changed_when: false
 
 - name: Set xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.keystore.secure_password'
   changed_when: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_transport_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != elasticsearch_transport_ssl_keystore_secure_password.stdout
     - elasticsearch_security
@@ -365,12 +365,12 @@
     - Restart Elasticsearch
 
 - name: Remove xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.keystore.secure_password'
   changed_when: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - "'xpack.security.transport.ssl.keystore.secure_password' in elasticsearch_keystore.stdout_lines"
     - not elasticsearch_security
@@ -378,7 +378,7 @@
     - Restart Elasticsearch
 
 - name: Get xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     show 'xpack.security.transport.ssl.truststore.secure_password'
@@ -387,17 +387,17 @@
     - elasticsearch_security
   register: elasticsearch_transport_ssl_truststore_secure_password
   ignore_errors: "{{ ansible_check_mode }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   changed_when: false
 
 - name: Set xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     echo "{{ elasticsearch_tls_key_passphrase }}" |
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     add -f -x 'xpack.security.transport.ssl.truststore.secure_password'
   changed_when: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_transport_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != elasticsearch_transport_ssl_truststore_secure_password.stdout
     - elasticsearch_security
@@ -405,12 +405,12 @@
     - Restart Elasticsearch
 
 - name: Remove xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-keystore
     remove 'xpack.security.transport.ssl.truststore.secure_password'
   changed_when: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - "'xpack.security.transport.ssl.truststore.secure_password' in elasticsearch_keystore.stdout_lines"
     - not elasticsearch_security
@@ -425,7 +425,7 @@
     - renew_es_cert
   block:
     - name: Configure ca on elasticstack_ca host
-      command: >
+      ansible.builtin.command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil ca
         --ca-dn {{ elasticstack_ca_name }}
         --days {{ elasticstack_ca_validity_period }}
@@ -434,10 +434,10 @@
         --silent
       args:
         creates: "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
-      no_log: true
+      no_log: "{{ elasticstack_no_log }}"
 
     - name: Create node certificates on elasticstack_ca host
-      command: >
+      ansible.builtin.command: >
         /usr/share/elasticsearch/bin/elasticsearch-certutil cert
         --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
         --days {{ elasticsearch_cert_validity_period }}
@@ -448,21 +448,21 @@
         --pass {{ elasticsearch_tls_key_passphrase }}
         --out {{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
       loop: "{{ groups['elasticsearch'] }}"
-      no_log: true
+      no_log: "{{ elasticstack_no_log }}"
       args:
         creates: "{{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
 
     - name: Extract CA certificate on elasticstack_ca host
-      command: >
+      ansible.builtin.command: >
         openssl pkcs12 -in {{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12
         -cacerts -nokeys -out {{ elasticstack_ca_dir }}/ca.crt
         -password pass:{{ elasticsearch_tls_key_passphrase }}
       args:
         creates: "{{ elasticstack_ca_dir }}/ca.crt"
-      no_log: true
+      no_log: "{{ elasticstack_no_log }}"
 
 - name: Fetch ca certificate from ca host to Ansible controller
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/ca.crt"
     dest: /tmp/ca.crt
     flat: yes
@@ -473,7 +473,7 @@
     - renew_es_cert
 
 - name: Fetch certificate from ca host to Ansible controller
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
     dest: "/tmp/{{ ansible_hostname }}.p12"
     flat: yes
@@ -484,7 +484,7 @@
     - renew_es_cert
 
 - name: Create certificate directory
-  file:
+  ansible.builtin.file:
     state: directory
     path: /etc/elasticsearch/certs
     owner: root
@@ -496,7 +496,7 @@
     - renew_es_cert
 
 - name: Copy the ca certificate to elasticsearch nodes
-  copy:
+  ansible.builtin.copy:
     src: /tmp/ca.crt
     dest: "/etc/elasticsearch/certs"
     owner: root
@@ -512,7 +512,7 @@
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Copy the certificate to elasticsearch nodes
-  copy:
+  ansible.builtin.copy:
     src: "/tmp/{{ ansible_hostname }}.p12"
     dest: "/etc/elasticsearch/certs"
     owner: root
@@ -528,15 +528,14 @@
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Start Elasticsearch
-  service:
+  ansible.builtin.service:
     name: elasticsearch
     state: started
   failed_when: false
 
 - name: Wait for all instances to start
-  include_tasks: wait_for_instance.yml
+  ansible.builtin.include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
-  tags: notest
 
 - name: Force all notified handlers to run at this point, not waiting for normal sync points
   ansible.builtin.meta: flush_handlers
@@ -546,16 +545,15 @@
     - renew_es_cert
 
 - name: Wait for all instances to start
-  include_tasks: wait_for_instance.yml
+  ansible.builtin.include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
   tags:
-    - notest
     - certificates
     - renew_ca
     - renew_es_cert
 
 - name: Check for passwords being set
-  stat:
+  ansible.builtin.stat:
     path: "{{ elasticstack_initial_passwords }}"
   delegate_to: "{{ elasticstack_ca }}"
   register: elasticsearch_passwords_file
@@ -565,8 +563,17 @@
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
 
+# Free up some space to let elsticsearch allocate replica in GitHub Action
+- name: Remove cache # noqa: risky-shell-pipe
+  ansible.builtin.shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    rm -rf /var/cache/*
+  failed_when: false
+  changed_when: false
+  when: ansible_virtualization_type == "container"
+
 - name: Check for cluster status with bootstrap password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     curl -ks
     {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty |
@@ -574,7 +581,7 @@
     cut -d\" -f4
   register: elasticsearch_cluster_status_bootstrap
   changed_when: false
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - not elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
@@ -583,18 +590,18 @@
   delay: 10
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
     awk {' print $4 '}
   register: elasticstack_password
   changed_when: false
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   delegate_to: "{{ elasticstack_ca }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
 - name: Check for cluster status with elastic password # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     curl -ks
     {{ elasticsearch_http_protocol }}://elastic:{{ elasticstack_password.stdout }}@localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty |
@@ -602,7 +609,7 @@
     cut -d\" -f4
   register: elasticsearch_cluster_status
   changed_when: false
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
@@ -611,7 +618,7 @@
   delay: 10
 
 - name: Leave a file showing that the cluster is set up
-  template:
+  ansible.builtin.template:
     dest: "{{ elasticsearch_initialized_file }}"
     src: elasticsearch_initialized.j2
     owner: root
@@ -619,23 +626,23 @@
     mode: "0600"
 
 - name: Set var that cluster is set up
-  set_fact:
+  ansible.builtin.set_fact:
     elaticsearch_cluster_set_up: true
 
 - name: Create initial passwords # noqa: risky-shell-pipe
-  shell: >
+  ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b >
     {{ elasticstack_initial_passwords }}
   when: inventory_hostname == elasticstack_ca
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   args:
     creates: "{{ elasticstack_initial_passwords }}"
 
 # It would be better to create and set the permissions before generating the passwords. But this would
 # break the logic that relies on the file being absent when no passwords are set
 - name: Set permissions on passwords file
-  file:
+  ansible.builtin.file:
     path: "{{ elasticstack_initial_passwords }}"
     owner: root
     group: root

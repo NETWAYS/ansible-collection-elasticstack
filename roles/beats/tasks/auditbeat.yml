@@ -1,7 +1,7 @@
 ---
 
 - name: Construct exact name of Auditbeat package
-  set_fact:
+  ansible.builtin.set_fact:
     beats_auditbeat_package: >
       {{
       'auditbeat' +
@@ -11,7 +11,7 @@
       replace(' ', '')
       }}
 - name: Install Auditbeat - rpm
-  package:
+  ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
@@ -19,13 +19,13 @@
     - ansible_os_family == "RedHat"
 
 - name: Install Auditbeat - deb
-  package:
+  ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
   when:
     - ansible_os_family == "Debian"
 
 - name: Install Auditbeat latest version - rpm
-  package:
+  ansible.builtin.package:
     name: auditbeat
     state: latest
     enablerepo:
@@ -38,7 +38,7 @@
     - ansible_os_family == "RedHat"
 
 - name: Install Auditbeat latest version - deb
-  package:
+  ansible.builtin.package:
     name: auditbeat
     state: latest
   notify:
@@ -49,7 +49,7 @@
     - ansible_os_family == "Debian"
 
 - name: Configure Auditbeat
-  template:
+  ansible.builtin.template:
     src: auditbeat.yml.j2
     dest: /etc/auditbeat/auditbeat.yml
     owner: root
@@ -63,7 +63,7 @@
     - beats_configuration
 
 - name: Setup Auditbeat in Elasticsearch
-  command: >
+  ansible.builtin.command: >
     /usr/bin/auditbeat setup --pipelines --index-management &&
     /usr/bin/auditbeat version > /etc/auditbeat/pipeline_created
   run_once: true
@@ -76,7 +76,7 @@
     - beats_auditbeat_output == "elasticsearch"
 
 - name: Start Auditbeat
-  service:
+  ansible.builtin.service:
     name: auditbeat
     state: started
     enabled: true

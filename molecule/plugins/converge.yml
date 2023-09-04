@@ -15,7 +15,7 @@
         passphrase: PleaseChangeMe
       register: test
     - name: Debug
-      debug:
+      ansible.builtin.debug:
         msg: "{{ test }}"
     - name: Test required parameters (missing path)
       cert_info:
@@ -27,7 +27,7 @@
         passphrase: PleaseChangeMe
       ignore_errors: true
     - name: Debug with to_datetime() - (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days
-      debug:
+      ansible.builtin.debug:
         msg: >-
           "{{ (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
     - name: Test wrong passphrase

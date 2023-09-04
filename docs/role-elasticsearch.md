@@ -30,6 +30,7 @@ Role Variables
 * *elasticsearch_http_publish_port*: (integer) The port of the HTTP publish address. Configure this setting only if you need the publish port to be different from http.port. (default: `not set`)
 * *elasticsearch_pamlimits*: Set pam_limits neccessary for Elasticsearch. (Default: `true`)
 * *elasticsearch_check_calculation*: End play in checks (Default: `false`)
+* *elasticsearch_network_host*: You can configure multipe network addresses where the networking is bind to. You can assign IP addresses or interfaces by their names. You can also use elasticsearch internal variabels as it set as default. Example: `"_ens190_,_local_"` (Default: `"_local_,"_site_"`) (Optional; if not defined `default` is used)
 
 This variable activates a workaround to start on systems that have certain hardening measures active. See [Stackoverflow](https://stackoverflow.com/questions/47824643/unable-to-load-jna-native-support-library-elasticsearch-6-x/50371992#50371992) for details and logmessages to look for. **WARNING**: This will change your `/etc/sysconfig/elasticseach`or `/etc/default/elasticsearch` file and overwrite `ES_JAVA_OPTS`. See this [issue](https://github.com/netways/ansible-role-elasticsearch/issues/79) for details.
 

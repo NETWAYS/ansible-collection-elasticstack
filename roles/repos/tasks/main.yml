@@ -8,13 +8,13 @@
     - elasticstack_variant == "oss"
 
 - name: Import RedHat tasks
-  import_tasks: redhat.yml
+  ansible.builtin.import_tasks: redhat.yml
   when: ansible_os_family == 'RedHat'
 
 - name: Import Debian tasks
-  import_tasks: debian.yml
+  ansible.builtin.import_tasks: debian.yml
   when: ansible_os_family == 'Debian'
 
 - name: Import SuSE tasks
-  import_tasks: suse.yml
+  ansible.builtin.import_tasks: suse.yml
   when: ansible_os_family|lower == 'suse'

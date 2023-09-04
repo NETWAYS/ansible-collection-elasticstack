@@ -579,6 +579,39 @@
   delegate_to: "{{ elasticstack_ca }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
+- name: Check disk space # noqa: risky-shell-pipe
+  ansible.builtin.shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    du -hs /*
+  register: elasticstack_disk_space
+  changed_when: false
+  
+- name: Print disk space
+  debug:
+    var: elasticstack_disk_space.stdout_lines
+
+- name: Check var space # noqa: risky-shell-pipe
+  ansible.builtin.shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    du -hs /var/*
+  register: elasticstack_var_space
+  changed_when: false
+
+- name: Print var space
+  debug:
+    var: elasticstack_var_space.stdout_lines
+
+- name: Check elasricsearch data path space # noqa: risky-shell-pipe
+  ansible.builtin.shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    du -hs /var/lib/elasticsearch/*
+  register: elasticstack_data_space
+  changed_when: false
+
+- name: Print data space
+  debug:
+    var: elasticstack_data_space.stdout_lines
+
 - name: Check for nodes being connected
   ansible.builtin.uri:
     url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes"
@@ -620,6 +653,7 @@
   when:
     - elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
+    - elasticstack_release | int > 7
   retries: 20
   delay: 10
 

@@ -90,4 +90,3 @@
   ansible.builtin.wait_for:
     host: localhost
     port: 5601
-  tags: notest

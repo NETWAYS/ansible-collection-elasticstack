@@ -235,5 +235,5 @@
     awk {' print $4 '}
   register: beats_writer_password
   changed_when: false
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   delegate_to: "{{ elasticstack_ca }}"

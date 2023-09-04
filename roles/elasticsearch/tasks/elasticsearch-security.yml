@@ -600,7 +600,7 @@
   delay: 10
 
 - name: Print nodes connection state
-  debug:
+  ansible.builtin.debug:
     var: elasticsearch_nodes_output 
 
 - name: Check for cluster status with elastic password # noqa: risky-shell-pipe

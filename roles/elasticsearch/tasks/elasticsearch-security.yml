@@ -593,7 +593,7 @@
     rm -rf /var/cache/*
   failed_when: false
   changed_when: false
-  when: ansible_virtualization_type == "docker"
+  when: ansible_virtualization_type == "container"
 
 - name: Check disk space # noqa: risky-shell-pipe
   ansible.builtin.shell: >

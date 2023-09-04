@@ -587,7 +587,7 @@
   changed_when: false
 
 - name: Print disk space
-  debug:
+  ansible.builtin.debug:
     var: elasticstack_disk_space.stdout_lines
 
 - name: Check var space # noqa: risky-shell-pipe
@@ -598,7 +598,7 @@
   changed_when: false
 
 - name: Print var space
-  debug:
+  ansible.builtin.debug:
     var: elasticstack_var_space.stdout_lines
 
 - name: Check elasricsearch data path space # noqa: risky-shell-pipe
@@ -609,7 +609,7 @@
   changed_when: false
 
 - name: Print data space
-  debug:
+  ansible.builtin.debug:
     var: elasticstack_data_space.stdout_lines
 
 - name: Check for nodes being connected

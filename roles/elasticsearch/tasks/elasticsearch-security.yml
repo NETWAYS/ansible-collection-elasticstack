@@ -583,7 +583,6 @@
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     rm -rf /var/cache/*
-  changed_when: false
   ignore_errors: true
   failed_when: false
 
@@ -592,7 +591,6 @@
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     df -h
   register: elasticstack_disk_space
-  changed_when: false
   ignore_errors: true
   failed_when: false
 

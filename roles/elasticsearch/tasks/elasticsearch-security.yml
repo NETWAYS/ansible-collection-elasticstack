@@ -582,9 +582,11 @@
 - name: Check disk space # noqa: risky-shell-pipe
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    du -hs /*
+    du -h
   register: elasticstack_disk_space
   changed_when: false
+  ignore_errors: true
+  failed_when: false
 
 - name: Print disk space
   ansible.builtin.debug:

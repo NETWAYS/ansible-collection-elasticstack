@@ -551,6 +551,15 @@
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
 
+# Free up some space to let elsticsearch allocate replica in GitHub Action
+- name: Remove cache # noqa: risky-shell-pipe
+  ansible.builtin.shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    rm -rf /var/cache/*
+  failed_when: false
+  changed_when: false
+  when: ansible_virtualization_type == "container"
+
 - name: Check for cluster status with bootstrap password # noqa: risky-shell-pipe
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
@@ -578,117 +587,6 @@
   no_log: "{{ elasticstack_no_log }}"
   delegate_to: "{{ elasticstack_ca }}"
   when: elasticsearch_passwords_file.stat.exists | bool
-
-- name: Collect only facts returned by facter
-  ansible.builtin.setup:
-  register: setup_result
-
-- name: Print data space
-  ansible.builtin.debug:
-    var: setup_result
-
-- name: Remove cache # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    rm -rf /var/cache/*
-  failed_when: false
-  changed_when: false
-  when: ansible_virtualization_type == "container"
-
-- name: Check disk space # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    df -h
-  register: elasticstack_disk_space
-  failed_when: false
-  changed_when: false
-
-- name: Print disk space
-  ansible.builtin.debug:
-    var: elasticstack_disk_space.stdout_lines
-
-- name: Check var space # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    du -hs /var/*
-  register: elasticstack_var_space
-  changed_when: false
-
-- name: Print var space
-  ansible.builtin.debug:
-    var: elasticstack_var_space.stdout_lines
-
-- name: Check elasricsearch data path space # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    du -hs /var/lib/elasticsearch/*
-  register: elasticstack_data_space
-  changed_when: false
-
-- name: Print data space
-  ansible.builtin.debug:
-    var: elasticstack_data_space.stdout_lines
-
-- name: Check for nodes being connected
-  ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes"
-    method: GET
-    force_basic_auth: yes
-    user: elastic
-    password: "{{ elasticstack_password.stdout }}"
-    return_content: yes
-    status_code: 200
-    validate_certs: false
-  register: elasticsearch_nodes_output
-  no_log: "{{ elasticstack_no_log }}"
-  until: "'{{ item }}' in elasticsearch_nodes_output.content"
-  with_items: "{{ groups['elasticsearch'] }}"
-  when:
-    - elasticsearch_passwords_file.stat.exists | bool
-    - groups['elasticsearch'] | length > 1
-  retries: 20
-  delay: 10
-
-- name: Print nodes connection state
-  ansible.builtin.debug:
-    var: elasticsearch_nodes_output
-
-- name: Check cluster allocation
-  ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/allocation/explain"
-    method: GET
-    force_basic_auth: yes
-    user: elastic
-    password: "{{ elasticstack_password.stdout }}"
-    return_content: yes
-    status_code: 200
-    validate_certs: false
-  register: elasticsearch_allocation_output
-  no_log: "{{ elasticstack_no_log }}"
-  until: "'{{ item }}' in elasticsearch_allocation_output.content"
-  with_items: "{{ groups['elasticsearch'] }}"
-  when:
-    - elasticsearch_passwords_file.stat.exists | bool
-    - groups['elasticsearch'] | length > 1
-    - elasticstack_release | int > 7
-  retries: 20
-  delay: 10
-
-- name: Print allocation state
-  ansible.builtin.debug:
-    var: elasticsearch_allocation_output
-
-- name: Check elasticsearch logs # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    tail -n 100 /var/log/elasticsearch/elasticsearch.log
-  register: elasticsearch_logs
-  changed_when: false
-  no_log: "{{ elasticstack_no_log }}"
-
-- name: Print elasticsearch logs
-  ansible.builtin.debug:
-    var: elasticsearch_logs
 
 - name: Check for cluster status with elastic password # noqa: risky-shell-pipe
   ansible.builtin.shell: >

@@ -171,7 +171,7 @@
     force: yes
   notify: Restart Elasticsearch
 
-# On containerized Debian 10 systemd will not recognize elasticsearch service 
+# On containerized Debian 10 systemd will not recognize elasticsearch service
 - name: Force systemd to reread configs on container
   ansible.builtin.systemd:
     daemon_reload: true

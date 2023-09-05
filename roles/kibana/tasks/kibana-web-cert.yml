@@ -1,4 +1,4 @@
---- 
+---
 
 - name: Check if TLS certificate exists
   ansible.builtin.stat:

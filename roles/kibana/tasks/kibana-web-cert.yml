@@ -12,7 +12,7 @@
 
 - name: Generate default OpenSSL Kibana TLS key
   ansible.builtin.command:
-    cmd: openssl genpkey -algorithm RSA -out {{ kibana_tls_key }}
+    cmd: openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out {{ kibana_tls_key }}
   when: not key_stat.stat.exists
   changed_when: not key_stat.stat.exists
 

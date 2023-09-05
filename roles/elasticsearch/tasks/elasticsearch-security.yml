@@ -242,7 +242,7 @@
         --silent
       args:
         creates: "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
-      no_log: true
+      no_log: "{{ elasticstack_no_log }}"
 
     - name: Create node certificates on elasticstack_ca host
       ansible.builtin.command: >
@@ -256,7 +256,7 @@
         --pass {{ elasticsearch_tls_key_passphrase }}
         --out {{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
       loop: "{{ groups['elasticsearch'] }}"
-      no_log: true
+      no_log: "{{ elasticstack_no_log }}"
       args:
         creates: "{{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
 
@@ -267,7 +267,7 @@
         -password pass:{{ elasticsearch_tls_key_passphrase }}
       args:
         creates: "{{ elasticstack_ca_dir }}/ca.crt"
-      no_log: true
+      no_log: "{{ elasticstack_no_log }}"
 
 - name: Fetch ca certificate from ca host to Ansible controller
   ansible.builtin.fetch:
@@ -339,12 +339,11 @@
   ansible.builtin.service:
     name: elasticsearch
     state: started
-  failed_when: false
+    enabled: yes
 
 - name: Wait for all instances to start
   ansible.builtin.include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
-  tags: notest
 
 - name: Force all notified handlers to run at this point, not waiting for normal sync points
   ansible.builtin.meta: flush_handlers
@@ -357,7 +356,6 @@
   ansible.builtin.include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
   tags:
-    - notest
     - certificates
     - renew_ca
     - renew_es_cert
@@ -381,7 +379,7 @@
     validate_certs: false
   register: elasticsearch_cluster_status_bootstrap
   changed_when: false
-  #no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - not elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
@@ -396,7 +394,7 @@
     awk {' print $4 '}
   register: elasticstack_password
   changed_when: false
-  #no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   delegate_to: "{{ elasticstack_ca }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
@@ -408,7 +406,7 @@
     validate_certs: false
   register: elasticsearch_cluster_status
   changed_when: false
-  #no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
@@ -434,7 +432,7 @@
     /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto -b >
     {{ elasticstack_initial_passwords }}
   when: inventory_hostname == elasticstack_ca
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   args:
     creates: "{{ elasticstack_initial_passwords }}"
 

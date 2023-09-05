@@ -47,11 +47,11 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 2
       matrix:
         distro:
-          - ubuntu2204
           - rockylinux8
+          - ubuntu2204
         scenario:
           - elasticstack_default
         release:

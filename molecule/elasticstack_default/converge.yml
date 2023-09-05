@@ -13,10 +13,10 @@
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
-    elasticsearch_heap: "2"
+    elasticsearch_heap: "1"
     elasticstack_full_stack: true
+    elasticstack_no_log: false
     logstash_pipeline_unsafe_shutdown: true
-    logstash_password_hash: false
     beats_filebeat_syslog_udp: true
     beats_filebeat_syslog_tcp: true
     beats_filebeat_modules:
@@ -28,12 +28,6 @@
       ansible.builtin.set_fact:
         elasticstack_rpm_workaround: true
       when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= "9"
-    - name: Update apt cache.
-      ansible.builtin.apt:
-        update_cache: yes
-        cache_valid_time: 600
-      changed_when: false
-      when: ansible_os_family == 'Debian'
     - name: Include Redis
       ansible.builtin.include_role:
         name: geerlingguy.redis

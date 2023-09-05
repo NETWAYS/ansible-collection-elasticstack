@@ -183,7 +183,7 @@
     --pass {{ logstash_tls_key_passphrase }}
     --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   args:
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
   tags:
@@ -253,7 +253,7 @@
     --pem
     --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   args:
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
   tags:
@@ -324,7 +324,7 @@
     -nocrypt
   args:
     creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   tags:
     - certificates
     - renew_ca
@@ -371,6 +371,39 @@
     msg: logstash user password must be at least 6 characters long.
   when: logstash_password | length < 6
 
+- name: Create logstash password hash salt
+  ansible.builtin.copy:
+    content: "{{ lookup('password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=logstash_password_hash_salt_length, seed=logstash_password_hash_salt_seed)}}"
+    dest: /root/logstash_password_hash_salt
+    owner: root
+    group: root
+    mode: 0600
+  delegate_to: "{{ elasticstack_ca }}"
+  when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
+
+- name: Read password hash salt
+  ansible.builtin.slurp:
+    src: /root/logstash_password_hash_salt
+  register: logstash_password_hash_salt_file
+  delegate_to: "{{ elasticstack_ca }}"
+  when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
+
+- name: Set password hash salt as a fact
+  ansible.builtin.set_fact:
+    logstash_password_hash_salt: "{{ logstash_password_hash_salt_file['content'] | b64decode }}"
+  delegate_to: "{{ elasticstack_ca }}"
+  when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
+
+- name: Place logstash_writer user configuration on ca node
+  ansible.builtin.template:
+    dest: /root/logstash_writer_user
+    src: logstash_writer_user.j2
+    owner: root
+    group: root
+    mode: 0600
+  delegate_to: "{{ elasticstack_ca }}"
+  run_once: true
+
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
@@ -379,7 +412,7 @@
   register: logstash_elasticstack_password
   changed_when: false
   delegate_to: "{{ elasticstack_ca }}"
-  #no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   tags:
     - configuration
     - logstash_configuration
@@ -428,6 +461,7 @@
   delegate_to: "{{ elasticstack_ca }}"
   failed_when: false
   changed_when: false
+  no_log: "{{ elasticstack_no_log }}"
   run_once: true
 
 - name: Set logstash_writer_role_present

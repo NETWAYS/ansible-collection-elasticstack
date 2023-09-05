@@ -151,16 +151,6 @@
     - {create: "{{ elasticsearch_create_logpath }}", path: "{{ elasticsearch_logpath }}" }
     - {create: "{{ elasticsearch_create_datapath }}", path: "{{ elasticsearch_datapath }}" }
 
-- name: Import Tasks elasticsearch-security.yml
-  ansible.builtin.import_tasks: elasticsearch-security.yml
-  when:
-    - elasticsearch_security | bool
-    - elasticstack_variant == "elastic"
-  tags:
-    - certificates
-    - renew_ca
-    - renew_es_cert
-
 - name: Activate JNA workaround (see README.md)
   ansible.builtin.lineinfile:
     path: "{{ elasticsearch_sysconfig_file }}"
@@ -169,22 +159,6 @@
   notify:
     - Restart Elasticsearch
   when: elasticsearch_jna_workaround | bool
-
-- name: Set initial heap
-  ansible.builtin.lineinfile:
-    path: /etc/elasticsearch/jvm.options
-    regexp: '^-Xms'
-    line: '-Xms{{ elasticsearch_heap }}g'
-  notify:
-    - Restart Elasticsearch
-
-- name: Set maximum heap
-  ansible.builtin.lineinfile:
-    path: /etc/elasticsearch/jvm.options
-    regexp: '^-Xmx'
-    line: '-Xmx{{ elasticsearch_heap }}g'
-  notify:
-    - Restart Elasticsearch
 
 - name: Copy jvm.options File
   become: yes
@@ -197,12 +171,36 @@
     force: yes
   notify: Restart Elasticsearch
 
+# On containerized Debian 10 systemd will not recognize elasticsearch service
+- name: Force systemd to reread configs on container
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: ansible_virtualization_type == "container"
+
+# Free up some space to let elsticsearch allocate replica in GitHub Action
+- name: Remove cache # noqa: risky-shell-pipe
+  ansible.builtin.shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    rm -rf /var/cache/*
+  failed_when: false
+  changed_when: false
+  when: ansible_virtualization_type == "container"
+
+- name: Import Tasks elasticsearch-security.yml
+  ansible.builtin.import_tasks: elasticsearch-security.yml
+  when:
+    - elasticsearch_security | bool
+    - elasticstack_variant == "elastic"
+  tags:
+    - certificates
+    - renew_ca
+    - renew_es_cert
+
 - name: Start Elasticsearch
   ansible.builtin.service:
     name: elasticsearch
     state: started
     enabled: yes
-  failed_when: false
 
 - name: Handle cluster setup without security
   when: not elasticsearch_security | bool

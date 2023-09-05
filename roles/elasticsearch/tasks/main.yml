@@ -171,9 +171,19 @@
     force: yes
   notify: Restart Elasticsearch
 
+# On containerized Debian 10 systemd will not recognize elasticsearch service 
 - name: Force systemd to reread configs on container
   ansible.builtin.systemd:
     daemon_reload: true
+  when: ansible_virtualization_type == "container"
+
+# Free up some space to let elsticsearch allocate replica in GitHub Action
+- name: Remove cache # noqa: risky-shell-pipe
+  ansible.builtin.shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    rm -rf /var/cache/*
+  failed_when: false
+  changed_when: false
   when: ansible_virtualization_type == "container"
 
 - name: Import Tasks elasticsearch-security.yml

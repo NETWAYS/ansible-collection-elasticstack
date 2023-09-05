@@ -1,4 +1,3 @@
 .cache
 *.swp
 __pycache__*
-roles/management

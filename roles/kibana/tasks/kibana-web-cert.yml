@@ -14,11 +14,13 @@
   ansible.builtin.command:
     cmd: openssl genpkey -algorithm RSA -out {{ kibana_tls_key }}
   when: not key_stat.stat.exists
+  changed_when: not key_stat.stat.exists
 
 - name: Generate default OpenSSL Kibana TLS certificate
   ansible.builtin.command:
     cmd: openssl req -x509 -key {{ kibana_tls_key }} -out {{ kibana_tls_cert }} -days 3650 -nodes -subj "/CN={{ ansible_fqdn }}"
   when: not cert_stat.stat.exists
+  changed_when: not cert_stat.stat.exists
 
 - name: Set proper permissions for Kibana TLS certificate
   ansible.builtin.file:

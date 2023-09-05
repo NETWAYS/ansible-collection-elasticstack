@@ -1,7 +1,7 @@
 ---
 
 - name: Install packages for security tasks
-  package:
+  ansible.builtin.package:
     name:
       - unzip
       - python3-cryptography

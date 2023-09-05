@@ -23,6 +23,7 @@
     beats_filebeat_syslog_tcp: true
     logstash_beats_tls: false
     elasticstack_release: 7
+    elasticstack_no_log: false
   tasks:
     - name: "Include Elastics repos role"
       ansible.builtin.include_role:

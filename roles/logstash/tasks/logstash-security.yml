@@ -183,7 +183,7 @@
     --pass {{ logstash_tls_key_passphrase }}
     --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   args:
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
   tags:
@@ -253,7 +253,7 @@
     --pem
     --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   args:
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
   tags:
@@ -324,7 +324,7 @@
     -nocrypt
   args:
     creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   tags:
     - certificates
     - renew_ca
@@ -381,6 +381,29 @@
     msg: logstash user password must be at least 6 characters long.
   when: logstash_password | length < 6
 
+- name: Create logstash password hash salt
+  ansible.builtin.copy:
+    content: "{{ lookup('password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=logstash_password_hash_salt_length, seed=logstash_password_hash_salt_seed)}}"
+    dest: /root/logstash_password_hash_salt
+    owner: root
+    group: root
+    mode: 0600
+  delegate_to: "{{ elasticstack_ca }}"
+  when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
+
+- name: Read password hash salt
+  ansible.builtin.slurp:
+    src: /root/logstash_password_hash_salt
+  register: logstash_password_hash_salt_file
+  delegate_to: "{{ elasticstack_ca }}"
+  when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
+
+- name: Set password hash salt as a fact
+  ansible.builtin.set_fact:
+    logstash_password_hash_salt: "{{ logstash_password_hash_salt_file['content'] | b64decode }}"
+  delegate_to: "{{ elasticstack_ca }}"
+  when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
+
 - name: Place logstash_writer user configuration on ca node
   ansible.builtin.template:
     dest: /root/logstash_writer_user
@@ -399,7 +422,7 @@
   register: logstash_elasticstack_password
   changed_when: false
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   tags:
     - configuration
     - logstash_configuration
@@ -415,7 +438,7 @@
   failed_when: false
   changed_when: false
   register: logstash_writer_role_present
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   run_once: true
 
 # we doubled the task and didn't use a more sophisticated way to just change
@@ -430,7 +453,7 @@
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/role/logstash_writer
   delegate_to: "{{ elasticstack_ca }}"
   changed_when: false
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   run_once: true
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
@@ -445,7 +468,7 @@
   delegate_to: "{{ elasticstack_ca }}"
   changed_when: false
   run_once: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   when:
     - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
     - elasticstack_release | int > 7
@@ -460,7 +483,7 @@
   delegate_to: "{{ elasticstack_ca }}"
   failed_when: false
   changed_when: false
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   register: logstash_writer_user_present
   run_once: true
 
@@ -476,7 +499,7 @@
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/user/{{ logstash_user }}
   delegate_to: "{{ elasticstack_ca }}"
   changed_when: false
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   run_once: true
   when:
     - logstash_writer_user_present.rc > 0
@@ -490,7 +513,7 @@
     https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/user/{{ logstash_user }}
   delegate_to: "{{ elasticstack_ca }}"
   run_once: true
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   changed_when: false
   when:
     - logstash_writer_user_present.rc > 0

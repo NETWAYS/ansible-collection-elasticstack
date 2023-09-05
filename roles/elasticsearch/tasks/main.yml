@@ -171,6 +171,11 @@
     force: yes
   notify: Restart Elasticsearch
 
+- name: Force systemd to reread configs on container
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: ansible_virtualization_type == "container"
+
 - name: Import Tasks elasticsearch-security.yml
   ansible.builtin.import_tasks: elasticsearch-security.yml
   when:

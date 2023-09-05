@@ -28,16 +28,6 @@
       ansible.builtin.set_fact:
         elasticstack_rpm_workaround: true
       when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= "9"
-    - name: Update apt cache.
-      ansible.builtin.apt:
-        update_cache: yes
-        cache_valid_time: 600
-      changed_when: false
-      when: ansible_os_family == 'Debian'
-    - name: Install dependencies
-      ansible.builtin.package:
-        name:
-          - curl
     - name: Include Redis
       ansible.builtin.include_role:
         name: geerlingguy.redis

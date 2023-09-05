@@ -519,7 +519,7 @@
   ansible.builtin.service:
     name: elasticsearch
     state: started
-  failed_when: false
+    enabled: yes
 
 - name: Wait for all instances to start
   ansible.builtin.include_tasks: wait_for_instance.yml

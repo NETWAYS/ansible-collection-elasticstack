@@ -1,30 +1,30 @@
 --- 
 
 - name: Check if TLS certificate exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ kibana_tls_cert }}"
   register: cert_stat
 
 - name: Check if TLS key exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ kibana_tls_key }}"
   register: key_stat
 
-- name: Generate Kibana TLS certificate and key
-  command:
+- name: Generate default OpenSSL Kibana TLS certificate and key
+  ansible.builtin.command:
     cmd: openssl req -x509 -newkey rsa:4096 -keyout {{ kibana_tls_key }} -out {{ kibana_tls_cert }} -days 3650 -nodes -subj "/CN={{ ansible_fqdn }}"
   when: not cert_stat.stat.exists or not key_stat.stat.exists
 
 - name: Set proper permissions for Kibana TLS certificate
-  file:
+  ansible.builtin.file:
     path: "{{ kibana_tls_cert }}"
     mode: '0644'
-    owner: kibana  
-    group: kibana  
+    owner: kibana
+    group: kibana
 
 - name: Set proper permissions for Kibana TLS key
-  file:
+  ansible.builtin.file:
     path: "{{ kibana_tls_key }}"
-    mode: '0600' 
-    owner: kibana 
-    group: kibana 
+    mode: '0600'
+    owner: kibana
+    group: kibana

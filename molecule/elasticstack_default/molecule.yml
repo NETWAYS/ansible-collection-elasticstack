@@ -4,7 +4,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: elasticstack-cluster1
+  - name: "elasticstack-cluster1-${MOLECULE_DISTRO}-${ELASTIC_RELEASE}"
     groups:
       - beats
       - logstash
@@ -17,7 +17,7 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
-  - name: elasticstack-cluster2
+  - name: "elasticstack-cluster2-${MOLECULE_DISTRO}-${ELASTIC_RELEASE}"
     groups:
       - beats
       - logstash

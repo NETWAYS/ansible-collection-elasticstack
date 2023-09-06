@@ -429,7 +429,7 @@
     ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
     user: elastic
     password: "{{ logstash_elasticstack_password.stdout }}"
-  register: logstash_writer_response
+  register: check_logstash_writer_role_response
   delegate_to: "{{ elasticstack_ca }}"
   failed_when: false
   changed_when: false
@@ -439,7 +439,7 @@
 - name: Set logstash_writer_role_present
   ansible.builtin.set_fact:
     logstash_writer_role_present: true
-  when: 'logstash_writer_response.status == 200'
+  when: check_logstash_writer_role_response.json.logstash_writer is defined
 
 - name: Put logstash_writer role into Elasticsearch if not present
   ansible.builtin.uri:
@@ -452,9 +452,11 @@
       Content-Type: application/json
     body: "{{ lookup('template', 'logstash_writer_role.j2') }}"
     body_format: json
-  register: result
+  register: put_logstash_writer_role_response
   when: logstash_writer_role_present is not defined
   delegate_to: "{{ elasticstack_ca }}"
+  failed_when: not put_logstash_writer_role_response.json.role.created
+  run_once: true
 
 - name: Check for logstash_writer user
   ansible.builtin.uri:
@@ -462,7 +464,7 @@
     ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
     user: elastic
     password: "{{ logstash_elasticstack_password.stdout }}"
-  register: logstash_writer_user_response
+  register: check_logstash_writer_user_response
   delegate_to: "{{ elasticstack_ca }}"
   failed_when: false
   changed_when: false
@@ -471,7 +473,7 @@
 - name: Set logstash_writer_user_present
   ansible.builtin.set_fact:
     logstash_writer_user_present: true
-  when: 'logstash_writer_user_response.status == 200'
+  when: check_logstash_writer_user_response.json.logstash_writer.username is defined and  check_logstash_writer_user_response.json.logstash_writer.username == "logstash_writer"
 
 - name: Put logstash_writer user into Elasticsearch if not present
   ansible.builtin.uri:
@@ -484,6 +486,8 @@
       Content-Type: application/json
     body: "{{ lookup('template', 'logstash_writer_user.j2') }}"
     body_format: json
-  register: result
-  #when: logstash_writer_user_present is not defined
+  register: put_logstash_writer_user_response
+  when: logstash_writer_user_present is not defined
   delegate_to: "{{ elasticstack_ca }}"
+  run_once: true
+  failed_when: not put_logstash_writer_user_response.json.created

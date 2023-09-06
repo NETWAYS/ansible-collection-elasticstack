@@ -390,8 +390,7 @@
 
 - name: Set password hash salt as a fact
   ansible.builtin.set_fact:
-    logstash_password_hash_salt: "{{ logstash_password_hash_salt_file['content'] | b64decode }}"
-  delegate_to: "{{ elasticstack_ca }}"
+    logstash_password_hash_salt: "{{ lookup('password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=logstash_password_hash_salt_length, seed=logstash_password_hash_salt_seed) }}"
   when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe

@@ -57,6 +57,3 @@
     - name: Include kibana
       ansible.builtin.include_role:
         name: kibana
-    - name: Include Beats
-      ansible.builtin.include_role:
-        name: beats

@@ -394,16 +394,6 @@
   delegate_to: "{{ elasticstack_ca }}"
   when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
 
-- name: Place logstash_writer user configuration on ca node
-  ansible.builtin.template:
-    dest: /root/logstash_writer_user
-    src: logstash_writer_user.j2
-    owner: root
-    group: root
-    mode: 0600
-  delegate_to: "{{ elasticstack_ca }}"
-  run_once: true
-
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;

@@ -391,12 +391,12 @@
 
 - name: Set elasticsearch security-api base url for elasticsearch > 7
   ansible.builtin.set_fact:
-    security_api_base_url: "https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/"
+    security_api_base_url: "https://{{ hostvars[elasticstack_ca]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/"
   when: elasticstack_release | int > 7
 
 - name: Set elasticsearch security-api base url for elasticsearch < 8
   ansible.builtin.set_fact:
-    security_api_base_url: "https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/"
+    security_api_base_url: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/"
   when: elasticstack_release | int < 8
 
 - name: Check for logstash_writer role

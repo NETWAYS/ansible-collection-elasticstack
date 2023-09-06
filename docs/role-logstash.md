@@ -70,7 +70,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_password_hash*: Generate and use a hash from your `logstash_password` (default: `true`)
 * *logstash_password_hash_algorithm*: Password hashing algorithms. Value must be same as `xpack.security.authc.password_hashing.algorithm` (default: `bcrypt`)
 * *logstash_password_salt_length*: base64 encoded Salt character lenght. This value must be integer and must be compatible to the selected password hashing algorithms (default: `22`)
-**logstash_password_hash_salt_seed*: A seed to generate random but idempotent salt on the elasticstack ca host. The salt will be used to create idempotent logstash hashed user password (default: `SeedChangeMe`)
+* *logstash_password_hash_salt_seed*: A seed to generate random but idempotent salt on the elasticstack ca host. The salt will be used to create idempotent logstash hashed user password (default: `SeedChangeMe`)
 * *logstash_password*: Password of Elasticsearch user. It must be at least 6 characters long (default: `password`)
 * *logstash_user_indices*: Indices the user has access to (default: `'"ecs-logstash*", "logstash*", "logs*"'`)
 * *logstash_reset_writer_role*: Reset user and role with every run: (default: `true`)

@@ -39,17 +39,21 @@ You will need the following Ansible collections installed
 
 You may want the following Ansible roles installed. There other ways to achieve what they are doing but using them is easy and convenient.
 
-* geerlingguy.redis
-* openssl if you want to use Elastic Security
+* `geerlingguy.redis` if you want to use logstash role
+* `openssl` if you want to use Elastic Security
+* `passlib` if you do not disable password hashing for logstash user.
 
 ### Supported systems
 
 We test the collection on the following Linux distributions. Each one with Elastic Stack 7 and 8.
 
+* Rocky Linux 9
 * Rocky Linux 8
-* Ubuntu 20.04 LTS
 * Ubuntu 22.04 LTS
+* Ubuntu 20.04 LTS
 * Debian 11
+* Debian 10
+* CentOS 8
 
 We know from personal experience, that the collections work in following combinations. Missing tests mostly come from incompatibilties between the distribution and our testing environment, not from problems with the collection itself.
 
@@ -57,9 +61,6 @@ We know from personal experience, that the collections work in following combina
 
 ### Known Issues
 
-There are known issues with the following Linux distributions.
-
-* Rocky Linux 9: The GnuPG key used by Elastic seems to be incompatible with this version of Rocky.
 
 ## Usage
 

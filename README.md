@@ -39,9 +39,9 @@ You will need the following Ansible collections installed
 
 You may want the following Ansible roles installed. There other ways to achieve what they are doing but using them is easy and convenient.
 
-* `geerlingguy.redis` if you want to use logstash role
-* `openssl` if you want to use Elastic Security
-* `passlib` if you do not disable password hashing for logstash user.
+* geerlingguy.redis if you want to use logstash role
+* openssl if you want to use Elastic Security
+* passlib if you do not disable password hashing for logstash user.
 
 ### Supported systems
 

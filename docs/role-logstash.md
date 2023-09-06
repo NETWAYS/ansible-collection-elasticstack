@@ -18,9 +18,9 @@ It will work with the standard Elastic Stack packages and Elastics OSS variant.
 Requirements
 ------------
 
-* `community.general` collection
-* `cryptography` >= 2.5
-* `passlib` if you do not disable password hashing for logstash user.
+* community.general collection
+* cryptography >= 2.5
+* passlib if you do not disable password hashing for logstash user.
 
 You need to have the Elastic Repos configured on your system. You can use our [role](./role-repos.md)
 

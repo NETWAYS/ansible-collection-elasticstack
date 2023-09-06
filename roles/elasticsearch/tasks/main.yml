@@ -208,11 +208,12 @@
     - name: Check for cluster status without security
       ansible.builtin.uri:
         url: "http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
-      register: result
+      register: elasticsearch_cluster_status
       ignore_errors: "{{ ansible_check_mode }}"
-      until: result.json.status == "green"
+      until: elasticsearch_cluster_status.json.status == "green"
       retries: 5
       delay: 10
+      no_log: "{{ elasticstack_no_log }}"
 
     - name: Leave a file showing that the cluster is set up
       ansible.builtin.template:

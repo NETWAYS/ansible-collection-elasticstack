@@ -391,7 +391,7 @@
 
 - name: Set elasticsearch security-api base url for elasticsearch > 7
   ansible.builtin.set_fact:
-    security_api_base_url: "https://{{ hostvars[elasticstack_ca]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/"
+    security_api_base_url: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/"
   when: elasticstack_release | int > 7
 
 - name: Set elasticsearch security-api base url for elasticsearch < 8

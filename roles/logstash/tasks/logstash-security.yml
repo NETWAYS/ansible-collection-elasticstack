@@ -431,7 +431,7 @@
   register: put_logstash_writer_role_response
   when: logstash_writer_role_present is not defined
   delegate_to: "{{ elasticstack_ca }}"
-  failed_when: not put_logstash_writer_role_response.json.role.created
+  failed_when: not put_logstash_writer_role_response.json.role.created | bool
   run_once: true
 
 - name: Check for logstash_writer user

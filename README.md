@@ -36,6 +36,9 @@ collections:
 You will need the following Ansible collections installed
 
 * `community.general` (probably already present)
+
+You will need these packages / libraries installed. Some very basic packages like `openssl` get handled by the collection if needed. The following list contains packages and libraries which only apply to special cases or need for you to decide on the installation method.
+
 * `passlib` Python library if you do not disable password hashing for logstash user and you want to use logstash role from this collection. It should be installed with pip on the Ansible controller.
 
 You may want the following Ansible roles installed. There other ways to achieve what they are doing but using them is easy and convenient.

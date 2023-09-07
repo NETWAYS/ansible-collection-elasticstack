@@ -19,6 +19,9 @@ Requirements
 ------------
 
 * `community.general` collection
+
+You will need these packages / libraries installed. Some very basic packages like `openssl` get handled by the collection if needed. The following list contains packages and libraries which only apply to special cases or need for you to decide on the installation method.
+
 * `passlib` Python library if you do not disable password hashing for logstash user. It should be installed with pip on the Ansible controller.
 
 You need to have the Elastic Repos configured on your system. You can use our [role](./role-repos.md)

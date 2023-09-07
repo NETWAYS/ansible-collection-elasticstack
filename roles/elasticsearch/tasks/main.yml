@@ -205,20 +205,15 @@
 - name: Handle cluster setup without security
   when: not elasticsearch_security | bool
   block:
-    - name: Check for cluster status without security # noqa: risky-shell-pipe
-      ansible.builtin.shell: >
-        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-        curl -s
-        http://localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
-        grep status |
-        cut -d\" -f4
-      register: es_cluster_status
-      changed_when: false
-      no_log: "{{ elasticstack_no_log }}"
+    - name: Check for cluster status without security
+      ansible.builtin.uri:
+        url: "http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+      register: elasticsearch_cluster_status
       ignore_errors: "{{ ansible_check_mode }}"
-      until: es_cluster_status.stdout == "green"
+      until: elasticsearch_cluster_status.json.status == "green"
       retries: 5
       delay: 10
+      no_log: "{{ elasticstack_no_log }}"
 
     - name: Leave a file showing that the cluster is set up
       ansible.builtin.template:

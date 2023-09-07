@@ -175,7 +175,7 @@
 - name: Force systemd to reread configs on container
   ansible.builtin.systemd:
     daemon_reload: true
-  when: ansible_virtualization_type == "container"
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
 
 # Free up some space to let elsticsearch allocate replica in GitHub Action
 - name: Remove cache # noqa: risky-shell-pipe
@@ -184,7 +184,7 @@
     rm -rf /var/cache/*
   failed_when: false
   changed_when: false
-  when: ansible_virtualization_type == "container"
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
 
 - name: setup
   ansible.builtin.setup:

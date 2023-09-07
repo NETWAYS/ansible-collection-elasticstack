@@ -1,11 +1,15 @@
 ---
 
-- name: Install unzip for certificate handling
+- name: Install packages for security tasks
   ansible.builtin.package:
-    name: unzip
-  when: beats_manage_unzip | bool
+    name:
+      - unzip
+      - python3-cryptography
+      - openssl
   tags:
+    - certificates
     - renew_ca
+    - renew_kibana_cert
     - renew_beats_cert
 
 - name: Ensure beats certificate exists

@@ -186,6 +186,14 @@
   changed_when: false
   when: ansible_virtualization_type == "container"
 
+- name: setup
+  ansible.builtin.setup:
+  register: setup_result
+
+- name: print ansible vars
+  ansible.builtin.debug:
+    var: setup_result
+
 - name: Import Tasks elasticsearch-security.yml
   ansible.builtin.import_tasks: elasticsearch-security.yml
   when:

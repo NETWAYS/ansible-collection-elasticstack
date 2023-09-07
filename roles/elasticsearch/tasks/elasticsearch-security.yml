@@ -1,5 +1,17 @@
 ---
 
+- name: Install packages for security tasks
+  ansible.builtin.package:
+    name:
+      - unzip
+      - python3-cryptography
+      - openssl
+  tags:
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
+    - renew_es_cert
+
 - name: Set elasticstack_ca variable if not already done by user
   ansible.builtin.set_fact:
     elasticstack_ca: "{{ groups['elasticsearch'][0] }}"

@@ -1,8 +1,11 @@
 ---
 
-- name: Install unzip for certificate handling
+- name: Install packages for security tasks
   ansible.builtin.package:
-    name: unzip
+    name:
+      - unzip
+      - python3-cryptography
+      - openssl
   tags:
     - certificates
     - renew_ca
@@ -383,7 +386,7 @@
 
 - name: Create logstash password hash salt
   ansible.builtin.copy:
-    content: "{{ lookup('password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=logstash_password_hash_salt_length, seed=logstash_password_hash_salt_seed)}}"
+    content: "{{ lookup('password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=logstash_password_hash_salt_length, seed=logstash_password_hash_salt_seed) }}"
     dest: /root/logstash_password_hash_salt
     owner: root
     group: root

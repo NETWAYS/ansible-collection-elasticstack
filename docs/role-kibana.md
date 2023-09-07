@@ -5,11 +5,6 @@ Ansible Role: Kibana
 
 This roles installs and configures Kibana.
 
-Requirements
-------------
-
-* `cryptography` >= 2.5
-
 Role Variables
 --------------
 

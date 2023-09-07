@@ -30,6 +30,7 @@ on:
       - 'roles/**'
       - '.github/workflows/test_roles_pr.yml'
       - 'molecule/elasticstack_default/**'
+  merge_group:
 
 jobs:
   lint_full:

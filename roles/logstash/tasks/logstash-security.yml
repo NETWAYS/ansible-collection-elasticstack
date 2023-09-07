@@ -1,8 +1,11 @@
 ---
 
-- name: Install unzip for certificate handling
+- name: Install packages for security tasks
   ansible.builtin.package:
-    name: unzip
+    name:
+      - unzip
+      - python3-cryptography
+      - openssl
   tags:
     - certificates
     - renew_ca

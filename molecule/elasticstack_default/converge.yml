@@ -40,6 +40,9 @@
     - name: Include logstash
       ansible.builtin.include_role:
         name: logstash
+    - name: Include kibana
+      ansible.builtin.include_role:
+        name: kibana
     - name: Include Beats
       ansible.builtin.include_role:
         name: beats
@@ -54,6 +57,3 @@
       ansible.builtin.service:
         name: rsyslog
         state: started
-    - name: Include kibana
-      ansible.builtin.include_role:
-        name: kibana

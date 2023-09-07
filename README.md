@@ -35,13 +35,12 @@ collections:
 
 You will need the following Ansible collections installed
 
-* community.general (probably already present)
+* `community.general` (probably already present)
+* `passlib` Python library if you do not disable password hashing for logstash user and you want to use logstash role from this collection. It should be installed with pip on the Ansible controller.
 
 You may want the following Ansible roles installed. There other ways to achieve what they are doing but using them is easy and convenient.
 
-* geerlingguy.redis if you want to use logstash role
-* openssl if you want to use Elastic Security
-* passlib if you do not disable password hashing for logstash user.
+* `geerlingguy.redis` if you want to use logstash role
 
 ### Supported systems
 

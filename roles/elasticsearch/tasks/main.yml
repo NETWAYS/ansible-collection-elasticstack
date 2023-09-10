@@ -182,7 +182,6 @@
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     rm -rf /var/cache/*
-  failed_when: false
   changed_when: false
   when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
 

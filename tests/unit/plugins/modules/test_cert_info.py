@@ -143,6 +143,7 @@ class TestCertInfo(unittest.TestCase):
             })
             cert_info.main()
 
+    # Tests with passphrase_check mode set to True (default is False)
     def test_module_exit_when_password_wrong_with_passphrase_check(self):
         with self.assertRaises(AnsibleExitJson):
             set_module_args({

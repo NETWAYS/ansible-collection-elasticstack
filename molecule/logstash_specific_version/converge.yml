@@ -15,6 +15,7 @@
     logstash_pipeline_unsafe_shutdown: true
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticstack_full_stack: false
+    elasticstack_no_log: false
   tasks:
 
     - name: Set Filebeat version for 7.x

@@ -35,21 +35,27 @@ collections:
 
 You will need the following Ansible collections installed
 
-* community.general (probably already present)
+* `community.general` (probably already present)
+
+You will need these packages / libraries installed. Some very basic packages like `openssl` get handled by the collection if needed. The following list contains packages and libraries which only apply to special cases or need for you to decide on the installation method.
+
+* `passlib` Python library if you do not disable password hashing for logstash user and you want to use logstash role from this collection. It should be installed with pip on the Ansible controller.
 
 You may want the following Ansible roles installed. There other ways to achieve what they are doing but using them is easy and convenient.
 
-* geerlingguy.redis
-* openssl if you want to use Elastic Security
+* `geerlingguy.redis` if you want to use logstash role
 
 ### Supported systems
 
 We test the collection on the following Linux distributions. Each one with Elastic Stack 7 and 8.
 
+* Rocky Linux 9
 * Rocky Linux 8
-* Ubuntu 20.04 LTS
 * Ubuntu 22.04 LTS
+* Ubuntu 20.04 LTS
 * Debian 11
+* Debian 10
+* CentOS 8
 
 We know from personal experience, that the collections work in following combinations. Missing tests mostly come from incompatibilties between the distribution and our testing environment, not from problems with the collection itself.
 
@@ -57,9 +63,6 @@ We know from personal experience, that the collections work in following combina
 
 ### Known Issues
 
-There are known issues with the following Linux distributions.
-
-* Rocky Linux 9: The GnuPG key used by Elastic seems to be incompatible with this version of Rocky.
 
 ## Usage
 
@@ -68,6 +71,8 @@ Every role is documented with all variables, please refer to the documentation f
 Make sure all hosts that should be configured are part of your playbook. (See below for details on groups etc.). The collection is built to first collect all facts from all hosts (including those only running beats) and then use facts like hostnames or ip addresses to connect the tools to each other.
 
 You will want to have reliable DNS resolution or enter all hosts of the stack into your systems hosts files.
+
+The variable `elasticstack_no_log` can be set to `false` if you want to see the output of all tasks. It defaults to `true` because some tasks could reveal passwords in production.
 
 ### Versioning
 

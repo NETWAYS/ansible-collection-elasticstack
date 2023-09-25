@@ -19,7 +19,10 @@ Requirements
 ------------
 
 * `community.general` collection
-* `cryptography` >= 2.5
+
+You will need these packages / libraries installed. Some very basic packages like `openssl` get handled by the collection if needed. The following list contains packages and libraries which only apply to special cases or need for you to decide on the installation method.
+
+* `passlib` Python library if you do not disable password hashing for logstash user. It should be installed with pip on the Ansible controller.
 
 You need to have the Elastic Repos configured on your system. You can use our [role](./role-repos.md)
 
@@ -67,6 +70,9 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
 * *logstash_user*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
 * *logstash_password_hash*: Generate and use a hash from your `logstash_password` (default: `true`)
+* *logstash_password_hash_algorithm*: Password hashing algorithms. Value must be same as `xpack.security.authc.password_hashing.algorithm` (default: `bcrypt`)
+* *logstash_password_salt_length*: base64 encoded Salt character lenght. This value must be integer and must be compatible to the selected password hashing algorithms (default: `22`)
+* *logstash_password_hash_salt_seed*: A seed to generate random but idempotent salt on the elasticstack ca host. The salt will be used to create idempotent logstash hashed user password (default: `SeedChangeMe`)
 * *logstash_password*: Password of Elasticsearch user. It must be at least 6 characters long (default: `password`)
 * *logstash_user_indices*: Indices the user has access to (default: `'"ecs-logstash*", "logstash*", "logs*"'`)
 * *logstash_reset_writer_role*: Reset user and role with every run: (default: `true`)

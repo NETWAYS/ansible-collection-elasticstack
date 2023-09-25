@@ -10,7 +10,6 @@ Requirements
 
 You need to have the beats you want to install available in your software repositories. We provide a [role](./role-repos.md) for just that but if you have other ways of managing software, just make sure it's available. Alternatively you can install the Beats yourself.
 
-* `cryptography` >= 2.5 
 * `community.crypto` collection: ansible-galaxy collection install community.crypto
 
 Role Variables
@@ -87,7 +86,6 @@ beats_filebeat_journald_inputs:
 * *beats_loglevel*: Level of logging (for all beats) (Default: `info`)
 * *beats_logpath*: If logging to file, where to put logfiles (Default: `/var/log/beats`)
 * *beats_fields*: Fields that are added to every input in the configuration
-* *beats_manage_unzip*: Install `unzip` via package manager (Default: `true`)
 
 The following variables only apply if you use this role together with our other Elastic Stack roles.
 

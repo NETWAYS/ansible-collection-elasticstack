@@ -1,8 +1,11 @@
 ---
 
-- name: Install unzip for certificate handling
+- name: Install packages for security tasks
   ansible.builtin.package:
-    name: unzip
+    name:
+      - unzip
+      - python3-cryptography
+      - openssl
   tags:
     - certificates
     - renew_ca
@@ -183,7 +186,7 @@
     --pass {{ logstash_tls_key_passphrase }}
     --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   args:
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
   tags:
@@ -253,7 +256,7 @@
     --pem
     --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   args:
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
   tags:
@@ -324,7 +327,7 @@
     -nocrypt
   args:
     creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   tags:
     - certificates
     - renew_ca
@@ -366,30 +369,15 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Place logstash_writer role configuration on ca node
-  ansible.builtin.template:
-    dest: /root/logstash_writer_role
-    src: logstash_writer_role.j2
-    owner: root
-    group: root
-    mode: 0600
-  delegate_to: "{{ elasticstack_ca }}"
-  run_once: true
-
 - name: Check the length of logstash user password
   ansible.builtin.fail:
     msg: logstash user password must be at least 6 characters long.
   when: logstash_password | length < 6
 
-- name: Place logstash_writer user configuration on ca node
-  ansible.builtin.template:
-    dest: /root/logstash_writer_user
-    src: logstash_writer_user.j2
-    owner: root
-    group: root
-    mode: 0600
-  delegate_to: "{{ elasticstack_ca }}"
-  run_once: true
+- name: Set password hash salt as a fact
+  ansible.builtin.set_fact:
+    logstash_password_hash_salt: "{{ lookup('password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=logstash_password_hash_salt_length, seed=logstash_password_hash_salt_seed) }}"
+  when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   ansible.builtin.shell: >
@@ -399,99 +387,86 @@
   register: logstash_elasticstack_password
   changed_when: false
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   tags:
     - configuration
     - logstash_configuration
 
-- name: Check for logstash_writer role # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    curl --cacert {{ elasticstack_ca_dir }}/ca.crt
-    -u elastic:{{ logstash_elasticstack_password.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/role/logstash_writer
-    | grep "enabled"
+- name: Set elasticsearch security-api base url for elasticsearch > 7
+  ansible.builtin.set_fact:
+    security_api_base_url: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/"
+  when: elasticstack_release | int > 7
+
+- name: Set elasticsearch security-api base url for elasticsearch < 8
+  ansible.builtin.set_fact:
+    security_api_base_url: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/"
+  when: elasticstack_release | int < 8
+
+- name: Check for logstash_writer role
+  ansible.builtin.uri:
+    url: "{{ security_api_base_url }}role/logstash_writer"
+    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
+    user: elastic
+    password: "{{ logstash_elasticstack_password.stdout }}"
+  register: check_logstash_writer_role_response
   delegate_to: "{{ elasticstack_ca }}"
   failed_when: false
   changed_when: false
-  register: logstash_writer_role_present
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   run_once: true
 
-# we doubled the task and didn't use a more sophisticated way to just change
-# the URI because we expect this task to be removed when ES 7 is out of
-# support
+- name: Set logstash_writer_role_present
+  ansible.builtin.set_fact:
+    logstash_writer_role_present: true
+  when: check_logstash_writer_role_response.json.logstash_writer is defined
 
-- name: Put logstash_writer role into Elasticsearch < 8
-  ansible.builtin.command: >
-    curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
-    --cacert {{ elasticstack_ca_dir }}/ca.crt
-    -u elastic:{{ logstash_elasticstack_password.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/role/logstash_writer
+- name: Put logstash_writer role into Elasticsearch if not present
+  ansible.builtin.uri:
+    url: "{{ security_api_base_url }}role/logstash_writer"
+    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
+    user: elastic
+    password: "{{ logstash_elasticstack_password.stdout }}"
+    method: PUT
+    headers:
+      Content-Type: application/json
+    body: "{{ lookup('template', 'logstash_writer_role.j2') }}"
+    body_format: json
+  register: put_logstash_writer_role_response
+  when: logstash_writer_role_present is not defined
   delegate_to: "{{ elasticstack_ca }}"
-  changed_when: false
-  no_log: true
+  failed_when: not put_logstash_writer_role_response.json.role.created | bool
   run_once: true
-  when:
-    - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
-    - elasticstack_release | int < 8
 
-- name: Put logstash_writer role into Elasticsearch > 7
-  ansible.builtin.command: >
-    curl -T /root/logstash_writer_role --header 'Content-Type: application/json'
-    --cacert {{ elasticstack_ca_dir }}/ca.crt
-    -u elastic:{{ logstash_elasticstack_password.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/role/logstash_writer
-  delegate_to: "{{ elasticstack_ca }}"
-  changed_when: false
-  run_once: true
-  no_log: true
-  when:
-    - logstash_writer_role_present.rc > 0 or logstash_reset_writer_role | bool
-    - elasticstack_release | int > 7
-
-- name: Check for logstash_writer user # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    curl --cacert {{ elasticstack_ca_dir }}/ca.crt
-    -u elastic:{{ logstash_elasticstack_password.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/user/{{ logstash_user }}
-    | grep "enabled"
+- name: Check for logstash_writer user
+  ansible.builtin.uri:
+    url: "{{ security_api_base_url }}user/{{ logstash_user }}"
+    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
+    user: elastic
+    password: "{{ logstash_elasticstack_password.stdout }}"
+  register: check_logstash_writer_user_response
   delegate_to: "{{ elasticstack_ca }}"
   failed_when: false
   changed_when: false
-  no_log: true
-  register: logstash_writer_user_present
   run_once: true
 
-# we doubled the task and didn't use a more sophisticated way to just change
-# the URI because we expect this task to be removed when ES 7 is out of
-# support
+- name: Set logstash_writer_user_present
+  ansible.builtin.set_fact:
+    logstash_writer_user_present: true
+  when: check_logstash_writer_user_response.json.logstash_writer.username is defined and  check_logstash_writer_user_response.json.logstash_writer.username == "logstash_writer"
 
-- name: Put logstash_writer user into Elasticsearch < 8
-  ansible.builtin.command: >
-    curl -T /root/logstash_writer_user --header 'Content-Type: application/json'
-    --cacert {{ elasticstack_ca_dir }}/ca.crt
-    -u elastic:{{ logstash_elasticstack_password.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/user/{{ logstash_user }}
-  delegate_to: "{{ elasticstack_ca }}"
-  changed_when: false
-  no_log: true
-  run_once: true
-  when:
-    - logstash_writer_user_present.rc > 0
-    - elasticstack_release | int < 8
-
-- name: Put logstash_writer user into Elasticsearch > 7
-  ansible.builtin.command: >
-    curl -T /root/logstash_writer_user --header 'Content-Type: application/json'
-    --cacert {{ elasticstack_ca_dir }}/ca.crt
-    -u elastic:{{ logstash_elasticstack_password.stdout }}
-    https://{{ hostvars[groups['elasticsearch'][0]].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/user/{{ logstash_user }}
+- name: Put logstash_writer user into Elasticsearch if not present
+  ansible.builtin.uri:
+    url: "{{ security_api_base_url }}user/{{ logstash_user }}"
+    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
+    user: elastic
+    password: "{{ logstash_elasticstack_password.stdout }}"
+    method: PUT
+    headers:
+      Content-Type: application/json
+    body: "{{ lookup('template', 'logstash_writer_user.j2') }}"
+    body_format: json
+  register: put_logstash_writer_user_response
+  when: logstash_writer_user_present is not defined
   delegate_to: "{{ elasticstack_ca }}"
   run_once: true
-  no_log: true
-  changed_when: false
-  when:
-    - logstash_writer_user_present.rc > 0
-    - elasticstack_release | int > 7
+  failed_when: not put_logstash_writer_user_response.json.created

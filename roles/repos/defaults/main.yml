@@ -7,3 +7,4 @@ elasticstack_variant: elastic
 elasticstack_rpm_workaround: false
 
 elasticstack_enable_repos: true
+elasticstack_no_log: true

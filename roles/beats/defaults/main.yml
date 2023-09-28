@@ -10,7 +10,6 @@ elasticstack_beats_port: 5044
 beats_logging: file
 beats_logpath: /var/log/beats
 beats_loglevel: info
-beats_manage_unzip: true
 
 # Use TLS without Elastic X-Pack #
 
@@ -68,6 +67,7 @@ elasticstack_ca_dir: /opt/es-ca
 elasticstack_ca_pass: PleaseChangeMe
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elasticstack_elasticsearch_http_port: 9200
+elasticstack_no_log: true
 beats_cert_validity_period: 1095
 beats_cert_expiration_buffer: "+30d"
 beats_cert_will_expire_soon: false

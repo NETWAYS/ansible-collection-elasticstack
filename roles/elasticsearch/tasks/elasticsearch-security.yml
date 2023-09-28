@@ -352,25 +352,30 @@
     name: elasticsearch
     state: started
     enabled: yes
+  register: elasticsearch_freshstart
 
 - name: Wait for all instances to start
   ansible.builtin.include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
 
-- name: Force all notified handlers to run at this point, not waiting for normal sync points
-  ansible.builtin.meta: flush_handlers
-  tags:
-    - certificates
-    - renew_ca
-    - renew_es_cert
+- name: Restart if Elasticsearch was already running
+  when:
+    - not elasticsearch_freshstart.changed | bool
+  block:
+    - name: Force all notified handlers to run at this point, not waiting for normal sync points
+      ansible.builtin.meta: flush_handlers
+      tags:
+        - certificates
+        - renew_ca
+        - renew_es_cert
 
-- name: Wait for all instances to start
-  ansible.builtin.include_tasks: wait_for_instance.yml
-  loop: "{{ groups['elasticsearch'] }}"
-  tags:
-    - certificates
-    - renew_ca
-    - renew_es_cert
+    - name: Wait for all instances to start
+      ansible.builtin.include_tasks: wait_for_instance.yml
+      loop: "{{ groups['elasticsearch'] }}"
+      tags:
+        - certificates
+        - renew_ca
+        - renew_es_cert
 
 - name: Check for passwords being set
   ansible.builtin.stat:

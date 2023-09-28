@@ -237,8 +237,6 @@
     group: root
     mode: 0644
     backup: "{{ elasticsearch_config_backup }}"
-  notify:
-    - Restart Elasticsearch
   when: elasticsearch_manage_yaml | bool
 
 - name: Show Info about heap

@@ -34,6 +34,7 @@ on:
       - 'molecule/plugins/**'
       - '.config/pep8.yml'
       - 'tests/**'
+  merge_group:
 
 jobs:
   pep8:

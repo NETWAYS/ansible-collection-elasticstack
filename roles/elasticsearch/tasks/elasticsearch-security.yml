@@ -388,6 +388,26 @@
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
 
+- name: Check for cluster status with bootstrap password - no fail
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+    user: elastic
+    password: "{{ elasticsearch_bootstrap_pw }}"
+    validate_certs: false
+  register: elasticsearch_cluster_status_bootstrap
+  changed_when: false
+  failed_when: false
+  no_log: "{{ elasticstack_no_log }}"
+  when:
+    - not elasticsearch_passwords_file.stat.exists | bool
+    - groups['elasticsearch'] | length > 1
+  until: elasticsearch_cluster_status_bootstrap.json.status == "green"
+  retries: 5
+  delay: 10
+
+# We need this check twice. One with failed_when: false to wait for the API to be actually available. And a second time to
+# check the actual return code. Should not cause a huge delay.
+
 - name: Check for cluster status with bootstrap password
   ansible.builtin.uri:
     url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
@@ -414,6 +434,26 @@
   no_log: "{{ elasticstack_no_log }}"
   delegate_to: "{{ elasticstack_ca }}"
   when: elasticsearch_passwords_file.stat.exists | bool
+
+- name: Check for cluster status with elastic password
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+    user: elastic
+    password: "{{ elasticstack_password.stdout }}"
+    validate_certs: false
+  register: elasticsearch_cluster_status
+  changed_when: false
+  failed_when: false
+  no_log: "{{ elasticstack_no_log }}"
+  when:
+    - elasticsearch_passwords_file.stat.exists | bool
+    - groups['elasticsearch'] | length > 1
+  until: elasticsearch_cluster_status.json.status == "green"
+  retries: 20
+  delay: 10
+
+# We need this check twice. One with failed_when: false to wait for the API to be actually available. And a second time to
+# check the actual return code. Should not cause a huge delay.
 
 - name: Check for cluster status with elastic password
   ansible.builtin.uri:

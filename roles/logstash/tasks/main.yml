@@ -230,3 +230,4 @@
     state: started
     enabled: yes
   when: logstash_enable | bool
+  register: logstash_freshstart

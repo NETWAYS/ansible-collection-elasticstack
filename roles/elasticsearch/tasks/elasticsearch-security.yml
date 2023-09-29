@@ -400,7 +400,7 @@
   when:
     - not elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
-  until: elasticsearch_api_status_bootstrap.json is defined
+  until: elasticsearch_api_status_bootstrap.json.cluster_name is defined
   retries: 5
   delay: 10
 
@@ -446,7 +446,7 @@
   when:
     - elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
-  until: elasticsearch_api_status_bootstrap.json is defined
+  until: elasticsearch_api_status.json.cluster_name is defined
   retries: 20
   delay: 10
 

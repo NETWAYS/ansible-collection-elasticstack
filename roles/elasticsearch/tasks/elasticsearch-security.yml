@@ -388,24 +388,23 @@
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
 
-- name: Check for cluster status with bootstrap password - no fail
+- name: Check for API with bootstrap password - no fail
   ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}"
     user: elastic
     password: "{{ elasticsearch_bootstrap_pw }}"
     validate_certs: false
-  register: elasticsearch_cluster_status_bootstrap
+  register: elasticsearch_api_status_bootstrap
   changed_when: false
-  failed_when: false
   no_log: "{{ elasticstack_no_log }}"
   when:
     - not elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
-  until: elasticsearch_cluster_status_bootstrap.json.status == "green"
+  until: elasticsearch_api_status_bootstrap.json is defined
   retries: 5
   delay: 10
 
-# We need this check twice. One with failed_when: false to wait for the API to be actually available. And a second time to
+# We need this check twice. One to wait for the API to be actually available. And a second time to
 # check the actual return code. Should not cause a huge delay.
 
 - name: Check for cluster status with bootstrap password
@@ -435,24 +434,23 @@
   delegate_to: "{{ elasticstack_ca }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
-- name: Check for cluster status with elastic password
+- name: Check for API availability with elastic password
   ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}"
     user: elastic
     password: "{{ elasticstack_password.stdout }}"
     validate_certs: false
-  register: elasticsearch_cluster_status
+  register: elasticsearch_api_status
   changed_when: false
-  failed_when: false
   no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
-  until: elasticsearch_cluster_status.json.status == "green"
+  until: elasticsearch_api_status_bootstrap.json is defined
   retries: 20
   delay: 10
 
-# We need this check twice. One with failed_when: false to wait for the API to be actually available. And a second time to
+# We need this check twice. One to wait for the API to be actually available. And a second time to
 # check the actual return code. Should not cause a huge delay.
 
 - name: Check for cluster status with elastic password

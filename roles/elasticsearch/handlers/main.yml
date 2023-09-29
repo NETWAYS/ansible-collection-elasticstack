@@ -5,7 +5,9 @@
     name: elasticsearch
     state: restarted
     daemon_reload: yes
-  when: elasticsearch_enable | bool
+  when:
+    - elasticsearch_enable | bool
+    - not elasticsearch_freshstart | bool
 
 - name: Restart kibana if available for elasticsearch certificates
   ansible.builtin.include_tasks: handlers/restart_kibana.yml

@@ -48,6 +48,9 @@ elasticsearch_cert_expiration_buffer: 30
 elasticstack_ca_will_expire_soon: false
 elasticsearch_cert_will_expire_soon: false
 
+# only used internally
+elasticsearch_freshstart: false
+
 # "global" variables for all roles
 
 elasticstack_release: 8

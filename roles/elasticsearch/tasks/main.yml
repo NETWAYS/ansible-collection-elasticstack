@@ -200,6 +200,7 @@
     name: elasticsearch
     state: started
     enabled: yes
+  register: elasticsearch_freshstart
 
 - name: Handle cluster setup without security
   when: not elasticsearch_security | bool

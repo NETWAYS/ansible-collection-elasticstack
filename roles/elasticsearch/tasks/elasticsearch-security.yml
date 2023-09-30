@@ -352,7 +352,7 @@
     name: elasticsearch
     state: started
     enabled: yes
-  register: elasticsearch_freshstart
+  register: elasticsearch_freshstart_security
 
 - name: Wait for all instances to start
   ansible.builtin.include_tasks: wait_for_instance.yml
@@ -361,6 +361,7 @@
 - name: Restart if Elasticsearch was already running
   when:
     - not elasticsearch_freshstart.changed | bool
+    - not elasticsearch_freshstart_security.changed | bool
   block:
     - name: Force all notified handlers to run at this point, not waiting for normal sync points
       ansible.builtin.meta: flush_handlers

@@ -51,6 +51,8 @@ elasticsearch_cert_will_expire_soon: false
 # only used internally
 elasticsearch_freshstart:
   changed: false
+elasticsearch_freshstart_security:
+  changed: false
 
 # "global" variables for all roles
 

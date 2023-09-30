@@ -8,6 +8,7 @@
   when:
     - elasticsearch_enable | bool
     - not elasticsearch_freshstart.changed | bool
+    - not elasticsearch_freshstart_security.changed | bool
 
 - name: Restart kibana if available for elasticsearch certificates
   ansible.builtin.include_tasks: handlers/restart_kibana.yml

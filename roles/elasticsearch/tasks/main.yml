@@ -240,6 +240,14 @@
     backup: "{{ elasticsearch_config_backup }}"
   when: elasticsearch_manage_yaml | bool
 
+# Free up some space to let elsticsearch allocate replica in GitHub Action
+- name: Remove cache # noqa: risky-shell-pipe
+  ansible.builtin.shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    rm -rf /var/cache/*
+  changed_when: false
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
+
 - name: Show Info about heap
   ansible.builtin.debug:
     msg: "Using {{ elasticsearch_heap | int * 1024 }} of {{ ansible_memtotal_mb }} MB as heap for Elasticsearch"

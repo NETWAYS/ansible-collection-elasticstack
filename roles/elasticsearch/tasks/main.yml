@@ -256,7 +256,7 @@
         curl
         -k
         -X PUT
-        "https://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/settings"
+        "{{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/settings"
         -H 'Content-Type: application/json' -d
         '
         {

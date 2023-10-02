@@ -389,7 +389,7 @@
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
 
-- name: Check for API with bootstrap password - no fail
+- name: Check for API with bootstrap password
   ansible.builtin.uri:
     url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}"
     user: elastic

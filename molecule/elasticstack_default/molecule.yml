@@ -10,7 +10,6 @@ platforms:
     groups:
       - beats
       - logstash
-      - kibana
       - elasticsearch
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
@@ -22,7 +21,6 @@ platforms:
   - name: "elasticstack${ELASTIC_RELEASE}-cluster2-${MOLECULE_DISTRO}"
     groups:
       - beats
-      - logstash
       - kibana
       - elasticsearch
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-centos7}-ansible:latest"

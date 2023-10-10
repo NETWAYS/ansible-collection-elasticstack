@@ -460,6 +460,7 @@
     validate_certs: false
   register: elasticsearch_cluster_explain
   changed_when: false
+  failed_when: false
   no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_passwords_file.stat.exists | bool

@@ -250,7 +250,7 @@
         rm -rf /var/cache/*
       changed_when: false
 
-    - name: Set watermarks to very high values
+    - name: Set persistent watermarks to very high values in Docker
       ansible.builtin.shell: >
         if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
         curl
@@ -261,6 +261,27 @@
         '
         {
           "persistent": {
+            "cluster.routing.allocation.disk.watermark.low": "95%",
+            "cluster.routing.allocation.disk.watermark.high": "97%",
+            "cluster.routing.allocation.disk.watermark.flood_stage": "99%",
+            "cluster.routing.allocation.disk.watermark.flood_stage.frozen": "99%",
+          }
+        }
+        '
+      changed_when: false
+      no_log: "{{ elasticstack_no_log }}"
+
+    - name: Set transient watermarks to very high values in Docker
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        curl
+        -k
+        -X PUT
+        "{{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:9200/_cluster/settings"
+        -H 'Content-Type: application/json' -d
+        '
+        {
+          "transient": {
             "cluster.routing.allocation.disk.watermark.low": "95%",
             "cluster.routing.allocation.disk.watermark.high": "97%",
             "cluster.routing.allocation.disk.watermark.flood_stage": "99%",

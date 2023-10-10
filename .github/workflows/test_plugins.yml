@@ -35,6 +35,7 @@ on:
       - '.config/pep8.yml'
       - 'tests/**'
   merge_group:
+    branches: [ main ]
 
 jobs:
   pep8:

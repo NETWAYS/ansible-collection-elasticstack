@@ -480,33 +480,9 @@
         }
         '
       changed_when: false
-      register: debugme
       no_log: "{{ elasticstack_no_log }}"
       when:
         - elasticstack_password.stdout is defined
-
-    - name: Show debug information
-      ansible.builtin.debug:
-        var: debugme
-
-### DEBUGGING ###
-- name: Check for cluster explain
-  ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/allocation/explain?pretty"
-    user: elastic
-    password: "{{ elasticstack_password.stdout }}"
-    validate_certs: false
-  register: elasticsearch_cluster_explain
-  changed_when: false
-  failed_when: false
-  no_log: "{{ elasticstack_no_log }}"
-  when:
-    - elasticsearch_passwords_file.stat.exists | bool
-    - groups['elasticsearch'] | length > 1
-
-- name: Output debug information
-  ansible.builtin.debug:
-    var: elasticsearch_cluster_explain
 
 # We need this check twice. One to wait for the API to be actually available. And a second time to
 # check the actual return code. Should not cause a huge delay.

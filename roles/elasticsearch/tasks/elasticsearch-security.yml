@@ -451,6 +451,44 @@
   retries: 20
   delay: 10
 
+- name: Work around low ressources on CI/CD nodes
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
+  block:
+    # Free up some space to let elsticsearch allocate replica in GitHub Action
+    - name: Remove cache # noqa: risky-shell-pipe
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        rm -rf /var/cache/*
+      changed_when: false
+
+    - name: Set persistent watermarks to very high values in Docker # noqa: risky-shell-pipe
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        curl
+        -k
+        -X PUT
+        "{{ elasticsearch_http_protocol }}://elastic:{{ elasticstack_password.stdout }}@localhost:9200/_cluster/settings"
+        -H 'Content-Type: application/json' -d
+        '
+        {
+          "persistent": {
+            "cluster.routing.allocation.disk.watermark.low": "97%",
+            "cluster.routing.allocation.disk.watermark.high": "98%",
+            "cluster.routing.allocation.disk.watermark.flood_stage": "99%",
+            "cluster.routing.allocation.disk.watermark.flood_stage.frozen": "99%"
+          }
+        }
+        '
+      changed_when: false
+      register: debugme
+      no_log: "{{ elasticstack_no_log }}"
+      when:
+        - elasticstack_password.stdout is defined
+
+    - name: Show debug information
+      ansible.builtin.debug:
+        var: debugme
+
 ### DEBUGGING ###
 - name: Check for cluster explain
   ansible.builtin.uri:

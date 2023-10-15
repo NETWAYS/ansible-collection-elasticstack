@@ -36,6 +36,8 @@ This variable activates a workaround to start on systems that have certain harde
 
 * *elasticsearch_jna_workaround*: Activate JNA workaround. (default: `false`)
 * *elasticsearch_ssl_verification_mode*: Defines how to verify the certificates presented by another party in the TLS connection
+* *elasticsearch_http_port*: The port to bind for HTTP client communication
+* *elasticsearch_transport_port*: The port to bind for communication between nodes
 
 These variables are identical over all our elastic related roles, hence the different naming schemes.
 

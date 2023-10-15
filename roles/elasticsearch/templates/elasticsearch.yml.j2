@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 node.name: "{{ ansible_hostname }}"
 path.data: {{ elasticsearch_datapath }}
 path.logs: {{ elasticsearch_logpath }}

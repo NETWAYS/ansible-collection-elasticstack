@@ -30,10 +30,15 @@ node.roles: [ {% for type in elasticsearch_node_types %}{{ type }}{% if not loop
 discovery.type: single-node
 {% endif %}
 
+{# Quickfix to override seed_hosts. Otherwise all nodes, not only master nodes are added to seed_hosts #}
+{% if elasticsearch_seed_hosts is defined %}
+discovery.seed_hosts: {{ elasticsearch_seed_hosts }}
+{% else %}
 {% if elasticstack_release | int < 8 or groups['elasticsearch'] | length > 1 %}
 discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
 "{{ hostvars[host].ansible_default_ipv4.address | default(hostvars[host].ansible_all_ipv4_addresses[0]) }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
+{% endif %}
 {% endif %}
 
 {% if not elaticsearch_cluster_set_up | bool and groups['elasticsearch'] | length > 1 %}

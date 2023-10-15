@@ -56,7 +56,9 @@ bootstrap.system_call_filter: false
 {% endif %}
 {% if elasticstack_variant == "elastic" %}
 xpack.ml.enabled: {{ elasticsearch_ml_enabled }}
+{% if elasticstack_release == 7 %}
 xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}
+{% endif %}
 {% if elasticsearch_security | bool %}
 xpack.security.enabled: true
 xpack.security.transport.ssl.enabled: true

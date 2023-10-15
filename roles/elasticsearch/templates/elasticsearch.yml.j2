@@ -66,6 +66,9 @@ xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}
 {% endif %}
 {% if elasticsearch_security | bool %}
 xpack.security.enabled: true
+{% if elasticsearch_security_enrollment is defined %}
+xpack.security.enrollment.enabled: {{ elasticsearch_security_enrollment }}
+{% endif %}
 xpack.security.transport.ssl.enabled: true
 xpack.security.transport.ssl.verification_mode: {{ elasticsearch_ssl_verification_mode }}
 xpack.security.transport.ssl.keystore.path: certs/{{ ansible_hostname }}.p12

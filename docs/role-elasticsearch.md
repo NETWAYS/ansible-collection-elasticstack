@@ -39,6 +39,7 @@ This variable activates a workaround to start on systems that have certain harde
 * *elasticsearch_http_port*: The port to bind for HTTP client communication
 * *elasticsearch_transport_port*: The port to bind for communication between nodes
 * *elasticsearch_seed_hosts*: Set elasticsearch seed hosts
+* *elasticsearch_security_enrollment*: Controls enrollment (of nodes and Kibana) to a local node that’s been autoconfigured for security.
 
 These variables are identical over all our elastic related roles, hence the different naming schemes.
 

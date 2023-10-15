@@ -35,6 +35,7 @@ Role Variables
 This variable activates a workaround to start on systems that have certain hardening measures active. See [Stackoverflow](https://stackoverflow.com/questions/47824643/unable-to-load-jna-native-support-library-elasticsearch-6-x/50371992#50371992) for details and logmessages to look for. **WARNING**: This will change your `/etc/sysconfig/elasticseach`or `/etc/default/elasticsearch` file and overwrite `ES_JAVA_OPTS`. See this [issue](https://github.com/netways/ansible-role-elasticsearch/issues/79) for details.
 
 * *elasticsearch_jna_workaround*: Activate JNA workaround. (default: `false`)
+* *elasticsearch_ssl_verification_mode*: Defines how to verify the certificates presented by another party in the TLS connection
 
 These variables are identical over all our elastic related roles, hence the different naming schemes.
 

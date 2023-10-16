@@ -82,6 +82,7 @@
     state: started
     enabled: yes
   when: kibana_enable | bool
+  register: kibana_freshstart
 
 # the following is useful when running tests or extra tasks that need to
 # have Kibana running. Escape it on Rocky8, because it gets time out with Elastic 8
@@ -90,3 +91,10 @@
   ansible.builtin.wait_for:
     host: localhost
     port: 5601
+
+# Free up some space to let elsticsearch allocate replica in GitHub Action
+- name: Remove cache
+  ansible.builtin.command: >
+    rm -rf /var/cache/*
+  changed_when: false
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"

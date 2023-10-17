@@ -4,7 +4,9 @@
   ansible.builtin.service:
     name: logstash
     state: restarted
-  when: logstash_enable | bool
+  when:
+    - logstash_enable | bool
+    - not logstash_freshstart.changed | bool
 
 - name: Restart Logstash noauto
   ansible.builtin.service:

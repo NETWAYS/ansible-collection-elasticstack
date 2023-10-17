@@ -49,6 +49,12 @@ elasticstack_ca_will_expire_soon: false
 elasticsearch_cert_will_expire_soon: false
 elasticsearch_ssl_verification_mode: none
 
+# only used internally
+elasticsearch_freshstart:
+  changed: false
+elasticsearch_freshstart_security:
+  changed: false
+
 # "global" variables for all roles
 
 elasticstack_release: 8

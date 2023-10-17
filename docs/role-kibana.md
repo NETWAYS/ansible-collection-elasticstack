@@ -13,6 +13,7 @@ Role Variables
 * *kibana_tls*: Whether to offer `https` for clients or not (default: `false`)
 * *kibana_tls_cert*: Path to the certificate Kibana should show to its clients (default: `/etc/kibana/certs/cert.pem`)
 * *kibana_tls_key*: Path to the key Kibana should use when communicating with clients (default: `/etc/kibana/certs/key.pem`)
+* *kibana_extra_config*: You can add arbitraty configuration options with this option. Just start it with `|-` and indent the following lines. So you can add as many lines and options to `kibana.yml` as you like. (default: none)
 
 * *kibana_security*: Activate TLS and authentication when connecting to Elasticsearch. **Note**: Only works when `elasticstack_full_stack` is enabled. (default: `true`)
 

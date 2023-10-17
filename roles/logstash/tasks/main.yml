@@ -237,3 +237,11 @@
     state: started
     enabled: yes
   when: logstash_enable | bool
+  register: logstash_freshstart
+
+# Free up some space to let elsticsearch allocate replica in GitHub Action
+- name: Remove cache
+  ansible.builtin.command: >
+    rm -rf /var/cache/*
+  changed_when: false
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"

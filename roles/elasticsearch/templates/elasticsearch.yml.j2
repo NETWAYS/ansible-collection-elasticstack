@@ -9,8 +9,8 @@ network.host: [ {{ elasticsearch_network_host }} ]
 {% else %}
 network.host: [ "_local_", "_site_" ]
 {% endif %}
-{% if elasticsearch_http_port is defined %}
-http.port: "{{ elasticsearch_http_port }}"
+{% if elasticstack_elasticsearch_http_port is defined %}
+http.port: "{{ elasticstack_elasticsearch_http_port }}"
 {% endif %}
 {% if elasticsearch_transport_port is defined %}
 transport.port: "{{ elasticsearch_transport_port }}"

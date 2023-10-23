@@ -47,7 +47,7 @@ elasticstack_ca_expiration_buffer: 30
 elasticsearch_cert_expiration_buffer: 30
 elasticstack_ca_will_expire_soon: false
 elasticsearch_cert_will_expire_soon: false
-elasticsearch_ssl_verification_mode: none
+elasticsearch_ssl_verification_mode: full
 
 # only used internally
 elasticsearch_freshstart:

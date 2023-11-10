@@ -1,11 +1,11 @@
 ---
 
-- name: Check if Logstash pipeline already exists
+- name: Check if Logstash pipeline {{ pipelinename.name }} already exists
   ansible.builtin.stat:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
   register: "logstash_pipeline_stat"
 
-- name: Check who managed pipeline in last run # noqa: risky-shell-pipe
+- name: Check who managed pipeline {{ pipelinename.name }} in last run # noqa: risky-shell-pipe
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep -e '^# source:{{ pipelinename.name }}' /etc/logstash/pipelines.yml |
@@ -16,7 +16,7 @@
     - logstash_pipeline_stat.stat.exists | bool
     - logstash_pipeline_stat.stat.isdir | bool
 
-- name: Delete directory if changing manager
+- name: Delete directory if changing manager of pipeline {{ pipelinename.name }}
   ansible.builtin.file:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
     state: absent
@@ -25,7 +25,7 @@
     - logstash_pipeline_manager.stdout == "local"
     - pipelinename.source is defined
 
-- name: Create Logstash pipeline directories
+- name: Create Logstash pipeline {{ pipelinename.name }} directory
   ansible.builtin.file:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
     state: directory
@@ -33,7 +33,7 @@
     group: root
     mode: 0755
 
-- name: Check out pipeline configuration
+- name: Check out pipeline configuration for {{ pipelinename.name }}
   ansible.builtin.git:
     repo: "{{ pipelinename.source }}"
     dest: "/etc/logstash/conf.d/{{ pipelinename.name }}"
@@ -42,7 +42,7 @@
   notify:
     - Restart Logstash noauto
 
-- name: Create simple input
+- name: Create simple input for {{ pipelinename.name }}
   ansible.builtin.template:
     src: simple-input.conf.j2
     dest: "/etc/logstash/conf.d/{{ pipelinename.name }}\
@@ -54,7 +54,7 @@
   notify:
     - Restart Logstash noauto
 
-- name: Create simple output
+- name: Create simple output for {{ pipelinename.name }}
   ansible.builtin.template:
     src: simple-output.conf.j2
     dest: "/etc/logstash/conf.d/{{ pipelinename.name }}\

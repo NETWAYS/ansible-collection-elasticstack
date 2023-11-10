@@ -1,11 +1,11 @@
 ---
 
-- name: Check if Logstash pipeline {{ pipelinename.name }} already exists
+- name: Check if Logstash pipeline already exists {{ pipelinename.name }}
   ansible.builtin.stat:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
   register: "logstash_pipeline_stat"
 
-- name: Check who managed pipeline {{ pipelinename.name }} in last run # noqa: risky-shell-pipe
+- name: Check who managed pipeline in last run {{ pipelinename.name }} # noqa: risky-shell-pipe
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
     grep -e '^# source:{{ pipelinename.name }}' /etc/logstash/pipelines.yml |
@@ -25,7 +25,7 @@
     - logstash_pipeline_manager.stdout == "local"
     - pipelinename.source is defined
 
-- name: Create Logstash pipeline {{ pipelinename.name }} directory
+- name: Create Logstash pipeline directory {{ pipelinename.name }}
   ansible.builtin.file:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"
     state: directory

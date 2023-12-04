@@ -18,6 +18,9 @@ kibana_cert_will_expire_soon: false
 kibana_sniff_on_start: false
 kibana_sniff_on_connection_fault: false
 
+kibana_freshstart:
+  changed: false
+
 # "global" variables for all roles
 elasticstack_release: 8
 elasticstack_full_stack: true

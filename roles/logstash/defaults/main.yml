@@ -73,6 +73,11 @@ logstash_pipeline_identifier: true
 logstash_pipeline_identifier_field_name: "[netways][pipeline]"
 logstash_pipeline_identifier_defaults: false
 
+# Only for internal use
+
+logstash_freshstart:
+  changed: false
+
 elasticstack_ca_dir: /opt/es-ca
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elasticstack_ca_pass: PleaseChangeMe

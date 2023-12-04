@@ -59,42 +59,46 @@
         msg: "Elasticsearch received {{ logstash_count.stdout }} events so far"
       when: "'elasticsearch' in group_names"
 
-    - name: fetch kibana.yml
-      ansible.builtin.command: cat /etc/kibana/kibana.yml
-      register: kibanayml
+    - name: Run Kibana checks
+      when: "'kibana' in group_names"
+      block:
 
-    - name: Show kibana.yml
-      ansible.builtin.debug:
-        var: kibanayml.stdout_lines
+        - name: Fetch kibana.yml
+          ansible.builtin.command: cat /etc/kibana/kibana.yml
+          register: kibanayml
 
-    - name: Check for Kibana port
-      ansible.builtin.wait_for:
-        port: 5601
-        timeout: 120
+        - name: Show kibana.yml
+          ansible.builtin.debug:
+            var: kibanayml.stdout_lines
 
-    - name: Connect to Kibana
-      ansible.builtin.command:
-        curl
-        -s
-        -u elastic:{{ elastic_pass.stdout }}
-        http://{{ ansible_hostname }}:5601/api/status
-      register: curl_out
-      failed_when:
-        - "'green' not in curl_out.stdout"
-        - "'Elasticsearch is available' not in curl_out.stdout"
+        - name: Check for Kibana port
+          ansible.builtin.wait_for:
+            port: 5601
+            timeout: 120
 
-      # The following might be nicer but doesn't work
-      #- name: Connect to Kibana
-      #  ansible.builtin.uri:
-      #    url: http://ansible-role-kibana_full_stack:5601/api/status
-      #    user: elastic
-      #    password: "{{ elastic_password.stdout }}"
-      #    return_content: yes
-      #  register: kibana_status
-      #  #failed_when: "'"title": "Green"' not in kibana_status.content"
-      #  failed_when: "'Green' not in kibana_status.content"
+        - name: Connect to Kibana
+          ansible.builtin.command:
+            curl
+            -s
+            -u elastic:{{ elastic_pass.stdout }}
+            http://{{ ansible_hostname }}:5601/api/status
+          register: curl_out
+          failed_when:
+            - "'green' not in curl_out.stdout"
+            - "'Elasticsearch is available' not in curl_out.stdout"
 
-    - name: Health check
+          # The following might be nicer but doesn't work
+          #- name: Connect to Kibana
+          #  ansible.builtin.uri:
+          #    url: http://ansible-role-kibana_full_stack:5601/api/status
+          #    user: elastic
+          #    password: "{{ elastic_password.stdout }}"
+          #    return_content: yes
+          #  register: kibana_status
+          #  #failed_when: "'"title": "Green"' not in kibana_status.content"
+          #  failed_when: "'Green' not in kibana_status.content"
+
+    - name: Elasticsearch health check
       ansible.builtin.uri:
         url: https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health
         method: GET
@@ -110,7 +114,7 @@
       delay: 10
       when: groups['elasticsearch'] | length > 1
 
-    - name: Node check
+    - name: Elasticsearch Node check
       ansible.builtin.uri:
         url: https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes
         method: GET

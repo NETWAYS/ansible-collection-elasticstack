@@ -17,7 +17,7 @@ filebeat.inputs:
 {% endif %}
 {% if beats_filebeat_log_inputs[input].fields is defined %}
 {% for field in beats_filebeat_log_inputs[input].fields %}
-    {{ field }}: beats_fields['field']
+    {{ field }}: {{ beats_fields['field'] }}
 {% endfor %}
 {% endif %}
 {% endif %}

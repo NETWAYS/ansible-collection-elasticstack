@@ -135,3 +135,11 @@
         success_msg: "'{{ item }}' was found in nodes.content"
       with_inventory_hostnames: all
       when: groups['elasticsearch'] | length > 1
+
+    - name: Fetch filebeat.yml
+      ansible.builtin.command: cat /etc/filebeat/filebeat.yml
+      register: filebeatyml
+
+    - name: Show filebeat.yml
+      ansible.builtin.debug:
+        var: filebeatyml.stdout_lines

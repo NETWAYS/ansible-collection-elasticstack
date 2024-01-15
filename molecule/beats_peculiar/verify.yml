@@ -26,3 +26,7 @@
       when:
         - beats_filebeat_version.stdout.find('8.4.1') == -1
         - elasticstack_release == 8
+
+    - name: Check for fields being set
+      ansible.builtin.command: >
+        pcregrep -M 'fields:(\n).*testfield: thisisatest' /etc/filebeeat/filebeat.yml

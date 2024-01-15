@@ -29,4 +29,4 @@
 
     - name: Check for fields being set
       ansible.builtin.command: >
-        pcregrep -M 'fields:(\n).*testfield: thisisatest' /etc/filebeeat/filebeat.yml
+        pcregrep -M 'fields:(\n).*testfield: thisisatest' /etc/filebeat/filebeat.yml

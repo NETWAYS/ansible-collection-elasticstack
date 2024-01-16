@@ -1,4 +1,12 @@
 ---
+
+- name: Update apt cache.
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 600
+  changed_when: false
+  when: ansible_os_family == 'Debian'
+
 - name: Check-set-parameters
   ansible.builtin.include_tasks: elasticsearch-parameters.yml
 
@@ -175,16 +183,14 @@
 - name: Force systemd to reread configs on container
   ansible.builtin.systemd:
     daemon_reload: true
-  when: ansible_virtualization_type == "container"
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
 
 # Free up some space to let elsticsearch allocate replica in GitHub Action
-- name: Remove cache # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+- name: Remove cache
+  ansible.builtin.command: >
     rm -rf /var/cache/*
-  failed_when: false
   changed_when: false
-  when: ansible_virtualization_type == "container"
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
 
 - name: Import Tasks elasticsearch-security.yml
   ansible.builtin.import_tasks: elasticsearch-security.yml
@@ -201,24 +207,20 @@
     name: elasticsearch
     state: started
     enabled: yes
+  register: elasticsearch_freshstart
 
 - name: Handle cluster setup without security
   when: not elasticsearch_security | bool
   block:
-    - name: Check for cluster status without security # noqa: risky-shell-pipe
-      ansible.builtin.shell: >
-        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-        curl -s
-        http://localhost:{{ elastic_elasticsearch_http_port }}/_cluster/health?pretty |
-        grep status |
-        cut -d\" -f4
-      register: es_cluster_status
-      changed_when: false
-      no_log: "{{ elasticstack_no_log }}"
+    - name: Check for cluster status without security
+      ansible.builtin.uri:
+        url: "http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+      register: elasticsearch_cluster_status
       ignore_errors: "{{ ansible_check_mode }}"
-      until: es_cluster_status.stdout == "green"
+      until: elasticsearch_cluster_status.json.status == "green"
       retries: 5
       delay: 10
+      no_log: "{{ elasticstack_no_log }}"
 
     - name: Leave a file showing that the cluster is set up
       ansible.builtin.template:
@@ -243,8 +245,6 @@
     group: root
     mode: 0644
     backup: "{{ elasticsearch_config_backup }}"
-  notify:
-    - Restart Elasticsearch
   when: elasticsearch_manage_yaml | bool
 
 - name: Show Info about heap

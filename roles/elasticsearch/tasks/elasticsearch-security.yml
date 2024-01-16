@@ -1,5 +1,17 @@
 ---
 
+- name: Install packages for security tasks
+  ansible.builtin.package:
+    name:
+      - unzip
+      - python3-cryptography
+      - openssl
+  tags:
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
+    - renew_es_cert
+
 - name: Set elasticstack_ca variable if not already done by user
   ansible.builtin.set_fact:
     elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
@@ -222,188 +234,8 @@
     - renew_ca
     - renew_es_cert
 
-- name: Create keystore
-  ansible.builtin.command: /usr/share/elasticsearch/bin/elasticsearch-keystore create
-  args:
-    creates: /etc/elasticsearch/elasticsearch.keystore
-
-- name: Check for bootstrap password
-  ansible.builtin.command: /usr/share/elasticsearch/bin/elasticsearch-keystore list
-  changed_when: false
-  register: elasticsearch_keystore
-
-- name: Set bootstrap password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    echo "{{ elasticsearch_bootstrap_pw }}" |
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    add -x 'bootstrap.password'
-  when: "'bootstrap.password' not in elasticsearch_keystore.stdout_lines"
-  changed_when: true
-  no_log: "{{ elasticstack_no_log }}"
-  notify:
-    - Restart Elasticsearch
-  ignore_errors: "{{ ansible_check_mode }}"
-
-- name: Get xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    show 'xpack.security.http.ssl.keystore.secure_password'
-  when:
-    - "'xpack.security.http.ssl.keystore.secure_password' in elasticsearch_keystore.stdout_lines"
-    - elasticsearch_http_security
-  register: elasticsearch_http_ssl_keystore_secure_password
-  ignore_errors: "{{ ansible_check_mode }}"
-  no_log: "{{ elasticstack_no_log }}"
-  changed_when: false
-
-- name: Set xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    echo "{{ elasticsearch_tls_key_passphrase }}" |
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    add -f -x 'xpack.security.http.ssl.keystore.secure_password'
-  changed_when: true
-  no_log: "{{ elasticstack_no_log }}"
-  when:
-    - elasticsearch_http_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != elasticsearch_http_ssl_keystore_secure_password.stdout
-    - elasticsearch_http_security
-  notify:
-    - Restart Elasticsearch
-
-- name: Remove xpack.security.http.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    remove 'xpack.security.http.ssl.keystore.secure_password'
-  changed_when: true
-  no_log: "{{ elasticstack_no_log }}"
-  when:
-    - "'xpack.security.http.ssl.keystore.secure_password' in elasticsearch_keystore.stdout_lines"
-    - not elasticsearch_http_security
-  notify:
-    - Restart Elasticsearch
-
-- name: Get xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    show 'xpack.security.http.ssl.truststore.secure_password'
-  when:
-    - "'xpack.security.http.ssl.truststore.secure_password' in elasticsearch_keystore.stdout_lines"
-    - elasticsearch_http_security
-  register: elasticsearch_http_ssl_truststore_secure_password
-  ignore_errors: "{{ ansible_check_mode }}"
-  no_log: "{{ elasticstack_no_log }}"
-  changed_when: false
-
-- name: Set xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    echo "{{ elasticsearch_tls_key_passphrase }}" |
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    add -f -x 'xpack.security.http.ssl.truststore.secure_password'
-  changed_when: true
-  no_log: "{{ elasticstack_no_log }}"
-  when:
-    - elasticsearch_http_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != elasticsearch_http_ssl_truststore_secure_password.stdout
-    - elasticsearch_http_security
-  notify:
-    - Restart Elasticsearch
-
-- name: Remove xpack.security.http.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    remove 'xpack.security.http.ssl.truststore.secure_password'
-  changed_when: true
-  no_log: "{{ elasticstack_no_log }}"
-  when:
-    - "'xpack.security.http.ssl.truststore.secure_password' in elasticsearch_keystore.stdout_lines"
-    - not elasticsearch_http_security
-  notify:
-    - Restart Elasticsearch
-
-- name: Get xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    show 'xpack.security.transport.ssl.keystore.secure_password'
-  when:
-    - "'xpack.security.transport.ssl.keystore.secure_password' in elasticsearch_keystore.stdout_lines"
-    - elasticsearch_security
-  register: elasticsearch_transport_ssl_keystore_secure_password
-  ignore_errors: "{{ ansible_check_mode }}"
-  no_log: "{{ elasticstack_no_log }}"
-  changed_when: false
-
-- name: Set xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    echo "{{ elasticsearch_tls_key_passphrase }}" |
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    add -f -x 'xpack.security.transport.ssl.keystore.secure_password'
-  changed_when: true
-  no_log: "{{ elasticstack_no_log }}"
-  when:
-    - elasticsearch_transport_ssl_keystore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != elasticsearch_transport_ssl_keystore_secure_password.stdout
-    - elasticsearch_security
-  notify:
-    - Restart Elasticsearch
-
-- name: Remove xpack.security.transport.ssl.keystore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    remove 'xpack.security.transport.ssl.keystore.secure_password'
-  changed_when: true
-  no_log: "{{ elasticstack_no_log }}"
-  when:
-    - "'xpack.security.transport.ssl.keystore.secure_password' in elasticsearch_keystore.stdout_lines"
-    - not elasticsearch_security
-  notify:
-    - Restart Elasticsearch
-
-- name: Get xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    show 'xpack.security.transport.ssl.truststore.secure_password'
-  when:
-    - "'xpack.security.transport.ssl.truststore.secure_password' in elasticsearch_keystore.stdout_lines"
-    - elasticsearch_security
-  register: elasticsearch_transport_ssl_truststore_secure_password
-  ignore_errors: "{{ ansible_check_mode }}"
-  no_log: "{{ elasticstack_no_log }}"
-  changed_when: false
-
-- name: Set xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    echo "{{ elasticsearch_tls_key_passphrase }}" |
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    add -f -x 'xpack.security.transport.ssl.truststore.secure_password'
-  changed_when: true
-  no_log: "{{ elasticstack_no_log }}"
-  when:
-    - elasticsearch_transport_ssl_truststore_secure_password.stdout is undefined or elasticsearch_tls_key_passphrase != elasticsearch_transport_ssl_truststore_secure_password.stdout
-    - elasticsearch_security
-  notify:
-    - Restart Elasticsearch
-
-- name: Remove xpack.security.transport.ssl.truststore.secure_password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    /usr/share/elasticsearch/bin/elasticsearch-keystore
-    remove 'xpack.security.transport.ssl.truststore.secure_password'
-  changed_when: true
-  no_log: "{{ elasticstack_no_log }}"
-  when:
-    - "'xpack.security.transport.ssl.truststore.secure_password' in elasticsearch_keystore.stdout_lines"
-    - not elasticsearch_security
-  notify:
-    - Restart Elasticsearch
+- name: Import Tasks elasticsearch-keystore.yml
+  ansible.builtin.import_tasks: elasticsearch-keystore.yml
 
 - name: Create ca and certificates on elasticstack_ca host
   when: inventory_hostname == elasticstack_ca
@@ -520,25 +352,31 @@
     name: elasticsearch
     state: started
     enabled: yes
+  register: elasticsearch_freshstart_security
 
 - name: Wait for all instances to start
   ansible.builtin.include_tasks: wait_for_instance.yml
   loop: "{{ groups['elasticsearch'] }}"
 
-- name: Force all notified handlers to run at this point, not waiting for normal sync points
-  ansible.builtin.meta: flush_handlers
-  tags:
-    - certificates
-    - renew_ca
-    - renew_es_cert
+- name: Restart if Elasticsearch was already running
+  when:
+    - not elasticsearch_freshstart.changed | bool
+    - not elasticsearch_freshstart_security.changed | bool
+  block:
+    - name: Force all notified handlers to run at this point, not waiting for normal sync points
+      ansible.builtin.meta: flush_handlers
+      tags:
+        - certificates
+        - renew_ca
+        - renew_es_cert
 
-- name: Wait for all instances to start
-  ansible.builtin.include_tasks: wait_for_instance.yml
-  loop: "{{ groups['elasticsearch'] }}"
-  tags:
-    - certificates
-    - renew_ca
-    - renew_es_cert
+    - name: Wait for all instances to start
+      ansible.builtin.include_tasks: wait_for_instance.yml
+      loop: "{{ groups['elasticsearch'] }}"
+      tags:
+        - certificates
+        - renew_ca
+        - renew_es_cert
 
 - name: Check for passwords being set
   ansible.builtin.stat:
@@ -551,20 +389,38 @@
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
 
-- name: Check for cluster status with bootstrap password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    curl -ks
-    {{ elasticsearch_http_protocol }}://elastic:{{ elasticsearch_bootstrap_pw }}@localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty |
-    grep status |
-    cut -d\" -f4
+- name: Check for API with bootstrap password
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}"
+    user: elastic
+    password: "{{ elasticsearch_bootstrap_pw }}"
+    validate_certs: false
+  register: elasticsearch_api_status_bootstrap
+  changed_when: false
+  no_log: "{{ elasticstack_no_log }}"
+  when:
+    - not elasticsearch_passwords_file.stat.exists | bool
+    - groups['elasticsearch'] | length > 1
+  until: elasticsearch_api_status_bootstrap.json.cluster_name is defined
+  retries: 5
+  delay: 10
+
+# We need this check twice. One to wait for the API to be actually available. And a second time to
+# check the actual return code. Should not cause a huge delay.
+
+- name: Check for cluster status with bootstrap password
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+    user: elastic
+    password: "{{ elasticsearch_bootstrap_pw }}"
+    validate_certs: false
   register: elasticsearch_cluster_status_bootstrap
   changed_when: false
   no_log: "{{ elasticstack_no_log }}"
   when:
     - not elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
-  until: elasticsearch_cluster_status_bootstrap.stdout == "green"
+  until: elasticsearch_cluster_status_bootstrap.json.status == "green"
   retries: 5
   delay: 10
 
@@ -579,20 +435,70 @@
   delegate_to: "{{ elasticstack_ca }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
-- name: Check for cluster status with elastic password # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    curl -ks
-    {{ elasticsearch_http_protocol }}://elastic:{{ elasticstack_password.stdout }}@localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty |
-    grep status |
-    cut -d\" -f4
+- name: Check for API availability with elastic password
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}"
+    user: elastic
+    password: "{{ elasticstack_password.stdout }}"
+    validate_certs: false
+  register: elasticsearch_api_status
+  changed_when: false
+  no_log: "{{ elasticstack_no_log }}"
+  when:
+    - elasticsearch_passwords_file.stat.exists | bool
+    - groups['elasticsearch'] | length > 1
+  until: elasticsearch_api_status.json.cluster_name is defined
+  retries: 20
+  delay: 10
+
+- name: Work around low ressources on CI/CD nodes
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
+  block:
+    # Free up some space to let elsticsearch allocate replica in GitHub Action
+    - name: Remove cache
+      ansible.builtin.command: >
+        rm -rf /var/cache/*
+      changed_when: false
+
+    - name: Set persistent watermarks to very high values in Docker # noqa: risky-shell-pipe
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        curl
+        -k
+        -X PUT
+        "{{ elasticsearch_http_protocol }}://elastic:{{ elasticstack_password.stdout }}@localhost:9200/_cluster/settings"
+        -H 'Content-Type: application/json' -d
+        '
+        {
+          "persistent": {
+            "cluster.routing.allocation.disk.watermark.low": "97%",
+            "cluster.routing.allocation.disk.watermark.high": "98%",
+            "cluster.routing.allocation.disk.watermark.flood_stage": "99%",
+            "cluster.routing.allocation.disk.watermark.flood_stage.frozen": "99%"
+          }
+        }
+        '
+      changed_when: false
+      no_log: "{{ elasticstack_no_log }}"
+      when:
+        - elasticstack_password.stdout is defined
+
+# We need this check twice. One to wait for the API to be actually available. And a second time to
+# check the actual return code. Should not cause a huge delay.
+
+- name: Check for cluster status with elastic password
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+    user: elastic
+    password: "{{ elasticstack_password.stdout }}"
+    validate_certs: false
   register: elasticsearch_cluster_status
   changed_when: false
   no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_passwords_file.stat.exists | bool
     - groups['elasticsearch'] | length > 1
-  until: elasticsearch_cluster_status.stdout == "green"
+  until: elasticsearch_cluster_status.json.status == "green"
   retries: 20
   delay: 10
 

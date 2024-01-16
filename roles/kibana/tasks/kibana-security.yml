@@ -1,8 +1,11 @@
 ---
 
-- name: Make sure openssl is installed
+- name: Install packages for security tasks
   ansible.builtin.package:
-    name: openssl
+    name:
+      - unzip
+      - python3-cryptography
+      - openssl
   tags:
     - certificates
     - renew_ca

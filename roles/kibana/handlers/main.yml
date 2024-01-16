@@ -4,3 +4,5 @@
   ansible.builtin.service:
     name: kibana
     state: restarted
+  when:
+    - not kibana_freshstart.changed | bool

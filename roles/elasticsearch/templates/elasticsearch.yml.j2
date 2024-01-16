@@ -62,6 +62,9 @@ xpack.security.http.ssl.keystore.path: certs/{{ ansible_hostname }}.p12
 xpack.security.http.ssl.truststore.path: certs/{{ ansible_hostname }}.p12
 {% endif %}
 {% endif %}
+{% if not elasticsearch_security | bool %}
+xpack.security.enabled: false
+{% endif %}
 {% endif %}
 
 {% if elasticsearch_fs_repo is defined %}
@@ -71,4 +74,8 @@ path:
     - {{ path }}
 
 {% endfor %}
+{% endif %}
+
+{% if elasticsearch_extra_config is defined %}
+{{ elasticsearch_extra_config | to_nice_yaml(indent=2, sort_keys=False) }}
 {% endif %}

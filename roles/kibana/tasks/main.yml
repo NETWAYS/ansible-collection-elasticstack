@@ -4,6 +4,13 @@
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
 
+- name: Update apt cache.
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 600
+  changed_when: false
+  when: ansible_os_family == 'Debian'
+
 - name: Include OS specific vars
   ansible.builtin.include_vars: '{{ item }}'
   with_first_found:
@@ -86,6 +93,7 @@
     state: started
     enabled: yes
   when: kibana_enable | bool
+  register: kibana_freshstart
 
 # the following is useful when running tests or extra tasks that need to
 # have Kibana running. Escape it on Rocky8, because it gets time out with Elastic 8
@@ -94,4 +102,10 @@
   ansible.builtin.wait_for:
     host: localhost
     port: 5601
-  tags: notest
+
+# Free up some space to let elsticsearch allocate replica in GitHub Action
+- name: Remove cache
+  ansible.builtin.command: >
+    rm -rf /var/cache/*
+  changed_when: false
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"

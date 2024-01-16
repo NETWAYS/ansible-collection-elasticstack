@@ -1,8 +1,11 @@
 ---
 
-- name: Make sure openssl is installed
+- name: Install packages for security tasks
   ansible.builtin.package:
-    name: openssl
+    name:
+      - unzip
+      - python3-cryptography
+      - openssl
   tags:
     - certificates
     - renew_ca
@@ -188,7 +191,7 @@
     --pass {{ kibana_tls_key_passphrase }}
     --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12
   delegate_to: "{{ elasticstack_ca }}"
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   args:
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
   tags:
@@ -228,7 +231,7 @@
     awk {' print $4 '}
   register: kibana_password
   changed_when: false
-  no_log: true
+  no_log: "{{ elasticstack_no_log }}"
   delegate_to: "{{ elasticstack_ca }}"
 
 - name: Fetch ca certificate from ca host to master

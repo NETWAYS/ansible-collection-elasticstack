@@ -46,8 +46,12 @@ logstash_sniffing: false
 
 # logstash security
 logstash_password_hash: true
+logstash_password_hash_algorithm: bcrypt
+logstash_password_salt_length: 22
 logstash_user: logstash_writer
 logstash_password: password
+logstash_password_hash_salt_length: 22
+logstash_password_hash_salt_seed: SeedChangeMe
 logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'
 logstash_reset_writer_role: true
 
@@ -68,3 +72,8 @@ logstash_ident_field_name: "[netways][instance]"
 logstash_pipeline_identifier: true
 logstash_pipeline_identifier_field_name: "[netways][pipeline]"
 logstash_pipeline_identifier_defaults: false
+
+# Only for internal use
+
+logstash_freshstart:
+  changed: false

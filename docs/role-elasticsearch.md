@@ -9,11 +9,6 @@ If you use the role to set up security you, can use its CA to create certificate
 
 Please note that setting `elasticsearch_bootstrap_pw` as variable will only take effect when initialising Elasticsearch. Changes after starting elasticsearch for the first time will not change the bootstrap password for the instance and will lead to breaking tests.
 
-Requirements
-------------
-
-* `cryptography` >= 2.5
-
 Role Variables
 --------------
 
@@ -36,6 +31,19 @@ Role Variables
 * *elasticsearch_pamlimits*: Set pam_limits neccessary for Elasticsearch. (Default: `true`)
 * *elasticsearch_check_calculation*: End play in checks (Default: `false`)
 * *elasticsearch_network_host*: You can configure multipe network addresses where the networking is bind to. You can assign IP addresses or interfaces by their names. You can also use elasticsearch internal variabels as it set as default. Example: `"_ens190_,_local_"` (Default: `"_local_,"_site_"`) (Optional; if not defined `default` is used)
+
+* *elasticsearch_extra_config*: You can set additional configuration in YAML-notation as you would write in the `elasaticsearch.yml`. Example:
+
+```YAML
+...
+elasticsearch_extra_config:
+  xpack.security.authc.token.enabled: true
+
+    xpack.security.authc.realms:
+        native.native1:
+            order: 0
+            enabled: true
+```
 
 This variable activates a workaround to start on systems that have certain hardening measures active. See [Stackoverflow](https://stackoverflow.com/questions/47824643/unable-to-load-jna-native-support-library-elasticsearch-6-x/50371992#50371992) for details and logmessages to look for. **WARNING**: This will change your `/etc/sysconfig/elasticseach`or `/etc/default/elasticsearch` file and overwrite `ES_JAVA_OPTS`. See this [issue](https://github.com/netways/ansible-role-elasticsearch/issues/79) for details.
 

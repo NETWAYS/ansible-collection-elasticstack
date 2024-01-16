@@ -12,32 +12,25 @@
   vars:
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
+    elasticsearch_monitoring_enabled: false
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticsearch_heap: "2"
     elasticstack_full_stack: true
+    elasticstack_no_log: false
     logstash_pipeline_unsafe_shutdown: true
-    logstash_password_hash: false
     beats_filebeat_syslog_udp: true
     beats_filebeat_syslog_tcp: true
     beats_filebeat_modules:
       - system
     beats_fields:
       - "testbed: molecule"
+    kibana_extra_config: |-
+      ops.interval: 5000
   tasks:
     - name: Enable Elastic installation on RHEL 9
       ansible.builtin.set_fact:
         elasticstack_rpm_workaround: true
       when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= "9"
-    - name: Update apt cache.
-      ansible.builtin.apt:
-        update_cache: yes
-        cache_valid_time: 600
-      changed_when: false
-      when: ansible_os_family == 'Debian'
-    - name: Install dependencies
-      ansible.builtin.package:
-        name:
-          - curl
     - name: Include Redis
       ansible.builtin.include_role:
         name: geerlingguy.redis
@@ -50,12 +43,20 @@
     - name: Include logstash
       ansible.builtin.include_role:
         name: logstash
+    - name: Include kibana
+      ansible.builtin.include_role:
+        name: kibana
     - name: Include Beats
       ansible.builtin.include_role:
         name: beats
     - name: Install rsyslog
       ansible.builtin.package:
         name: rsyslog
+    - name: Remove cache # noqa: risky-shell-pipe
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        rm -rf /var/cache/*
+      changed_when: false
     - name: Configure rsyslog
       ansible.builtin.lineinfile:
         line: "*.* @@localhost:514"
@@ -64,9 +65,3 @@
       ansible.builtin.service:
         name: rsyslog
         state: started
-    - name: Include kibana
-      ansible.builtin.include_role:
-        name: kibana
-    - name: Include Beats
-      ansible.builtin.include_role:
-        name: beats

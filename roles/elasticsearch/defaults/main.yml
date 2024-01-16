@@ -39,3 +39,10 @@ elasticsearch_tls_key_passphrase: PleaseChangeMeIndividually
 elasticsearch_cert_validity_period: 1095
 elasticsearch_cert_expiration_buffer: 30
 elasticsearch_cert_will_expire_soon: false
+
+# only used internally
+elasticsearch_freshstart:
+  changed: false
+elasticsearch_freshstart_security:
+  changed: false
+

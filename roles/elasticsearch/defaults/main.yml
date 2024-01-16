@@ -45,4 +45,3 @@ elasticsearch_freshstart:
   changed: false
 elasticsearch_freshstart_security:
   changed: false
-

@@ -60,5 +60,3 @@ beats_metricbeat_loadbalance: true
 beats_cert_validity_period: 1095
 beats_cert_expiration_buffer: "+30d"
 beats_cert_will_expire_soon: false
-
-

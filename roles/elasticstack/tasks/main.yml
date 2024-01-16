@@ -12,3 +12,7 @@
   when:
     - elasticstack_ca is undefined
     - groups['elasticsearch'][0] is defined
+
+- name: Set elasticstack_globals_set for other roles to skip this role
+  ansible.builtin.set_fact:
+    elasticstack_globals_set: true

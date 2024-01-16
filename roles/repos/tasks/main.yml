@@ -3,6 +3,8 @@
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
+  when:
+    - not elasticstack_globals_set | bool
 
 - name: Check for versions
   ansible.builtin.fail:

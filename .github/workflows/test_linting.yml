@@ -19,13 +19,7 @@ on:
         type: string
   pull_request:
     branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - '.github/workflows/test_linting.yml'
-      - '.config/ansible-lint.yml'
-      - '.yamllint'
+      - '*'
 
 jobs:
   lint:

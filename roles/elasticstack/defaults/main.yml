@@ -13,6 +13,7 @@ elasticstack_release: 8
 elasticstack_rpm_workaround: false
 elasticstack_security: true
 elasticstack_variant: elastic
+elasticstack_ca_will_expire_soon: false
 
 # only for debugging
 #

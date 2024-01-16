@@ -1,4 +1,9 @@
 ---
+
+- name: Include global role
+  ansible.builtin.import_role:
+    name: netways.elasticstack.elasticstack
+
 - name: Check-set-parameters
   ansible.builtin.include_tasks: elasticsearch-parameters.yml
 

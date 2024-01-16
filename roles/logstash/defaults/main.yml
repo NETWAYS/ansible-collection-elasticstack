@@ -68,20 +68,3 @@ logstash_ident_field_name: "[netways][instance]"
 logstash_pipeline_identifier: true
 logstash_pipeline_identifier_field_name: "[netways][pipeline]"
 logstash_pipeline_identifier_defaults: false
-
-elasticstack_ca_dir: /opt/es-ca
-elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
-elasticstack_ca_pass: PleaseChangeMe
-
-# "global" variables for all roles
-
-elasticstack_release: 8
-elasticstack_full_stack: true
-elasticstack_variant: elastic
-elasticstack_security: true
-elasticstack_elasticsearch_http_port: 9200
-elasticstack_beats_port: 5044
-
-# Variables for debugging and development
-
-elasticstack_override_beats_tls: false

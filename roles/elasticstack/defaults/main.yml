@@ -1,3 +1,5 @@
+---
+
 elasticstack_beats_port: 5044
 elasticstack_ca_dir: /opt/es-ca
 elasticstack_ca_pass: PleaseChangeMe
@@ -6,9 +8,12 @@ elasticstack_enable_repos: true
 elasticstack_full_stack: true
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elasticstack_kibana_port: 5601
-elasticstack_no_log: true
 elasticstack_override_beats_tls: false
 elasticstack_release: 8
 elasticstack_rpm_workaround: false
 elasticstack_security: true
 elasticstack_variant: elastic
+
+# only for debugging
+#
+elasticstack_no_log: true

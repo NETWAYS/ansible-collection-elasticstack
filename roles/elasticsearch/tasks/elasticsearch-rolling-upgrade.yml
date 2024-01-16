@@ -24,20 +24,23 @@
 #  tasks:
       # this first step is a overkill, but here
       # in case the upgrade was cancelled by user mid playbook run
-- name: make sure elasticsearch service is running
-  service: name=elasticsearch enabled=yes state=started
+- name: Make sure elasticsearch service is running
+  ansible.builtin.service:
+    name: elasticsearch
+    enabled: yes
+    state: started
   register: response
   become: true
 
 - name: Wait for elasticsearch node to come back up if it was stopped
-  wait_for:
+  ansible.builtin.wait_for:
     host: "{{ ansible_default_ipv4.address }}"
     port: "{{ es_transport_port }}"
     delay: 45
-  when: response.changed == true
+  when: response.changed | bool
 
-- name: check current version
-  uri:
+- name: Check current version
+  ansible.builtin.uri:
     url: https://localhost:{{ es_http_port }}
     method: GET
     user: elastic
@@ -48,12 +51,13 @@
   delay: 10
 
 - name: Display Current Elasticsearch Version
-  debug: var=version_found.json.version.number
+  ansible.builtin.debug:
+    var: version_found.json.version.number
 
   # this step is key!!!  Don't restart more nodes
   # until all shards have completed recovery
 - name: Wait for cluster health to return to green
-  uri:
+  ansible.builtin.uri:
     url: https://localhost:{{ es_http_port }}/_cluster/health
     method: GET
     user: elastic
@@ -67,7 +71,7 @@
 
 
 - name: Disable shard allocation for the cluster
-  uri:
+  ansible.builtin.uri:
     url: https://localhost:{{ es_http_port }}/_cluster/settings
     method: PUT
     body: '{{ es_disable_allocation }}'
@@ -77,103 +81,117 @@
     validate_certs: no
   #when: version_found.json.version.number != '{{ es_version }}'
 
-- name: stop non essential indexing to speed up shard recovery
-  uri:
+- name: Stop non essential indexing to speed up shard recovery
+  ansible.builtin.uri:
     url: https://localhost:{{ es_http_port }}/_flush
     method: POST
     user: elastic
     password: "{{ es_api_basic_auth_password }}"
     validate_certs: no
-  ignore_errors: yes
+  failed_when: false
 
 
 - name: Shutdown elasticsearch service
-  service: name=elasticsearch enabled=yes state=stopped
+  ansible.builtin.service:
+    name: elasticsearch
+    enabled: yes
+    state: stopped
   become: true
 
 # do an "apt-get update", to ensure latest package lists
-- name: apt-get update
-  apt:
+- name: Apt-get update
+  ansible.builtin.apt:
     update-cache: yes
-  changed_when: 0
+  changed_when: false
 
 # get a list of packages that have updates
-- name: get list of pending upgrades
-  command: apt-get --simulate dist-upgrade
-  args:
-    warn: false # don't warn us about apt having its own plugin
+- name: Get list of pending upgrades
+  ansible.builtin.command: apt-get --simulate dist-upgrade
   register: apt_simulate
-  changed_when: 0
+  changed_when: false
 
 # pick out list of pending updates from command output. This essentially
 # takes the above output from "apt-get --simulate dist-upgrade", and
 # pipes it through "cut -f2 -d' ' | sort"
-- name: parse apt-get output to get list of changed packages
-  set_fact:
+- name: Parse apt-get output to get list of changed packages
+  ansible.builtin.set_fact:
     updates: '{{ apt_simulate.stdout_lines | select("match", "^Inst ") | list | splitpart(1, " ") | list | sort }}'
-  changed_when: 0
+  changed_when: false
 
 # tell user about packages being updated
-- name: show pending updates
-  debug:
+- name: Show pending updates
+  ansible.builtin.debug:
     var: updates
   when: updates.0 is defined
 
 # request manual ack before proceeding with package upgrade
-- pause:
+- name: Wait for interaction
+  ansible.builtin.pause:
   when: updates.0 is defined
 
 # if a new kernel is incoming, remove old ones to avoid full /boot
-- name: apt-get autoremove
-  command: apt-get -y autoremove
-  args:
-    warn: false
+- name: Apt-get autoremove
+  ansible.builtin.command: apt-get -y autoremove
   when: '"Inst linux-image-" in apt_simulate.stdout'
-  changed_when: 0
+  changed_when: false
 
 # do the actual apt-get dist-upgrade
-- name: apt-get dist-upgrade
-  apt:
+- name: Apt-get dist-upgrade
+  ansible.builtin.apt:
     upgrade: dist # upgrade all packages to latest version
 
 # REBOOT machine after Upgrade
-- name: check if reboot is required
-  register: reboot_required_file
+- name: Check if reboot is required
+  ansible.builtin.register: reboot_required_file
   stat:
     path: /var/run/reboot-required
 
-- name: restart machine
-  reboot:
+- name: Restart machine
+  ansible.builtin.reboot:
     msg: "Reboot initiated by Ansible to update system libs/kernel as needed"
-  when: reboot_required_file.stat.exists == true
+  when: reboot_required_file.stat.exists | bool
 
-- name: waiting for machine to come back
-  wait_for_connection:
+- name: Waiting for machine to come back
+  ansible.builtin.wait_for_connection:
     delay: 10
     connect_timeout: 300
-  when: reboot_required_file.stat.exists == true
+  when: reboot_required_file.stat.exists | bool
 
 - name: Start elasticsearch
-  service: name=elasticsearch enabled=yes state=started
+  ansible.builtin.service:
+    name: elasticsearch
+    enabled: yes
+    state: started
     #when: version_found.json.version.number != '{{ es_version }}'
   become: true
 
 - name: Wait for elasticsearch node to come back up if it was stopped
-  wait_for:
+  ansible.builtin.wait_for:
     host: "{{ ansible_default_ipv4.address }}"
     port: "{{ es_transport_port }}"
     delay: 30
 
-- name: Confirm the node joins the cluster
-  shell: "curl -k -u elastic:{{ es_api_basic_auth_password }} -s -m 2 'https://localhost:9200/_cat/nodes?h=name' | grep -E '^{{ ansible_fqdn }}$'"
+- name: Confirm the node joins the cluster # noqa: risky-shell-pipe
+  ansible.builtin.shell: >
+    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    curl
+    -k
+    -u elastic:{{ es_api_basic_auth_password }}
+    -s
+    -m 2
+    'https://localhost:9200/_cat/nodes?h=name'
+    | grep
+    -E
+    '^{{ ansible_fqdn }}$'
   register: result
   until: result.rc == 0
   retries: 200
   delay: 3
+  changed_when: false
   #when: version_found.json.version.number != '{{ es_version }}'
 
 - name: Enable shard allocation for the cluster
-  uri:
+  ansible.builtin.uri:
     url: https://localhost:{{ es_http_port }}/_cluster/settings
     method: PUT
     body: '{{ es_enable_allocation }}'
@@ -190,7 +208,7 @@
   #when: version_found.json.version.number != es_version
 
 - name: Wait for cluster health to return to yellow or green
-  uri:
+  ansible.builtin.uri:
     url: https://localhost:{{ es_http_port }}/_cluster/health
     method: GET
     user: elastic

@@ -1,5 +1,5 @@
 # Ansible
-# 
+#
 # Rolling Upgrade of Elasticsearch with security on
 # Source from: author: Jeff Steinmetz, @jeffsteinmetz; Bin Li, @holysoros
 # Modifications: author: Daniel Neuberger @netways.de
@@ -30,14 +30,14 @@
   become: true
 
 - name: Wait for elasticsearch node to come back up if it was stopped
-  wait_for: 
-    host: "{{ ansible_default_ipv4.address }}" 
+  wait_for:
+    host: "{{ ansible_default_ipv4.address }}"
     port: "{{ es_transport_port }}"
     delay: 45
   when: response.changed == true
 
 - name: check current version
-  uri: 
+  uri:
     url: https://localhost:{{ es_http_port }}
     method: GET
     user: elastic
@@ -53,8 +53,8 @@
   # this step is key!!!  Don't restart more nodes
   # until all shards have completed recovery
 - name: Wait for cluster health to return to green
-  uri: 
-    url: https://localhost:{{ es_http_port }}/_cluster/health 
+  uri:
+    url: https://localhost:{{ es_http_port }}/_cluster/health
     method: GET
     user: elastic
     password: "{{ es_api_basic_auth_password }}"
@@ -67,10 +67,10 @@
 
 
 - name: Disable shard allocation for the cluster
-  uri: 
-    url: https://localhost:{{ es_http_port }}/_cluster/settings 
+  uri:
+    url: https://localhost:{{ es_http_port }}/_cluster/settings
     method: PUT
-    body: '{{ es_disable_allocation }}' 
+    body: '{{ es_disable_allocation }}'
     body_format: json
     user: elastic
     password: "{{ es_api_basic_auth_password }}"
@@ -91,52 +91,52 @@
   service: name=elasticsearch enabled=yes state=stopped
   become: true
 
-# do an "apt-get update", to ensure latest package lists 
+# do an "apt-get update", to ensure latest package lists
 - name: apt-get update
-  apt:                    
-    update-cache: yes 
+  apt:
+    update-cache: yes
   changed_when: 0
-                                                                                                                  
+
 # get a list of packages that have updates
-- name: get list of pending upgrades                                                                              
+- name: get list of pending upgrades
   command: apt-get --simulate dist-upgrade
-  args:                                                                                                           
+  args:
     warn: false # don't warn us about apt having its own plugin
-  register: apt_simulate 
-  changed_when: 0 
-                                                        
+  register: apt_simulate
+  changed_when: 0
+
 # pick out list of pending updates from command output. This essentially
 # takes the above output from "apt-get --simulate dist-upgrade", and
-# pipes it through "cut -f2 -d' ' | sort"                                                                         
+# pipes it through "cut -f2 -d' ' | sort"
 - name: parse apt-get output to get list of changed packages
-  set_fact:     
+  set_fact:
     updates: '{{ apt_simulate.stdout_lines | select("match", "^Inst ") | list | splitpart(1, " ") | list | sort }}'
   changed_when: 0
-                                                        
-# tell user about packages being updated
-- name: show pending updates                                                                                      
-  debug:                                        
-    var: updates
-  when: updates.0 is defined            
-                                                        
- request manual ack before proceeding with package upgrade
-- pause:      
-  when: updates.0 is defined                    
 
-if a new kernel is incoming, remove old ones to avoid full /boot
+# tell user about packages being updated
+- name: show pending updates
+  debug:
+    var: updates
+  when: updates.0 is defined
+
+# request manual ack before proceeding with package upgrade
+- pause:
+  when: updates.0 is defined
+
+# if a new kernel is incoming, remove old ones to avoid full /boot
 - name: apt-get autoremove
-  command: apt-get -y autoremove                                                                                  
-  args:             
-    warn: false          
+  command: apt-get -y autoremove
+  args:
+    warn: false
   when: '"Inst linux-image-" in apt_simulate.stdout'
-  changed_when: 0            
-                                                        
-do the actual apt-get dist-upgrade
-- name: apt-get dist-upgrade                                                                                      
-  apt:                                                  
+  changed_when: 0
+
+# do the actual apt-get dist-upgrade
+- name: apt-get dist-upgrade
+  apt:
     upgrade: dist # upgrade all packages to latest version
 
-REBOOT machine after Upgrade
+# REBOOT machine after Upgrade
 - name: check if reboot is required
   register: reboot_required_file
   stat:
@@ -159,8 +159,8 @@ REBOOT machine after Upgrade
   become: true
 
 - name: Wait for elasticsearch node to come back up if it was stopped
-  wait_for: 
-    host: "{{ ansible_default_ipv4.address }}" 
+  wait_for:
+    host: "{{ ansible_default_ipv4.address }}"
     port: "{{ es_transport_port }}"
     delay: 30
 
@@ -173,10 +173,10 @@ REBOOT machine after Upgrade
   #when: version_found.json.version.number != '{{ es_version }}'
 
 - name: Enable shard allocation for the cluster
-  uri: 
-    url: https://localhost:{{ es_http_port }}/_cluster/settings 
-    method: PUT 
-    body: '{{ es_enable_allocation }}' 
+  uri:
+    url: https://localhost:{{ es_http_port }}/_cluster/settings
+    method: PUT
+    body: '{{ es_enable_allocation }}'
     body_format: json
     user: elastic
     password: "{{ es_api_basic_auth_password }}"
@@ -190,8 +190,8 @@ REBOOT machine after Upgrade
   #when: version_found.json.version.number != es_version
 
 - name: Wait for cluster health to return to yellow or green
-  uri: 
-    url: https://localhost:{{ es_http_port }}/_cluster/health 
+  uri:
+    url: https://localhost:{{ es_http_port }}/_cluster/health
     method: GET
     user: elastic
     password: "{{ es_api_basic_auth_password }}"

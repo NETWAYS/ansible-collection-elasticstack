@@ -12,17 +12,6 @@ on:
           - info
           - warning
           - debug
-  push:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'plugins/**'
-      - '.github/workflows/test_plugins.yml'
-      - 'molecule/plugins/**'
-      - '.config/pep8.yml'
-      - 'tests/**'
   pull_request:
     branches:
       - 'feature/**'

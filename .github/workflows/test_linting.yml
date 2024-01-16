@@ -17,15 +17,6 @@ on:
       rolename:
         required: true
         type: string
-  push:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - '.github/workflows/test_linting.yml'
-      - '.config/ansible-lint.yml'
-      - '.yamllint'
   pull_request:
     branches:
       - 'feature/**'

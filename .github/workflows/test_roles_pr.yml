@@ -13,7 +13,6 @@ on:
           - warning
           - debug
   pull_request:
-  push:
   merge_group:
 
 jobs:

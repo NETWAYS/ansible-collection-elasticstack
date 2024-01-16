@@ -41,8 +41,8 @@ elasticsearch_extra_config:
 
     xpack.security.authc.realms:
         native.native1:
-	    order: 0
-	    enabled: true
+            order: 0
+            enabled: true
 ```
 
 This variable activates a workaround to start on systems that have certain hardening measures active. See [Stackoverflow](https://stackoverflow.com/questions/47824643/unable-to-load-jna-native-support-library-elasticsearch-6-x/50371992#50371992) for details and logmessages to look for. **WARNING**: This will change your `/etc/sysconfig/elasticseach`or `/etc/default/elasticsearch` file and overwrite `ES_JAVA_OPTS`. See this [issue](https://github.com/netways/ansible-role-elasticsearch/issues/79) for details.

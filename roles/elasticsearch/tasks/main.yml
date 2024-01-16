@@ -1,4 +1,12 @@
 ---
+
+- name: Update apt cache.
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 600
+  changed_when: false
+  when: ansible_os_family == 'Debian'
+
 - name: Check-set-parameters
   ansible.builtin.include_tasks: elasticsearch-parameters.yml
 
@@ -178,9 +186,8 @@
   when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
 
 # Free up some space to let elsticsearch allocate replica in GitHub Action
-- name: Remove cache # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+- name: Remove cache
+  ansible.builtin.command: >
     rm -rf /var/cache/*
   changed_when: false
   when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
@@ -200,6 +207,7 @@
     name: elasticsearch
     state: started
     enabled: yes
+  register: elasticsearch_freshstart
 
 - name: Handle cluster setup without security
   when: not elasticsearch_security | bool
@@ -237,8 +245,6 @@
     group: root
     mode: 0644
     backup: "{{ elasticsearch_config_backup }}"
-  notify:
-    - Restart Elasticsearch
   when: elasticsearch_manage_yaml | bool
 
 - name: Show Info about heap

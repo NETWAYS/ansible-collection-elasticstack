@@ -43,7 +43,7 @@ filebeat.inputs:
 - type: log
   enabled: true
   paths:
-    - /var/lib/mysql/*-slow.log
+    - /var/log/mysql/*-slow.log
   multiline.pattern: '^\#[[:space:]]Time'
   multiline.negate: true
   multiline.match: after

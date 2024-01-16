@@ -6,3 +6,9 @@
     - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
     - '{{ ansible_os_family }}.yml'
 
+- name: Set elasticstack_ca variable if not already done by user
+  ansible.builtin.set_fact:
+    elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
+  when:
+    - elasticstack_ca is undefined
+    - groups['elasticsearch'][0] is defined

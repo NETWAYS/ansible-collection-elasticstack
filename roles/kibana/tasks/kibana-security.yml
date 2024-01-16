@@ -11,17 +11,6 @@
     - renew_ca
     - renew_kibana_cert
 
-- name: Set elasticstack_ca variable if not already done by user
-  ansible.builtin.set_fact:
-    elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
-  when:
-    - elasticstack_ca is undefined
-    - groups['elasticsearch'] is defined
-  tags:
-    - certificates
-    - renew_ca
-    - renew_kibana_cert
-
 - name: Ensure kibana certificate exists
   ansible.builtin.stat:
     path: "/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12"

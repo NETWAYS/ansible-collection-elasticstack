@@ -23,18 +23,6 @@
         - elasticstack_variant != "oss"
         - not elasticstack_override_beats_tls | bool
 
-    - name: Set elasticstack_ca variable if not already done by user
-      ansible.builtin.set_fact:
-        elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
-      when:
-        - beats_security | bool
-        - elasticstack_ca is undefined
-        - groups['elasticsearch'] is defined
-      tags:
-        - certificates
-        - renew_ca
-        - renew_beats_cert
-
     - name: Set beats_ca_dir if whole stack is used
       ansible.builtin.set_fact:
         beats_ca_dir: "/etc/beats/certs"

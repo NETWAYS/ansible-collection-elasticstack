@@ -11,19 +11,6 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Set elasticstack_ca variable if not already done by user
-  ansible.builtin.set_fact:
-    elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
-  when:
-    - elasticstack_ca is undefined
-    - groups['elasticsearch'] is defined
-  tags:
-    - certificates
-    - configuration
-    - logstash_configuration
-    - renew_ca
-    - renew_logstash_cert
-
 - name: Ensure logstash certificate exists
   ansible.builtin.stat:
     path: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"

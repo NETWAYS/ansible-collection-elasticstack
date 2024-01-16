@@ -3,6 +3,7 @@
 # Rolling Upgrade of Elasticsearch with security on
 # Source from: author: Jeff Steinmetz, @jeffsteinmetz; Bin Li, @holysoros
 # Modifications: author: Daniel Neuberger @netways.de
+# More modifications: NETWAYS Professional Services GmbH
 # latest tested with Ansible 2.9 and later
 
 ---

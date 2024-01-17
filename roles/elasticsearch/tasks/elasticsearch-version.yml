@@ -29,4 +29,4 @@
   ansible.builtin.set_fact:
     elasticsearch_current_version: "{{ elasticsearch_version_output.stdout }}"
   when:
-    - elasticsearch_version_output is defined
+    - elasticsearch_version_output.stdout is defined

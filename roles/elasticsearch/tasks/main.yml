@@ -129,6 +129,12 @@
       replace(' ', '')
       }}
 
+- name: Update Elasitcsearch if needed
+  ansible.builtin.import_tasks: elasticsearch-rolling-upgrade.yml
+  when:
+    - elasticsearch_version is defined
+    - elasticsearch_version is version( ansible_package_facts['elasticsearch'].version, '>')
+
 - name: Install Elasticsearch - rpm
   ansible.builtin.package:
     name: "{{ elasticsearch_package }}"

@@ -1,9 +1,5 @@
 ---
 
-#- name: Fetch current Elasticsearch version
-#  ansible.builtin.import_tasks: elasticsearch-version.yml
-#  when: elasitcsearch_current_version is undefined
-
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack

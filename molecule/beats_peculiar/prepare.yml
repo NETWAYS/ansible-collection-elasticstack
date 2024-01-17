@@ -10,5 +10,4 @@
           - procps
           - curl
           - git
-            #- pcregrep
         update_cache: yes

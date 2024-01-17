@@ -1,0 +1,34 @@
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+driver:
+  name: docker
+platforms:
+  - name: elasticsearch_default1
+    groups:
+      - elasticsearch
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian11}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+  #- name: elasticsearch_default2
+  #  groups:
+  #    - elasticsearch
+  #  image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian11}-ansible:latest"
+  #  command: ${MOLECULE_DOCKER_COMMAND:-""}
+  #  volumes:
+  #    - /sys/fs/cgroup:/sys/fs/cgroup:rw
+  #  cgroupns_mode: host
+  #  privileged: true
+  #  pre_build_image: true
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_VERBOSITY: 3
+verifier:
+  name: ansible

@@ -1,0 +1,50 @@
+---
+# The workaround for arbitrarily named role directory is important because the git repo has one name and the role within it another
+# Found at: https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+- name: Converge
+  collections:
+    - netways.elasticstack
+  hosts: all
+  vars:
+    #elasticsearch_security: true # needed for tests of > 7 releases
+    elasticstack_full_stack: false
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
+    elasticstack_release: 8
+    elasticsearch_heap: "1"
+    elasticstack_no_log: false
+  tasks:
+    - name: Include Elastics repos role
+      ansible.builtin.include_role:
+        name: repos
+    - name: Include Elasticsearch
+      ansible.builtin.include_role:
+        name: elasticsearch
+
+    - name: Fetch Elastic password # noqa: risky-shell-pipe
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        grep "PASSWORD elastic" /usr/share/elasticsearch/initial_passwords |
+        awk {' print $4 '}
+      register: elasticstack_password
+      changed_when: false
+
+    - name: Create role
+      netways.elasticstack.elasticsearch_role:
+        name: new-role3
+        cluster:
+          - manage_own_api_key
+          - delegate_pki
+        indicies:
+          - names:
+              - foobar321
+              - barfoo123
+            privileges:
+              - read
+              - write
+        state: present
+        host: https://localhost:9200
+        auth_user: elastic
+        auth_pass: "{{ elasticstack_password.stdout }}"
+        verify_certs: false
+        ca_certs: /etc/elasticsearch/certs/http_ca.crt

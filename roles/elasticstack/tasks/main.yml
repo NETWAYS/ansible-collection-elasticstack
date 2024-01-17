@@ -14,7 +14,7 @@
     - groups['elasticsearch'][0] is defined
 
 - name: Set versions for components
-  ansible.builtin.import_tasks: elasticstack_versions.yml
+  ansible.builtin.import_tasks: elasticstack-versions.yml
 
 - name: Set elasticstack_globals_set for other roles to skip this role
   ansible.builtin.set_fact:

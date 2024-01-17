@@ -140,23 +140,6 @@
   ansible.builtin.apt:
     upgrade: dist # upgrade all packages to latest version
 
-# REBOOT machine after Upgrade
-- name: Check if reboot is required
-  ansible.builtin.register: reboot_required_file
-  stat:
-    path: /var/run/reboot-required
-
-- name: Restart machine
-  ansible.builtin.reboot:
-    msg: "Reboot initiated by Ansible to update system libs/kernel as needed"
-  when: reboot_required_file.stat.exists | bool
-
-- name: Waiting for machine to come back
-  ansible.builtin.wait_for_connection:
-    delay: 10
-    connect_timeout: 300
-  when: reboot_required_file.stat.exists | bool
-
 - name: Start elasticsearch
   ansible.builtin.service:
     name: elasticsearch

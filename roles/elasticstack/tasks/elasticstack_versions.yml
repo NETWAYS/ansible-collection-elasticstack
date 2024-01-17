@@ -1,0 +1,9 @@
+---
+
+- name: Set target version to Elasticsearch on CA host
+  set_fact:
+    elasticstack_version: "{{ elasticsearch_current_version }}"
+  delegate_to: {{ elasticstack_ca }}
+  when:
+    - elasticsearch_current_version is defined
+    - if elasticstack_version is undefined

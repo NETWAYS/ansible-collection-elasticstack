@@ -13,6 +13,9 @@
     - elasticstack_ca is undefined
     - groups['elasticsearch'][0] is defined
 
+- name: Set versions for components
+  ansible.builtin.import_tasks: elasticstack_versions.yml
+
 - name: Set elasticstack_globals_set for other roles to skip this role
   ansible.builtin.set_fact:
     elasticstack_globals_set: true

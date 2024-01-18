@@ -98,43 +98,6 @@
     state: stopped
   become: true
 
-# do an "apt-get update", to ensure latest package lists
-- name: Apt-get update
-  ansible.builtin.apt:
-    update-cache: yes
-  changed_when: false
-
-# get a list of packages that have updates
-- name: Get list of pending upgrades
-  ansible.builtin.command: apt-get --simulate dist-upgrade
-  register: apt_simulate
-  changed_when: false
-
-# pick out list of pending updates from command output. This essentially
-# takes the above output from "apt-get --simulate dist-upgrade", and
-# pipes it through "cut -f2 -d' ' | sort"
-- name: Parse apt-get output to get list of changed packages
-  ansible.builtin.set_fact:
-    updates: '{{ apt_simulate.stdout_lines | select("match", "^Inst ") | list | splitpart(1, " ") | list | sort }}'
-  changed_when: false
-
-# tell user about packages being updated
-- name: Show pending updates
-  ansible.builtin.debug:
-    var: updates
-  when: updates.0 is defined
-
-# request manual ack before proceeding with package upgrade
-- name: Wait for interaction
-  ansible.builtin.pause:
-  when: updates.0 is defined
-
-# if a new kernel is incoming, remove old ones to avoid full /boot
-- name: Apt-get autoremove
-  ansible.builtin.command: apt-get -y autoremove
-  when: '"Inst linux-image-" in apt_simulate.stdout'
-  changed_when: false
-
 # do the actual apt-get dist-upgrade
 - name: Apt-get dist-upgrade
   ansible.builtin.apt:

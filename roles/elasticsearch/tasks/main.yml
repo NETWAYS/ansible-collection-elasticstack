@@ -134,6 +134,8 @@
   throttle: 1
   when:
     - elasticsearch_version is defined
+    - ansible_package_facts['elasticsearch'].version is defined
+    - elasticstack_password.stdout is defined
     - elasticsearch_version is version( ansible_package_facts['elasticsearch'].version, '>')
 
 - name: Install Elasticsearch - rpm

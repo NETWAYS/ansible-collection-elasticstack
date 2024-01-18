@@ -16,6 +16,11 @@
 - name: Set versions for components
   ansible.builtin.import_tasks: elasticstack-versions.yml
 
+- name: Fetch passwords if passwords are initialized
+  ansible.builtin.import_tasks: elasticstack-passwords.yml
+  when:
+    - elasticstack_password.stdout is undefined
+
 - name: Set elasticstack_globals_set for other roles to skip this role
   ansible.builtin.set_fact:
     elasticstack_globals_set: true

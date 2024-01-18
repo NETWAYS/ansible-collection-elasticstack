@@ -94,6 +94,8 @@
     state: started
     #when: version_found.json.version.number != '{{ es_version }}'
   become: true
+  when:
+    - elasticsearch_running.status.ActiveState == "active"
 
 - name: Wait for elasticsearch node to come back up if it was stopped
   ansible.builtin.wait_for:

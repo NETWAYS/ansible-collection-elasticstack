@@ -22,81 +22,65 @@
 #    es_version: '8.5.3'
 #
 #  tasks:
-      # this first step is a overkill, but here
-      # in case the upgrade was cancelled by user mid playbook run
-- name: Make sure elasticsearch service is running
-  ansible.builtin.service:
+
+- name: Check for running Elasticsearch service
+  ansible.builtin.systemd:
     name: elasticsearch
-    enabled: yes
-    state: started
-  register: response
-  become: true
+  register: elasticsearch_running
 
-- name: Wait for elasticsearch node to come back up if it was stopped
-  ansible.builtin.wait_for:
-    host: "{{ ansible_default_ipv4.address }}"
-    port: "{{ es_transport_port }}"
-    delay: 45
-  when: response.changed | bool
+- name: Be careful about upgrade when Elasticsearch is running
+  when:
+    - elasticsearch_running.status.ActiveState == "active"
+  block:
 
-- name: Check current version
-  ansible.builtin.uri:
-    url: https://localhost:{{ es_http_port }}
-    method: GET
-    user: elastic
-    password: "{{ es_api_basic_auth_password }}"
-    validate_certs: no
-  register: version_found
-  retries: 10
-  delay: 10
+    - name: Wait for elasticsearch node to come back up if it was stopped
+      ansible.builtin.wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: "{{ es_transport_port }}"
+        delay: 45
+      when: response.changed | bool
 
-- name: Display Current Elasticsearch Version
-  ansible.builtin.debug:
-    var: version_found.json.version.number
+      # this step is key!!!  Don't restart more nodes
+      # until all shards have completed recovery
+    - name: Wait for cluster health to return to green
+      ansible.builtin.uri:
+        url: https://localhost:{{ es_http_port }}/_cluster/health
+        method: GET
+        user: elastic
+        password: "{{ es_api_basic_auth_password }}"
+        validate_certs: no
+      register: response
+      until: "response.json.status == 'green'"
+      retries: 50
+      delay: 30
+      # when: version_found.json.version.number !=  '{{ es_version }}'
 
-  # this step is key!!!  Don't restart more nodes
-  # until all shards have completed recovery
-- name: Wait for cluster health to return to green
-  ansible.builtin.uri:
-    url: https://localhost:{{ es_http_port }}/_cluster/health
-    method: GET
-    user: elastic
-    password: "{{ es_api_basic_auth_password }}"
-    validate_certs: no
-  register: response
-  until: "response.json.status == 'green'"
-  retries: 50
-  delay: 30
-  # when: version_found.json.version.number !=  '{{ es_version }}'
+    - name: Disable shard allocation for the cluster
+      ansible.builtin.uri:
+        url: https://localhost:{{ es_http_port }}/_cluster/settings
+        method: PUT
+        body: '{{ es_disable_allocation }}'
+        body_format: json
+        user: elastic
+        password: "{{ es_api_basic_auth_password }}"
+        validate_certs: no
+      #when: version_found.json.version.number != '{{ es_version }}'
 
+    - name: Stop non essential indexing to speed up shard recovery
+      ansible.builtin.uri:
+        url: https://localhost:{{ es_http_port }}/_flush
+        method: POST
+        user: elastic
+        password: "{{ es_api_basic_auth_password }}"
+        validate_certs: no
+      failed_when: false
 
-- name: Disable shard allocation for the cluster
-  ansible.builtin.uri:
-    url: https://localhost:{{ es_http_port }}/_cluster/settings
-    method: PUT
-    body: '{{ es_disable_allocation }}'
-    body_format: json
-    user: elastic
-    password: "{{ es_api_basic_auth_password }}"
-    validate_certs: no
-  #when: version_found.json.version.number != '{{ es_version }}'
-
-- name: Stop non essential indexing to speed up shard recovery
-  ansible.builtin.uri:
-    url: https://localhost:{{ es_http_port }}/_flush
-    method: POST
-    user: elastic
-    password: "{{ es_api_basic_auth_password }}"
-    validate_certs: no
-  failed_when: false
-
-
-- name: Shutdown elasticsearch service
-  ansible.builtin.service:
-    name: elasticsearch
-    enabled: yes
-    state: stopped
-  become: true
+    - name: Shutdown elasticsearch service
+      ansible.builtin.service:
+        name: elasticsearch
+        enabled: yes
+        state: stopped
+      become: true
 
 # do the actual apt-get dist-upgrade
 - name: Apt-get dist-upgrade

@@ -80,7 +80,6 @@
         name: elasticsearch
         enabled: yes
         state: stopped
-      become: true
 
 # do the actual apt-get dist-upgrade
 - name: Apt-get dist-upgrade
@@ -93,7 +92,6 @@
     enabled: yes
     state: started
     #when: version_found.json.version.number != '{{ es_version }}'
-  become: true
   when:
     - elasticsearch_running.status.ActiveState == "active"
 

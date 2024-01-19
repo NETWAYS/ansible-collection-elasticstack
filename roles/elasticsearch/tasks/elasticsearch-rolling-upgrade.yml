@@ -64,10 +64,19 @@
         enabled: yes
         state: stopped
 
-# do the actual apt-get dist-upgrade
-- name: Apt-get dist-upgrade
-  ansible.builtin.apt:
-    upgrade: dist # upgrade all packages to latest version
+- name: Install Elasticsearch - rpm
+  ansible.builtin.package:
+    name: "{{ elasticsearch_package }}"
+    enablerepo:
+      - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
+  when:
+    - ansible_os_family == "RedHat"
+
+- name: Install Elasticsearch - deb
+  ansible.builtin.package:
+    name: "{{ elasticsearch_package }}"
+  when:
+    - ansible_os_family == "Debian"
 
 - name: Start elasticsearch
   ansible.builtin.service:

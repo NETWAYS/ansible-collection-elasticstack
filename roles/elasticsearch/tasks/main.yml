@@ -129,10 +129,10 @@
   ansible.builtin.import_tasks: elasticsearch-rolling-upgrade.yml
   throttle: 1
   when:
-    - elasticsstack_version is defined
+    - elasticstack_version is defined
     - ansible_facts.packages['elasticsearch'][0].version is defined
     - elasticstack_password.stdout is defined
-    - elasticstack_version is version( ansible_package_facts['elasticsearch'][0].version, '>')
+    - elasticstack_version is version( ansible_facts.packages['elasticsearch'][0].version, '>')
 
 - name: Install Elasticsearch - rpm
   ansible.builtin.package:

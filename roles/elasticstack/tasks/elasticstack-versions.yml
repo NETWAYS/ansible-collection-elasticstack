@@ -6,8 +6,8 @@
 
 - name: Set target version to Elasticsearch on CA host
   ansible.builtin.set_fact:
-    elasticstack_version: "{{ ansible_facts.packages['elasticsearch'].version }}"
+    elasticstack_version: "{{ ansible_facts.packages['elasticsearch'][0].version }}"
   delegate_to: "{{ elasticstack_ca }}"
   when:
-    - ansible_facts.packages['elasticsearch'].version is defined
-    - if elasticstack_version is undefined
+    - ansible_facts.packages['elasticsearch'][0].version is defined
+    - elasticstack_version is undefined

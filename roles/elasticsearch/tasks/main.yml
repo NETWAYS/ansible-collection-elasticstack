@@ -3,10 +3,6 @@
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
-  when: >
-    not elasticstack_globals_set | bool
-    or
-    elasticstack_globals_set is undefined
 
 - name: Update apt cache.
   ansible.builtin.apt:
@@ -133,10 +129,10 @@
   ansible.builtin.import_tasks: elasticsearch-rolling-upgrade.yml
   throttle: 1
   when:
-    - elasticsearch_version is defined
-    - ansible_package_facts['elasticsearch'].version is defined
+    - elasticsstack_version is defined
+    - ansible_facts.packages['elasticsearch'][0].version is defined
     - elasticstack_password.stdout is defined
-    - elasticsearch_version is version( ansible_package_facts['elasticsearch'].version, '>')
+    - elasticstack_version is version( ansible_package_facts['elasticsearch'][0].version, '>')
 
 - name: Install Elasticsearch - rpm
   ansible.builtin.package:

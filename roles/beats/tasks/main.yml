@@ -3,10 +3,6 @@
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
-  when: >
-    not elasticstack_globals_set | bool
-    or
-    elasticstack_globals_set is undefined
 
 - name: Update apt cache.
   ansible.builtin.apt:

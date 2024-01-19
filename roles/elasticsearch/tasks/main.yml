@@ -127,7 +127,6 @@
 
 - name: Update Elasitcsearch if needed
   ansible.builtin.import_tasks: elasticsearch-rolling-upgrade.yml
-  throttle: 1
   when:
     - elasticstack_version is defined
     - ansible_facts.packages['elasticsearch'][0].version is defined

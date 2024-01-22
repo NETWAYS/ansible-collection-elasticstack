@@ -14,7 +14,7 @@
 
 - name: Set elasticstack_ca variable if not already done by user
   ansible.builtin.set_fact:
-    elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
+    elasticstack_ca: "{{ groups[elasticsearch_group_name][0] }}"
   when: elasticstack_ca is undefined
   tags:
     - certificates
@@ -267,7 +267,7 @@
         --dns {{ hostvars[item].ansible_hostname }},{{ hostvars[item].ansible_fqdn }},{{ hostvars[item].inventory_hostname }}
         --pass {{ elasticsearch_tls_key_passphrase }}
         --out {{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
-      loop: "{{ groups['elasticsearch'] }}"
+      loop: "{{ groups[elasticsearch_group_name] }}"
       no_log: "{{ elasticstack_no_log }}"
       args:
         creates: "{{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
@@ -356,7 +356,7 @@
 
 - name: Wait for all instances to start
   ansible.builtin.include_tasks: wait_for_instance.yml
-  loop: "{{ groups['elasticsearch'] }}"
+  loop: "{{ groups[elasticsearch_group_name] }}"
 
 - name: Restart if Elasticsearch was already running
   when:
@@ -372,7 +372,7 @@
 
     - name: Wait for all instances to start
       ansible.builtin.include_tasks: wait_for_instance.yml
-      loop: "{{ groups['elasticsearch'] }}"
+      loop: "{{ groups[elasticsearch_group_name] }}"
       tags:
         - certificates
         - renew_ca
@@ -400,7 +400,7 @@
   no_log: "{{ elasticstack_no_log }}"
   when:
     - not elasticsearch_passwords_file.stat.exists | bool
-    - groups['elasticsearch'] | length > 1
+    - groups[elasticsearch_group_name] | length > 1
   until: elasticsearch_api_status_bootstrap.json.cluster_name is defined
   retries: 5
   delay: 10
@@ -419,7 +419,7 @@
   no_log: "{{ elasticstack_no_log }}"
   when:
     - not elasticsearch_passwords_file.stat.exists | bool
-    - groups['elasticsearch'] | length > 1
+    - groups[elasticsearch_group_name] | length > 1
   until: elasticsearch_cluster_status_bootstrap.json.status == "green"
   retries: 5
   delay: 10
@@ -446,7 +446,7 @@
   no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_passwords_file.stat.exists | bool
-    - groups['elasticsearch'] | length > 1
+    - groups[elasticsearch_group_name] | length > 1
   until: elasticsearch_api_status.json.cluster_name is defined
   retries: 20
   delay: 10
@@ -497,7 +497,7 @@
   no_log: "{{ elasticstack_no_log }}"
   when:
     - elasticsearch_passwords_file.stat.exists | bool
-    - groups['elasticsearch'] | length > 1
+    - groups[elasticsearch_group_name] | length > 1
   until: elasticsearch_cluster_status.json.status == "green"
   retries: 20
   delay: 10

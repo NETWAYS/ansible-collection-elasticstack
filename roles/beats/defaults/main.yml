@@ -63,6 +63,8 @@ elasticstack_full_stack: true
 elasticstack_variant: elastic
 elasticstack_security: true
 
+elasticsearch_group_name: elasticsearch
+
 elasticstack_ca_dir: /opt/es-ca
 elasticstack_ca_pass: PleaseChangeMe
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords

@@ -20,10 +20,10 @@
 
     - name: Set Elasticsearch hosts if used with other roles
       ansible.builtin.set_fact:
-        logstash_elasticsearch: "{{ groups['elasticsearch'] }}"
+        logstash_elasticsearch: "{{ groups[elasticsearch_group_name] }}"
       when:
         - logstash_elasticsearch is undefined
-        - groups['elasticsearch'] is defined
+        - groups[elasticsearch_group_name] is defined
       tags:
         - configuration
         - logstash_configuration
@@ -41,7 +41,7 @@
       - localhost
   when:
     - logstash_elasticsearch is undefined
-    - groups['elasticsearch'] is undefined
+    - groups[elasticsearch_group_name] is undefined
   tags:
     - configuration
     - logstash_configuration

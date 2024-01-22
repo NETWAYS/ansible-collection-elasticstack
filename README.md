@@ -120,7 +120,7 @@ There are some comments in the Playbook. Either fill them with the correct value
 
 ### Inventory
 
-_Note_: The roles rely on hardcoded group names for placing services on hosts. Please make sure you have groups named `elasticsearch`, `logstash` and `kibana` in your Ansible inventory. Hosts in these groups will get the respective services. Just restricting your plays to the appropriate hosts will not work because the roles interact with hosts from other groups e.g. for certificate generation.
+_Note_: The roles rely on hardcoded group names for placing services on hosts. Please make sure you have groups named `elasticsearch` (or define your desired group name using the var `elasticsearch_group_name`), `logstash` and `kibana` in your Ansible inventory. Hosts in these groups will get the respective services. Just restricting your plays to the appropriate hosts will not work because the roles interact with hosts from other groups e.g. for certificate generation.
 
 The execution order of the roles is important! (see below)
 

@@ -6,19 +6,37 @@
       - gpg-agent
     state: present
 
-- name: Ensure Elastic Stack key is available (Debian)
+- name: Ensure Elastic Stack key is removed (Debian legacy format)
   ansible.builtin.apt_key:
     url: "{{ elasticstack_repo_key }}"
-    state: present
+    state: absent
+
+- name: Ensure Elastic Stack key is available (Debian)
+  ansible.builtin.get_url:
+    url: "{{ elasticstack_repo_key }}"
+    dest: /usr/share/keyrings/elasticsearch.asc
+    mode: "0644"
+
+- name: Ensure Elastic Stack apt repo is absent (Debian legacy format)
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/artifacts_elastic_co_packages_{{ item }}_x_apt.list
+    state: absent
+  with_items:
+    - "7"
+    - "oss-7"
+    - "8"
+    - "oss-8"
 
 - name: Ensure Elastic Stack apt repository is configured (Debian)
   ansible.builtin.apt_repository:
-    repo: deb https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/apt stable main
+    repo: deb [signed-by=/usr/share/keyrings/elasticsearch.asc] https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/apt stable main
     state: present
+    filename: elasticstack
   when: elasticstack_variant == "elastic"
 
 - name: Ensure Elastic Stack OSS apt repository is configured (Debian)
   ansible.builtin.apt_repository:
-    repo: deb https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/apt stable main
+    repo: deb [signed-by=/usr/share/keyrings/elasticsearch.asc] https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/apt stable main
     state: present
+    filename: elasticstack
   when: elasticstack_variant == "oss"

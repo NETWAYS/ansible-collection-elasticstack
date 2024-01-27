@@ -8,7 +8,7 @@
 
 - name: Ensure Elastic Stack key is available (Debian)
   ansible.builtin.apt_key:
-    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    url: "{{ elasticstack_repo_key }}"
     state: present
 
 - name: Ensure Elastic Stack apt repository is configured (Debian)

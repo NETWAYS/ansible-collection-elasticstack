@@ -1,5 +1,5 @@
 instances:
-{% for host in groups[elasticsearch_group_name]  %}
+{% for host in groups[elasticstack_elasticsearch_group_name]  %}
   - name: "{{ host }}" 
     ip: 
       - "{{ hostvars[host].ansible_default_ipv4.address | default(hostvars[host].ansible_all_ipv4_addresses[0]) }}"

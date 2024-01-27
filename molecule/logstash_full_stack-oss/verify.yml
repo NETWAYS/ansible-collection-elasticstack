@@ -25,16 +25,16 @@
       sort -n |
       tail -1
     register: logstash_count
-    when: "elasticsearch_group_name is defined and elasticsearch_group_name in group_names"
+    when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names"
   - name: Show full output
     ansible.builtin.debug:
       var: logstash_count
-    when: "elasticsearch_group_name is defined and elasticsearch_group_name in group_names"
+    when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names"
   - name: Fail when logstash is empty
     ansible.builtin.fail:
       msg: "Logstash Index is empty"
-    when: "elasticsearch_group_name is defined and elasticsearch_group_name in group_names and logstash_count.stdout == 0"
+    when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names and logstash_count.stdout == 0"
   - name: Show number of received events
     ansible.builtin.debug:
       msg: "Elasticsearch received {{ logstash_count.stdout }} events so far"
-    when: "elasticsearch_group_name is defined and elasticsearch_group_name in group_names"
+    when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names"

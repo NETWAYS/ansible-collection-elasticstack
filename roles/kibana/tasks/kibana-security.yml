@@ -13,10 +13,10 @@
 
 - name: Set elasticstack_ca variable if not already done by user
   ansible.builtin.set_fact:
-    elasticstack_ca: "{{ groups[elasticsearch_group_name][0] }}"
+    elasticstack_ca: "{{ groups[elasticstack_elasticsearch_group_name][0] }}"
   when:
     - elasticstack_ca is undefined
-    - groups[elasticsearch_group_name] is defined
+    - groups[elasticstack_elasticsearch_group_name] is defined
   tags:
     - certificates
     - renew_ca

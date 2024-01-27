@@ -21,10 +21,10 @@
 
 - name: Set Elasticsearch hosts if used with other roles
   ansible.builtin.set_fact:
-    kibana_elasticsearch_hosts: "{{ groups[elasticsearch_group_name] }}"
+    kibana_elasticsearch_hosts: "{{ groups[elasticstack_elasticsearch_group_name] }}"
   when:
     - kibana_elasticsearch_hosts is undefined
-    - groups[elasticsearch_group_name] is defined
+    - groups[elasticstack_elasticsearch_group_name] is defined
 
 - name: Set Elasticsearch hosts to localhost if no other info is available
   ansible.builtin.set_fact:
@@ -32,7 +32,7 @@
       - localhost
   when:
     - kibana_elasticsearch_hosts is undefined
-    - groups[elasticsearch_group_name] is undefined
+    - groups[elasticstack_elasticsearch_group_name] is undefined
 
 - name: Construct exact name of Kibana package
   ansible.builtin.set_fact:

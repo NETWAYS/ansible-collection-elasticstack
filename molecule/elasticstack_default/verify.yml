@@ -5,7 +5,7 @@
   vars:
     elasticstack_elasticsearch_http_port: 9200
     elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
-    elasticsearch_group_name: elasticsearch
+    elasticstack_elasticsearch_group_name: elasticsearch
   tasks:
 
     - name: Run Logstash syntax check
@@ -23,7 +23,7 @@
 
     - name: Set elasticsearch_ca variable if not already done by user
       ansible.builtin.set_fact:
-        elasticsearch_ca: "{{ groups[elasticsearch_group_name][0] }}"
+        elasticsearch_ca: "{{ groups[elasticstack_elasticsearch_group_name][0] }}"
       when: elasticsearch_ca is undefined
 
     - name: fetch Elastic password
@@ -43,22 +43,22 @@
         sort -n |
         tail -1
       register: logstash_count
-      when: "elasticsearch_group_name is defined and elasticsearch_group_name in group_names"
+      when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names"
 
     - name: Show full output
       ansible.builtin.debug:
         var: logstash_count
-      when: "elasticsearch_group_name is defined and elasticsearch_group_name in group_names"
+      when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names"
 
     - name: Fail when logstash index is empty
       ansible.builtin.fail:
         msg: "Logstash Index is empty"
-      when: "elasticsearch_group_name is defined and elasticsearch_group_name in group_names and logstash_count.stdout == 0"
+      when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names and logstash_count.stdout == 0"
 
     - name: Show number of received events
       ansible.builtin.debug:
         msg: "Elasticsearch received {{ logstash_count.stdout }} events so far"
-      when: "elasticsearch_group_name is defined and elasticsearch_group_name in group_names"
+      when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names"
 
     - name: Run Kibana checks
       when: "'kibana' in group_names"
@@ -113,7 +113,7 @@
       until: result.json.status == "green"
       retries: 6
       delay: 10
-      when: groups[elasticsearch_group_name] | length > 1
+      when: groups[elasticstack_elasticsearch_group_name] | length > 1
 
     - name: Elasticsearch Node check
       ansible.builtin.uri:
@@ -126,7 +126,7 @@
         status_code: 200
         validate_certs: false
       register: nodes
-      when: groups[elasticsearch_group_name] | length > 1
+      when: groups[elasticstack_elasticsearch_group_name] | length > 1
 
     - name: Check if all Nodes see each other
       ansible.builtin.assert:
@@ -135,5 +135,5 @@
         fail_msg: "'{{ item }}' was not found in nodes.content"
         success_msg: "'{{ item }}' was found in nodes.content"
       with_inventory_hostnames: all
-      when: groups[elasticsearch_group_name] | length > 1
+      when: groups[elasticstack_elasticsearch_group_name] | length > 1
 

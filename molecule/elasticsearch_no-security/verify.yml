@@ -5,7 +5,7 @@
   hosts: all
   vars:
     elasticstack_elasticsearch_http_port: 9200
-    elasticstack_elasticsearch_group_name: elasticsearch
+    elasticstack_elasticsearch_group_name: elasticsearchXYZ
   tasks:
 
 # Remember, this is the no-security scenario. So no https

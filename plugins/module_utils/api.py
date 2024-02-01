@@ -4,9 +4,6 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or
 # https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from difflib import restore
-from pickle import NONE
-from xml.sax.saxutils import prepare_input_source
 from elasticsearch import Elasticsearch
 import ssl
 

@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+# Copyright (c) 2024, Tobias Bauriedel <tobias.bauriedel@netways.de>
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or
+# https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
@@ -41,10 +45,13 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=dict(
+            # User args
             name=dict(type=str, required=True),
             cluster=dict(type=list, required=False),
-            indicies=dict(type=list, required=False), # indicies.{n}.name, indicies.{n}.privileges
+            indicies=dict(type=list, required=False),
             state=dict(type=str, required=False, default='present'),
+
+            # Auth args
             host=dict(type=str, required=True),
             auth_user=dict(type=str, required=True),
             auth_pass=dict(type=str, required=True),

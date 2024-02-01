@@ -4,77 +4,82 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or
 # https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.netways.elasticstack.plugins.module_utils.elasticsearch_api import (
-    UserObject,
-)
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.netways.elasticstack.plugins.module_utils.api import (
+    User
+)
 
 
 def run_module():
     '''
     Elasticsearch user management.
+
+    ```
+    netways.elasticstack.elasticsearch_user:
+        name: new-user1
+        fullname: New User
+        password: changeMe123!
+        email: "new@user.de"
+        roles:
+          - new-role1
+        enabled: true
+        state: absent
+        host: https://localhost:9200
+        auth_user: elastic
+        auth_pass: "{{ elasticstack_password.stdout }}"
+        verify_certs: false
+        ca_certs: /etc/elasticsearch/certs/http_ca.crt
+    ```
     '''
-
-    # https://github.com/NETWAYS/ansible-collection-elasticstack/blob/main/roles/logstash/tasks/logstash-security.yml#L405-L472
-
-    # get user
-    # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-get-user.html
-
-    # create or update user
-    # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-put-user.html
-
-    # delete user
-    # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-delete-user.html
-
-    # enable user
-    # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-enable-user.html
-
-    # disable user
-    # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-disable-user.html
 
     module = AnsibleModule(
         argument_spec=dict(
+            # User args
             name=dict(type=str, required=True),
             fullname=dict(type=str, required=False),
             password=dict(type=str, required=True),
             email=dict(type=str, required=False),
             roles=dict(type=list, required=True),
-            metadata=dict(type=dict, required=False),
-            state=dict(type=str, required=False, default="present"), # 'present' or 'absent'
-            enabled=dict(type=bool, required=False, default=True), # True=enabled & False=disabled
-            endpoint=dict(type=str, required=False, default="https://localhost:9200"),
-            ca=dict(type=str, required=True), # Path to ca to authenticate API requests
-            es_version=dict(type=int, required=False, default=8), # Elasticsearch version
+            enabled=dict(type=bool, required=False, default=True),
+            state=dict(type=str, required=False, default="present"),
+            
+            # Auth args
+            host=dict(type=str, required=True),
+            auth_user=dict(type=str, required=True),
+            auth_pass=dict(type=str, required=True),
+            ca_certs=dict(type=str, required=False),
+            verify_certs=dict(type=bool, required=False, default=True)
         )
     )
 
-    # Check if provided state is valid
-    valid_states = list("present", "absent")
-    if module.params['state'] not in valid_states:
-        module.exit_json(
-            failed=True,
-            changed=False,
-            stderr="Invalid state provided. Use 'present' or 'absent."
-        )
-
-    user = UserObject(module)
-
-    module.exit_json(
-        debug=user
+    result = dict(
+        failed=False,
+        changed=False
     )
 
-    # Block 1
-        # if (current state == configured state) && (current properties == configured properties) -> exit
+    user = User(
+        result=result,
+        user_name=module.params['name'],
+        full_name=module.params['fullname'],
+        password=module.params['password'],
+        email=module.params['email'],
+        roles=module.params['roles'],
+        enabled=module.params['enabled'],
+        state=module.params['state'],
+        host=module.params['host'],
+        auth_user=module.params['auth_user'],
+        auth_pass=module.params['auth_pass'],
+        ca_certs=module.params['ca_certs'],
+        verify_certs=module.params['verify_certs'],
+    )
 
-        # if (current enabled != configured enable) -> change
+    result = user.return_result()
 
-        # if current state != configured state -> create or delete (based on configured state)
+    module.exit_json(**result)
 
-        # if (current state == configured state) && (current properties != configured properties) -> update user properties
-
-    # Block 2
 
 if __name__ == "__main__":
     run_module()

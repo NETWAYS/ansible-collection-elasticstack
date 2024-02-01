@@ -29,16 +29,15 @@
       register: elasticstack_password
       changed_when: false
 
-    - name: Create role
+    - name: Create elasticsearch role 'new-role'
       netways.elasticstack.elasticsearch_role:
-        name: new-role3
+        name: new-role1
         cluster:
           - manage_own_api_key
           - delegate_pki
         indicies:
           - names:
               - foobar321
-              - barfoo123
             privileges:
               - read
               - write
@@ -47,4 +46,21 @@
         auth_user: elastic
         auth_pass: "{{ elasticstack_password.stdout }}"
         verify_certs: false
-        ca_certs: /etc/elasticsearch/certs/http_ca.crt
+        #ca_certs: /etc/elasticsearch/certs/http_ca.crt
+
+    - name: Create elasticsearch user 'new-user'
+      netways.elasticstack.elasticsearch_user:
+        name: new-user1
+        fullname: New User
+        password: changeMe123!
+        email: new@user.de
+        roles:
+          - new-role1
+          - logstash-writer
+        enabled: true
+        state: present
+        host: https://localhost:9200
+        auth_user: elastic
+        auth_pass: "{{ elasticstack_password.stdout }}"
+        verify_certs: false
+        #ca_certs: /etc/elasticsearch/certs/http_ca.crt

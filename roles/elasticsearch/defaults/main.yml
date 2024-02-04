@@ -63,3 +63,4 @@ elasticstack_elasticsearch_http_port: 9200
 elasticstack_no_log: true
 
 elasticstack_elasticsearch_group_name: elasticsearch
+elasticstack_logstash_group_name: logstash

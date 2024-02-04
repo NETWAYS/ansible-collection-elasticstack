@@ -61,11 +61,12 @@
   ansible.builtin.service:
     name: logstash
     state: stopped
-  with_items: "{{ groups['logstash'] }}"
+  with_items: "{{ groups[elasticstack_logstash_group_name] }}"
   delegate_to: "{{ item }}"
   when:
     - "'renew_ca' in ansible_run_tags or elasticstack_ca_will_expire_soon | bool"
-    - groups['logstash'] is defined
+    - elasticstack_logstash_group_name is defined
+    - groups[elasticstack_logstash_group_name] is defined
 
 - name: Backup ca directory on elasticsearch ca host then remove
   when: (inventory_hostname == elasticstack_ca) and ('renew_ca' in "ansible_run_tags" or elasticstack_ca_will_expire_soon | bool)

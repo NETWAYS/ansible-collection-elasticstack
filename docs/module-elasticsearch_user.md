@@ -30,12 +30,29 @@ Module arguments
 Example usage
 ---
 ```
-    - name: Create elasticsearch user 'new-user'
+    - name: Create elasticsearch user 'new-user1'
       netways.elasticstack.elasticsearch_user:
-        name: new-user
-        fullname: New User
+        name: new-user1
+        fullname: New User 1
         password: changeMe321!
-        email: new@user.de
+        email: new1@user.de
+        roles:
+          - new-role
+          - logstash-writer
+        enabled: true
+        state: present
+        host: https://localhost:9200
+        auth_user: elastic
+        auth_pass: changeMe123!
+        verify_certs: true
+        ca_certs: /etc/elasticsearch/certs/http_ca.crt
+
+    - name: Create elasticsearch user 'new-user2'
+      netways.elasticstack.elasticsearch_user:
+        name: new-user2
+        fullname: New User 2
+        password: changeMe321!
+        email: new2@user.de
         roles:
           - new-role
           - logstash-writer

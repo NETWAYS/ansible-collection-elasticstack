@@ -29,9 +29,28 @@ Module arguments
 Example usage
 ---
 ```
-    - name: Create elasticsearch role 'new-role'
+    - name: Create elasticsearch role 'new-role1'
       netways.elasticstack.elasticsearch_role:
-        name: new-role
+        name: new-role1
+        cluster:
+          - manage_own_api_key
+          - delegate_pki
+        indicies:
+          - names:
+              - default01
+            privileges:
+              - read
+              - write
+        state: present
+        host: https://localhost:9200
+        auth_user: elastic
+        auth_pass: changeMe123!
+        verify_certs: true
+        ca_certs: /etc/elasticsearch/certs/http_ca.crt
+
+    - name: Create elasticsearch role 'new-role2'
+      netways.elasticstack.elasticsearch_role:
+        name: new-role2
         cluster:
           - manage_own_api_key
           - delegate_pki

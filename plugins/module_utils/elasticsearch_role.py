@@ -60,10 +60,12 @@ class Role():
             self.result['msg'] = self.role_name + " has been created"
             return
 
-        if pre_role != None:
-            if pre_role.raw != self.get().raw:
-                self.result['changed'] = True
-                self.result['msg'] = self.role_name + " has been updated"
+        if pre_role == None:
+            return
+
+        if pre_role.raw != self.get().raw:
+            self.result['changed'] = True
+            self.result['msg'] = self.role_name + " has been updated"
 
         return
         

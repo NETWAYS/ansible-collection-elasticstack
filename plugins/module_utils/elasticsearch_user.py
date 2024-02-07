@@ -62,7 +62,10 @@ class User():
             self.result['msg'] = self.user_name + " has been created"
             return
 
-        if pre_user != None and pre_user.raw != self.get().raw:
+        if pre_user == None:
+            return
+
+        if pre_user.raw != self.get().raw:
             self.result['changed'] = True
             self.result['msg'] = self.user_name + " has beed updated"
 

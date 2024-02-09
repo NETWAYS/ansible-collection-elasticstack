@@ -121,13 +121,21 @@
       replace(' ', '')
       }}
 
-- name: Install Elasticsearch - rpm
+- name: Install Elasticsearch - rpm - full stack
   ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
+    - elasticstack_full_stack | bool
+
+- name: Install Elasticsearch - rpm - standalone
+  ansible.builtin.package:
+    name: "{{ elasticsearch_package }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - not elasticstack_full_stack | bool
 
 - name: Install Elasticsearch - deb
   ansible.builtin.package:

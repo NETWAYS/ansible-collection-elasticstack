@@ -26,3 +26,11 @@
       when:
         - beats_filebeat_version.stdout.find('8.4.1') == -1
         - elasticstack_release == 8
+
+    - name: Ensure field is set correctly
+      ansible.builtin.lineinfile:
+        dest: /etc/filebeat/filebeat.yml
+        line: "    testfield: thisisatest"
+      check_mode: true
+      register: _field
+      failed_when: _field.changed

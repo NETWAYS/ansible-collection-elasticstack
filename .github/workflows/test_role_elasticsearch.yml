@@ -12,15 +12,6 @@ on:
           - info
           - warning
           - debug
-  push:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'roles/elasticsearch/**'
-      - '.github/workflows/test_role_elasticsearch.yml'
-      - 'molecule/elasticsearch_**'
   pull_request:
     branches:
       - 'feature/**'

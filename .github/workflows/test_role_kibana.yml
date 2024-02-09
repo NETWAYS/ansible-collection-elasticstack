@@ -12,15 +12,6 @@ on:
           - info
           - warning
           - debug
-  push:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'roles/kibana/**'
-      - '.github/workflows/test_role_kibana.yml'
-      - 'molecule/kibana_**'
   pull_request:
     branches:
       - 'feature/**'

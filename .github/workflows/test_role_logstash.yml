@@ -12,15 +12,6 @@ on:
           - info
           - warning
           - debug
-  push:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'roles/logstash/**'
-      - '.github/workflows/test_role_logstash.yml'
-      - 'molecule/logstash_**'
   pull_request:
     branches:
       - 'feature/**'
@@ -48,7 +39,6 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 4
       matrix:
         distro: [ubuntu2204]
         scenario:
@@ -64,7 +54,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.8
 

@@ -1,5 +1,12 @@
 ---
 
+- name: Update apt cache.
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 600
+  changed_when: false
+  when: ansible_os_family == 'Debian'
+
 - name: Include OS specific vars
   ansible.builtin.include_vars: '{{ item }}'
   with_first_found:
@@ -63,13 +70,21 @@
       replace(' ', '')
       }}
 
-- name: Install Logstash - rpm
+- name: Install Logstash - rpm - full stack
   ansible.builtin.package:
     name: "{{ logstash_package }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
+    - elasticstack_full_stack | bool
+
+- name: Install Logstash - rpm - standalone
+  ansible.builtin.package:
+    name: "{{ logstash_package }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - not elasticstack_full_stack | bool
 
 - name: Install Logstash - deb
   ansible.builtin.package:
@@ -230,3 +245,11 @@
     state: started
     enabled: yes
   when: logstash_enable | bool
+  register: logstash_freshstart
+
+# Free up some space to let elsticsearch allocate replica in GitHub Action
+- name: Remove cache
+  ansible.builtin.command: >
+    rm -rf /var/cache/*
+  changed_when: false
+  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"

@@ -13,23 +13,6 @@ on:
           - warning
           - debug
   pull_request:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'roles/**'
-      - '.github/workflows/test_roles_pr.yml'
-      - 'molecule/elasticstack_default/**'
-  push:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'roles/**'
-      - '.github/workflows/test_roles_pr.yml'
-      - 'molecule/elasticstack_default/**'
   merge_group:
 
 jobs:
@@ -48,7 +31,6 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 2
       matrix:
         distro:
           - rockylinux8
@@ -64,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.8
 

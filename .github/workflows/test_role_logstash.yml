@@ -12,15 +12,6 @@ on:
           - info
           - warning
           - debug
-  push:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'roles/logstash/**'
-      - '.github/workflows/test_role_logstash.yml'
-      - 'molecule/logstash_**'
   pull_request:
     branches:
       - 'feature/**'

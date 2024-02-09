@@ -10,13 +10,22 @@
       string if elasticstack_version is defined else '') |
       replace(' ', '')
       }}
-- name: Install Auditbeat - rpm
+
+- name: Install Auditbeat - rpm - full stack
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
+    - elasticstack_full_stack | bool
+
+- name: Install Auditbeat - rpm - standalone
+  ansible.builtin.package:
+    name: "{{ beats_auditbeat_package }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - not elasticstack_full_stack | bool
 
 - name: Install Auditbeat - deb
   ansible.builtin.package:
@@ -24,7 +33,7 @@
   when:
     - ansible_os_family == "Debian"
 
-- name: Install Auditbeat latest version - rpm
+- name: Install Auditbeat latest version - rpm - full stack
   ansible.builtin.package:
     name: auditbeat
     state: latest
@@ -36,6 +45,19 @@
     - elasticstack_version is defined
     - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
+    - elasticstack_full_stack | bool
+
+- name: Install Auditbeat latest version - rpm - standalone
+  ansible.builtin.package:
+    name: auditbeat
+    state: latest
+  notify:
+    - Restart Auditbeat
+  when:
+    - elasticstack_version is defined
+    - elasticstack_version == "latest"
+    - ansible_os_family == "RedHat"
+    - not elasticstack_full_stack | bool
 
 - name: Install Auditbeat latest version - deb
   ansible.builtin.package:

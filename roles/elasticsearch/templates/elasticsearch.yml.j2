@@ -75,3 +75,7 @@ path:
 
 {% endfor %}
 {% endif %}
+
+{% if elasticsearch_extra_config is defined %}
+{{ elasticsearch_extra_config | to_nice_yaml(indent=2, sort_keys=False) }}
+{% endif %}

@@ -258,3 +258,7 @@
     - certificates
     - renew_ca
     - renew_kibana_cert
+
+- name: Create default web certificate
+  ansible.builtin.include_tasks: kibana-web-cert.yml
+  when: kibana_tls | bool

@@ -222,7 +222,7 @@
   block:
     - name: Check for cluster status without security
       ansible.builtin.uri:
-        url: "http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+        url: "http://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
       register: elasticsearch_cluster_status
       ignore_errors: "{{ ansible_check_mode }}"
       until: elasticsearch_cluster_status.json.status == "green"

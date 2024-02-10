@@ -31,7 +31,7 @@ Role Variables
 * *elasticsearch_pamlimits*: Set pam_limits neccessary for Elasticsearch. (Default: `true`)
 * *elasticsearch_check_calculation*: End play in checks (Default: `false`)
 * *elasticsearch_network_host*: You can configure multipe network addresses where the networking is bind to. You can assign IP addresses or interfaces by their names. You can also use elasticsearch internal variabels as it set as default. Example: `"_ens190_,_local_"` (Default: `"_local_,"_site_"`) (Optional; if not defined `default` is used)
-
+* *elasticsearch_api_host*: Hostname or IP elasticsearch is listening on. Only used for connection checks by ansible role. (Default: `localhost`)
 * *elasticsearch_extra_config*: You can set additional configuration in YAML-notation as you would write in the `elasaticsearch.yml`. Example:
 
 ```YAML

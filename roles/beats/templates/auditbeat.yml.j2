@@ -31,7 +31,7 @@ setup.template.settings:
 setup.kibana:
 {% if beats_auditbeat_output == "elasticsearch" %}
 output.elasticsearch:
-{% if elasticsearch_http_security | bool %}
+{% if beats_security | bool %}
 {% if elasticstack_full_stack | bool %}
   hosts: [ {% for host in groups['elasticsearch'] %}"https://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% else %}

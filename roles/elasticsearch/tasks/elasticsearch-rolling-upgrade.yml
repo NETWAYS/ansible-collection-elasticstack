@@ -119,7 +119,7 @@
         '{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes?h=name'
         | grep
         -E
-        '^{{ ansible_fqdn }}$'
+        '^{{ ansible_hostname }}$'
       register: result
       until: result.rc == 0
       retries: 200

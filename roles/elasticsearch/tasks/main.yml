@@ -126,8 +126,10 @@
       }}
 
 - name: Update Elasitcsearch if needed
-  ansible.builtin.import_tasks: elasticsearch-rolling-upgrade.yml
+  ansible.builtin.include_tasks: elasticsearch-rolling-upgrade.yml
+  with_items: "{{ groups['elasticsearch'] }}"
   when:
+    - "hostvars[item].inventory_hostname == inventory_hostname"
     - elasticstack_version is defined
     - ansible_facts.packages['elasticsearch'][0].version is defined
     - elasticstack_password.stdout is defined

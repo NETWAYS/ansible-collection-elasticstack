@@ -8,6 +8,10 @@
 
 ---
 
+- name: Set connection protocol to https
+  ansible.builtin.set_fact:
+    elasticsearch_http_protocol: "https"
+
 - name: Check for running Elasticsearch service
   ansible.builtin.systemd:
     name: elasticsearch
@@ -35,7 +39,6 @@
 - name: Be careful about upgrade when Elasticsearch is running
   when:
     - elasticsearch_running.status.ActiveState == "active"
-  throttle: 1
   block:
 
       # this step is key!!!  Don't restart more nodes

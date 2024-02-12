@@ -22,6 +22,7 @@ elasticsearch_conf_dir: "/etc/elasticsearch/"
 elasticsearch_config_jvm: "jvm.options.j2"
 elasticsearch_user: elasticsearch
 elasticsearch_group: elasticsearch
+elasticsearch_api_host: localhost
 
 # JVM custom parameters
 elasticsearch_java_home: ''

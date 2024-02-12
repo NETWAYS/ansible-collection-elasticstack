@@ -40,7 +40,7 @@ def run_module():
             # User args
             name=dict(type=str, required=True),
             fullname=dict(type=str, required=False),
-            password=dict(type=str, required=True),
+            password=dict(type=str, required=True, no_log=True),
             email=dict(type=str, required=False),
             roles=dict(type=list, required=True),
             enabled=dict(type=bool, required=False, default=True),
@@ -49,7 +49,7 @@ def run_module():
             # Auth args
             host=dict(type=str, required=True),
             auth_user=dict(type=str, required=True),
-            auth_pass=dict(type=str, required=True),
+            auth_pass=dict(type=str, required=True, no_log=True),
             ca_certs=dict(type=str, required=False),
             verify_certs=dict(type=bool, required=False, default=True)
         )

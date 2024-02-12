@@ -54,7 +54,7 @@ def run_module():
             # Auth args
             host=dict(type=str, required=True),
             auth_user=dict(type=str, required=True),
-            auth_pass=dict(type=str, required=True),
+            auth_pass=dict(type=str, required=True, no_log=True),
             ca_certs=dict(type=str, required=False),
             verify_certs=dict(type=bool, required=False, default=True)
         )

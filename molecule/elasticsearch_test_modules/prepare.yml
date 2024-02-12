@@ -20,4 +20,3 @@
         name: "{{ item }}"
       loop:
         - elasticsearch
-        - certifi

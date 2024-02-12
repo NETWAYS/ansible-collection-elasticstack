@@ -23,7 +23,7 @@ Module arguments
 * *host*: API endpoint (**Required**)
 * *auth_user*: User to authenticate on the Elasticsearch API (**Required**)
 * *auth_pass*: Password for the given user (**Required**)
-* *verify_certs*: Verify certificates (Default: True)
+* *verify_certs*: Verify certificates (Default: `true`)
 * *ca_certs*: Verify HTTPS connection by using ca certificate. Path to ca needs to be given
 
 Example usage

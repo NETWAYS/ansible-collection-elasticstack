@@ -1,0 +1,115 @@
+# Ansible
+#
+# Rolling restart of Elasticsearch with security on
+# Source from: author: Jeff Steinmetz, @jeffsteinmetz; Bin Li, @holysoros
+# Modifications: author: Daniel Neuberger @netways.de
+# More modifications: NETWAYS Professional Services GmbH
+# latest tested with Ansible 2.9 and later
+
+---
+
+- name: Set connection protocol to https
+  ansible.builtin.set_fact:
+    elasticsearch_http_protocol: "https"
+
+- name: Check for running Elasticsearch service
+  ansible.builtin.systemd:
+    name: elasticsearch
+  register: elasticsearch_running
+
+- name: Be careful about upgrade when Elasticsearch is running
+  when:
+    - elasticsearch_running.status.ActiveState == "active"
+  block:
+
+      # this step is key!!!  Don't restart more nodes
+      # until all shards have completed recovery
+    - name: Wait for cluster health to return to green
+      ansible.builtin.uri:
+        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
+        method: GET
+        user: elastic
+        password: "{{ elasticstack_password.stdout }}"
+        validate_certs: no
+      register: response
+      until: "response.json.status == 'green'"
+      retries: 50
+      delay: 30
+
+    - name: Disable shard allocation for the cluster
+      ansible.builtin.uri:
+        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
+        method: PUT
+        body: '{ "persistent": { "cluster.routing.allocation.enable": "none" }}'
+        body_format: json
+        user: elastic
+        password: "{{ elasticstack_password.stdout }}"
+        validate_certs: no
+
+    - name: Stop non essential indexing to speed up shard recovery
+      ansible.builtin.uri:
+        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_flush"
+        method: POST
+        user: elastic
+        password: "{{ elasticstack_password.stdout }}"
+        validate_certs: no
+      failed_when: false
+
+    - name: Shutdown elasticsearch service
+      ansible.builtin.service:
+        name: elasticsearch
+        enabled: yes
+        daemon_reload: yes
+        state: restarted
+
+    - name: Wait for elasticsearch node to come back up if it was stopped
+      ansible.builtin.wait_for:
+        host: "localhost"
+        port: "{{ elasticstack_elasticsearch_http_port }}"
+        delay: 30
+
+    - name: Confirm the node joins the cluster # noqa: risky-shell-pipe
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        curl
+        -k
+        -u elastic:{{ elasticstack_password.stdout }}
+        -s
+        -m 2
+        '{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes?h=name'
+        | grep
+        -E
+        '^{{ elasticsearch_nodename }}$'
+      register: result
+      until: result.rc == 0
+      retries: 200
+      delay: 3
+      changed_when: false
+
+    - name: Enable shard allocation for the cluster
+      ansible.builtin.uri:
+        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
+        method: PUT
+        body: '{ "persistent": { "cluster.routing.allocation.enable": null }}'
+        body_format: json
+        user: elastic
+        password: "{{ elasticstack_password.stdout }}"
+        validate_certs: no
+      register: response
+      # next line is boolean not string, so no quotes around true
+      # use python truthiness
+      until: "response.json.acknowledged == true"
+      retries: 5
+      delay: 30
+
+    - name: Wait for cluster health to return to yellow or green
+      ansible.builtin.uri:
+        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
+        method: GET
+        user: elastic
+        password: "{{ elasticstack_password.stdout }}"
+        validate_certs: no
+      register: response
+      until: "response.json.status == 'yellow' or response.json.status == 'green'"
+      retries: 5
+      delay: 30

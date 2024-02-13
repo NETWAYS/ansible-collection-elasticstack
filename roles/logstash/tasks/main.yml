@@ -67,6 +67,23 @@
       string if elasticstack_version is defined else '') |
       replace(' ', '')
       }}
+  when:
+    - ansible_os_family != "Debian"
+
+- name: Construct exact name of Logstas package
+  ansible.builtin.set_fact:
+    logstash_package: >
+      {{
+      'logstash' +
+      '1:' +
+      ('-oss' if elasticstack_variant == 'oss' else '') +
+      (elasticstack_versionseparator +
+      elasticstack_version |
+      string if elasticstack_version is defined else '') |
+      replace(' ', '')
+      }}
+  when:
+    - ansible_os_family == "Debian"
 
 - name: Install Logstash - rpm - full stack
   ansible.builtin.package:

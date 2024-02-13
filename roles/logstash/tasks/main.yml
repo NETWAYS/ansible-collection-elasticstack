@@ -76,8 +76,8 @@
       {{
       'logstash' +
       ('-oss' if elasticstack_variant == 'oss' else '') +
-      ('1:' +
-      elasticstack_versionseparator +
+      (elasticstack_versionseparator +
+      '1:' +
       elasticstack_version |
       string if elasticstack_version is defined else '') |
       replace(' ', '')

@@ -125,7 +125,7 @@
       replace(' ', '')
       }}
 
-- name: Update Elasitcsearch if needed
+- name: Update Elasticsearch if needed
   ansible.builtin.include_tasks: elasticsearch-rolling-upgrade.yml
   with_items: "{{ groups['elasticsearch'] }}"
   when:

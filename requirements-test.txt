@@ -4,3 +4,4 @@ molecule
 molecule-plugins[docker]
 pytest
 passlib
+elasticsearch

@@ -22,6 +22,7 @@ elasticsearch_conf_dir: "/etc/elasticsearch/"
 elasticsearch_config_jvm: "jvm.options.j2"
 elasticsearch_user: elasticsearch
 elasticsearch_group: elasticsearch
+elasticsearch_api_host: localhost
 
 # JVM custom parameters
 elasticsearch_java_home: ''
@@ -39,6 +40,7 @@ elasticsearch_tls_key_passphrase: PleaseChangeMeIndividually
 elasticsearch_cert_validity_period: 1095
 elasticsearch_cert_expiration_buffer: 30
 elasticsearch_cert_will_expire_soon: false
+elasticsearch_ssl_verification_mode: full
 
 # only used internally
 elasticsearch_freshstart:

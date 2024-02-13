@@ -43,13 +43,21 @@
       string if elasticstack_version is defined else '') |
       replace(' ', '') }}
 
-- name: Install Kibana - rpm
+- name: Install Kibana - rpm - full stack
   ansible.builtin.package:
     name: "{{ kibana_package }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
+    - elasticstack_full_stack | bool
+
+- name: Install Kibana - rpm - standalone
+  ansible.builtin.package:
+    name: "{{ kibana_package }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - not elasticstack_full_stack | bool
 
 - name: Install Kibana - deb
   ansible.builtin.package:

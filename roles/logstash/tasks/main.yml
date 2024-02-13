@@ -68,13 +68,21 @@
       replace(' ', '')
       }}
 
-- name: Install Logstash - rpm
+- name: Install Logstash - rpm - full stack
   ansible.builtin.package:
     name: "{{ logstash_package }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
+    - elasticstack_full_stack | bool
+
+- name: Install Logstash - rpm - standalone
+  ansible.builtin.package:
+    name: "{{ logstash_package }}"
+  when:
+    - ansible_os_family == "RedHat"
+    - not elasticstack_full_stack | bool
 
 - name: Install Logstash - deb
   ansible.builtin.package:

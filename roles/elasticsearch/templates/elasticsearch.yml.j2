@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 node.name: "{{ elasticsearch_nodename }}"
 path.data: {{ elasticsearch_datapath }}
 path.logs: {{ elasticsearch_logpath }}
@@ -6,6 +8,12 @@ cluster.name: "{{ elasticsearch_clustername }}"
 network.host: [ {{ elasticsearch_network_host }} ]
 {% else %}
 network.host: [ "_local_", "_site_" ]
+{% endif %}
+{% if elasticstack_elasticsearch_http_port is defined %}
+http.port: "{{ elasticstack_elasticsearch_http_port }}"
+{% endif %}
+{% if elasticsearch_transport_port is defined %}
+transport.port: "{{ elasticsearch_transport_port }}"
 {% endif %}
 {% if elasticsearch_http_publish_host is defined %}
 http.publish_host: "{{ elasticsearch_http_publish_host }}"
@@ -22,10 +30,15 @@ node.roles: [ {% for type in elasticsearch_node_types %}{{ type }}{% if not loop
 discovery.type: single-node
 {% endif %}
 
+{# Quickfix to override seed_hosts. Otherwise all nodes, not only master nodes are added to seed_hosts #}
+{% if elasticsearch_seed_hosts is defined %}
+discovery.seed_hosts: {{ elasticsearch_seed_hosts }}
+{% else %}
 {% if elasticstack_release | int < 8 or groups['elasticsearch'] | length > 1 %}
 discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
 "{{ hostvars[host].ansible_default_ipv4.address | default(hostvars[host].ansible_all_ipv4_addresses[0]) }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
+{% endif %}
 {% endif %}
 
 {% if not elaticsearch_cluster_set_up | bool and groups['elasticsearch'] | length > 1 %}
@@ -48,14 +61,18 @@ bootstrap.system_call_filter: false
 {% endif %}
 {% if elasticstack_variant == "elastic" %}
 xpack.ml.enabled: {{ elasticsearch_ml_enabled }}
+{% if elasticstack_release == 7 %}
 xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}
+{% endif %}
 {% if elasticsearch_security | bool %}
 xpack.security.enabled: true
+{% if elasticsearch_security_enrollment is defined %}
+xpack.security.enrollment.enabled: {{ elasticsearch_security_enrollment }}
+{% endif %}
 xpack.security.transport.ssl.enabled: true
-#xpack.security.transport.ssl.verification_mode: certificate 
-xpack.security.transport.ssl.verification_mode: none 
-xpack.security.transport.ssl.keystore.path: certs/{{ ansible_hostname }}.p12 
-xpack.security.transport.ssl.truststore.path: certs/{{ ansible_hostname }}.p12 
+xpack.security.transport.ssl.verification_mode: {{ elasticsearch_ssl_verification_mode }}
+xpack.security.transport.ssl.keystore.path: certs/{{ ansible_hostname }}.p12
+xpack.security.transport.ssl.truststore.path: certs/{{ ansible_hostname }}.p12
 {% if elasticsearch_http_security | bool %}
 xpack.security.http.ssl.enabled: true
 xpack.security.http.ssl.keystore.path: certs/{{ ansible_hostname }}.p12

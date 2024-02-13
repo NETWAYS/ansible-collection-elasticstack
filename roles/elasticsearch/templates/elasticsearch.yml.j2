@@ -1,4 +1,4 @@
-node.name: "{{ ansible_hostname }}"
+node.name: "{{ elasticsearch_nodename }}"
 path.data: {{ elasticsearch_datapath }}
 path.logs: {{ elasticsearch_logpath }}
 cluster.name: "{{ elasticsearch_clustername }}"
@@ -31,11 +31,11 @@ discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
 {% if not elaticsearch_cluster_set_up | bool and groups['elasticsearch'] | length > 1 %}
 {% if elasticsearch_node_types is defined %}
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch_role_master']  %}
-"{{ hostvars[host].ansible_hostname }}"{% if not loop.last %},{% endif %}
+"{{ hostvars[host]['elasticsearch_nodename'] }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
 {% else %}
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
-"{{ hostvars[host].ansible_hostname }}"{% if not loop.last %},{% endif %}
+"{{ hostvars[host]['elasticsearch_nodename'] }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
 {% endif %}
 {% endif %}

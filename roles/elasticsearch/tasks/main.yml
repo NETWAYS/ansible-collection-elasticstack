@@ -20,6 +20,12 @@
     - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
     - '{{ ansible_os_family }}.yml'
 
+- name: Set node name if not overriden by user
+  ansible.builtin.set_fact:
+    elasticsearch_nodename: "{{ ansible_hostname }}"
+  when:
+    - elasticsearch_nodename is undefined
+
 - name: Set common password for common certificates
   ansible.builtin.set_fact:
     elasticsearch_tls_key_passphrase: "{{ elasticstack_cert_pass }}"

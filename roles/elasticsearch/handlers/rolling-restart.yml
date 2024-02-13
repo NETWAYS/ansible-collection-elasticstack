@@ -17,10 +17,26 @@
     name: elasticsearch
   register: elasticsearch_running
 
-- name: Be careful about upgrade when Elasticsearch is running
+- name: Restart a single node with extra checks
   when:
     - elasticsearch_running.status.ActiveState == "active"
   block:
+
+    - name: Enable shard allocation for the cluster
+      ansible.builtin.uri:
+        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
+        method: PUT
+        body: '{ "persistent": { "cluster.routing.allocation.enable": null }}'
+        body_format: json
+        user: elastic
+        password: "{{ elasticstack_password.stdout }}"
+        validate_certs: no
+      register: response
+      # next line is boolean not string, so no quotes around true
+      # use python truthiness
+      until: "response.json.acknowledged == true"
+      retries: 5
+      delay: 30
 
       # this step is key!!!  Don't restart more nodes
       # until all shards have completed recovery

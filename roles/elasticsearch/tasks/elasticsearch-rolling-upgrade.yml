@@ -21,24 +21,49 @@
   when:
     - elasticsearch_running.status.ActiveState == "inactive"
   block:
-    - name: Install Elasticsearch - rpm
+    - name: Install Elasticsearch - rpm fullstack
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
         enablerepo:
           - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
       when:
         - ansible_os_family == "RedHat"
+        - elasticstack_full_stack | bool
 
-    - name: Install Elasticsearch - deb
+    - name: Install Elasticsearch
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
       when:
-        - ansible_os_family == "Debian"
+        - ansible_os_family == "Debian" or
+          not elasticstack_full_stack | bool
+
+- name: Update single instances without extra caution
+  ansible.builtin.package:
+    name: "{{ elasticsearch_package }}"
+  when:
+    - ansible_os_family == "Debian" or
+      not elasticstack_full_stack | bool
+    - groups['elasticsearch'] | length == 1
+  notify:
+    - Restart Elasticsearch
+
+- name: Update single instances without extra caution - rpm fullstack
+  ansible.builtin.package:
+    name: "{{ elasticsearch_package }}"
+    enablerepo:
+      - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
+  when:
+    - ansible_os_family == "RedHat"
+    - elasticstack_full_stack | bool
+    - groups['elasticsearch'] | length == 1
+  notify:
+    - Restart Elasticsearch
 
 
 - name: Be careful about upgrade when Elasticsearch is running
   when:
     - elasticsearch_running.status.ActiveState == "active"
+    - groups['elasticsearch'] | length > 1
   block:
 
     - name: Enable shard allocation for the cluster

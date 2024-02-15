@@ -121,19 +121,21 @@
         enabled: yes
         state: stopped
 
-    - name: Install Elasticsearch - rpm
+    - name: Install Elasticsearch - rpm fullstack
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
         enablerepo:
           - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
       when:
         - ansible_os_family == "RedHat"
+        - elasticstack_full_stack | bool
 
-    - name: Install Elasticsearch - deb
+    - name: Install Elasticsearch
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
       when:
-        - ansible_os_family == "Debian"
+        - ansible_os_family == "Debian" or
+          not elasticstack_full_stack | bool
 
     - name: Start elasticsearch
       ansible.builtin.service:

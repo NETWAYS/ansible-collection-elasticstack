@@ -13,6 +13,13 @@
     - elasticstack_ca is undefined
     - groups['elasticsearch'][0] is defined
 
+- name: Set elasticstack_ca variable if not already set to Elasticsearch server
+  ansible.builtin.set_fact:
+    elasticstack_ca: "{{ groups['logstash'][0] }}"
+  when:
+    - elasticstack_ca is undefined
+    - groups['logstash'][0] is defined
+
 - name: Set versions for components
   ansible.builtin.import_tasks: elasticstack-versions.yml
 

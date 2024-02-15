@@ -56,7 +56,7 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Construct exact name of Logstas package
+- name: Construct exact name of Logstash package
   ansible.builtin.set_fact:
     logstash_package: >
       {{
@@ -67,23 +67,24 @@
       string if elasticstack_version is defined else '') |
       replace(' ', '')
       }}
-#  when:
-#    - ansible_os_family != "Debian"
-#
-#- name: Construct exact name of Logstas package
-#  ansible.builtin.set_fact:
-#    logstash_package: >
-#      {{
-#      'logstash' +
-#      ('-oss' if elasticstack_variant == 'oss' else '') +
-#      (elasticstack_versionseparator +
-#      '1:' +
-#      elasticstack_version |
-#      string if elasticstack_version is defined else '') |
-#      replace(' ', '')
-#      }}
-#  when:
-#    - ansible_os_family == "Debian"
+  when:
+    - ansible_os_family != "Debian"
+
+- name: Construct exact name of Logstas package
+  ansible.builtin.set_fact:
+    logstash_package: >
+      {{
+      'logstash' +
+      ('-oss' if elasticstack_variant == 'oss' else '') +
+      (elasticstack_versionseparator +
+      '1:' +
+      elasticstack_version +
+      '-1' |
+      string if elasticstack_version is defined else '') |
+      replace(' ', '')
+      }}
+  when:
+    - ansible_os_family == "Debian"
 
 - name: Install Logstash - rpm - full stack
   ansible.builtin.package:

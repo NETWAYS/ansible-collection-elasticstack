@@ -14,7 +14,6 @@ on:
           - debug
   pull_request:
   merge_group:
-  push:
 
 jobs:
   lint_full:

@@ -8,6 +8,9 @@
 
 ---
 
+# For now we support upgrade only for clusters with security enabled
+# If you positively need support for safely upgrading clusters without security,
+# feel free to open an issue at https://github.com/NETWAYS/ansible-collection-elasticstack/issues
 - name: Set connection protocol to https
   ansible.builtin.set_fact:
     elasticsearch_http_protocol: "https"
@@ -66,6 +69,8 @@
     - groups['elasticsearch'] | length > 1
   block:
 
+    # Usually we should not need this step. It's only there to recover from broken upgrade plays
+    # Without this step the cluster would never recover and the play would always fail
     - name: Enable shard allocation for the cluster
       ansible.builtin.uri:
         url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
@@ -96,6 +101,7 @@
       retries: 50
       delay: 30
 
+    # Disabling shard allocation right after enabling it seems redundant. Please see above for details.
     - name: Disable shard allocation for the cluster
       ansible.builtin.uri:
         url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"

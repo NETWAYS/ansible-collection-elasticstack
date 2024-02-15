@@ -70,7 +70,7 @@
   when:
     - ansible_os_family != "Debian"
 
-- name: Construct exact name of Logstas package
+- name: Construct exact name of Logstash package
   ansible.builtin.set_fact:
     logstash_package: >
       {{

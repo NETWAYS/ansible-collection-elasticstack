@@ -29,3 +29,6 @@
 - name: Set elasticstack_globals_set for other roles to skip this role
   ansible.builtin.set_fact:
     elasticstack_globals_set: true
+
+- name: Install common packages and dependencies
+  ansible.builtin.import_tasks: packages.yml

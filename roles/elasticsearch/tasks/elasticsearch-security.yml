@@ -1,17 +1,5 @@
 ---
 
-- name: Install packages for security tasks
-  ansible.builtin.package:
-    name:
-      - unzip
-      - python3-cryptography
-      - openssl
-  tags:
-    - certificates
-    - renew_ca
-    - renew_kibana_cert
-    - renew_es_cert
-
 - name: Ensure ca exists
   ansible.builtin.stat:
     path: "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"

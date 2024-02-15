@@ -1,16 +1,5 @@
 ---
 
-- name: Install packages for security tasks
-  ansible.builtin.package:
-    name:
-      - unzip
-      - python3-cryptography
-      - openssl
-  tags:
-    - certificates
-    - renew_ca
-    - renew_logstash_cert
-
 - name: Ensure logstash certificate exists
   ansible.builtin.stat:
     path: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"

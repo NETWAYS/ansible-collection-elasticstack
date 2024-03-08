@@ -75,7 +75,7 @@
     # Without this step the cluster would never recover and the play would always fail
     - name: Enable shard allocation for the cluster
       ansible.builtin.uri:
-        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
+        url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
         method: PUT
         body: '{ "persistent": { "cluster.routing.allocation.enable": null }}'
         body_format: json
@@ -93,7 +93,7 @@
       # until all shards have completed recovery
     - name: Wait for cluster health to return to green
       ansible.builtin.uri:
-        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
+        url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
         method: GET
         user: elastic
         password: "{{ elasticstack_password.stdout }}"
@@ -106,7 +106,7 @@
     # Disabling shard allocation right after enabling it seems redundant. Please see above for details.
     - name: Disable shard allocation for the cluster
       ansible.builtin.uri:
-        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
+        url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
         method: PUT
         body: '{ "persistent": { "cluster.routing.allocation.enable": "none" }}'
         body_format: json
@@ -116,7 +116,7 @@
 
     - name: Stop non essential indexing to speed up shard recovery
       ansible.builtin.uri:
-        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_flush"
+        url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_flush"
         method: POST
         user: elastic
         password: "{{ elasticstack_password.stdout }}"
@@ -155,7 +155,7 @@
 
     - name: Wait for elasticsearch node to come back up if it was stopped
       ansible.builtin.wait_for:
-        host: "localhost"
+        host: "{{ elasticsearch_api_host }}"
         port: "{{ elasticstack_elasticsearch_http_port }}"
         delay: 30
 
@@ -167,7 +167,7 @@
         -u elastic:{{ elasticstack_password.stdout }}
         -s
         -m 2
-        '{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes?h=name'
+        '{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes?h=name'
         | grep
         -E
         '^{{ elasticsearch_nodename }}$'
@@ -179,7 +179,7 @@
 
     - name: Enable shard allocation for the cluster
       ansible.builtin.uri:
-        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
+        url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
         method: PUT
         body: '{ "persistent": { "cluster.routing.allocation.enable": null }}'
         body_format: json
@@ -195,7 +195,7 @@
 
     - name: Wait for cluster health to return to yellow or green
       ansible.builtin.uri:
-        url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
+        url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
         method: GET
         user: elastic
         password: "{{ elasticstack_password.stdout }}"

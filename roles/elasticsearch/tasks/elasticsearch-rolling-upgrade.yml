@@ -52,7 +52,7 @@
           not elasticstack_full_stack | bool
       notify:
         - Restart Elasticsearch
-    
+
     - name: Update single instances without extra caution - rpm fullstack
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"

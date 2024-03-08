@@ -41,26 +41,28 @@
           not elasticstack_full_stack | bool
 
 - name: Update single instances without extra caution
-  ansible.builtin.package:
-    name: "{{ elasticsearch_package }}"
   when:
-    - ansible_os_family == "Debian" or
-      not elasticstack_full_stack | bool
     - groups['elasticsearch'] | length == 1
-  notify:
-    - Restart Elasticsearch
-
-- name: Update single instances without extra caution - rpm fullstack
-  ansible.builtin.package:
-    name: "{{ elasticsearch_package }}"
-    enablerepo:
-      - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
-  when:
-    - ansible_os_family == "RedHat"
-    - elasticstack_full_stack | bool
-    - groups['elasticsearch'] | length == 1
-  notify:
-    - Restart Elasticsearch
+  block:
+    - name: Update single instances without extra caution - deb
+      ansible.builtin.package:
+        name: "{{ elasticsearch_package }}"
+      when:
+        - ansible_os_family == "Debian" or
+          not elasticstack_full_stack | bool
+      notify:
+        - Restart Elasticsearch
+    
+    - name: Update single instances without extra caution - rpm fullstack
+      ansible.builtin.package:
+        name: "{{ elasticsearch_package }}"
+        enablerepo:
+          - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
+      when:
+        - ansible_os_family == "RedHat"
+        - elasticstack_full_stack | bool
+      notify:
+        - Restart Elasticsearch
 
 
 - name: Be careful about upgrade when Elasticsearch is running

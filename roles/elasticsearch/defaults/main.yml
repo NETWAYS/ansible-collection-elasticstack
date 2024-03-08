@@ -31,16 +31,15 @@ elasticsearch_heap_dump_path: "/var/lib/elasticsearch"
 
 elasticsearch_jna_workaround: false
 
-# The following variables are to be used when activating security
-# They follow a different naming scheme to show that they are global
-# to our set of Elastic Stack related Ansible roles
-
 elasticsearch_initialized_file: "{{ elasticstack_initial_passwords | dirname }}/cluster_initialized"
 elasticsearch_tls_key_passphrase: PleaseChangeMeIndividually
 elasticsearch_cert_validity_period: 1095
 elasticsearch_cert_expiration_buffer: 30
 elasticsearch_cert_will_expire_soon: false
 elasticsearch_ssl_verification_mode: full
+
+# use this only for non-prod environments and at your own risk!
+elasticsearch_unsafe_upgrade_restart: false
 
 # only used internally
 elasticsearch_freshstart:

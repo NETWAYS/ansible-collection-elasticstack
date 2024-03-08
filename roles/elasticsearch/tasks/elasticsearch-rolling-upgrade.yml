@@ -128,6 +128,8 @@
         name: elasticsearch
         enabled: yes
         state: stopped
+      when:
+        - not elasticsearch_unsafe_upgrade_restart | bool
 
     - name: Install Elasticsearch - rpm fullstack
       ansible.builtin.package:
@@ -152,6 +154,16 @@
         state: started
       when:
         - elasticsearch_running.status.ActiveState == "active"
+        - not elasticsearch_unsafe_upgrade_restart | bool
+
+    - name: Restart elasticsearch (fast, for non-prod)
+      ansible.builtin.service:
+        name: elasticsearch
+        enabled: yes
+        state: restarted
+      when:
+        - elasticsearch_running.status.ActiveState == "active"
+        - elasticsearch_unsafe_upgrade_restart | bool
 
     - name: Wait for elasticsearch node to come back up if it was stopped
       ansible.builtin.wait_for:

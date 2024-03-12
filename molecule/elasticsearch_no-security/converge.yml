@@ -13,6 +13,7 @@
     elasticsearch_heap: "1"
     elasticstack_release: 7
     elasticstack_no_log: false
+    elasticstack_elasticsearch_group_name: elasticsearchXYZ
   tasks:
     - name: Include Elastics repos role
       ansible.builtin.include_role:

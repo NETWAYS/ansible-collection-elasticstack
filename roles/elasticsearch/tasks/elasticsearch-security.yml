@@ -392,7 +392,7 @@
 
 - name: Check for API with bootstrap password
   ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}"
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}"
     user: elastic
     password: "{{ elasticsearch_bootstrap_pw }}"
     validate_certs: false
@@ -411,7 +411,7 @@
 
 - name: Check for cluster status with bootstrap password
   ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
     user: elastic
     password: "{{ elasticsearch_bootstrap_pw }}"
     validate_certs: false
@@ -438,7 +438,7 @@
 
 - name: Check for API availability with elastic password
   ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}"
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}"
     user: elastic
     password: "{{ elasticstack_password.stdout }}"
     validate_certs: false
@@ -467,7 +467,7 @@
         curl
         -k
         -X PUT
-        "{{ elasticsearch_http_protocol }}://elastic:{{ elasticstack_password.stdout }}@localhost:9200/_cluster/settings"
+        "{{ elasticsearch_http_protocol }}://elastic:{{ elasticstack_password.stdout }}@{{ elasticsearch_api_host }}:9200/_cluster/settings"
         -H 'Content-Type: application/json' -d
         '
         {
@@ -489,7 +489,7 @@
 
 - name: Check for cluster status with elastic password
   ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
     user: elastic
     password: "{{ elasticstack_password.stdout }}"
     validate_certs: false

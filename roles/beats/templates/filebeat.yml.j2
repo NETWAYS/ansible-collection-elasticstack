@@ -56,7 +56,7 @@ filebeat.inputs:
 - type: tcp
   enabled: true
   max_message_size: 10MiB
-  host: "0.0.0.0:514"
+  host: "0.0.0.0:{{ beats_filebeat_syslog_tcp_port }}"
 {% if beats_fields is defined %}
   fields:
 {% for field in beats_fields %}
@@ -69,7 +69,7 @@ filebeat.inputs:
 - type: udp
   enabled: true
   max_message_size: 10MiB
-  host: "0.0.0.0:514"
+  host: "0.0.0.0:{{ beats_filebeat_syslog_udp_port }}"
 {% if beats_fields is defined %}
   fields:
 {% for field in beats_fields %}

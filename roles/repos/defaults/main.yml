@@ -1,5 +1,6 @@
 ---
 # defaults file for elastic-repos
+elasticstack_repo_key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
 elasticstack_release: 8
 elasticstack_full_stack: true
 elasticstack_variant: elastic

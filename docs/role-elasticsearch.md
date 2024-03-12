@@ -31,7 +31,7 @@ Role Variables
 * *elasticsearch_pamlimits*: Set pam_limits neccessary for Elasticsearch. (Default: `true`)
 * *elasticsearch_check_calculation*: End play in checks (Default: `false`)
 * *elasticsearch_network_host*: You can configure multipe network addresses where the networking is bind to. You can assign IP addresses or interfaces by their names. You can also use elasticsearch internal variabels as it set as default. Example: `"_ens190_,_local_"` (Default: `"_local_,"_site_"`) (Optional; if not defined `default` is used)
-
+* *elasticsearch_api_host*: Hostname or IP elasticsearch is listening on. Only used for connection checks by ansible role. (Default: `localhost`)
 * *elasticsearch_extra_config*: You can set additional configuration in YAML-notation as you would write in the `elasaticsearch.yml`. Example:
 
 ```YAML
@@ -48,6 +48,10 @@ elasticsearch_extra_config:
 This variable activates a workaround to start on systems that have certain hardening measures active. See [Stackoverflow](https://stackoverflow.com/questions/47824643/unable-to-load-jna-native-support-library-elasticsearch-6-x/50371992#50371992) for details and logmessages to look for. **WARNING**: This will change your `/etc/sysconfig/elasticseach`or `/etc/default/elasticsearch` file and overwrite `ES_JAVA_OPTS`. See this [issue](https://github.com/netways/ansible-role-elasticsearch/issues/79) for details.
 
 * *elasticsearch_jna_workaround*: Activate JNA workaround. (default: `false`)
+* *elasticsearch_ssl_verification_mode*: Defines how to verify the certificates presented by another party in the TLS connection
+* *elasticsearch_transport_port*: The port to bind for communication between nodes
+* *elasticsearch_seed_hosts*: Set elasticsearch seed hosts
+* *elasticsearch_security_enrollment*: Controls enrollment (of nodes and Kibana) to a local node that’s been autoconfigured for security.
 
 These variables are identical over all our elastic related roles, hence the different naming schemes.
 

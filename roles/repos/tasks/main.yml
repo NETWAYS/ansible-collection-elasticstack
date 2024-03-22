@@ -1,5 +1,9 @@
 ---
 
+- name: Include global role
+  ansible.builtin.import_role:
+    name: netways.elasticstack.elasticstack
+
 - name: Check for versions
   ansible.builtin.fail:
     msg: "No OSS versions later than 7 are available"

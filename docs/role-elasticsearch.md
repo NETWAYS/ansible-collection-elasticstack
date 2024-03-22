@@ -13,6 +13,7 @@ Role Variables
 --------------
 
 * *elasticsearch_node_types*: List of types of this very node. Please refer to [official docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html) for details. (default: not set. allowed value: array of types)
++ *elasticsearch_nodename*': Node name of the Elasticsearch node. (default: value of `ansible_hostname`)
 * *elasticsearch_clustername*: Name the Elasticsearch Cluster (default: `elasticsearch`)
 * *elasticsearch_heap*: Heapsize for Elasticsearch. (Half of free memory on host. Maximum 30GB. (default: Half of hosts memory. Min 1GB, Max 30GB)
 * *elasticsearch_tls_key_passphrase*: Passphrase for elasticsearch certificates (default: `PleaseChangeMeIndividually`)
@@ -52,6 +53,10 @@ This variable activates a workaround to start on systems that have certain harde
 * *elasticsearch_transport_port*: The port to bind for communication between nodes
 * *elasticsearch_seed_hosts*: Set elasticsearch seed hosts
 * *elasticsearch_security_enrollment*: Controls enrollment (of nodes and Kibana) to a local node that’s been autoconfigured for security.
+
+The following variable was only integrated to speed up upgrades of non-production clusters. Use with caution and at your own risk:
+
+* *elasticsearch_unsafe_upgrade_restart*: This will still perform rolling upgrades, but will first update the package and then restart the service. In contrast the default behaviour is to stop the service, do the upgrade and then start again. (default: `false`)
 
 These variables are identical over all our elastic related roles, hence the different naming schemes.
 

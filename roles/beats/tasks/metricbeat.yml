@@ -16,6 +16,8 @@
     name: "{{ beats_metricbeat_package }}"
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
+  notify:
+    - Restart Metricbeat
   when:
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
@@ -23,6 +25,8 @@
 - name: Install Metricbeat - rpm - standalone
   ansible.builtin.package:
     name: "{{ beats_metricbeat_package }}"
+  notify:
+    - Restart Metricbeat
   when:
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
@@ -30,6 +34,8 @@
 - name: Install Metricbeat - deb
   ansible.builtin.package:
     name: "{{ beats_metricbeat_package }}"
+  notify:
+    - Restart Metricbeat
   when:
     - ansible_os_family == "Debian"
 

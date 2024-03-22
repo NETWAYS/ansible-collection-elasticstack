@@ -1,0 +1,13 @@
+---
+
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Set target version to Elasticsearch on CA host
+  ansible.builtin.set_fact:
+    elasticstack_version: "{{ ansible_facts.packages['elasticsearch'][0].version }}"
+  delegate_to: "{{ elasticstack_ca }}"
+  when:
+    - ansible_facts.packages['elasticsearch'][0].version is defined
+    - elasticstack_version is undefined

@@ -1,17 +1,5 @@
 ---
 
-- name: Install packages for security tasks
-  ansible.builtin.package:
-    name:
-      - unzip
-      - python3-cryptography
-      - openssl
-  tags:
-    - certificates
-    - renew_ca
-    - renew_kibana_cert
-    - renew_beats_cert
-
 - name: Ensure beats certificate exists
   ansible.builtin.stat:
     path: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"

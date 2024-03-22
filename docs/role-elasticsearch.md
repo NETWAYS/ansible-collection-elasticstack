@@ -54,6 +54,10 @@ This variable activates a workaround to start on systems that have certain harde
 * *elasticsearch_seed_hosts*: Set elasticsearch seed hosts
 * *elasticsearch_security_enrollment*: Controls enrollment (of nodes and Kibana) to a local node that’s been autoconfigured for security.
 
+The following variable was only integrated to speed up upgrades of non-production clusters. Use with caution and at your own risk:
+
+* *elasticsearch_unsafe_upgrade_restart*: This will still perform rolling upgrades, but will first update the package and then restart the service. In contrast the default behaviour is to stop the service, do the upgrade and then start again. (default: `false`)
+
 These variables are identical over all our elastic related roles, hence the different naming schemes.
 
 * *elasticstack_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)

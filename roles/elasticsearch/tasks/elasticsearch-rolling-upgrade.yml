@@ -24,7 +24,7 @@
   when:
     - elasticsearch_running.status.ActiveState == "inactive"
   block:
-    - name: Install Elasticsearch - rpm fullstack
+    - name: Install Elasticsearch - rpm with managed repositories
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
         enablerepo:
@@ -33,7 +33,7 @@
         - ansible_os_family == "RedHat"
         - elasticstack_full_stack | bool
 
-    - name: Install Elasticsearch
+    - name: Install Elasticsearch - deb or unmanaged repositories rpm
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
       when:
@@ -44,7 +44,7 @@
   when:
     - groups['elasticsearch'] | length == 1
   block:
-    - name: Update single instances without extra caution - deb
+    - name: Update single instances without extra caution - deb or unmanaged repositories rpm
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
       when:
@@ -53,7 +53,7 @@
       notify:
         - Restart Elasticsearch
 
-    - name: Update single instances without extra caution - rpm fullstack
+    - name: Update single instances without extra caution - rpm with managed repositories
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
         enablerepo:

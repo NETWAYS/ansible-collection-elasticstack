@@ -13,7 +13,7 @@ Role Variables
 --------------
 
 * *elasticsearch_node_types*: List of types of this very node. Please refer to [official docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html) for details. (default: not set. allowed value: array of types)
-+ *elasticsearch_nodename*': Node name of the Elasticsearch node. (default: Hostname of the node as seen by Ansible)
++ *elasticsearch_nodename*': Node name of the Elasticsearch node. (default: value of `ansible_hostname`)
 * *elasticsearch_clustername*: Name the Elasticsearch Cluster (default: `elasticsearch`)
 * *elasticsearch_heap*: Heapsize for Elasticsearch. (Half of free memory on host. Maximum 30GB. (default: Half of hosts memory. Min 1GB, Max 30GB)
 * *elasticsearch_tls_key_passphrase*: Passphrase for elasticsearch certificates (default: `PleaseChangeMeIndividually`)

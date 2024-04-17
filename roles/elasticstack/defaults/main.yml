@@ -2,6 +2,7 @@
 
 elasticstack_elasticsearch_group_name: elasticsearch
 elasticstack_logstash_group_name: logstash
+elasticstack_kibana_group_name: kibana
 
 elasticstack_beats_port: 5044
 elasticstack_ca_dir: /opt/es-ca

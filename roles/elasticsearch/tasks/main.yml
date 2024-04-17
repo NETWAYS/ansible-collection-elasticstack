@@ -133,7 +133,7 @@
 
 - name: Update Elasticsearch if needed
   ansible.builtin.include_tasks: elasticsearch-rolling-upgrade.yml
-  with_items: "{{ groups['elasticsearch'] }}"
+  with_items: "{{ groups[elasticstack_elasticsearch_group_name] }}"
   when:
     - "hostvars[item].inventory_hostname == inventory_hostname"
     - elasticstack_version is defined

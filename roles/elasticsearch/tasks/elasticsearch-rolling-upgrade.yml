@@ -42,7 +42,7 @@
 
 - name: Update single instances without extra caution
   when:
-    - groups['elasticsearch'] | length == 1
+    - groups[elasticstack_elasticsearch_group_name] | length == 1
   block:
     - name: Update single instances without extra caution - deb or unmanaged repositories rpm
       ansible.builtin.package:
@@ -68,7 +68,7 @@
 - name: Be careful about upgrade when Elasticsearch is running
   when:
     - elasticsearch_running.status.ActiveState == "active"
-    - groups['elasticsearch'] | length > 1
+    - groups[elasticstack_elasticsearch_group_name] | length > 1
   block:
 
     # Usually we should not need this step. It's only there to recover from broken upgrade plays

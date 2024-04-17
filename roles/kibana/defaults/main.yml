@@ -28,3 +28,5 @@ elasticstack_variant: elastic
 elasticstack_elasticsearch_http_port: 9200
 elasticstack_kibana_port: 5601
 elasticstack_no_log: true
+
+elasticstack_elasticsearch_group_name: elasticsearch

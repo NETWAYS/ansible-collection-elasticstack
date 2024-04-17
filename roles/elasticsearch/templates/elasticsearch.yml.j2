@@ -27,7 +27,7 @@ http.publish_port: {{ elasticsearch_http_publish_port }}
 node.roles: [ {% for type in elasticsearch_node_types %}{{ type }}{% if not loop.last %}, {% endif %}{% endfor %} ]
 {% endif %}
 
-{% if elasticstack_release | int > 7 and groups['elasticsearch'] | length == 1 %}
+{% if elasticstack_release | int > 7 and groups[elasticstack_elasticsearch_group_name] | length == 1 %}
 discovery.type: single-node
 {% endif %}
 
@@ -35,20 +35,20 @@ discovery.type: single-node
 {% if elasticsearch_seed_hosts is defined %}
 discovery.seed_hosts: {{ elasticsearch_seed_hosts }}
 {% else %}
-{% if elasticstack_release | int < 8 or groups['elasticsearch'] | length > 1 %}
-discovery.seed_hosts: [ {% for host in groups['elasticsearch']  %}
+{% if elasticstack_release | int < 8 or groups[elasticstack_elasticsearch_group_name] | length > 1 %}
+discovery.seed_hosts: [ {% for host in groups[elasticstack_elasticsearch_group_name]  %}
 "{{ hostvars[host].ansible_default_ipv4.address | default(hostvars[host].ansible_all_ipv4_addresses[0]) }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
 {% endif %}
 {% endif %}
 
-{% if not elaticsearch_cluster_set_up | bool and groups['elasticsearch'] | length > 1 %}
+{% if not elaticsearch_cluster_set_up | bool and groups[elasticstack_elasticsearch_group_name] | length > 1 %}
 {% if elasticsearch_node_types is defined %}
 cluster.initial_master_nodes: [ {% for host in groups['elasticsearch_role_master']  %}
 "{{ hostvars[host]['elasticsearch_nodename'] }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
 {% else %}
-cluster.initial_master_nodes: [ {% for host in groups['elasticsearch']  %}
+cluster.initial_master_nodes: [ {% for host in groups[elasticstack_elasticsearch_group_name]  %}
 "{{ hostvars[host]['elasticsearch_nodename'] }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
 {% endif %}

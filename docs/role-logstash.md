@@ -60,6 +60,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_ident_field_name*: Name of the identifying the instance (default: `"[netways][instance]"`)
 * *logstash_beats_input*: Enable default pipeline with `beats` input (default: `true`)
 * *logstash_beats_input_congestion*: Optional congestion threshold for the beats input pipeline
+* *logstash_beats_timeout*: Optional timeout for client connections. (Example: `60s`)
 * *logstash_beats_tls*: Activate TLS for the beats input pipeline (default: none but `true` with full stack setup if not set)
 * *logstash_tls_key_passphrase*: Passphrase for Logstash certificates (default: `LogstashChangeMe`)
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)

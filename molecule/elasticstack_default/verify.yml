@@ -136,4 +136,3 @@
         success_msg: "'{{ item }}' was found in nodes.content"
       with_inventory_hostnames: all
       when: groups[elasticstack_elasticsearch_group_name] | length > 1
-

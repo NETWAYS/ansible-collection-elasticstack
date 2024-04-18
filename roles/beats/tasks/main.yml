@@ -1,10 +1,8 @@
 ---
 
-- name: Include OS specific vars
-  ansible.builtin.include_vars: '{{ item }}'
-  with_first_found:
-    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
-    - '{{ ansible_os_family }}.yml'
+- name: Include global role
+  ansible.builtin.import_role:
+    name: netways.elasticstack.elasticstack
 
 - name: Update apt cache.
   ansible.builtin.apt:
@@ -24,18 +22,6 @@
         - elasticstack_security | bool
         - elasticstack_variant != "oss"
         - not elasticstack_override_beats_tls | bool
-
-    - name: Set elasticstack_ca variable if not already done by user
-      ansible.builtin.set_fact:
-        elasticstack_ca: "{{ groups[elasticstack_elasticsearch_group_name][0] }}"
-      when:
-        - beats_security | bool
-        - elasticstack_ca is undefined
-        - groups[elasticstack_elasticsearch_group_name] is defined
-      tags:
-        - certificates
-        - renew_ca
-        - renew_beats_cert
 
     - name: Set beats_ca_dir if whole stack is used
       ansible.builtin.set_fact:

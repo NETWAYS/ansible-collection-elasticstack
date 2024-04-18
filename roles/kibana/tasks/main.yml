@@ -1,17 +1,15 @@
 ---
 
+- name: Include global role
+  ansible.builtin.import_role:
+    name: netways.elasticstack.elasticstack
+
 - name: Update apt cache.
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 600
   changed_when: false
   when: ansible_os_family == 'Debian'
-
-- name: Include OS specific vars
-  ansible.builtin.include_vars: '{{ item }}'
-  with_first_found:
-    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
-    - '{{ ansible_os_family }}.yml'
 
 - name: Set common password for common certificates
   ansible.builtin.set_fact:
@@ -50,6 +48,8 @@
     name: "{{ kibana_package }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
+  notify:
+    - Restart Kibana
   when:
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
@@ -57,6 +57,8 @@
 - name: Install Kibana - rpm - standalone
   ansible.builtin.package:
     name: "{{ kibana_package }}"
+  notify:
+    - Restart Kibana
   when:
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
@@ -64,6 +66,8 @@
 - name: Install Kibana - deb
   ansible.builtin.package:
     name: "{{ kibana_package }}"
+  notify:
+    - Restart Kibana
   when:
     - ansible_os_family == "Debian"
 

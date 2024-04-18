@@ -1,27 +1,5 @@
 ---
 
-- name: Install packages for security tasks
-  ansible.builtin.package:
-    name:
-      - unzip
-      - python3-cryptography
-      - openssl
-  tags:
-    - certificates
-    - renew_ca
-    - renew_kibana_cert
-
-- name: Set elasticstack_ca variable if not already done by user
-  ansible.builtin.set_fact:
-    elasticstack_ca: "{{ groups[elasticstack_elasticsearch_group_name][0] }}"
-  when:
-    - elasticstack_ca is undefined
-    - groups[elasticstack_elasticsearch_group_name] is defined
-  tags:
-    - certificates
-    - renew_ca
-    - renew_kibana_cert
-
 - name: Ensure kibana certificate exists
   ansible.builtin.stat:
     path: "/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12"

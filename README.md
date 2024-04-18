@@ -79,13 +79,13 @@ You will want to have reliable DNS resolution or enter all hosts of the stack in
 
 The variable `elasticstack_no_log` can be set to `false` if you want to see the output of all tasks. It defaults to `true` because some tasks could reveal passwords in production.
 
-### Versioning
+### Versions and upgrades
 
-*elasticstack_version*: Version number of tools to install. Only set if you don't want the latest. (default: none).
+*elasticstack_version*: Version number of tools to install. Only set if you don't want the latest on new setups. (default: none). If you already have an installation of Elastic Stack, this collection will query the version of Elasticsearch on the CA host and use it for all further installations in the same setup. (Only if you run the `elasticsearch` role before all others) Example: `7.17.2`
 
-*elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)
+*elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`) Make sure it corresponds to `elasticstack_version` if you set both.
 
-For OSS version see `elasticstack_variant` below. **IMPORTANT** Do not change the version once you have set up the stack. There are unpredictable effects to be expected when using this for upgrades. And upgrade mechanism is already on it's way. (default: none. Example: `7.17.2`)
+For OSS version see `elasticstack_variant` below.
 
 *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
 
@@ -98,6 +98,14 @@ roles:
      vars:
         elasticstack_version: 8.8.1
 ```
+
+#### Upgrades ####
+
+Set `elasticstack_version` to the version you want to upgrade to. Positively do read and understand Elastics changelog and "breaking changes" of your target version and all between your current and the target version. Do not use unless you have a valid backup.
+
+If an upgrade fails, you can try re-running the collection with the same settings. There are several tasks that can provide "self-healing". Please do not rely on these mechanisms, they are more of a "convenience recovery" for easier steps.
+
+The collection will make sure to upgrade Elasticsearch nodes one by one.
 
 ### Default Passwords
 

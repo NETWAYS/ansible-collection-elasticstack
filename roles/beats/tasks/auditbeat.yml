@@ -16,6 +16,8 @@
     name: "{{ beats_auditbeat_package }}"
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
+  notify:
+    - Restart Auditbeat
   when:
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
@@ -23,6 +25,8 @@
 - name: Install Auditbeat - rpm - standalone
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
+  notify:
+    - Restart Auditbeat
   when:
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
@@ -30,6 +34,8 @@
 - name: Install Auditbeat - deb
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
+  notify:
+    - Restart Auditbeat
   when:
     - ansible_os_family == "Debian"
 

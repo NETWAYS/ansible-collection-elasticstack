@@ -1,0 +1,22 @@
+---
+
+- name: Update apt cache.
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 600
+  changed_when: false
+  when: ansible_os_family == 'Debian'
+
+- name: Install packages for security tasks
+  ansible.builtin.package:
+    name:
+      - unzip
+      - python3-cryptography
+      - openssl
+  tags:
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
+    - renew_beats_cert
+    - renew_es_cert
+    - renew_logstash_cert

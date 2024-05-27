@@ -381,7 +381,7 @@
 - name: Create role
   netways.elasticstack.elasticsearch_role:
     name: "{{ logstash_role_name }}"
-    cluster: 
+    cluster:
       - manage_index_templates
       - monitor
       - manage_ilm
@@ -401,7 +401,6 @@
     auth_pass: "{{ logstash_elasticstack_password.stdout }}"
     verify_certs: false
     ca_certs: "{{ elasticstack_ca_dir }}/ca.crt"
-
 
 - name: Create user
   netways.elasticstack.elasticsearch_user:

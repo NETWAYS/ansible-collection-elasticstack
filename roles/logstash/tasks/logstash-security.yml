@@ -378,71 +378,42 @@
     security_api_base_url: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/"
   when: elasticstack_release | int < 8
 
-- name: Check for logstash_writer role
-  ansible.builtin.uri:
-    url: "{{ security_api_base_url }}role/logstash_writer"
-    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
-    user: elastic
-    password: "{{ logstash_elasticstack_password.stdout }}"
-  register: check_logstash_writer_role_response
-  delegate_to: "{{ elasticstack_ca }}"
-  failed_when: false
-  changed_when: false
-  no_log: "{{ elasticstack_no_log }}"
-  run_once: true
+- name: Create role
+  netways.elasticstack.elasticsearch_role:
+    name: "{{ logstash_role_name }}"
+    cluster: 
+      - manage_index_templates
+      - monitor
+      - manage_ilm
+    indicies:
+      - names:
+          - logstash_user_indices
+        privileges:
+          - write
+          - create
+          - delete
+          - create_index
+          - manage
+          - manage_ilm
+    state: present
+    host: https://localhost:9200
+    auth_user: elastic
+    auth_pass: "{{ logstash_elasticstack_password.stdout }}"
+    verify_certs: false
+    ca_certs: "{{ elasticstack_ca_dir }}/ca.crt"
 
-- name: Set logstash_writer_role_present
-  ansible.builtin.set_fact:
-    logstash_writer_role_present: true
-  when: check_logstash_writer_role_response.json.logstash_writer is defined
 
-- name: Put logstash_writer role into Elasticsearch if not present
-  ansible.builtin.uri:
-    url: "{{ security_api_base_url }}role/logstash_writer"
-    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
-    user: elastic
-    password: "{{ logstash_elasticstack_password.stdout }}"
-    method: PUT
-    headers:
-      Content-Type: application/json
-    body: "{{ lookup('template', 'logstash_writer_role.j2') }}"
-    body_format: json
-  register: put_logstash_writer_role_response
-  when: logstash_writer_role_present is not defined
-  delegate_to: "{{ elasticstack_ca }}"
-  failed_when: not put_logstash_writer_role_response.json.role.created | bool
-  run_once: true
-
-- name: Check for logstash_writer user
-  ansible.builtin.uri:
-    url: "{{ security_api_base_url }}user/{{ logstash_user }}"
-    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
-    user: elastic
-    password: "{{ logstash_elasticstack_password.stdout }}"
-  register: check_logstash_writer_user_response
-  delegate_to: "{{ elasticstack_ca }}"
-  failed_when: false
-  changed_when: false
-  run_once: true
-
-- name: Set logstash_writer_user_present
-  ansible.builtin.set_fact:
-    logstash_writer_user_present: true
-  when: check_logstash_writer_user_response.json.logstash_writer.username is defined and  check_logstash_writer_user_response.json.logstash_writer.username == "logstash_writer"
-
-- name: Put logstash_writer user into Elasticsearch if not present
-  ansible.builtin.uri:
-    url: "{{ security_api_base_url }}user/{{ logstash_user }}"
-    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
-    user: elastic
-    password: "{{ logstash_elasticstack_password.stdout }}"
-    method: PUT
-    headers:
-      Content-Type: application/json
-    body: "{{ lookup('template', 'logstash_writer_user.j2') }}"
-    body_format: json
-  register: put_logstash_writer_user_response
-  when: logstash_writer_user_present is not defined
-  delegate_to: "{{ elasticstack_ca }}"
-  run_once: true
-  failed_when: not put_logstash_writer_user_response.json.created
+- name: Create user
+  netways.elasticstack.elasticsearch_user:
+    name: "{{ logstash_user }}"
+    fullname: Internal Logstash User
+    password: "{{ logstash_password }}"
+    email: "{{ logstash_email }}"
+    roles:
+      - "{{ logstash_role_name }}"
+    enabled: true
+    state: present
+    host: https://localhost:9200
+    auth_user: elastic
+    auth_pass: "{{ logstash_elasticstack_password.stdout }}"
+    verify_certs: false

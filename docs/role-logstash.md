@@ -69,7 +69,9 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_cert_will_expire_soon*: Set it to true to renew logstash certificate (default: `false`), Or run the playbook with `--tags renew_logstash_cert` to do that.
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
+* *logstash_role_name*: Name of the logstash role that is getting created (Default: `logstash_writer`)
 * *logstash_user*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
+* *logstash_email*: email-address that is linked with the logstash_user (Default: `new@user.de`)
 * *logstash_password_hash*: Generate and use a hash from your `logstash_password` (default: `true`)
 * *logstash_password_hash_algorithm*: Password hashing algorithms. Value must be same as `xpack.security.authc.password_hashing.algorithm` (default: `bcrypt`)
 * *logstash_password_salt_length*: base64 encoded Salt character lenght. This value must be integer and must be compatible to the selected password hashing algorithms (default: `22`)

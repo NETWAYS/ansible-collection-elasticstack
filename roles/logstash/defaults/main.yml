@@ -51,7 +51,7 @@ logstash_password_salt_length: 22
 logstash_role_name: logstash_writer
 logstash_user: logstash_writer
 logstash_password: password
-logstash_email: new@user.de
+logstash_email: ""
 logstash_password_hash_salt_length: 22
 logstash_password_hash_salt_seed: SeedChangeMe
 logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'

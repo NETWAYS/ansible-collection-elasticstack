@@ -11,6 +11,17 @@
   changed_when: false
   when: ansible_os_family == 'Debian'
 
+
+- name: Install pip Package
+  ansible.builtin.package:
+    name: "pip"
+
+- name: Install Elasticsearch Pyhon Module
+  ansible.builtin.pip:
+    name: 
+      - elasticsearch
+
+
 - name: Prepare for whole stack roles if used
   when:
     - elasticstack_full_stack | bool

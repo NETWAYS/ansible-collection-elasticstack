@@ -45,7 +45,7 @@ logstash_forwarder_queue_max_bytes: 1gb
 logstash_sniffing: false
 
 # logstash security
-logstasth_role_cluster_privileges:
+logstash_role_cluster_privileges:
   - manage_index_templates
   - monitor
   - manage_ilm

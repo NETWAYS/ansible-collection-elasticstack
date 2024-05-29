@@ -45,13 +45,13 @@ logstash_forwarder_queue_max_bytes: 1gb
 logstash_sniffing: false
 
 # logstash security
-logstasth_role_cluster:
+logstasth_role_cluster_privileges:
   - manage_index_templates
   - monitor
   - manage_ilm
 logstash_role_indicies_names:
-  - "ecs-logstash*" 
-  - "logstash*" 
+  - "ecs-logstash*"
+  - "logstash*"
   - "logs*"
 logstash_role_indicies_privileges:
   - write

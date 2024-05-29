@@ -348,7 +348,7 @@
 - name: Check the length of logstash user password
   ansible.builtin.fail:
     msg: logstash user password must be at least 6 characters long.
-  when: logstash_password | length < 6
+  when: logstash_user_password | length < 6
 
 - name: Set password hash salt as a fact
   ansible.builtin.set_fact:
@@ -378,23 +378,13 @@
     security_api_base_url: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/"
   when: elasticstack_release | int < 8
 
-- name: Create role
+- name: Create logstash role {{ logstash_role_name }}
   netways.elasticstack.elasticsearch_role:
     name: "{{ logstash_role_name }}"
-    cluster:
-      - manage_index_templates
-      - monitor
-      - manage_ilm
+    cluster: "{{ logstasth_role_cluster }}"
     indicies:
-      - names:
-          - logstash_user_indices
-        privileges:
-          - write
-          - create
-          - delete
-          - create_index
-          - manage
-          - manage_ilm
+      - names: "{{ logstash_role_indicies_names }}"
+        privileges: "{{ logstash_role_indicies_privileges }}"
     state: present
     host: https://localhost:9200
     auth_user: elastic
@@ -402,12 +392,12 @@
     verify_certs: false
     ca_certs: "{{ elasticstack_ca_dir }}/ca.crt"
 
-- name: Create user
+- name: Create logstash user {{ logstash_user }}
   netways.elasticstack.elasticsearch_user:
     name: "{{ logstash_user }}"
-    fullname: Internal Logstash User
+    fullname: "{{ logstash_user_fullname }}"
     password: "{{ logstash_password }}"
-    email: "{{ logstash_email }}"
+    email: "{{ logstash_user_email }}"
     roles:
       - "{{ logstash_role_name }}"
     enabled: true

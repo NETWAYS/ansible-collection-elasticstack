@@ -350,11 +350,6 @@
     msg: logstash user password must be at least 6 characters long.
   when: logstash_user_password | length < 6
 
-- name: Set password hash salt as a fact
-  ansible.builtin.set_fact:
-    logstash_password_hash_salt: "{{ lookup('password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=logstash_password_hash_salt_length, seed=logstash_password_hash_salt_seed) }}"
-  when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
-
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   ansible.builtin.shell: >
     if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
@@ -368,16 +363,6 @@
     - configuration
     - logstash_configuration
 
-- name: Set elasticsearch security-api base url for elasticsearch > 7
-  ansible.builtin.set_fact:
-    security_api_base_url: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/"
-  when: elasticstack_release | int > 7
-
-- name: Set elasticsearch security-api base url for elasticsearch < 8
-  ansible.builtin.set_fact:
-    security_api_base_url: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/"
-  when: elasticstack_release | int < 8
-
 - name: Create logstash role {{ logstash_role_name }}
   netways.elasticstack.elasticsearch_role:
     name: "{{ logstash_role_name }}"
@@ -386,7 +371,7 @@
       - names: "{{ logstash_role_indicies_names }}"
         privileges: "{{ logstash_role_indicies_privileges }}"
     state: present
-    host: https://localhost:9200
+    host: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}"
     auth_user: elastic
     auth_pass: "{{ logstash_elasticstack_password.stdout }}"
     verify_certs: false
@@ -402,7 +387,7 @@
       - "{{ logstash_role_name }}"
     enabled: true
     state: present
-    host: https://localhost:9200
+    host: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}"
     auth_user: elastic
     auth_pass: "{{ logstash_elasticstack_password.stdout }}"
     verify_certs: false

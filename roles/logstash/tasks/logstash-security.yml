@@ -396,7 +396,7 @@
   netways.elasticstack.elasticsearch_user:
     name: "{{ logstash_user }}"
     fullname: "{{ logstash_user_fullname }}"
-    password: "{{ logstash_password }}"
+    password: "{{ logstash_user_password }}"
     email: "{{ logstash_user_email }}"
     roles:
       - "{{ logstash_role_name }}"

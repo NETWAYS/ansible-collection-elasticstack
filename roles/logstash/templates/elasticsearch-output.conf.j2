@@ -37,7 +37,7 @@ output {
     cacert => "{{ logstash_certs_dir }}/ca.crt"
     ssl => true
     user => "{{ logstash_user }}"
-    password => "{{ logstash_password }}"
+    password => "{{ logstash_user_password }}"
 {% endif %}
   }
 }

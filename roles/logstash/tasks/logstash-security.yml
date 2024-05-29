@@ -375,7 +375,7 @@
     auth_user: elastic
     auth_pass: "{{ logstash_elasticstack_password.stdout }}"
     verify_certs: false
-    ca_certs: "{{ elasticstack_ca_dir }}/ca.crt"
+    ca_certs: "{{ logstash_certs_dir }}/ca.crt"
 
 - name: Create logstash user {{ logstash_user }}
   netways.elasticstack.elasticsearch_user:

@@ -381,7 +381,7 @@
 - name: Create logstash role {{ logstash_role_name }}
   netways.elasticstack.elasticsearch_role:
     name: "{{ logstash_role_name }}"
-    cluster: "{{ logstasth_role_cluster }}"
+    cluster: "{{ logstash_role_cluster_privileges }}"
     indicies:
       - names: "{{ logstash_role_indicies_names }}"
         privileges: "{{ logstash_role_indicies_privileges }}"

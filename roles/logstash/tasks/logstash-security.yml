@@ -391,3 +391,4 @@
     auth_user: elastic
     auth_pass: "{{ logstash_elasticstack_password.stdout }}"
     verify_certs: false
+    ca_certs: "{{ logstash_certs_dir }}/ca.crt"

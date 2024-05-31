@@ -69,11 +69,11 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_cert_will_expire_soon*: Set it to true to renew logstash certificate (default: `false`), Or run the playbook with `--tags renew_logstash_cert` to do that.
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
-* *logstash_role_name*: Name of the logstash role that is getting created (Default: `logstash_writer`)
 * *logstash_user*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
 * *logstash_user_email*: email-address that is linked with the logstash_user (Default: `""`)
 * *logstash_user_fullname*: fullname that is linked with the logstash_user (Default: `Internal Logstash User`)
 * *logstash_user_password*: Password of Elasticsearch user. It must be at least 6 characters long (default: `password`)
+* *logstash_role_name*: Name of the logstash role that is getting created (Default: `logstash_writer`)
 * *logstash_role_cluster_privileges*: Cluster privileges the role has access to (default: `"manage_index_templates", "monitor", "manage_ilm"`)
 * *logstash_role_indicies_names*: Indices the role has access to (default: `"ecs-logstash*", "logstash*", "logs*"`)
 * *logstash_role_indicies_privileges*: Indices the role has access to (default: `"write", "create", "delete", "create_index", "manage", "manage_ilm"`)

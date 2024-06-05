@@ -1,5 +1,4 @@
 ---
-
 - name: Update apt cache.
   ansible.builtin.apt:
     update_cache: yes
@@ -20,3 +19,14 @@
     - renew_beats_cert
     - renew_es_cert
     - renew_logstash_cert
+
+- name: Install packages for module dependencies
+  ansible.builtin.package:
+    name:
+      - python3
+      - python3-pip
+
+- name: Install Elasticsearch Python Module
+  ansible.builtin.pip:
+    name:
+      - elasticsearch

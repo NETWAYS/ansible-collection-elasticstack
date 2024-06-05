@@ -32,5 +32,7 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_VERBOSITY: 3
 verifier:
   name: ansible

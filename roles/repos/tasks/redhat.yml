@@ -4,7 +4,7 @@
 # for more information why this is needed
 
 - name: Ensure gpg exists, for signing keys
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: gnupg
     state: present
 

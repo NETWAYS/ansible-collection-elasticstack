@@ -3,3 +3,5 @@ extends: relaxed
 
 rules:
   line-length: disable
+  comments.min-spaces-from-content: 1
+  octal-values.forbid-explicit-octal: true

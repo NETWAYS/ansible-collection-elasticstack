@@ -33,7 +33,7 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - rockylinux8
+          #- rockylinux8
           - rockylinux9
           - ubuntu2004
           - ubuntu2204

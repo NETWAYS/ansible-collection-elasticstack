@@ -327,7 +327,7 @@
     - renew_es_cert
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: Start Elasticsearch
+- name: Start Elasticsearch for security tasks
   ansible.builtin.service:
     name: elasticsearch
     state: started

@@ -45,14 +45,26 @@ logstash_forwarder_queue_max_bytes: 1gb
 logstash_sniffing: false
 
 # logstash security
-logstash_password_hash: true
-logstash_password_hash_algorithm: bcrypt
-logstash_password_salt_length: 22
+logstash_role_cluster_privileges:
+  - manage_index_templates
+  - monitor
+  - manage_ilm
+logstash_role_indicies_names:
+  - "ecs-logstash*"
+  - "logstash*"
+  - "logs*"
+logstash_role_indicies_privileges:
+  - write
+  - create
+  - delete
+  - create_index
+  - manage
+  - manage_ilm
+logstash_role_name: logstash_writer
 logstash_user: logstash_writer
-logstash_password: password
-logstash_password_hash_salt_length: 22
-logstash_password_hash_salt_seed: SeedChangeMe
-logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'
+logstash_user_password: password
+logstash_user_email: ""
+logstash_user_fullname: "Internal Logstash User"
 logstash_reset_writer_role: true
 
 logstash_tls_key_passphrase: LogstashChangeMe

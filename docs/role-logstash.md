@@ -69,7 +69,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_cert_will_expire_soon*: Set it to true to renew logstash certificate (default: `false`), Or run the playbook with `--tags renew_logstash_cert` to do that.
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
-* *logstash_user_create*: Enables creation `logstash_user_name` (Default: `true`)
+* *logstash_create_user*: Enables creation `logstash_user_name` (Default: `true`)
 * *logstash_user_name*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
 * *logstash_user_email*: email-address that is linked with the logstash_user_name (Default: `""`)
 * *logstash_user_fullname*: fullname that is linked with the logstash_user_name (Default: `Internal Logstash User`)

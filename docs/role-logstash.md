@@ -74,7 +74,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_user_email*: email-address that is linked with the logstash_user_name (Default: `""`)
 * *logstash_user_fullname*: fullname that is linked with the logstash_user_name (Default: `Internal Logstash User`)
 * *logstash_user_password*: Password of `logstash_user_name` in Elasticsearch. It must be at least 6 characters long (default: `password`)
-* *logstash_role_create*: Enables creation `logstash_role_name` (Default: `true`)
+* *logstash_create_role*: Enables creation `logstash_role_name` (Default: `true`)
 * *logstash_role_name*: Name of the logstash role that is getting created (Default: `logstash_writer`)
 * *logstash_role_cluster_privileges*: Cluster privileges the role has access to (default: `"manage_index_templates", "monitor", "manage_ilm"`)
 * *logstash_role_indicies_names*: Indices the role has access to (default: `"ecs-logstash*", "logstash*", "logs*"`)

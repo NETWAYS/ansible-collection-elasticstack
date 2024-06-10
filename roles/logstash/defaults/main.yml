@@ -44,7 +44,9 @@ logstash_forwarder_queue_type: memory
 logstash_forwarder_queue_max_bytes: 1gb
 logstash_sniffing: false
 
-# logstash security
+# logstash role / user
+logstash_create_role: true
+logstash_role_name: logstash_writer
 logstash_role_cluster_privileges:
   - manage_index_templates
   - monitor
@@ -60,13 +62,14 @@ logstash_role_indicies_privileges:
   - create_index
   - manage
   - manage_ilm
-logstash_role_name: logstash_writer
-logstash_user: logstash_writer
+logstash_create_user: true
+logstash_user_name: logstash_writer
 logstash_user_password: password
 logstash_user_email: ""
 logstash_user_fullname: "Internal Logstash User"
 logstash_reset_writer_role: true
 
+# logstash security
 logstash_tls_key_passphrase: LogstashChangeMe
 logstash_certs_dir: /etc/logstash/certs
 logstash_cert_validity_period: 1095

@@ -376,10 +376,11 @@
     auth_pass: "{{ logstash_elasticstack_password.stdout }}"
     verify_certs: true
     ca_certs: "{{ logstash_certs_dir }}/ca.crt"
+  when: logstash_create_role | bool
 
-- name: Create logstash user {{ logstash_user }}
+- name: Create logstash user {{ logstash_user_name }}
   netways.elasticstack.elasticsearch_user:
-    name: "{{ logstash_user }}"
+    name: "{{ logstash_user_name }}"
     fullname: "{{ logstash_user_fullname }}"
     password: "{{ logstash_user_password }}"
     email: "{{ logstash_user_email }}"
@@ -392,3 +393,4 @@
     auth_pass: "{{ logstash_elasticstack_password.stdout }}"
     verify_certs: false
     ca_certs: "{{ logstash_certs_dir }}/ca.crt"
+  when: logstash_create_user | bool

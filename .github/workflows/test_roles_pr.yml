@@ -33,7 +33,8 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          #- rockylinux9
+          - rockylinux8
+          - rockylinux9
           - ubuntu2204
         scenario:
           - elasticstack_default

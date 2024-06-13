@@ -43,8 +43,8 @@ jobs:
           - centos7
           - debian10
           - debian11
-          # - rockylinux8
-          # - rockylinux9
+          - rockylinux8
+          - rockylinux9
           - ubuntu2004
           - ubuntu2204]
         scenario:

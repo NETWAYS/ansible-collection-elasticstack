@@ -87,6 +87,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_sniffing_delay*: How long to wait, in seconds, between sniffing attempts (Default: `not set`).
 * *logstash_sniffing_path*: HTTP Path to be used for the sniffing requests (Default: `not set`).
 * *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_full_stack` is not set. (default: `true`)
+* *logstash_redis_password*: If set this will use this password when connecting our simple inputs and outputs to Redis. (default: not set)
 
 The following variables configure Log4j for Logstash. All default to `true` as this is the default after the installation.
 

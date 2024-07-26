@@ -18,6 +18,8 @@
     elasticstack_full_stack: true
     elasticstack_no_log: false
     logstash_pipeline_unsafe_shutdown: true
+    logstash_redis_password: "ThisIsMyRedisTest"
+    redis_requirepass: "{{ logstash_redis_password }}"
     beats_filebeat_syslog_udp: true
     beats_filebeat_syslog_tcp: true
     beats_filebeat_modules:

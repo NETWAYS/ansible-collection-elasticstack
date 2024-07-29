@@ -159,3 +159,6 @@ processors:
 {% if beats_filebeat_docker | bool %}
   - add_docker_metadata: ~
 {% endif %}
+
+monitoring:
+  enabled: {{ filebeat_elastic_monitoring | bool }}

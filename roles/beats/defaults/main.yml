@@ -17,6 +17,9 @@ beats_tls_cert: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.crt"
 beats_tls_cacert: "{{ beats_ca_dir }}/ca.crt"
 beats_tls_key_passphrase: BeatsChangeMe
 
+# Filebeat elastic monitoring #
+filebeat_elastic_monitoring: false
+
 # Filebeat specific #
 
 beats_filebeat_output: logstash

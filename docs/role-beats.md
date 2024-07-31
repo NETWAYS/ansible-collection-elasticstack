@@ -18,6 +18,7 @@ Role Variables
 * *beats_filebeat*: Install and manage filebeat (Default: `true`)
 * *beats_filebeat_enable*: Automatically start Filebeat (Default: `true`)
 * *beats_filebeat_output*: Set to `logstash` or `elasticsearch`. (default: `logstash`)
+* *beats_filebeat_elastic_monitoring*: `filebeat` monitoring over `Elastic Stack monitoring features` (default: 'flase')    
 * *beats_filebeat_syslog_udp*: Use UDP Syslog input (Default: `false`)
 * *beats_filebeat_syslog_udp_port*: Port of UDP Syslog input (Default: `514`)
 * *beats_filebeat_syslog_tcp*: Use TCP Syslog input (Default: `false`)

@@ -19,6 +19,7 @@ beats_tls_key_passphrase: BeatsChangeMe
 
 # Filebeat specific #
 
+beats_filebeat_elastic_monitoring: false
 beats_filebeat_output: logstash
 beats_filebeat_syslog_udp: false
 beats_filebeat_syslog_udp_port: 514

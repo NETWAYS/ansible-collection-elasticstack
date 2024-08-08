@@ -23,7 +23,7 @@ Every role is documented with all variables, please refer to the documentation f
 
 ## Global variables
 
-* `elasticstack_force_pip`: Will force installation of required Python modules via `pip`. This is useful if your package manager doesn't provide current versions of modules. (Default: `false`)
+* `elasticstack_force_pip`: Will force installation of required Python modules via `pip`. This is useful if your package manager doesn't provide current versions of modules. (Default: `false`) See [PEP668](https://peps.python.org/pep-0668/) for more details.
 * `elasticstack_manage_pip`: Will install `pip` on your system. (Default: `false`)
 
 ## Installation

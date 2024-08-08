@@ -36,7 +36,7 @@
 # Packets are sometimes too old as a dependency, so pip is
 # preferred
 # If that's the case the next task will allow breaking
-# systems Python and just install it via pip no matter what 
+# systems Python and just install it via pip no matter what
 
 - name: Install Python Modules as dependencies
   when:
@@ -49,7 +49,7 @@
           - cryptography
       ignore_errors: true
       register: elasticstack_pip_installation
-    
+
     - name: Install Python Module via package manager
       ansible.builtin.package:
         name:

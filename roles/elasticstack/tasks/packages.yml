@@ -28,8 +28,8 @@
   ansible.builtin.package:
     name:
       - python3-pip
-    when:
-      - elasticstack_manage_pip | bool
+  when:
+    - elasticstack_manage_pip | bool
 
 # The following block will try to install modules via pip
 # If that fails it will try to install them via package manager

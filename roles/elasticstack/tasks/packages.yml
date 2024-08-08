@@ -20,13 +20,51 @@
     - renew_es_cert
     - renew_logstash_cert
 
+# We don't know how the user made `pip` available and we don't want
+# to mess with the installation.
+# But we need a way to install our dependencies
+
 - name: Install packages for module dependencies
   ansible.builtin.package:
     name:
-      - python3
       - python3-pip
+  when:
+    - elasticstack_manage_pip | bool
 
-- name: Install Elasticsearch Python Module
+# The following block will try to install modules via pip
+# If that fails it will try to install them via package manager
+# Packets are sometimes too old as a dependency, so pip is
+# preferred
+# If that's the case the next task will allow breaking
+# systems Python and just install it via pip no matter what
+
+- name: Install Python Modules as dependencies
+  when:
+    - not elasticstack_force_pip | bool
+  block:
+    - name: Install Python Modules via pip
+      ansible.builtin.pip:
+        name:
+          - elasticsearch
+          - cryptography
+      ignore_errors: true
+      register: elasticstack_pip_installation
+
+    - name: Install Python Module via package manager
+      ansible.builtin.package:
+        name:
+          - python3-elasticsearch
+          - python3-cryptography
+      when:
+        - elasticstack_pip_installation
+
+- name: Install Python Modules via pip  - forced
   ansible.builtin.pip:
     name:
       - elasticsearch
+      - cryptography
+    break_system_packages: true
+  ignore_errors: true
+  when:
+    - elasticstack_force_pip | bool
+  register: elasticstack_pip_installation_forced

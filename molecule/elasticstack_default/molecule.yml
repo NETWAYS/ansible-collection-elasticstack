@@ -32,7 +32,9 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
-  env:
-    ANSIBLE_VERBOSITY: 3
+  # Just enable temporarily. Sometimes it's useful, but most of the time it's
+  # overwhelming
+  #env:
+  #  ANSIBLE_VERBOSITY: 3
 verifier:
   name: ansible

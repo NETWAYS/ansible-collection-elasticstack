@@ -54,7 +54,7 @@
       ansible.builtin.package:
         name:
           - python3-elasticsearch
-          - cryptography
+          - python3-cryptography
       when:
         - elasticstack_pip_installation
 

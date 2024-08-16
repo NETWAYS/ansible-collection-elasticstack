@@ -21,6 +21,11 @@ Every role is documented with all variables, please refer to the documentation f
 * [elasticsearch_role](docs/module-elasticsearch_role.md)
 * [elasticsearch_user](docs/module-elasticsearch_user.md)
 
+## Global variables
+
+* `elasticstack_force_pip`: Will force installation of required Python modules via `pip`. This is useful if your package manager doesn't provide current versions of modules. (Default: `false`) See [PEP668](https://peps.python.org/pep-0668/) for more details.
+* `elasticstack_manage_pip`: Will install `pip` on your system. (Default: `false`)
+
 ## Installation
 
 You can easily install the collection with the `ansible-galaxy` command.

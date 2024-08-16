@@ -46,10 +46,10 @@ jobs:
           - rockylinux8
           - rockylinux9
           - ubuntu2004
-          - ubuntu2204]
+          - ubuntu2204
         scenario:
           - repos_default
-          - repos_oss]
+          - repos_oss
         release:
           - 7
           - 8

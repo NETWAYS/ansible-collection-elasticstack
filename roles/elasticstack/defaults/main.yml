@@ -22,6 +22,8 @@ elasticstack_repo_key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
 elasticstack_rpm_workaround: false
 elasticstack_security: true
 elasticstack_variant: elastic
+elasticstack_force_pip: false
+elasticstack_manage_pip: false
 
   # for debugging only
 elasticstack_no_log: true

@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+
+{% for item in elasticsearch_jvm_custom_parameters %}
+{{ item }}
+{% endfor %}

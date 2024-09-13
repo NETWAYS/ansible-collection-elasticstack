@@ -8,6 +8,7 @@ input {
     ssl_verify_mode => force_peer
     ssl_certificate_authorities => ["{{ logstash_certs_dir }}/ca.crt"]
     ssl_peer_metadata => false
+    ssl_key_passphrase => "{{ logstash_tls_key_passphrase }}"
 {% endif %}
 {% if logstash_beats_timeout is defined %}
     client_inactivity_timeout => "{{ logstash_beats_timeout }}"

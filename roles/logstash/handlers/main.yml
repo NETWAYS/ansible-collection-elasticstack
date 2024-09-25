@@ -4,6 +4,7 @@
   ansible.builtin.service:
     name: logstash
     state: restarted
+    daemon-reload: true
   when:
     - logstash_enable | bool
     - not logstash_freshstart.changed | bool
@@ -12,4 +13,5 @@
   ansible.builtin.service:
     name: logstash
     state: restarted
+    daemon-reload: true
   when: not logstash_config_autoreload and logstash_enable | bool

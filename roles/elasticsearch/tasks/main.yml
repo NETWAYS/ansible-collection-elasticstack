@@ -2,7 +2,7 @@
 
 - name: Check for versions
   ansible.builtin.fail:
-    msg: "No OSS package with version later than 7 is available for elasticsearch"
+    msg: "No OSS package with version later than 7 is available for Elasticsearch"
   when:
     - elasticstack_release | int > 7
     - elasticstack_variant == "oss"

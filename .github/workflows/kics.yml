@@ -13,15 +13,7 @@ on:
           - warning
           - debug
   pull_request:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - '*'
-#      - 'plugins/**'
-#      - 'roles/**'
-#      - '.github/**'
+  merge_group:
 jobs:
   kics:
     runs-on: ubuntu-latest

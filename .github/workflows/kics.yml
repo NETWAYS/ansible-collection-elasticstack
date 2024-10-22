@@ -20,6 +20,7 @@ on:
     paths:
       - 'plugins/**'
       - 'roles/**'
+      - '.github/**'
 jobs:
   kics:
     runs-on: ubuntu-latest

@@ -18,9 +18,10 @@ on:
       - 'fix/**'
       - '!doc/**'
     paths:
-      - 'plugins/**'
-      - 'roles/**'
-      - '.github/**'
+      - '*'
+#      - 'plugins/**'
+#      - 'roles/**'
+#      - '.github/**'
 jobs:
   kics:
     runs-on: ubuntu-latest

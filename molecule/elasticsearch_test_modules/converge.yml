@@ -50,7 +50,7 @@
       netways.elasticstack.elasticsearch_user:
         name: new-user1
         fullname: New User
-        password: changeMe123!
+        password: "{{ lookup('random_string', length=12, override_special='-_=+!#') }}"
         email: new@user.de
         roles:
           - new-role1

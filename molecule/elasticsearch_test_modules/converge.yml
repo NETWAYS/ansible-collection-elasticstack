@@ -50,7 +50,7 @@
       netways.elasticstack.elasticsearch_user:
         name: new-user1
         fullname: New User
-        password: "changeMe123!"
+        password: changeMe123!
         email: new@user.de
         roles:
           - new-role1

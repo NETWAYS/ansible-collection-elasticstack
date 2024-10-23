@@ -1,7 +1,4 @@
 ---
-# kics-scan disable=2e8d4922-8362-4606-8c14-aa10466a1ce3
-# above command will disable scanning for `http` (without `s`)
-# connections
 
 - name: Check for versions
   ansible.builtin.fail:

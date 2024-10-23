@@ -30,6 +30,7 @@ jobs:
           path: '.'
           # fail_on: high
           ignore_on_exit: results
+          output_formats: 'json,sarif'
           output_path: results-dir
       - name: Debug
         run: ls results-dir

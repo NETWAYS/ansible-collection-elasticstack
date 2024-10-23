@@ -244,6 +244,7 @@
     enabled: yes
   register: elasticsearch_freshstart
 
+# kics-scan ignore-block
 - name: Handle cluster setup without security
   when: not elasticsearch_security | bool
   block:

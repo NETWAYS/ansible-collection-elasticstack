@@ -9,6 +9,7 @@
   tasks:
 
 # Remember, this is the no-security scenario. So no https
+# kics-scan ignore-block
     - name: Health check
       ansible.builtin.uri:
         url: http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health
@@ -22,6 +23,7 @@
       delay: 10
       when: groups[elasticstack_elasticsearch_group_name] | length > 1
 
+# kics-scan ignore-block
     - name: Node check
       ansible.builtin.uri:
         url: http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes

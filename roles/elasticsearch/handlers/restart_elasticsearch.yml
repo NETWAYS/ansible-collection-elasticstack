@@ -1,0 +1,12 @@
+---
+
+- name: Check for running Elasticsearch service
+  ansible.builtin.systemd:
+    name: elasticsearch
+  register: elasticsearch_running
+
+- name: Include rolling stop
+  ansible.builtin.include_tasks: tasks/elasticsearch-rolling-stop.yml
+
+- name: Include rolling start
+  ansible.builtin.include_tasks: tasks/elasticsearch-rolling-start.yml

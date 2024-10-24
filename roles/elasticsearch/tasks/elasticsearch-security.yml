@@ -245,7 +245,7 @@
         --name {{ hostvars[item].ansible_hostname }}
         --ip {{ hostvars[item].ansible_default_ipv4.address | default(hostvars[item].ansible_all_ipv4_addresses[0]) }}
         --dns {{ hostvars[item].ansible_hostname }},{{ hostvars[item].ansible_fqdn }},{{ hostvars[item].inventory_hostname }}
-        --pass {{ hostvars[item].elasticsearch_tls_key_passphrase }}
+        --pass {{ (hostvars[item].elasticsearch_tls_key_passphrase  is defined) | ternary(hostvars[item].elasticsearch_tls_key_passphrase , elasticsearch_tls_key_passphrase) }}
         --out {{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
       loop: "{{ groups[elasticstack_elasticsearch_group_name] }}"
       no_log: "{{ elasticstack_no_log }}"

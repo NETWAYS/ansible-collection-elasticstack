@@ -92,4 +92,3 @@
 
     - name: Include rolling start
       ansible.builtin.include_tasks: elasticsearch-rolling-start.yml
-

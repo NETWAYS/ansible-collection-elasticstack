@@ -19,7 +19,6 @@ elasticsearch_pamlimits: true
 elasticsearch_check_calculation: false
 elasticsearch_clustername: elasticsearch
 elasticsearch_conf_dir: "/etc/elasticsearch/"
-elasticsearch_config_jvm: "jvm.options.j2"
 elasticsearch_user: elasticsearch
 elasticsearch_group: elasticsearch
 elasticsearch_api_host: localhost

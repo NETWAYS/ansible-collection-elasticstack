@@ -8,13 +8,23 @@ Every role is documented with all variables, please refer to the documentation f
 
 **Please note**: If you are already using this collection before version `1.0.0`, please note that we had to rename a significant amount of variables due to naming schema changes made by Ansible. Please review the variables you have set in your playbooks and variable files.
 
-## Roles Documentation
+## Roles documentation
 
 * [Beats](docs/role-beats.md)
 * [Elasticsearch](docs/role-elasticsearch.md)
 * [Kibana](docs/role-kibana.md)
 * [Logstash](docs/role-logstash.md)
 * [Repos](docs/role-repos.md)
+
+## Modules documentation
+
+* [elasticsearch_role](docs/module-elasticsearch_role.md)
+* [elasticsearch_user](docs/module-elasticsearch_user.md)
+
+## Global variables
+
+* `elasticstack_force_pip`: Will force installation of required Python modules via `pip`. This is useful if your package manager doesn't provide current versions of modules. (Default: `false`) See [PEP668](https://peps.python.org/pep-0668/) for more details.
+* `elasticstack_manage_pip`: Will install `pip` on your system. (Default: `false`)
 
 ## Installation
 
@@ -74,13 +84,13 @@ You will want to have reliable DNS resolution or enter all hosts of the stack in
 
 The variable `elasticstack_no_log` can be set to `false` if you want to see the output of all tasks. It defaults to `true` because some tasks could reveal passwords in production.
 
-### Versioning
+### Versions and upgrades
 
-*elasticstack_version*: Version number of tools to install. Only set if you don't want the latest. (default: none).
+*elasticstack_version*: Version number of tools to install. Only set if you don't want the latest on new setups. (default: none). If you already have an installation of Elastic Stack, this collection will query the version of Elasticsearch on the CA host and use it for all further installations in the same setup. (Only if you run the `elasticsearch` role before all others) Example: `7.17.2`
 
-*elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)
+*elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`) Make sure it corresponds to `elasticstack_version` if you set both.
 
-For OSS version see `elasticstack_variant` below. **IMPORTANT** Do not change the version once you have set up the stack. There are unpredictable effects to be expected when using this for upgrades. And upgrade mechanism is already on it's way. (default: none. Example: `7.17.2`)
+For OSS version see `elasticstack_variant` below.
 
 *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
 
@@ -93,6 +103,14 @@ roles:
      vars:
         elasticstack_version: 8.8.1
 ```
+
+#### Upgrades ####
+
+Set `elasticstack_version` to the version you want to upgrade to. Positively do read and understand Elastics changelog and "breaking changes" of your target version and all between your current and the target version. Do not use unless you have a valid backup.
+
+If an upgrade fails, you can try re-running the collection with the same settings. There are several tasks that can provide "self-healing". Please do not rely on these mechanisms, they are more of a "convenience recovery" for easier steps.
+
+The collection will make sure to upgrade Elasticsearch nodes one by one.
 
 ### Default Passwords
 
@@ -120,7 +138,7 @@ There are some comments in the Playbook. Either fill them with the correct value
 
 ### Inventory
 
-_Note_: The roles rely on hardcoded group names for placing services on hosts. Please make sure you have groups named `elasticsearch`, `logstash` and `kibana` in your Ansible inventory. Hosts in these groups will get the respective services. Just restricting your plays to the appropriate hosts will not work because the roles interact with hosts from other groups e.g. for certificate generation.
+_Note_: The roles rely on group names for placing services on hosts. Please make sure you have group names defined: `elasticstack_elasticsearch_group_name` (default: `elasticsearch`), `elasticstack_logstash_group_name` (default: `logstash`) and `elasticstack_kibana_group_name` (default: `kibana`) that will match your desired setup in your Ansible inventory. Hosts in these groups will get the respective services. Just restricting your plays to the appropriate hosts will not work because the roles interact with hosts from other groups e.g. for certificate generation.
 
 The execution order of the roles is important! (see below)
 

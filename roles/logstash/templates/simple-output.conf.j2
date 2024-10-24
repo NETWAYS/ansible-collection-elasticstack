@@ -19,6 +19,9 @@ output {
     host => "localhost"
     data_type => "list"
     key => "{{ output.key }}"
+{% if logstash_redis_password is defined %}
+    password => "{{ logstash_redis_password }}"
+{% endif %}
     {% if output.congestion is defined %}congestion_threshold => {{ output.congestion }}{% endif %}
 
   }

@@ -6,6 +6,9 @@ input {
     host => "localhost"
     data_type => "list"
     key => "{{ input.key }}"
+{% if logstash_redis_password is defined %}
+    password => "{{ logstash_redis_password }}"
+{% endif %}
   }
 {% endfor %}
 

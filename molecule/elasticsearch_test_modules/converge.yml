@@ -1,0 +1,64 @@
+---
+# The workaround for arbitrarily named role directory is important because the git repo has one name and the role within it another
+# Found at: https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+- name: Converge
+  collections:
+    - netways.elasticstack
+  hosts: all
+  vars:
+    elasticstack_full_stack: false
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elasticsearch_heap: "1"
+    elasticstack_no_log: false
+  tasks:
+    - name: Include Elastics repos role
+      ansible.builtin.include_role:
+        name: repos
+    - name: Include Elasticsearch
+      ansible.builtin.include_role:
+        name: elasticsearch
+
+    - name: Fetch Elastic password # noqa: risky-shell-pipe
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        grep "PASSWORD elastic" /usr/share/elasticsearch/initial_passwords |
+        awk {' print $4 '}
+      register: elasticstack_password
+      changed_when: false
+
+    - name: Create elasticsearch role 'new-role'
+      netways.elasticstack.elasticsearch_role:
+        name: new-role1
+        cluster:
+          - manage_own_api_key
+          - delegate_pki
+        indicies:
+          - names:
+              - foobar321
+            privileges:
+              - read
+              - write
+        state: present
+        host: https://localhost:9200
+        auth_user: elastic
+        auth_pass: "{{ elasticstack_password.stdout }}"
+        verify_certs: false
+
+    - name: Create elasticsearch user 'new-user'
+      netways.elasticstack.elasticsearch_user:
+        name: new-user1
+        fullname: New User
+        password: changeMe123!
+        email: new@user.de
+        roles:
+          - new-role1
+          - logstash-writer
+        enabled: true
+        state: present
+        host: https://localhost:9200
+        auth_user: elastic
+        auth_pass: "{{ elasticstack_password.stdout }}"
+        verify_certs: false
+        ca_certs: /etc/elasticsearch/certs/http_ca.crt

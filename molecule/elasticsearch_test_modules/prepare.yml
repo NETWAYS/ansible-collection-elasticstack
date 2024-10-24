@@ -1,0 +1,22 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: Install packages for Debian
+      ansible.builtin.apt:
+        name:
+          - gpg
+          - gpg-agent
+          - procps
+          - curl
+          - iproute2
+          - git
+          - openssl
+          - python3
+        update_cache: yes
+
+    - name: Install python module dependencies
+      ansible.builtin.pip:
+        name: "{{ item }}"
+      loop:
+        - elasticsearch

@@ -1,29 +1,5 @@
 ---
 
-- name: Install packages for security tasks
-  ansible.builtin.package:
-    name:
-      - unzip
-      - python3-cryptography
-      - openssl
-  tags:
-    - certificates
-    - renew_ca
-    - renew_logstash_cert
-
-- name: Set elasticstack_ca variable if not already done by user
-  ansible.builtin.set_fact:
-    elasticstack_ca: "{{ groups['elasticsearch'][0] }}"
-  when:
-    - elasticstack_ca is undefined
-    - groups['elasticsearch'] is defined
-  tags:
-    - certificates
-    - configuration
-    - logstash_configuration
-    - renew_ca
-    - renew_logstash_cert
-
 - name: Ensure logstash certificate exists
   ansible.builtin.stat:
     path: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"
@@ -372,12 +348,7 @@
 - name: Check the length of logstash user password
   ansible.builtin.fail:
     msg: logstash user password must be at least 6 characters long.
-  when: logstash_password | length < 6
-
-- name: Set password hash salt as a fact
-  ansible.builtin.set_fact:
-    logstash_password_hash_salt: "{{ lookup('password', '/dev/null', chars=['ascii_lowercase', 'digits'], length=logstash_password_hash_salt_length, seed=logstash_password_hash_salt_seed) }}"
-  when: logstash_password_hash | bool and inventory_hostname == elasticstack_ca
+  when: logstash_user_password | length < 6
 
 - name: Fetch Elastic password # noqa: risky-shell-pipe
   ansible.builtin.shell: >
@@ -392,81 +363,34 @@
     - configuration
     - logstash_configuration
 
-- name: Set elasticsearch security-api base url for elasticsearch > 7
-  ansible.builtin.set_fact:
-    security_api_base_url: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_security/"
-  when: elasticstack_release | int > 7
+- name: Create logstash role {{ logstash_role_name }}
+  netways.elasticstack.elasticsearch_role:
+    name: "{{ logstash_role_name }}"
+    cluster: "{{ logstash_role_cluster_privileges }}"
+    indicies:
+      - names: "{{ logstash_role_indicies_names }}"
+        privileges: "{{ logstash_role_indicies_privileges }}"
+    state: present
+    host: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}"
+    auth_user: elastic
+    auth_pass: "{{ logstash_elasticstack_password.stdout }}"
+    verify_certs: true
+    ca_certs: "{{ logstash_certs_dir }}/ca.crt"
+  when: logstash_create_role | bool
 
-- name: Set elasticsearch security-api base url for elasticsearch < 8
-  ansible.builtin.set_fact:
-    security_api_base_url: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}/_xpack/security/"
-  when: elasticstack_release | int < 8
-
-- name: Check for logstash_writer role
-  ansible.builtin.uri:
-    url: "{{ security_api_base_url }}role/logstash_writer"
-    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
-    user: elastic
-    password: "{{ logstash_elasticstack_password.stdout }}"
-  register: check_logstash_writer_role_response
-  delegate_to: "{{ elasticstack_ca }}"
-  failed_when: false
-  changed_when: false
-  no_log: "{{ elasticstack_no_log }}"
-  run_once: true
-
-- name: Set logstash_writer_role_present
-  ansible.builtin.set_fact:
-    logstash_writer_role_present: true
-  when: check_logstash_writer_role_response.json.logstash_writer is defined
-
-- name: Put logstash_writer role into Elasticsearch if not present
-  ansible.builtin.uri:
-    url: "{{ security_api_base_url }}role/logstash_writer"
-    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
-    user: elastic
-    password: "{{ logstash_elasticstack_password.stdout }}"
-    method: PUT
-    headers:
-      Content-Type: application/json
-    body: "{{ lookup('template', 'logstash_writer_role.j2') }}"
-    body_format: json
-  register: put_logstash_writer_role_response
-  when: logstash_writer_role_present is not defined
-  delegate_to: "{{ elasticstack_ca }}"
-  failed_when: not put_logstash_writer_role_response.json.role.created | bool
-  run_once: true
-
-- name: Check for logstash_writer user
-  ansible.builtin.uri:
-    url: "{{ security_api_base_url }}user/{{ logstash_user }}"
-    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
-    user: elastic
-    password: "{{ logstash_elasticstack_password.stdout }}"
-  register: check_logstash_writer_user_response
-  delegate_to: "{{ elasticstack_ca }}"
-  failed_when: false
-  changed_when: false
-  run_once: true
-
-- name: Set logstash_writer_user_present
-  ansible.builtin.set_fact:
-    logstash_writer_user_present: true
-  when: check_logstash_writer_user_response.json.logstash_writer.username is defined and  check_logstash_writer_user_response.json.logstash_writer.username == "logstash_writer"
-
-- name: Put logstash_writer user into Elasticsearch if not present
-  ansible.builtin.uri:
-    url: "{{ security_api_base_url }}user/{{ logstash_user }}"
-    ca_path: "{{ elasticstack_ca_dir }}/ca.crt"
-    user: elastic
-    password: "{{ logstash_elasticstack_password.stdout }}"
-    method: PUT
-    headers:
-      Content-Type: application/json
-    body: "{{ lookup('template', 'logstash_writer_user.j2') }}"
-    body_format: json
-  register: put_logstash_writer_user_response
-  when: logstash_writer_user_present is not defined
-  delegate_to: "{{ elasticstack_ca }}"
-  run_once: true
-  failed_when: not put_logstash_writer_user_response.json.created
+- name: Create logstash user {{ logstash_user_name }}
+  netways.elasticstack.elasticsearch_user:
+    name: "{{ logstash_user_name }}"
+    fullname: "{{ logstash_user_fullname }}"
+    password: "{{ logstash_user_password }}"
+    email: "{{ logstash_user_email }}"
+    roles:
+      - "{{ logstash_role_name }}"
+    enabled: true
+    state: present
+    host: "https://{{ hostvars[elasticstack_ca].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}"
+    auth_user: elastic
+    auth_pass: "{{ logstash_elasticstack_password.stdout }}"
+    verify_certs: false
+    ca_certs: "{{ logstash_certs_dir }}/ca.crt"
+  when: logstash_create_user | bool

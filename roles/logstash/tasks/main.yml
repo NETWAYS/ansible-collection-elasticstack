@@ -1,17 +1,15 @@
 ---
 
+- name: Include global role
+  ansible.builtin.import_role:
+    name: netways.elasticstack.elasticstack
+
 - name: Update apt cache.
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 600
   changed_when: false
   when: ansible_os_family == 'Debian'
-
-- name: Include OS specific vars
-  ansible.builtin.include_vars: '{{ item }}'
-  with_first_found:
-    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
-    - '{{ ansible_os_family }}.yml'
 
 - name: Prepare for whole stack roles if used
   when:
@@ -20,10 +18,10 @@
 
     - name: Set Elasticsearch hosts if used with other roles
       ansible.builtin.set_fact:
-        logstash_elasticsearch: "{{ groups['elasticsearch'] }}"
+        logstash_elasticsearch: "{{ groups[elasticstack_elasticsearch_group_name] }}"
       when:
         - logstash_elasticsearch is undefined
-        - groups['elasticsearch'] is defined
+        - groups[elasticstack_elasticsearch_group_name] is defined
       tags:
         - configuration
         - logstash_configuration
@@ -41,7 +39,7 @@
       - localhost
   when:
     - logstash_elasticsearch is undefined
-    - groups['elasticsearch'] is undefined
+    - groups[elasticstack_elasticsearch_group_name] is undefined
   tags:
     - configuration
     - logstash_configuration
@@ -58,7 +56,7 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Construct exact name of Logstas package
+- name: Construct exact name of Logstash package
   ansible.builtin.set_fact:
     logstash_package: >
       {{
@@ -69,12 +67,32 @@
       string if elasticstack_version is defined else '') |
       replace(' ', '')
       }}
+  when:
+    - ansible_os_family != "Debian"
+
+- name: Construct exact name of Logstash package
+  ansible.builtin.set_fact:
+    logstash_package: >
+      {{
+      'logstash' +
+      ('-oss' if elasticstack_variant == 'oss' else '') +
+      (elasticstack_versionseparator +
+      '1:' +
+      elasticstack_version +
+      '-1' |
+      string if elasticstack_version is defined else '') |
+      replace(' ', '')
+      }}
+  when:
+    - ansible_os_family == "Debian"
 
 - name: Install Logstash - rpm - full stack
   ansible.builtin.package:
     name: "{{ logstash_package }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
+  notify:
+    - Restart Logstash
   when:
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
@@ -82,6 +100,8 @@
 - name: Install Logstash - rpm - standalone
   ansible.builtin.package:
     name: "{{ logstash_package }}"
+  notify:
+    - Restart Logstash
   when:
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
@@ -89,6 +109,8 @@
 - name: Install Logstash - deb
   ansible.builtin.package:
     name: "{{ logstash_package }}"
+  notify:
+    - Restart Logstash
   when:
     - ansible_os_family == "Debian"
 

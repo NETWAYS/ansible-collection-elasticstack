@@ -1,11 +1,8 @@
 ---
 
-- name: Check for versions
-  ansible.builtin.fail:
-    msg: "No OSS versions later than 7 are available"
-  when:
-    - elasticstack_release | int > 7
-    - elasticstack_variant == "oss"
+- name: Include global role
+  ansible.builtin.import_role:
+    name: netways.elasticstack.elasticstack
 
 - name: Import RedHat tasks
   ansible.builtin.import_tasks: redhat.yml

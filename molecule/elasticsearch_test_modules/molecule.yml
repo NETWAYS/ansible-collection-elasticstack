@@ -1,0 +1,26 @@
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+driver:
+  name: docker
+platforms:
+  - name: elasticsearch_default
+    groups:
+      - elasticsearch
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian11}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  # Just enable temporarily. Sometimes it's useful, but most of the time it's
+  # overwhelming
+  #env:
+  #  ANSIBLE_VERBOSITY: 3
+verifier:
+  name: ansible

@@ -4,7 +4,7 @@
 # for more information why this is needed
 
 - name: Ensure gpg exists, for signing keys
-  ansible.builtin.yum:
+  ansible.builtin.package:
     name: gnupg
     state: present
 
@@ -36,7 +36,7 @@
 
 - name: Ensure Elastic repository key is available (RedHat)
   ansible.builtin.rpm_key:
-    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    key: "{{ elasticstack_repo_key }}"
     state: present
 
 - name: Ensure Elastic Stack yum repository is configured (RedHat)
@@ -46,7 +46,7 @@
     file: elastic-release
     baseurl: https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/yum
     gpgcheck: yes
-    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    gpgkey: "{{ elasticstack_repo_key }}"
     enabled: "{{ elasticstack_enable_repos | bool }}"
   when: elasticstack_variant == "elastic"
 
@@ -57,6 +57,6 @@
     file: elastic-oss-release
     baseurl: https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/yum
     gpgcheck: yes
-    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    gpgkey: "{{ elasticstack_repo_key }}"
     enabled: "{{ elasticstack_enable_repos | bool }}"
   when: elasticstack_variant == "oss"

@@ -44,17 +44,32 @@ logstash_forwarder_queue_type: memory
 logstash_forwarder_queue_max_bytes: 1gb
 logstash_sniffing: false
 
-# logstash security
-logstash_password_hash: true
-logstash_password_hash_algorithm: bcrypt
-logstash_password_salt_length: 22
-logstash_user: logstash_writer
-logstash_password: password
-logstash_password_hash_salt_length: 22
-logstash_password_hash_salt_seed: SeedChangeMe
-logstash_user_indices: '"ecs-logstash*", "logstash*", "logs*"'
+# logstash role / user
+logstash_create_role: true
+logstash_role_name: logstash_writer
+logstash_role_cluster_privileges:
+  - manage_index_templates
+  - monitor
+  - manage_ilm
+logstash_role_indicies_names:
+  - "ecs-logstash*"
+  - "logstash*"
+  - "logs*"
+logstash_role_indicies_privileges:
+  - write
+  - create
+  - delete
+  - create_index
+  - manage
+  - manage_ilm
+logstash_create_user: true
+logstash_user_name: logstash_writer
+logstash_user_password: password
+logstash_user_email: ""
+logstash_user_fullname: "Internal Logstash User"
 logstash_reset_writer_role: true
 
+# logstash security
 logstash_tls_key_passphrase: LogstashChangeMe
 logstash_certs_dir: /etc/logstash/certs
 logstash_cert_validity_period: 1095
@@ -77,20 +92,3 @@ logstash_pipeline_identifier_defaults: false
 
 logstash_freshstart:
   changed: false
-
-elasticstack_ca_dir: /opt/es-ca
-elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
-elasticstack_ca_pass: PleaseChangeMe
-
-# "global" variables for all roles
-
-elasticstack_release: 8
-elasticstack_full_stack: true
-elasticstack_variant: elastic
-elasticstack_security: true
-elasticstack_elasticsearch_http_port: 9200
-elasticstack_beats_port: 5044
-
-# Variables for debugging and development
-
-elasticstack_override_beats_tls: false

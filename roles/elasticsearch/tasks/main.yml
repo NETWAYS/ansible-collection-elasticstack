@@ -1,5 +1,16 @@
 ---
 
+- name: Check for versions
+  ansible.builtin.fail:
+    msg: "No OSS package with version later than 7 is available for Elasticsearch"
+  when:
+    - elasticstack_release | int > 7
+    - elasticstack_variant == "oss"
+
+- name: Include global role
+  ansible.builtin.import_role:
+    name: netways.elasticstack.elasticstack
+
 - name: Update apt cache.
   ansible.builtin.apt:
     update_cache: yes
@@ -15,6 +26,12 @@
   with_first_found:
     - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
     - '{{ ansible_os_family }}.yml'
+
+- name: Set node name if not overriden by user
+  ansible.builtin.set_fact:
+    elasticsearch_nodename: "{{ ansible_hostname }}"
+  when:
+    - elasticsearch_nodename is undefined
 
 - name: Set common password for common certificates
   ansible.builtin.set_fact:
@@ -121,6 +138,16 @@
       replace(' ', '')
       }}
 
+- name: Update Elasticsearch if needed
+  ansible.builtin.include_tasks: elasticsearch-rolling-upgrade.yml
+  with_items: "{{ groups[elasticstack_elasticsearch_group_name] }}"
+  when:
+    - "hostvars[item].inventory_hostname == inventory_hostname"
+    - elasticstack_version is defined
+    - ansible_facts.packages['elasticsearch'][0].version is defined
+    - elasticstack_password.stdout is defined
+    - elasticstack_version is version( ansible_facts.packages['elasticsearch'][0].version, '>')
+
 - name: Install Elasticsearch - rpm - full stack
   ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
@@ -222,7 +249,7 @@
   block:
     - name: Check for cluster status without security
       ansible.builtin.uri:
-        url: "http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
+        url: "http://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
       register: elasticsearch_cluster_status
       ignore_errors: "{{ ansible_check_mode }}"
       until: elasticsearch_cluster_status.json.status == "green"

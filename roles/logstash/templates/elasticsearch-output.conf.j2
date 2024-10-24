@@ -36,8 +36,8 @@ output {
     keystore_password => "{{ logstash_tls_key_passphrase }}"
     cacert => "{{ logstash_certs_dir }}/ca.crt"
     ssl => true
-    user => "{{ logstash_user }}"
-    password => "{{ logstash_password }}"
+    user => "{{ logstash_user_name }}"
+    password => "{{ logstash_user_password }}"
 {% endif %}
   }
 }

@@ -60,6 +60,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_ident_field_name*: Name of the identifying the instance (default: `"[netways][instance]"`)
 * *logstash_beats_input*: Enable default pipeline with `beats` input (default: `true`)
 * *logstash_beats_input_congestion*: Optional congestion threshold for the beats input pipeline
+* *logstash_beats_timeout*: Optional timeout for client connections. (Example: `60s`)
 * *logstash_beats_tls*: Activate TLS for the beats input pipeline (default: none but `true` with full stack setup if not set)
 * *logstash_tls_key_passphrase*: Passphrase for Logstash certificates (default: `LogstashChangeMe`)
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
@@ -68,13 +69,16 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_cert_will_expire_soon*: Set it to true to renew logstash certificate (default: `false`), Or run the playbook with `--tags renew_logstash_cert` to do that.
 * *logstash_elasticsearch*: Address of Elasticsearch instance for default output (default: list of Elasticsearch nodes from `elasticsearch` role or `localhost` when used standalone)
 * *logstash_security*: Enable X-Security (No default set, but will be activated when in full stack mode)
-* *logstash_user*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
-* *logstash_password_hash*: Generate and use a hash from your `logstash_password` (default: `true`)
-* *logstash_password_hash_algorithm*: Password hashing algorithms. Value must be same as `xpack.security.authc.password_hashing.algorithm` (default: `bcrypt`)
-* *logstash_password_salt_length*: base64 encoded Salt character lenght. This value must be integer and must be compatible to the selected password hashing algorithms (default: `22`)
-* *logstash_password_hash_salt_seed*: A seed to generate random but idempotent salt on the elasticstack ca host. The salt will be used to create idempotent logstash hashed user password (default: `SeedChangeMe`)
-* *logstash_password*: Password of Elasticsearch user. It must be at least 6 characters long (default: `password`)
-* *logstash_user_indices*: Indices the user has access to (default: `'"ecs-logstash*", "logstash*", "logs*"'`)
+* *logstash_create_user*: Enables creation `logstash_user_name` (Default: `true`)
+* *logstash_user_name*: Name of the user to connect to Elasticsearch (Default: `logstash_writer`)
+* *logstash_user_email*: email-address that is linked with the logstash_user_name (Default: `""`)
+* *logstash_user_fullname*: fullname that is linked with the logstash_user_name (Default: `Internal Logstash User`)
+* *logstash_user_password*: Password of `logstash_user_name` in Elasticsearch. It must be at least 6 characters long (default: `password`)
+* *logstash_create_role*: Enables creation `logstash_role_name` (Default: `true`)
+* *logstash_role_name*: Name of the logstash role that is getting created (Default: `logstash_writer`)
+* *logstash_role_cluster_privileges*: Cluster privileges the role has access to (default: `"manage_index_templates", "monitor", "manage_ilm"`)
+* *logstash_role_indicies_names*: Indices the role has access to (default: `"ecs-logstash*", "logstash*", "logs*"`)
+* *logstash_role_indicies_privileges*: Index permissions the role has on `logstash_role_indicies_names` (default: `"write", "create", "delete", "create_index", "manage", "manage_ilm"`)
 * *logstash_reset_writer_role*: Reset user and role with every run: (default: `true`)
 * *logstash_validate_after_inactivity*: How long should logstash wait, before starting a new connection and leave the old one with elasticsearch, when the connection with elasticsearch get lost: (Default: `300`).
 * *logstash_queue_type*: What kind of queue should Logstash use per default: (Default: `persisted`, alternative: `memory`)
@@ -83,6 +87,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_sniffing_delay*: How long to wait, in seconds, between sniffing attempts (Default: `not set`).
 * *logstash_sniffing_path*: HTTP Path to be used for the sniffing requests (Default: `not set`).
 * *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_full_stack` is not set. (default: `true`)
+* *logstash_redis_password*: If set this will use this password when connecting our simple inputs and outputs to Redis. (default: not set)
 
 The following variables configure Log4j for Logstash. All default to `true` as this is the default after the installation.
 

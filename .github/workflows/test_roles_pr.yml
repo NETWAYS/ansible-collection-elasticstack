@@ -34,6 +34,7 @@ jobs:
       matrix:
         distro:
           - rockylinux8
+          - rockylinux9
           - ubuntu2204
         scenario:
           - elasticstack_default

@@ -39,9 +39,20 @@ jobs:
       fail-fast: false
       matrix:
 
-        distro: [centos7, debian10, debian11, rockylinux8, rockylinux9, ubuntu2004, ubuntu2204]
-        scenario: [repos_default, repos_oss]
-        release: [ 7, 8 ]
+        distro:
+          - centos7
+          - debian10
+          - debian11
+          - rockylinux8
+          - rockylinux9
+          - ubuntu2004
+          - ubuntu2204
+        scenario:
+          - repos_default
+          - repos_oss
+        release:
+          - 7
+          - 8
 
     steps:
       - name: Check out code

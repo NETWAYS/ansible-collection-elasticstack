@@ -32,6 +32,11 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  inventory:
+    host_vars:
+      elasticstack${ELASTIC_RELEASE}-cluster2-${MOLECULE_DISTRO}:
+        elasticsearch_tls_key_passphrase: UniqueHostPassword
+
   # Just enable temporarily. Sometimes it's useful, but most of the time it's
   # overwhelming
   #env:

@@ -13,6 +13,7 @@ on:
           - warning
           - debug
   pull_request:
+  push:
   merge_group:
   schedule:
     - cron: '15 6 * * 4'

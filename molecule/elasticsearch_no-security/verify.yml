@@ -26,6 +26,7 @@
 
     - name: Node check
       ansible.builtin.uri:
+# kics-scan ignore-line
         url: http://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes
         method: GET
         return_content: yes

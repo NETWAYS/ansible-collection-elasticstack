@@ -74,14 +74,14 @@
 
     - name: Check the existance of ca on Ansible controler
       ansible.builtin.stat:
-        path: /tmp/ca.crt
+        path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
       register: elasticsearch_check_temporary_ca
       delegate_to: localhost
 
     - name: Move temporary ca file on Ansible controler
       ansible.builtin.copy:
-        src: /tmp/ca.crt
-        dest: "/tmp/ca.crt_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
+        dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
       when: elasticsearch_check_temporary_ca.stat.exists
       delegate_to: localhost
@@ -89,7 +89,7 @@
 
     - name: Remove temporary ca file on Ansible controler
       ansible.builtin.file:
-        path: /tmp/ca.crt
+        path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
         state: absent
       when: elasticsearch_move_ca_file.changed
       delegate_to: localhost
@@ -185,20 +185,20 @@
   block:
     - name: Check the existance of cert on Ansible controler
       ansible.builtin.stat:
-        path: /tmp/{{ ansible_hostname }}.p12
+        path:  "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
       register: elasticsearch_check_temporary_cert
 
     - name: Move temporary cert on Ansible controler
       ansible.builtin.copy:
-        src: /tmp/{{ ansible_hostname }}.p12
-        dest: "/tmp/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
+        dest:  "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
       when: elasticsearch_check_temporary_cert.stat.exists
       register: elasticsearch_move_cert_file
 
     - name: Remove temporary cert on Ansible controler
       ansible.builtin.file:
-        path: /tmp/{{ ansible_hostname }}.p12
+        path:  "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
         state: absent
       when: elasticsearch_move_cert_file.changed
 
@@ -275,7 +275,7 @@
 - name: Fetch certificate from ca host to Ansible controller
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
-    dest: "/tmp/{{ ansible_hostname }}.p12"
+    dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
     flat: yes
   delegate_to: "{{ elasticstack_ca }}"
   tags:
@@ -297,7 +297,7 @@
 
 - name: Copy the ca certificate to elasticsearch nodes
   ansible.builtin.copy:
-    src: /tmp/ca.crt
+    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
     dest: "/etc/elasticsearch/certs"
     owner: root
     group: elasticsearch
@@ -313,7 +313,7 @@
 
 - name: Copy the certificate to elasticsearch nodes
   ansible.builtin.copy:
-    src: "/tmp/{{ ansible_hostname }}.p12"
+    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
     dest: "/etc/elasticsearch/certs"
     owner: root
     group: elasticsearch

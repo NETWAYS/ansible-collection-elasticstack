@@ -191,7 +191,7 @@
     - name: Move temporary cert on Ansible controler
       ansible.builtin.copy:
         src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
-        dest:  "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
+        dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
       when: elasticsearch_check_temporary_cert.stat.exists
       register: elasticsearch_move_cert_file

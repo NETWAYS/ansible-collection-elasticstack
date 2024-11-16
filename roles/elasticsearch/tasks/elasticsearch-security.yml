@@ -198,7 +198,7 @@
 
     - name: Remove temporary cert on Ansible controler
       ansible.builtin.file:
-        path:  "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
+        path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
         state: absent
       when: elasticsearch_move_cert_file.changed
 

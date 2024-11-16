@@ -185,7 +185,7 @@
   block:
     - name: Check the existance of cert on Ansible controler
       ansible.builtin.stat:
-        path:  "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
+        path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
       register: elasticsearch_check_temporary_cert
 
     - name: Move temporary cert on Ansible controler

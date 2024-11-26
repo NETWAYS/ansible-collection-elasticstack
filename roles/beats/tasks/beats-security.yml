@@ -87,20 +87,20 @@
   block:
     - name: Check the existance of cert on localhost
       ansible.builtin.stat:
-        path: /tmp/{{ ansible_hostname }}-beats.zip
+        path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip"
       register: beats_check_temporary_cert
 
     - name: Move temporary zip file
       ansible.builtin.copy:
-        src: /tmp/{{ ansible_hostname }}-beats.zip
-        dest: "/tmp/{{ ansible_hostname }}-beats.zip_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip"
+        dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
       when: beats_check_temporary_cert.stat.exists
       register: beats_move_cert_file
 
     - name: Remove temporary cert file
       ansible.builtin.file:
-        path: /tmp/{{ ansible_hostname }}-beats.zip
+        path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip"
         state: absent
       when: beats_move_cert_file.changed
 
@@ -139,7 +139,7 @@
 - name: Fetch certificate from ca host to master
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip"
-    dest: "/tmp/{{ ansible_hostname }}-beats.zip"
+    dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip"
     flat: yes
   delegate_to: "{{ elasticstack_ca }}"
   tags:
@@ -149,7 +149,7 @@
 
 - name: Copy the certificate to actual node
   ansible.builtin.unarchive:
-    src: "/tmp/{{ ansible_hostname }}-beats.zip"
+    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip"
     dest: "/etc/beats/certs/"
     owner: root
     group: root
@@ -196,7 +196,7 @@
 - name: Fetch ca certificate from ca host to master
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/ca.crt"
-    dest: /tmp/ca.crt
+    dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
     flat: yes
   delegate_to: "{{ elasticstack_ca }}"
   tags:
@@ -206,7 +206,7 @@
 
 - name: Copy the ca certificate to actual node
   ansible.builtin.copy:
-    src: /tmp/ca.crt
+    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
     dest: /etc/beats/certs
     owner: root
     group: root

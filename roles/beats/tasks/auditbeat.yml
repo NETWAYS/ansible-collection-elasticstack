@@ -39,9 +39,12 @@
   when:
     - ansible_os_family == "Debian"
 
+# KICS complains about "latest" package but this is a dedicated update task
+
 - name: Install Auditbeat latest version - rpm - full stack
   ansible.builtin.package:
     name: auditbeat
+# kics-scan ignore-line
     state: latest
     enablerepo:
       - "elastic-{{ elasticstack_release }}.x"

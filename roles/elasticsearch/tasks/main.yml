@@ -268,11 +268,16 @@
     enabled: yes
   register: elasticsearch_freshstart
 
+# The comment in the following task will disable KICS security checks for this
+# very line. In this state of the system we can only communicate without https
+# so the finding is a false positive
+
 - name: Handle cluster setup without security
   when: not elasticsearch_security | bool
   block:
     - name: Check for cluster status without security
       ansible.builtin.uri:
+# kics-scan ignore-line
         url: "http://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
       register: elasticsearch_cluster_status
       ignore_errors: "{{ ansible_check_mode }}"

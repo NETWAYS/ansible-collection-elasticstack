@@ -18,7 +18,7 @@
     elasticstack_full_stack: true
     elasticstack_no_log: false
     logstash_pipeline_unsafe_shutdown: true
-    logstash_redis_password: "ThisIsMyRedisTest"
+    logstash_redis_password: "{{ lookup('ansible.builtin.password', '/tmp/redispassword', chars=['ascii_letters'], length=15) }}"
     redis_requirepass: "{{ logstash_redis_password }}"
     beats_filebeat_syslog_udp: true
     beats_filebeat_syslog_tcp: true

@@ -2,7 +2,7 @@
 
 - name: Construct exact name of Auditbeat package
   ansible.builtin.set_fact:
-    beats_auditbeat_package: >
+    beats_auditbeat_package: >-
       {{
       'auditbeat' +
       (elasticstack_versionseparator +

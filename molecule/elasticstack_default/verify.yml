@@ -17,10 +17,6 @@
         port: 5044
       when: "'logstash' in group_names"
 
-    - name: Wait for syslog port to open
-      ansible.builtin.wait_for:
-        port: 514
-
     - name: Set elasticsearch_ca variable if not already done by user
       ansible.builtin.set_fact:
         elasticsearch_ca: "{{ groups[elasticstack_elasticsearch_group_name][0] }}"

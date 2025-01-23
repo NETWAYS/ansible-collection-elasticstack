@@ -22,6 +22,7 @@
     redis_requirepass: "{{ logstash_redis_password }}"
     beats_filebeat_syslog_udp: true
     beats_filebeat_syslog_tcp: true
+    beats_filebeat_journald: true
     beats_filebeat_modules:
       - system
     beats_fields:
@@ -51,26 +52,26 @@
     - name: Include Beats
       ansible.builtin.include_role:
         name: beats
-    - name: Install rsyslog
-      ansible.builtin.package:
-        name: rsyslog
-    - name: Remove cache # noqa: risky-shell-pipe
-      ansible.builtin.shell: >
-        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-        rm -rf /var/cache/*
-      changed_when: false
-    - name: Configure rsyslog
-      ansible.builtin.lineinfile:
-        line: "*.* @@localhost:514"
-        path: /etc/rsyslog.conf
-    - name: Start rsyslog
-      ansible.builtin.service:
-        name: rsyslog
-        state: started
-      failed_when: false
-    - name: Fetch journalctl output
-      command: journalctl -xeu rsyslog.service
-      register: debug_output
-    - name: Output rsyslog problems
-      debug:
-        var: debug_output
+    #- name: Install rsyslog
+    #  ansible.builtin.package:
+    #    name: rsyslog
+    #- name: Remove cache # noqa: risky-shell-pipe
+    #  ansible.builtin.shell: >
+    #    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+    #    rm -rf /var/cache/*
+    #  changed_when: false
+    #- name: Configure rsyslog
+    #  ansible.builtin.lineinfile:
+    #    line: "*.* @@localhost:514"
+    #    path: /etc/rsyslog.conf
+    #- name: Start rsyslog
+    #  ansible.builtin.service:
+    #    name: rsyslog
+    #    state: started
+    #  failed_when: false
+    #- name: Fetch journalctl output
+    #  command: journalctl -xeu rsyslog.service
+    #  register: debug_output
+    #- name: Output rsyslog problems
+    #  debug:
+    #    var: debug_output

@@ -25,10 +25,10 @@
              data_type => list
            }
          }
-    notify:
-      - Set permissions for input.conf
-      
-
+      mode: preserve
+      owner: root
+      group: root
+        "
   - name: Create Syslog output
     ansible.builtin.copy:
       dest: /etc/logstash/conf.d/syslog/output.conf
@@ -40,35 +40,9 @@
              data_type => list
            }
          }
-    notify:
-      - Set permissions for output.conf
         "
   - name: Update Pipeline code
     ansible.builtin.git:
       repo: https://github.com/widhalmt/syslog-logstash-pipeline.git
       dest: /etc/logstash/conf.d/syslog/
       version: master
-    notify:
-      - Set permissions for syslog directory
-
-  handlers:
-    - name: Set permissions for input.conf
-      ansible.builtin.file:
-        path: /etc/logstash/conf.d/syslog/input.conf
-        owner: root
-        group: root
-        mode: '0644'
-
-    - name: Set permissions for output.conf
-      ansible.builtin.file:
-        path: /etc/logstash/conf.d/syslog/output.conf
-        owner: root
-        group: root
-        mode: '0644'
-
-    - name: Set permissions for syslog directory
-      ansible.builtin.file:
-        path: /etc/logstash/conf.d/syslog/
-        owner: root
-        group: root
-        mode: '0755'

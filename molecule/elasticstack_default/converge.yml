@@ -67,7 +67,7 @@
       ansible.builtin.service:
         name: rsyslog
         state: started
-        failed_when: false
+      failed_when: false
     - name: Fetch journalctl output
       command: journalctl -xeu rsyslog.service
       register: debug_output

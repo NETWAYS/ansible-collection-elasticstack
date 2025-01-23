@@ -19,8 +19,7 @@
     logstash_security: false
     logstash_pipeline_unsafe_shutdown: true
     elasticstack_security: false
-    beats_filebeat_syslog_udp: true
-    beats_filebeat_syslog_tcp: true
+    beats_filebeat_journald: true
     logstash_beats_tls: false
     elasticstack_release: 7
     elasticstack_no_log: false
@@ -28,13 +27,6 @@
     - name: "Include Elastics repos role"
       ansible.builtin.include_role:
         name: repos
-    - name: Install rsyslog
-      ansible.builtin.package:
-        name: rsyslog
-    - name: Start rsyslog
-      ansible.builtin.service:
-        name: rsyslog
-        state: started
     - name: "Include Elasticsearch role"
       ansible.builtin.include_role:
         name: elasticsearch
@@ -47,12 +39,3 @@
     - name: "Include Logstash"
       ansible.builtin.include_role:
         name: logstash
-    - name: Configure rsyslog
-      ansible.builtin.lineinfile:
-        line: "*.* @@localhost:514"
-        path: /etc/rsyslog.conf
-    - name: Restart rsyslog
-      ansible.builtin.service:
-        name: rsyslog
-        state: restarted
-      changed_when: false

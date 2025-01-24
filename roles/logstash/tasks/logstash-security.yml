@@ -96,6 +96,8 @@
         src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
         dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
+        owner: root
+        group: root
         remote_src: true
       when: logstash_check_cert_zip_file_ca_host.stat.exists
       register: logstash_move_cert_zip_file_ca_host

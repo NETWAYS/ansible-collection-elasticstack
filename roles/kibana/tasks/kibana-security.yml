@@ -45,6 +45,8 @@
         src: /etc/kibana/certs
         dest: "/etc/kibana/certs_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
+        owner: root
+        group: root
         remote_src: true
       when: kibana_check_cert_path.stat.exists
       register: kibana_move_cert_directory
@@ -72,6 +74,8 @@
         src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
         dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
+        owner: root
+        group: root
         remote_src: true
       when: kibana_check_cert_file.stat.exists
       register: kibana_move_cert_file
@@ -99,6 +103,8 @@
         src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-kibana.p12"
         dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-kibana.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
+        owner: root
+        group: root
       when: kibana_check_temporary_cert.stat.exists
       register: kibana_move_cert_file
 

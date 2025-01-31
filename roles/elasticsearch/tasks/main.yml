@@ -204,7 +204,6 @@
   when: elasticsearch_jna_workaround | bool
 
 - name: Set jvm heap size
-  become: yes
   ansible.builtin.template:
     src: "jvm.options.d/heap.options.j2"
     dest: "{{ elasticsearch_conf_dir }}/jvm.options.d/10-heap.options"
@@ -216,7 +215,6 @@
   when: (elasticsearch_heap)
 
 - name: Set jvm paths
-  become: yes
   ansible.builtin.template:
     src: "jvm.options.d/paths.options.j2"
     dest: "{{ elasticsearch_conf_dir }}/jvm.options.d/50-paths.options"
@@ -227,7 +225,6 @@
   notify: Restart Elasticsearch
 
 - name: Set jvm custom options
-  become: yes
   ansible.builtin.template:
     src: "jvm.options.d/custom.options.j2"
     dest: "{{ elasticsearch_conf_dir }}/jvm.options.d/90-custom.options"

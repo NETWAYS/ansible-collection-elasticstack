@@ -20,8 +20,7 @@
     logstash_pipeline_unsafe_shutdown: true
     logstash_redis_password: "{{ lookup('ansible.builtin.password', '/tmp/redispassword', chars=['ascii_letters'], length=15) }}"
     redis_requirepass: "{{ logstash_redis_password }}"
-    beats_filebeat_syslog_udp: true
-    beats_filebeat_syslog_tcp: true
+    beats_filebeat_journald: true
     beats_filebeat_modules:
       - system
     beats_fields:
@@ -51,19 +50,3 @@
     - name: Include Beats
       ansible.builtin.include_role:
         name: beats
-    - name: Install rsyslog
-      ansible.builtin.package:
-        name: rsyslog
-    - name: Remove cache # noqa: risky-shell-pipe
-      ansible.builtin.shell: >
-        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-        rm -rf /var/cache/*
-      changed_when: false
-    - name: Configure rsyslog
-      ansible.builtin.lineinfile:
-        line: "*.* @@localhost:514"
-        path: /etc/rsyslog.conf
-    - name: Start rsyslog
-      ansible.builtin.service:
-        name: rsyslog
-        state: started

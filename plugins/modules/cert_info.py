@@ -22,7 +22,8 @@ from ansible_collections.netways.elasticstack.plugins.module_utils.certs import 
 def run_module():
     module_args = dict(
         path=dict(type='str', no_log=True, required=True),
-        passphrase=dict(type='str', no_log=True, required=False, default=None)
+        passphrase=dict(type='str', no_log=True, required=False, default=None),
+        passphrase_check=dict(type='bool', no_log=True, required=False, default=False)
     )
 
     # seed the result dict
@@ -34,7 +35,8 @@ def run_module():
         not_valid_before='',
         serial_number='',
         subject='',
-        version=''
+        version='',
+        passphrase_check=True
     )
 
     # the AnsibleModule object
@@ -47,13 +49,8 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
-    try:
-        cert_info = AnalyzeCertificate(module, result)
-        result = cert_info.return_result()
-    except ValueError as e:
-        module.fail_json(msg='ValueError: %s' % to_native(e))
-    except Exception as e:
-        module.fail_json(msg='Exception: %s: %s' % (to_native(type(e)), to_native(e)))
+    cert_info = AnalyzeCertificate(module, result)
+    result = cert_info.return_result()
 
     module.exit_json(**result)
 

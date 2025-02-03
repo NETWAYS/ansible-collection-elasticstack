@@ -41,6 +41,8 @@
         src: /etc/beats/certs
         dest: "/etc/beats/certs_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
+        owner: root
+        group: root
         remote_src: true
       when: beats_check_cert_path.stat.exists
       register: beats_move_cert_directory
@@ -68,6 +70,8 @@
         src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip"
         dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
+        owner: root
+        group: root
         remote_src: true
       when: beats_check_cert_file.stat.exists
       register: beats_move_cert_file
@@ -95,6 +99,8 @@
         src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip"
         dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
+        owner: root
+        group: root
       when: beats_check_temporary_cert.stat.exists
       register: beats_move_cert_file
 

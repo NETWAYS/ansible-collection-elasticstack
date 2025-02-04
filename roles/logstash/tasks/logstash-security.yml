@@ -74,6 +74,8 @@
         src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
         dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
+        owner: root
+        group: root
         remote_src: true
       when: logstash_check_cert_file_ca_host.stat.exists
       register: logstash_move_cert_file_ca_host
@@ -94,6 +96,8 @@
         src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
         dest: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
+        owner: root
+        group: root
         remote_src: true
       when: logstash_check_cert_zip_file_ca_host.stat.exists
       register: logstash_move_cert_zip_file_ca_host
@@ -114,39 +118,39 @@
   block:
     - name: Check the existance of cert on Ansible controler
       ansible.builtin.stat:
-        path: /tmp/{{ ansible_hostname }}-ls.p12
+        path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12"
       register: logstash_check_temporary_cert_ansible_controler
 
     - name: Move temporary cert file on Ansible controler
       ansible.builtin.copy:
-        src: /tmp/{{ ansible_hostname }}-ls.p12
-        dest: "/tmp/{{ ansible_hostname }}-ls.p12_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12"
+        dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
       when: logstash_check_temporary_cert_ansible_controler.stat.exists
       register: logstash_move_cert_file_ansible_controler
 
     - name: Remove temporary cert file on Ansible controler
       ansible.builtin.file:
-        path: /tmp/{{ ansible_hostname }}-ls.p12
+        path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12"
         state: absent
       when: logstash_move_cert_file_ansible_controler.changed
 
     - name: Check the existance of cert zip file on Ansible controler
       ansible.builtin.stat:
-        path: /tmp/{{ ansible_hostname }}-ls.zip
+        path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip"
       register: logstash_check_temporary_cert_zip_ansible_controler
 
     - name: Move temporary cert zip file on Ansible controler
       ansible.builtin.copy:
-        src: /tmp/{{ ansible_hostname }}-ls.zip
-        dest: "/tmp/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip"
+        dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
       when: logstash_check_temporary_cert_zip_ansible_controler.stat.exists
       register: logstash_move_cert_zip_ansible_controler
 
     - name: Remove temporary cert zip file on Ansible controler
       ansible.builtin.file:
-        path: /tmp/{{ ansible_hostname }}-ls.zip
+        path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip"
         state: absent
       when: logstash_move_cert_zip_ansible_controler.changed
 
@@ -173,7 +177,7 @@
 - name: Fetch certificate from ca host to Ansible controler
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
-    dest: "/tmp/{{ ansible_hostname }}-ls.p12"
+    dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12"
     flat: yes
   delegate_to: "{{ elasticstack_ca }}"
   tags:
@@ -195,7 +199,7 @@
 
 - name: Copy the certificate to logstash node
   ansible.builtin.copy:
-    src: "/tmp/{{ ansible_hostname }}-ls.p12"
+    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12"
     dest: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"
     owner: root
     group: logstash
@@ -207,7 +211,7 @@
 
 - name: Put the certificate in keystore
   ansible.builtin.copy:
-    src: "/tmp/{{ ansible_hostname }}-ls.p12"
+    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12"
     dest: "{{ logstash_certs_dir }}/keystore.pfx"
     owner: root
     group: logstash
@@ -243,7 +247,7 @@
 - name: Fetch PEM certificate from ca host to Ansible controler
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
-    dest: "/tmp/{{ ansible_hostname }}-ls.zip"
+    dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip"
     flat: yes
   delegate_to: "{{ elasticstack_ca }}"
   tags:
@@ -253,7 +257,7 @@
 
 - name: Copy PEM certificate to logstash node
   ansible.builtin.unarchive:
-    src: "/tmp/{{ ansible_hostname }}-ls.zip"
+    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip"
     dest: "{{ logstash_certs_dir }}/"
     owner: root
     group: logstash
@@ -323,7 +327,7 @@
 - name: Fetch ca certificate from ca host to Ansible controler
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/ca.crt"
-    dest: /tmp/ca.crt
+    dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
     flat: yes
   delegate_to: "{{ elasticstack_ca }}"
   tags:
@@ -333,7 +337,7 @@
 
 - name: Copy the ca certificate to logstash node
   ansible.builtin.copy:
-    src: /tmp/ca.crt
+    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
     dest: "{{ logstash_certs_dir }}"
     owner: root
     group: logstash

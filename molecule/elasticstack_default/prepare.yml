@@ -35,9 +35,13 @@
           - unzip
           - systemd
 
+# KICS complains about packages being updated.
+# In this case, a mere test scenario it is OK, though.
+
     - name: Update all installed packages RHEL
       ansible.builtin.yum:
         name: '*'
+# kics-scan ignore-line
         state: latest
         update_cache: yes
         update_only: yes
@@ -46,6 +50,7 @@
     - name: Update all installed packages Debian
       ansible.builtin.apt:
         name: '*'
+# kics-scan ignore-line
         state: latest
         update_cache: yes
       when: ansible_os_family == "Debian"

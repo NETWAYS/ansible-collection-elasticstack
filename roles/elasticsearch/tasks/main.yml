@@ -203,16 +203,37 @@
     - Restart Elasticsearch
   when: elasticsearch_jna_workaround | bool
 
-- name: Copy jvm.options File
-  become: yes
+- name: Set jvm heap size
   ansible.builtin.template:
-    src: "{{ elasticsearch_config_jvm }}"
-    dest: "{{ elasticsearch_conf_dir }}/jvm.options"
+    src: "jvm.options.d/heap.options.j2"
+    dest: "{{ elasticsearch_conf_dir }}/jvm.options.d/10-heap.options"
     owner: root
     group: "{{ elasticsearch_group }}"
     mode: "660"
     force: yes
   notify: Restart Elasticsearch
+  when: (elasticsearch_heap)
+
+- name: Set jvm paths
+  ansible.builtin.template:
+    src: "jvm.options.d/paths.options.j2"
+    dest: "{{ elasticsearch_conf_dir }}/jvm.options.d/50-paths.options"
+    owner: root
+    group: "{{ elasticsearch_group }}"
+    mode: "660"
+    force: yes
+  notify: Restart Elasticsearch
+
+- name: Set jvm custom options
+  ansible.builtin.template:
+    src: "jvm.options.d/custom.options.j2"
+    dest: "{{ elasticsearch_conf_dir }}/jvm.options.d/90-custom.options"
+    owner: root
+    group: "{{ elasticsearch_group }}"
+    mode: "660"
+    force: yes
+  notify: Restart Elasticsearch
+  when: (elasticsearch_jvm_custom_parameters)
 
 # On containerized Debian 10 systemd will not recognize elasticsearch service
 - name: Force systemd to reread configs on container
@@ -244,11 +265,16 @@
     enabled: yes
   register: elasticsearch_freshstart
 
+# The comment in the following task will disable KICS security checks for this
+# very line. In this state of the system we can only communicate without https
+# so the finding is a false positive
+
 - name: Handle cluster setup without security
   when: not elasticsearch_security | bool
   block:
     - name: Check for cluster status without security
       ansible.builtin.uri:
+# kics-scan ignore-line
         url: "http://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health?pretty"
       register: elasticsearch_cluster_status
       ignore_errors: "{{ ansible_check_mode }}"
@@ -285,6 +311,7 @@
 - name: Show Info about heap
   ansible.builtin.debug:
     msg: "Using {{ elasticsearch_heap | int * 1024 }} of {{ ansible_memtotal_mb }} MB as heap for Elasticsearch"
+  when: (elasticsearch_heap)
 
 - name: Show hint about passwords
   ansible.builtin.debug:

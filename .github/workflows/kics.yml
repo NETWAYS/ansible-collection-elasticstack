@@ -1,0 +1,43 @@
+---
+name: KICS Security Scan
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+  pull_request:
+  push:
+    branches:
+      - 'main'
+  merge_group:
+  schedule:
+    - cron: '15 6 * * 4'
+jobs:
+  kics:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mkdir results-dir
+        # make sure results dir is created
+        run: mkdir -p results-dir
+      - name: run kics Scan
+        uses: Checkmarx/kics-github-action@5a6152ef88416063435cebadfec9de28bcfd041d # v2.1.4
+        with:
+          # path: 'roles,plugins'
+          path: '.'
+          # fail_on: high
+          ignore_on_exit: results
+          output_formats: 'json,sarif'
+          output_path: results-dir
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@af56b044b5d41c317aef5d19920b3183cb4fbbec # v3
+        with:
+          sarif_file: results-dir/results.sarif

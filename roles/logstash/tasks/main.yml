@@ -61,6 +61,7 @@
     logstash_package: >
       {{
       'logstash' +
+      ('-oss' if elasticstack_variant == 'oss' else '') +
       ((elasticstack_versionseparator +
       elasticstack_version |
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |

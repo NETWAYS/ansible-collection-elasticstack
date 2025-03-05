@@ -14,7 +14,6 @@
 - name: Install Auditbeat - rpm - full stack
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
-    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
   notify:
@@ -26,7 +25,6 @@
 - name: Install Auditbeat - rpm - standalone
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
-    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
   notify:
     - Restart Auditbeat
   when:
@@ -36,7 +34,6 @@
 - name: Install Auditbeat - deb
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
-    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
   notify:
     - Restart Auditbeat
   when:

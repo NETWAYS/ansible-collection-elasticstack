@@ -45,14 +45,15 @@
       {{
       'kibana' +
       ('-oss' if elasticstack_variant == 'oss' else '') +
-      (elasticstack_versionseparator +
+      ((elasticstack_versionseparator +
       elasticstack_version |
-      string if elasticstack_version is defined else '') |
+      string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '') }}
 
 - name: Install Kibana - rpm - full stack
   ansible.builtin.package:
     name: "{{ kibana_package }}"
+    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   notify:
@@ -64,6 +65,7 @@
 - name: Install Kibana - rpm - standalone
   ansible.builtin.package:
     name: "{{ kibana_package }}"
+    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
   notify:
     - Restart Kibana
   when:
@@ -73,6 +75,7 @@
 - name: Install Kibana - deb
   ansible.builtin.package:
     name: "{{ kibana_package }}"
+    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
   notify:
     - Restart Kibana
   when:

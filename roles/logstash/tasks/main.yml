@@ -85,7 +85,6 @@
 - name: Install Logstash - rpm - full stack
   ansible.builtin.package:
     name: "{{ logstash_package }}"
-    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   notify:
@@ -97,7 +96,6 @@
 - name: Install Logstash - rpm - standalone
   ansible.builtin.package:
     name: "{{ logstash_package }}"
-    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
   notify:
     - Restart Logstash
   when:
@@ -107,7 +105,6 @@
 - name: Install Logstash - deb
   ansible.builtin.package:
     name: "{{ logstash_package }}"
-    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
   notify:
     - Restart Logstash
   when:

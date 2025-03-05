@@ -13,7 +13,6 @@
 - name: Install Filebeat - rpm - full stack
   ansible.builtin.package:
     name: "{{ beats_filebeat_package }}"
-    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
   notify:
@@ -25,7 +24,6 @@
 - name: Install Filebeat - rpm - standalone
   ansible.builtin.package:
     name: "{{ beats_filebeat_package }}"
-    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
   notify:
     - Restart Filebeat
   when:
@@ -35,7 +33,6 @@
 - name: Install Filebeat - deb
   ansible.builtin.package:
     name: "{{ beats_filebeat_package }}"
-    state: "{{ 'latest' if elasticstack_version is not defined or elasticstack_version | length == 0 else 'present' }}"
   notify:
     - Restart Filebeat
   when:

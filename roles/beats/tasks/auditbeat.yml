@@ -7,7 +7,7 @@
       'auditbeat' +
       ((elasticstack_versionseparator +
       elasticstack_version |
-      string ) if (elasticstack_version is defined and elasticstack_version | length > )|
+      string ) if (elasticstack_version is defined and elasticstack_version | length > 0)|
       replace(' ', '')
       }}
 

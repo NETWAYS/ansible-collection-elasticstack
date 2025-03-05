@@ -5,9 +5,9 @@
     beats_filebeat_package: >
       {{
       'filebeat' +
-      (elasticstack_versionseparator +
+      ((elasticstack_versionseparator +
       elasticstack_version |
-      string if elasticstack_version is defined else '') |
+      string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '') }}
 
 - name: Install Filebeat - rpm - full stack

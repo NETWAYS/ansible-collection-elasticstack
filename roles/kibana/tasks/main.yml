@@ -45,9 +45,9 @@
       {{
       'kibana' +
       ('-oss' if elasticstack_variant == 'oss' else '') +
-      (elasticstack_versionseparator +
+      ((elasticstack_versionseparator +
       elasticstack_version |
-      string if elasticstack_version is defined else '') |
+      string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '') }}
 
 - name: Install Kibana - rpm - full stack

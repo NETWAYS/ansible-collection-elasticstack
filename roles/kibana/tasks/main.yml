@@ -41,7 +41,7 @@
 
 - name: Construct exact name of Kibana package
   ansible.builtin.set_fact:
-    kibana_package: >
+    kibana_package: >-
       {{
       'kibana' +
       ('-oss' if elasticstack_variant == 'oss' else '') +

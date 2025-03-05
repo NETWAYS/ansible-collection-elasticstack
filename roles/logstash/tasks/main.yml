@@ -58,7 +58,7 @@
 
 - name: Construct exact name of Logstash package
   ansible.builtin.set_fact:
-    logstash_package: >
+    logstash_package: >-
       {{
       'logstash' +
       ((elasticstack_versionseparator +
@@ -71,7 +71,7 @@
 
 - name: Construct exact name of Logstash package
   ansible.builtin.set_fact:
-    logstash_package: >
+    logstash_package: >-
       {{
       'logstash' +
       ('-oss' if elasticstack_variant == 'oss' else '') +

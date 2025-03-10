@@ -1,11 +1,10 @@
 ---
 # handlers file for elasticsearch
 - name: Restart Elasticsearch
-  ansible.builtin.service:
-    name: elasticsearch
-    state: restarted
-    daemon_reload: yes
+  ansible.builtin.include_tasks: restart_elasticsearch.yml
+  with_items: "{{ groups[elasticstack_elasticsearch_group_name] }}"
   when:
+    - "hostvars[item].inventory_hostname == inventory_hostname"
     - elasticsearch_enable | bool
     - not elasticsearch_freshstart.changed | bool
     - not elasticsearch_freshstart_security.changed | bool

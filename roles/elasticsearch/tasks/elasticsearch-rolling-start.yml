@@ -38,16 +38,19 @@
 
 - name: Confirm the node joins the cluster
   ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}//_cat/nodes?h=name&format=json"
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes?h=name&format=json"
     method: GET
     user: elastic
     password: "{{ elasticstack_password.stdout }}"
     validate_certs: no
   register: response
-  until: response.json | json_query("[?name=='{{ elasticsearch_nodename }}']") | length > 0
+  until: node_found | bool
   retries: 200
   delay: 3
   changed_when: false
+  vars:
+    node_found: "{{ response.json | json_query(node_query) | length > 0 }}"
+    node_query: "[?name=='{{ elasticsearch_nodename }}']"
 
 - name: Enable shard allocation for the cluster
   ansible.builtin.uri:

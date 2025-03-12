@@ -20,13 +20,16 @@
     - name: Include Elasticsearch
       ansible.builtin.include_role:
         name: elasticsearch
-      vars: 
+      vars:
         elasticstack_version: "8.16.0"
       tags:
         - molecule-idempotence-notest
 
+    - name: Flush handlers before upgrade
+      meta: flush_handlers
+
     - name: Include Elasticsearch
       ansible.builtin.include_role:
         name: elasticsearch
-      vars: 
+      vars:
         elasticstack_version: "8.17.0"

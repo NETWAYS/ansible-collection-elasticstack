@@ -7,21 +7,21 @@
 
 flowchart TD
 {% if logstash_beats_input | bool %}
-ansible-input[ansible-input] --> input{input}
+p_ansible-input[ansible-input] --> k_input{input}
 {% endif %}
 {% if logstash_elasticsearch_output | bool %}
-forwarder{forwarder} --> ansible-forwarder[ansible-forwarder]
+k_forwarder{forwarder} --> p_ansible-forwarder[ansible-forwarder]
 {% endif %}
 {% if logstash_pipelines is defined %}
 {% for item in logstash_pipelines %}
 {% if item.input is defined %}
 {% for input in item.input %}
-{{ input.key }}{{ '{' }}{{ input.key }}{{ '}' }} --> {{ item.name }}{{ '[' }}{{item.name}}{{ ']' }}
+k_{{ input.key }}{{ '{' }}{{ input.key }}{{ '}' }} --> p_{{ item.name }}{{ '[' }}{{item.name}}{{ ']' }}
 {% endfor %}
 {% endif %}
 {% if item.output is defined %}
 {% for output in item.output %}
-{{ item.name }}{{ '[' }}{{ item.name }}{{ ']' }} --> {% if output.condition is defined %}{{ '|' }}if {{ output.condition | replace("][", ".") | replace("[","") | replace("]","") | replace('"', '')}}{{ '|' }}{% endif %}{{ output.key }}{{ '{' }}{{ output.key }}}
+p_{{ item.name }}{{ '[' }}{{ item.name }}{{ ']' }} --> {% if output.condition is defined %}{{ '|' }}if {{ output.condition | replace("][", ".") | replace("[","") | replace("]","") | replace('"', '')}}{{ '|' }}{% endif %}k_{{ output.key }}{{ '{' }}{{ output.key }}}
 {% endfor %}
 {% endif %}
 {% endfor %}

@@ -1,0 +1,28 @@
+# Managed via Ansible role
+# https://github.com/netways/ansible-role-logstash
+
+# Use the following code with your favorite Mermaid editor
+# Or paste into: https://mermaid.live/
+# To get a graphical overview of your Logstash pipelines
+
+flowchart TD
+{% if logstash_beats_input | bool %}
+ansible-input[ansible-input] --> input{input}
+{% endif %}
+{% if logstash_elasticsearch_output | bool %}
+forwarder{forwarder} --> ansible-forwarder[ansible-forwarder]
+{% endif %}
+{% if logstash_pipelines is defined %}
+{% for item in logstash_pipelines %}
+{% if item.input is defined %}
+{% for input in item.input %}
+{{ input.key }}{{ '{' }}{{ input.key }}{{ '}' }} --> {{ item.name }}{{ '[' }}{{item.name}}{{ ']' }}
+{% endfor %}
+{% endif %}
+{% if item.output is defined %}
+{% for output in item.output %}
+{{ item.name }}{{ '[' }}{{ item.name }}{{ ']' }} --> {% if output.condition is defined %}{{ '|' }}if {{ output.condition | replace("][", ".") | replace("[","") | replace("]","") | replace('"', '')}}{{ '|' }}{% endif %}{{ output.key }}{{ '{' }}{{ output.key }}}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}

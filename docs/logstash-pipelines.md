@@ -1,5 +1,13 @@
 # Pipelines #
 
+## Keeping an overview ##
+
+It can be quite difficult to stay on top of your pipeline configuration because they tend to become very complex.
+
+This collection will leave some comments about how pipelines are interconnected within the `/etc/logstash/pipelines.yml` configuration file.
+
+If you set `logstash_mermaid` to `true` (which is the default), then you will also get a new file in `/etc/logstash/pipelines.mermaid`. You can paste it into a Mermaid editor in your documentation tool or in an [online Mermaid editor](https://mermaid.live/).
+
 ## Git managed ##
 
 If you have pipeline code managed in (and available via) Git repositories, you can use this role to check them out and integrate them into `pipelines.yml`.

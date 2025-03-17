@@ -64,7 +64,6 @@
       notify:
         - Restart Elasticsearch
 
-
 - name: Be careful about upgrade when Elasticsearch is running
   when:
     - elasticsearch_running.status.ActiveState == "active"

@@ -9,6 +9,9 @@ If you use the role to set up security you, can use its CA to create certificate
 
 Please note that setting `elasticsearch_bootstrap_pw` as variable will only take effect when initialising Elasticsearch. Changes after starting elasticsearch for the first time will not change the bootstrap password for the instance and will lead to breaking tests.
 
+The role can perform a rolling upgrade of an elasticsearch cluster. Nodes will be upgraded in inventory order. If you are using data tires, you're ansible inventory should be sorted acording to data tiers.  Set `any_errors_fatal: true` in your playbook to abort if any errors occur during the upgrade.
+
+
 Role Variables
 --------------
 
@@ -53,6 +56,9 @@ This variable activates a workaround to start on systems that have certain harde
 * *elasticsearch_transport_port*: The port to bind for communication between nodes
 * *elasticsearch_seed_hosts*: Set elasticsearch seed hosts
 * *elasticsearch_security_enrollment*: Controls enrollment (of nodes and Kibana) to a local node that’s been autoconfigured for security.
+
+*elasticsearch_upgrade_routing_mode*: Set `cluster.routing.allocation.enable` during rolling upgrade. (default: `none`)
+*elasticsearch_upgrade_stop_ml*: Stop the tasks associated with active machine learning jobs and datafeeds during rolling upgrade. (default: `false`)
 
 The following variable was only integrated to speed up upgrades of non-production clusters. Use with caution and at your own risk:
 

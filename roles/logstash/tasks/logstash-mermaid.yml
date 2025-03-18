@@ -16,19 +16,19 @@
   block:
 
     - name: Create temporary directory on control node
-      local_action:
-        module: tempfile
+      ansible.builtin.tempfile
         prefix: logstash_mermaid
       register: mermaid_path
+      delegate_to: localhost
 
     - name: Print Logstash pipelines in Mermaid syntax on control node
-      local_action:
-        module: template
+      ansible.builtin.template
         src: pipelines.mermaid.j2
         dest: "{{ mermaid_path.path }}"
         owner: root
         group: root
         mode: 0655
+      delegate_to: localhost
 
     - name: Send user to Mermaid file
       ansible.builtin.debug:

@@ -26,3 +26,6 @@ p_{{ item.name }}{{ '[' }}{{ item.name }}{{ ']' }} --> {% if output.condition is
 {% endif %}
 {% endfor %}
 {% endif %}
+{% if logstash_mermaid_extra is defined %}
+{{ logstash_mermaid_extra }}
+{% endif %}

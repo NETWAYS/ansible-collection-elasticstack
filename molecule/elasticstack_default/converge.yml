@@ -19,6 +19,7 @@
     elasticstack_no_log: false
     logstash_pipeline_unsafe_shutdown: true
     logstash_redis_password: "{{ lookup('ansible.builtin.password', '/tmp/redispassword', chars=['ascii_letters'], length=15) }}"
+    logstash_mermaid_local: false # no permission to write into Docker control node
     redis_requirepass: "{{ logstash_redis_password }}"
     beats_filebeat_journald: true
     beats_filebeat_modules:

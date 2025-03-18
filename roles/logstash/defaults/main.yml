@@ -89,6 +89,8 @@ logstash_pipeline_identifier_field_name: "[netways][pipeline]"
 logstash_pipeline_identifier_defaults: false
 
 logstash_mermaid: true
+logstash_mermaid_local: true
+logstash_mermaid_logstash: true
 
 # Only for internal use
 

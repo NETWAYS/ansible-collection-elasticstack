@@ -252,12 +252,7 @@
     - logstash_configuration
 
 - name: Print Logstash pipelines in Mermaid syntax
-  ansible.builtin.template:
-    src: pipelines.mermaid.j2
-    dest: /etc/logstash/pipelines.mermaid
-    owner: root
-    group: root
-    mode: 0655
+  ansible.builtin.import_tasks: logstash-mermaid.yml
   when:
     - logstash_mermaid | bool
   tags:

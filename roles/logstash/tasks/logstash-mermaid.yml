@@ -16,13 +16,13 @@
   block:
 
     - name: Create temporary directory on control node
-      ansible.builtin.local_task:
+      ansible.builtin.local_action:
         module: tempfile
         prefix: logstash_mermaid
       register: mermaid_path
 
     - name: Print Logstash pipelines in Mermaid syntax on control node
-      ansible.builtin.local_task:
+      ansible.builtin.local_action:
         module: template
         src: pipelines.mermaid.j2
         dest: "{{ mermaid_path.path }}"

@@ -1,0 +1,15 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: Install packages for Debian
+      ansible.builtin.apt:
+        name:
+          - gpg
+          - gpg-agent
+          - procps
+          - curl
+          - iproute2
+          - git
+          - openssl
+        update_cache: yes

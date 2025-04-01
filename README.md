@@ -225,3 +225,8 @@ Please note that we have some actions bound to specific names of branches. So pl
 * `doc/` as a prefix for every branch that only changes documentation
 
 For now we open pull requests against `main`. We are planning to introduce dedicated branches to support older versions without breaking changes. Since we don't need them for now, please check back with this section because when we decided on how to proceed, you will find the information here. For now `main` always has the newest changes and if you want a stable version, please use the newest release.
+
+## Testing
+
+Besides real tests that the developer should do before creating a PR, we built molecule scenarios to test the complete stack.
+In parallel, we check for ansible and yaml lint errors. To do this pro-actively, a `makefile` is included. You can use this by calling `make`.

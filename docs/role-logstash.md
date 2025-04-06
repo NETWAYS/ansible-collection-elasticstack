@@ -89,6 +89,11 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_full_stack` is not set. (default: `true`)
 * *logstash_redis_password*: If set this will use this password when connecting our simple inputs and outputs to Redis. (default: not set)
 
+* *logstash_mermaid*: Print overview over Logstash pipelines in Mermaid syntax. (default: `true`)
+* *logstash_mermaid_logstash*: Place Mermaid syntax into `/etc/logstash/pipelines.mermaid` on Logstash hosts. (default: `true`)
+* *logstash_mermaid_local*: Place Mermaid syntax into temporary file on control node. (default: `false`)
+* *logstash_mermaid_extra*: You can add extra Mermaid syntax to the output by adding it to this variable. YAML-multiline is supported. (default: none)
+
 The following variables configure Log4j for Logstash. All default to `true` as this is the default after the installation.
 
 * *logstash_logging_console*: Log to console - syslog when run via systemd

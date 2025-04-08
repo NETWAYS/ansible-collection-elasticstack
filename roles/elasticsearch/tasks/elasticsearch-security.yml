@@ -264,7 +264,7 @@
 - name: Fetch ca certificate from ca host to Ansible controller
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/ca.crt"
-    dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
+    dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.crt"
     flat: yes
   when: inventory_hostname == elasticstack_ca
   tags:
@@ -297,8 +297,8 @@
 
 - name: Copy the ca certificate to elasticsearch nodes
   ansible.builtin.copy:
-    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
-    dest: "/etc/elasticsearch/certs"
+    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.crt"
+    dest: "/etc/elasticsearch/certs/ca.crt"
     owner: root
     group: elasticsearch
     mode: 0640

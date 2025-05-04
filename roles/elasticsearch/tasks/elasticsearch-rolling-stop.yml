@@ -33,8 +33,14 @@
   retries: 5
   delay: 30
 
-  # this step is key!!!  Don't restart more nodes
-  # until all shards have completed recovery
+  # this step is key!!!  Don't restart more nodes until we can safely do so. This either requires a green cluster status, or a yellow status with 0 initializing or relocating shards
+  #
+  # From https://www.elastic.co/guide/en/elastic-stack/8.17/upgrading-elasticsearch.html
+  ## During a rolling upgrade, primary shards assigned to a node running the new version cannot have their replicas assigned to a node with the old version. The new version might have a different data format that is not understood by the old version.
+  ##
+  ## If it is not possible to assign the replica shards to another node (there is only one upgraded node in the cluster), the replica shards remain unassigned and status stays yellow.
+  ##
+  ## In this case, you can proceed once there are no initializing or relocating shards (check the init and relo columns).
 - name: Wait for cluster health to return to green
   ansible.builtin.uri:
     url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
@@ -43,9 +49,32 @@
     password: "{{ elasticstack_password.stdout }}"
     validate_certs: no
   register: response
-  until: "response.json.status == 'green'"
+  until: "response.json.status == 'green' or
+    ( response.json.status == 'yellow' and
+      response.json.relocating_shards == 0 and
+      response.json.initializing_shards == 0
+    )"
   retries: 50
   delay: 30
+
+# Extra safety in case we continune with a yellow cluster
+# Wait a short time, then check cluster status again
+- name: "Attempting to contune with yellow cluster health"
+  when: "response.json.status == 'yellow'"
+  block:
+  - name: "Cluster health yellow: Wait before verifying status"
+    ansible.builtin.pause:
+      seconds: 10
+
+  - name: "Cluster health yellow: Verify we can safely continue"
+    ansible.builtin.uri:
+      url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
+      method: GET
+      user: elastic
+      password: "{{ elasticstack_password.stdout }}"
+      validate_certs: no
+    register: response1
+    failed_when: "response1.json.relocating_shards != 0 or response1.json.initializing_shards != 0"
 
 # Disabling shard allocation right after enabling it seems redundant. Please see above for details.
 - name: Disable shard allocation for the cluster

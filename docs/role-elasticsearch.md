@@ -45,6 +45,16 @@ elasticsearch_extra_config:
             order: 0
             enabled: true
 ```
+* *elasticsearch_keystore_extra*: You can set additional items for the elasticsearch keystore. Example:
+```YAML
+...
+elasticsearch_keystore_extra:
+  the.setting.name.to.set: "some value",
+  the.other.setting.name.to.set: "some other value"
+
+```
+
+* *elasticsearch_keystore_purge*: Purge items from keystore not set by this role. (Default: false)
 
 This variable activates a workaround to start on systems that have certain hardening measures active. See [Stackoverflow](https://stackoverflow.com/questions/47824643/unable-to-load-jna-native-support-library-elasticsearch-6-x/50371992#50371992) for details and logmessages to look for. **WARNING**: This will change your `/etc/sysconfig/elasticseach`or `/etc/default/elasticsearch` file and overwrite `ES_JAVA_OPTS`. See this [issue](https://github.com/netways/ansible-role-elasticsearch/issues/79) for details.
 

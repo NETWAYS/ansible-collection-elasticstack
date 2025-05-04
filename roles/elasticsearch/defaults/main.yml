@@ -37,6 +37,10 @@ elasticsearch_cert_expiration_buffer: 30
 elasticsearch_cert_will_expire_soon: false
 elasticsearch_ssl_verification_mode: full
 
+# Upgrade options
+elasticsearch_upgrade_routing_mode: "none"
+elasticsearch_upgrade_stop_ml: false
+
 # use this only for non-prod environments and at your own risk!
 elasticsearch_unsafe_upgrade_restart: false
 

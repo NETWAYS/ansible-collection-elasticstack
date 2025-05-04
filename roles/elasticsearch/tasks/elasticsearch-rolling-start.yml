@@ -54,30 +54,17 @@
   delay: 3
   changed_when: false
 
-- name: Enable shard allocation for the cluster
-  ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
-    method: PUT
-    body: '{ "persistent": { "cluster.routing.allocation.enable": null }}'
-    body_format: json
-    user: elastic
-    password: "{{ elasticstack_password.stdout }}"
-    validate_certs: no
-  register: response
-  # next line is boolean not string, so no quotes around true
-  # use python truthiness
-  until: "response.json.acknowledged == true"
-  retries: 5
-  delay: 30
+# Don't continue the play unless cluster health is OK
+- name: Cluster health check
+  ansible.builtin.include_tasks: elasticsearch-wait-for-cluster-health.yml
 
-- name: Wait for cluster health to return to yellow or green
+- name: Restart ML jobs
   ansible.builtin.uri:
-    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
-    method: GET
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_ml/set_upgrade_mode?enabled=false"
+    method: POST
     user: elastic
     password: "{{ elasticstack_password.stdout }}"
     validate_certs: no
-  register: response
-  until: "response.json.status == 'yellow' or response.json.status == 'green'"
-  retries: 5
-  delay: 30
+  failed_when: false
+  when:
+    - elasticsearch_upgrade_stop_ml | bool

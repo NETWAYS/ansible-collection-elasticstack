@@ -36,20 +36,15 @@
     port: "{{ elasticstack_elasticsearch_http_port }}"
     delay: 30
 
-- name: Confirm the node joins the cluster # noqa: risky-shell-pipe
-  ansible.builtin.shell: >
-    if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-    curl
-    -k
-    -u elastic:{{ elasticstack_password.stdout }}
-    -s
-    -m 2
-    '{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes?h=name'
-    | grep
-    -E
-    '^{{ elasticsearch_nodename }}$'
-  register: result
-  until: result.rc == 0
+- name: Confirm the node joins the cluster
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}//_cat/nodes?h=name&format=json"
+    method: GET
+    user: elastic
+    password: "{{ elasticstack_password.stdout }}"
+    validate_certs: no
+  register: response
+  until: response.json | json_query("[?name=='{{ elasticsearch_nodename }}']") | length > 0
   retries: 200
   delay: 3
   changed_when: false
@@ -79,5 +74,5 @@
     validate_certs: no
   register: response
   until: "response.json.status == 'yellow' or response.json.status == 'green'"
-  retries: 5
+  retries: 200
   delay: 30

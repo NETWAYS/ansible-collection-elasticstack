@@ -2,6 +2,9 @@
 
 ![Test ElasticStack](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_full_stack.yml/badge.svg)
 
+> [!CAUTION]
+> This branch has some breaking changes. Be careful using it!
+
 This collection installs and manages the Elastic Stack. It provides roles for every component of the Stack. Furthermore, it is possible to differentiate between Enterprise or OSS releases.
 
 Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/getting-started.md)**

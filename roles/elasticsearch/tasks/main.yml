@@ -314,8 +314,8 @@
 
 - name: Show hint about passwords
   ansible.builtin.debug:
-    msg: "Remember, your temporary passwords can be found on {{ elasticstack_ca }} in {{ elasticstack_initial_passwords }}"
+    msg: "Remember, your temporary passwords can be found on {{ elasticstack_ca_host }} in {{ elasticstack_initial_passwords }}"
   when:
     - elasticsearch_security | bool
     - elasticstack_variant == "elastic"
-    - inventory_hostname == elasticstack_ca
+    - inventory_hostname == elasticstack_ca_host

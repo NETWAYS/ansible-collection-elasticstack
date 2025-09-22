@@ -6,18 +6,18 @@
     - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
     - '{{ ansible_os_family }}.yml'
 
-- name: Set elasticstack_ca variable if not already done by user
+- name: Set elasticstack_ca_host variable if not already done by user
   ansible.builtin.set_fact:
     elasticstack_ca: "{{ groups[elasticstack_elasticsearch_group_name][0] }}"
   when:
-    - elasticstack_ca is undefined
+    - elasticstack_ca_host is undefined
     - groups[elasticstack_elasticsearch_group_name][0] is defined
 
-- name: Set elasticstack_ca variable if not already set to Elasticsearch server
+- name: Set elasticstack_ca_host variable if not already set to Elasticsearch server
   ansible.builtin.set_fact:
-    elasticstack_ca: "{{ groups[elasticstack_logstash_group_name][0] }}"
+    elasticstack_ca_host: "{{ groups[elasticstack_logstash_group_name][0] }}"
   when:
-    - elasticstack_ca is undefined
+    - elasticstack_ca_host is undefined
     - groups[elasticstack_logstash_group_name][0] is defined
 
 - name: Set versions for components

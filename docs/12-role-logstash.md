@@ -9,7 +9,7 @@ It can optionally configure two types of Logstash pipelines:
 * Pipeline configuration managed in an external git repository
 * A default pipeline which will read from different Redis keys and write into Elasticsearch
 
-For details on how to configure pipelines please refer to our [docs about pipelines](./logstash-pipelines.md).
+For details on how to configure pipelines please refer to our [docs about pipelines](./13-logstash-pipelines.md).
 
 Details about configured pipelines will be written into `pipelines.yml` as comments. Same goes for logging configuration in `log4j.options`.
 
@@ -24,7 +24,7 @@ You will need these packages / libraries installed. Some very basic packages lik
 
 * `passlib` Python library if you do not disable password hashing for logstash user. It should be installed with pip on the Ansible controller.
 
-You need to have the Elastic Repos configured on your system. You can use our [role](./role-repos.md)
+You need to have the Elastic Repos configured on your system. You can use our [role](./14-role-repos.md)
 
 If you want to use the default pipeline configuration you need to have `git` available.
 

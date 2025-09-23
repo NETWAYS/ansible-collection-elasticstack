@@ -8,4 +8,4 @@ The collection provides roles for several tools (elasticsearch, kibana, ...). In
 
 **elasticstack_ca_host**
 
-This is a mandatory variable. It is used to define the host that will be used as "CA host".
+This is a mandatory variable. It is used to define the host that will be used as "CA host". Per default it is already defined (first host inside the group `elasticstack_elasticsearch_group_name`). In case you are using different group names, this variable wont be set with a defualt value.

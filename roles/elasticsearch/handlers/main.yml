@@ -14,7 +14,7 @@
   ansible.builtin.include_tasks: handlers/restart_kibana.yml
   with_items: "{{ groups[elasticstack_kibana_group_name] }}"
   when:
-    - elasticstack_full_stack: true
+    - elasticstack_collection_managed: true
     - "not 'renew_ca' in ansible_run_tags"
     - "not elasticstack_ca_will_expire_soon | bool"
     - elasticstack_kibana_group_name is defined

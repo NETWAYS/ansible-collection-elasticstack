@@ -60,7 +60,7 @@
     - Restart Kibana
   when:
     - ansible_os_family == "RedHat"
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
 
 - name: Install Kibana - rpm - standalone
   ansible.builtin.package:
@@ -69,7 +69,7 @@
     - Restart Kibana
   when:
     - ansible_os_family == "RedHat"
-    - not elasticstack_full_stack | bool
+    - not elasticstack_collection_managed | bool
 
 - name: Install Kibana - deb
   ansible.builtin.package:
@@ -82,8 +82,8 @@
 - name: Import security related tasks
   ansible.builtin.import_tasks: kibana-security.yml
   when:
-    - elasticstack_full_stack is defined
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed is defined
+    - elasticstack_collection_managed | bool
     - kibana_security | bool
     - elasticstack_variant == "elastic"
   tags:

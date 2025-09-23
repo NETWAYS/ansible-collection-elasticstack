@@ -79,7 +79,7 @@ beats_filebeat_journald_inputs:
 * *beats_metricbeat_modules*: List of modules to enable. (Default: `- system`)
 * *beats_metricbeat_loadbalance*: Enable loadbalancing for Metricbeats Logstash output (default: `true`)
 
-* *beats_security*: Activate TLS for connections to targets. Can either be use with our other roles and `elasticstack_full_stack` to automatically create certificates or `beats_tls*` variables for custom certificates. (default: `false`)
+* *beats_security*: Activate TLS for connections to targets. Can either be use with our other roles and `elasticstack_collection_managed` to automatically create certificates or `beats_tls*` variables for custom certificates. (default: `false`)
 * *beats_target_hosts*: Only use when this role is used standalone. When used in combination with our other roles, the target hosts will be determined automatically. Use a YAML list. (default: `- localhost`)
 * *elasticstack_elasticsearch_http_port*: Port of Elasticsearch to send events to (Default: `9200`)
 * *elasticstack_beats_port*: Port of Logstash to send events to (Default: `5044`)
@@ -90,7 +90,7 @@ beats_filebeat_journald_inputs:
 
 The following variables only apply if you use this role together with our other Elastic Stack roles.
 
-* *elasticstack_full_stack*: Use `elasticsearch` as well (default: `false`)
+* *elasticstack_collection_managed*: Use `elasticsearch` as well (default: `false`)
 * *elasticstack_variant*: Define which variant of elastic stack to use. (default: `elastic`)
 * *elasticstack_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)

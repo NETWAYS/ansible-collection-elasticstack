@@ -14,7 +14,7 @@
 
 - name: Prepare for whole stack roles if used
   when:
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
   block:
 
     - name: Set Elasticsearch hosts if used with other roles
@@ -50,7 +50,7 @@
     logstash_security: true
   when:
     - logstash_security is undefined or elasticstack_security | bool
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
     - elasticstack_variant == "elastic"
   tags:
     - certificates
@@ -93,7 +93,7 @@
     - Restart Logstash
   when:
     - ansible_os_family == "RedHat"
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
 
 - name: Install Logstash - rpm - standalone
   ansible.builtin.package:
@@ -102,7 +102,7 @@
     - Restart Logstash
   when:
     - ansible_os_family == "RedHat"
-    - not elasticstack_full_stack | bool
+    - not elasticstack_collection_managed | bool
 
 - name: Install Logstash - deb
   ansible.builtin.package:
@@ -115,7 +115,7 @@
 - name: Import Logstash Security tasks
   ansible.builtin.import_tasks: logstash-security.yml
   when:
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
     - logstash_security is defined and logstash_security | bool
     - elasticstack_variant == "elastic"
   tags:

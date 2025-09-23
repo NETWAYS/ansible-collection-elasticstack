@@ -14,7 +14,7 @@
 
 - name: Prepare for whole stack roles if used
   when:
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
   block:
     - name: Enable security if enabled for whole stack
       ansible.builtin.set_fact:
@@ -58,7 +58,7 @@
   ansible.builtin.import_tasks: beats-security.yml
   when:
     - beats_security | bool
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
     - elasticstack_variant == "elastic"
   tags:
     - certificates

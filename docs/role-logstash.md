@@ -86,7 +86,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_sniffing*: Enable sniffing (Default: `false`).
 * *logstash_sniffing_delay*: How long to wait, in seconds, between sniffing attempts (Default: `not set`).
 * *logstash_sniffing_path*: HTTP Path to be used for the sniffing requests (Default: `not set`).
-* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_full_stack` is not set. (default: `true`)
+* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_collection_managed` is not set. (default: `true`)
 * *logstash_redis_password*: If set this will use this password when connecting our simple inputs and outputs to Redis. (default: not set)
 
 * *logstash_mermaid*: Print overview over Logstash pipelines in Mermaid syntax. (default: `true`)
@@ -114,7 +114,7 @@ The following variables are identical over all our elastic related roles, hence 
 
 The following variables only apply if you use this role together with our Elasticsearch and Kibana roles.
 
-* *elasticstack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
+* *elasticstack_collection_managed*: Use `ansible-role-elasticsearch` as well (default: `false`)
 * *elasticstack_ca_dir*: Directory where the CA and certificates lie on the main Elasticsearch host (default: `/opt/es-ca`)
 * *elasticstack_elasticsearch_http_port*: Port of Elasticsearch to send events to (Default: `9200`)
 * *elasticstack_initial_passwords*: File where initial passwords are stored on the main Elasticsearch host (default: `/usr/share/elasticsearch/initial_passwords`)

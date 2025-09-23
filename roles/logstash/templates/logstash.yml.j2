@@ -16,7 +16,7 @@ pipeline.ecs_compatibility: {{ logstash_global_ecs }}
 {% if logstash_pipeline_unsafe_shutdown is defined %}
 pipeline.unsafe_shutdown: {{ logstash_pipeline_unsafe_shutdown }}
 {% endif %}
-{% if logstash_legacy_monitoring | bool and elasticstack_full_stack | bool and elasticstack_variant == "elastic" and elasticstack_release | int < 8 %}
+{% if logstash_legacy_monitoring | bool and elasticstack_collection_managed | bool and elasticstack_variant == "elastic" and elasticstack_release | int < 8 %}
 xpack.monitoring.enabled: true
 xpack.monitoring.elasticsearch.hosts: [ {% for host in logstash_elasticsearch %}"https://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %} ]
 xpack.monitoring.elasticsearch.username: elastic

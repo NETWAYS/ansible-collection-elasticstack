@@ -14,7 +14,7 @@ elasticstack_ca_validity_period: 1095
 elasticstack_ca_will_expire_soon: false
 elasticstack_elasticsearch_http_port: 9200
 elasticstack_enable_repos: true
-elasticstack_full_stack: true
+elasticstack_collection_managed: true
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elasticstack_kibana_port: 5601
 elasticstack_override_beats_tls: false

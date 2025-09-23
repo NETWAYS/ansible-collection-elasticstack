@@ -29,6 +29,9 @@ Every role is documented with all variables, please refer to the documentation f
 
 ## Global variables
 
+* `elasticstack_collection_managed`: When set to true, roles inside this collection can fully rely on each other’s default configuration, naming conventions, and managed resources. This means the collection handles repositories, package names, and other components internally, leaving no room for external tools or custom configurations to override these defaults.
+When set to false, you can provide your own repositories, package names, or other configurations, but roles cannot assume defaults from other roles anymore. (Default: `true`)
+
 * `elasticstack_force_pip`: Will force installation of required Python modules via `pip`. This is useful if your package manager doesn't provide current versions of modules. (Default: `false`) See [PEP668](https://peps.python.org/pep-0668/) for more details.
 * `elasticstack_manage_pip`: Will install `pip` on your system. (Default: `false`)
 

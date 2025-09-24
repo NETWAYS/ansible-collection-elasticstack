@@ -12,7 +12,7 @@
     baseurl: https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/yum
     gpgcheck: yes
     gpgkey: "{{ elasticstack_repo_key }}"
-    enabled: "{{ elasticstack_enable_repos | bool }}"
+    enabled: "{{ repos_enable_repos | bool }}"
   when: elasticstack_variant == "elastic"
 
 - name: Ensure Elastic Stack OSS yum repository is configured (RedHat)
@@ -23,5 +23,5 @@
     baseurl: https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/yum
     gpgcheck: yes
     gpgkey: "{{ elasticstack_repo_key }}"
-    enabled: "{{ elasticstack_enable_repos | bool }}"
+    enabled: "{{ repos_enable_repos | bool }}"
   when: elasticstack_variant == "oss"

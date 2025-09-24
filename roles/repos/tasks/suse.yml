@@ -5,7 +5,7 @@
     description: Elastic Release {{ elasticstack_release }}.x
     repo: https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/yum
     auto_import_keys: true
-    enabled: "{{ elasticstack_enable_repos | bool }}"
+    enabled: "{{ repos_enable_repos | bool }}"
   when: elasticstack_variant == "elastic"
 
 - name: Ensure Elastic Stack OSS yum repository is configured (SuSE)
@@ -14,5 +14,5 @@
     description: Elastic OSS Release {{ elasticstack_release }}.x
     repo: https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/yum
     auto_import_keys: true
-    enabled: "{{ elasticstack_enable_repos | bool }}"
+    enabled: "{{ repos_enable_repos | bool }}"
   when: elasticstack_variant == "oss"

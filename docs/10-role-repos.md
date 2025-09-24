@@ -1,12 +1,8 @@
-Elastic Repos
-=========
+# Role `repos`
 
-![Test Role repos](https://github.com/netways/ansible-collection-elasticstack/actions/workflows/test_role_repos.yml/badge.svg)
+This role will add the Elastic repositories to the package manager (dnf/yum. apt or zypper). It will not install packages (these can be done with the role `elasticsearch`).
 
-The role adds Elastic repositories to the package manager. It's main use is in connection with other roles that provide installation and configuration of the Elastic Stack.
-
-Requirements
-------------
+## Requirements
 
 GPG needs to be installed on the systems to verify the package signature. This will be installed as part of the role. Below you can find a list of packages that will be installed.
 * Debian family: `apt-transport-https`, `gpg` and `gpg-agent`
@@ -15,25 +11,28 @@ GPG needs to be installed on the systems to verify the package signature. This w
 
 For SuSE hosts you will need the Ansible collection `community.general` on your Ansible controller.
 
-Role Variables
---------------
+## Variables
 
-* *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`). `7` and `8` are supported.
-* *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`).
-* *elasticstack_enable_repos*: Enable repositories after creating them. (default: `true`) Only works on RPM based distributions!
+There are variables that are needed in more than one role of the collection. These are defined inside the "meta" role `elasticstack`. The role `elasticstack` is imported in this role.
+
+**List of variables from `elasticsearch` used inside `repos`:**
+* `elasticstack_release`: Major release version of Elastic stack to configure. (default: `7`). `7` and `8` are supported.
+* `elasticstack_variant`: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`).
 
 Please note that no `oss` versions are available for Elastic Stack later than `7`. This role will fail if you try to install them.
 
-Usage
---------
+**Variables that are explicity defined inside `repos`:**
+* `repos_enable_repos`: Enable repositories after creating them. Only works on RPM based distributions (default: `true`) 
 
-Upgrades
-========
+## Usage
 
-If you want to be able to update your operating system without worrying about accidentally upgrading Elastic Stack, set `elasticstack_enable_repos` to `false`. The roles in this collection will enable the repository in case they need it. Keep in mind that this will only work on rpm based distributions.
+### Upgrades
 
-Example playbook
-================
+If you want to be able to update your operating system without worrying about accidentally upgrading Elastic Stack, set `repos_enable_repos` to `false`. The roles in this collection will enable the repository in case they need it. Keep in mind that this will only work on rpm based distributions.
+
+### Example playbook
+
+The following playbook will add the Elastic repository to the package manager.
 
 ```
   - hosts: all

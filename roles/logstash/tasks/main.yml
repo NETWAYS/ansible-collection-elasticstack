@@ -3,6 +3,7 @@
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
+  when: not hostvars[inventory_hostname]._elasticstack_role_imported | default(false)
 
 - name: Update apt cache.
   ansible.builtin.apt:
@@ -250,6 +251,13 @@
   tags:
     - configuration
     - logstash_configuration
+
+- name: Print Logstash pipelines in Mermaid syntax
+  ansible.builtin.import_tasks: logstash-mermaid.yml
+  when:
+    - logstash_mermaid | bool
+  tags:
+    - mermaid
 
 - name: Install Logstash plugins
   community.general.logstash_plugin:

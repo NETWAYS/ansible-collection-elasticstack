@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 filebeat.inputs:
 
 {% if beats_filebeat_log_input | bool %}

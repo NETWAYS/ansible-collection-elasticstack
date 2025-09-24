@@ -1,7 +1,6 @@
 ---
+{{ ansible_managed | comment }}
 
-# Managed via Ansible role
-# https://github.com/netways/ansible-role-logstash
 {% if logstash_beats_input_congestion is defined %}
 # global congestion threshold: {{ logstash_beats_input_congestion }}
 {% endif %}

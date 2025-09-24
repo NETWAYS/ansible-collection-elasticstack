@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 path.data: {{ logstash_config_path_data }}
 config.reload.automatic: {{ logstash_config_autoreload | lower }}
 {% if logstash_config_autoreload | bool and logstash_config_autoreload_interval is defined %}

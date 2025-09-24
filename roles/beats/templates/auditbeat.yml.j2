@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 auditbeat.modules:
 - module: auditd
   audit_rule_files: [ '${path.config}/audit.rules.d/*.conf' ]

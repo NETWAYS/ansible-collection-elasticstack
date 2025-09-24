@@ -1,13 +1,10 @@
-# Ansible
-#
+---
 # Rolling Upgrade of Elasticsearch with security on
 # Source from: author: Jeff Steinmetz, @jeffsteinmetz; Bin Li, @holysoros
 # Modifications: author: Daniel Neuberger @netways.de
 # More modifications: NETWAYS Professional Services GmbH
 # latest tested with Ansible 2.9 and later
-
----
-
+#
 # For now we support upgrade only for clusters with security enabled
 # If you positively need support for safely upgrading clusters without security,
 # feel free to open an issue at https://github.com/NETWAYS/ansible-collection-elasticstack/issues

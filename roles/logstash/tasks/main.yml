@@ -1,5 +1,4 @@
 ---
-
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack

@@ -1,5 +1,4 @@
 ---
-
 - name: Ensure logstash certificate exists
   ansible.builtin.stat:
     path: "{{ logstash_certs_dir }}/{{ ansible_hostname }}-ls.p12"

@@ -1,5 +1,4 @@
 ---
-
 - name: Construct exact name of Metricbeat package
   ansible.builtin.set_fact:
     beats_metricbeat_package: >-

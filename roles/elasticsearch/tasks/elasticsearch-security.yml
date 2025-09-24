@@ -1,5 +1,4 @@
 ---
-
 - name: Ensure ca exists
   ansible.builtin.stat:
     path: "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"

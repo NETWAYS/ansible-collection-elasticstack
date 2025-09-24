@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 {% if logstash_pipeline_identifier | bool and logstash_pipeline_identifier_defaults | bool %}
 filter {
   mutate {

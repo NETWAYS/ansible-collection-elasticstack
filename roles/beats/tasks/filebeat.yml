@@ -1,5 +1,4 @@
 ---
-
 - name: Construct exact name of Filebeat package
   ansible.builtin.set_fact:
     beats_filebeat_package: >-

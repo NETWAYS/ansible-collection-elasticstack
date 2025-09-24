@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 server.host: "0.0.0.0"
 server.publicBaseUrl: "http{% if kibana_tls | bool %}s{% endif %}://{{ elasticstack_kibana_host | default( ansible_fqdn ) }}:{{ elasticstack_kibana_port }}"
 

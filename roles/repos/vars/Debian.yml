@@ -1,0 +1,5 @@
+---
+repos_packages:
+  - gpg
+  - gpg-agent
+  - apt-transport-https

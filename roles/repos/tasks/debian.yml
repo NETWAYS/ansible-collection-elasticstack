@@ -1,11 +1,4 @@
 ---
-- name: Ensure gpg exists, for signing keys
-  ansible.builtin.apt:
-    name:
-      - gpg
-      - gpg-agent
-    state: present
-
 - name: Ensure Elastic Stack key is removed (Debian legacy format)
   ansible.builtin.apt_key:
     url: "{{ elasticstack_repo_key }}"

@@ -3,6 +3,7 @@
   ansible.builtin.apt_key:
     url: "{{ elasticstack_repo_key }}"
     state: absent
+  when: repos_deb_remove_legacy_key | bool
 
 - name: Ensure Elastic Stack key is available (Debian)
   ansible.builtin.get_url:
@@ -19,6 +20,7 @@
     - "oss-7"
     - "8"
     - "oss-8"
+  when: repos_deb_remove_legacy_key | bool
 
 - name: Ensure Elastic Stack apt repository is configured (Debian)
   ansible.builtin.apt_repository:

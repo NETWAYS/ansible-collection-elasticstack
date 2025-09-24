@@ -23,6 +23,7 @@ Please note that no `oss` versions are available for Elastic Stack later than `7
 
 **Variables that are explicity defined inside `repos`:**
 * `repos_enable_repos`: Enable repositories after creating them. Only works on RPM based distributions (default: `true`) 
+* `repos_deb_remove_legacy_key`: Remove repository key from legacy trusted.gpg keyring (Only needed on older distributions with apt as package manager. Details can be found in [this](https://askubuntu.com/questions/1286545/what-commands-exactly-should-replace-the-deprecated-apt-key) post) (Default: `false`)
 
 ## Usage
 

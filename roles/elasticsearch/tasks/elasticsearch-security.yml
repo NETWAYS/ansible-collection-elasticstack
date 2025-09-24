@@ -297,7 +297,7 @@
 
 - name: Copy the ca certificate to elasticsearch nodes
   ansible.builtin.copy:
-    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ elasticstack_ca }}.crt"
+    src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ elasticstack_ca_host }}.crt"
     dest: "/etc/elasticsearch/certs/ca.crt"
     owner: root
     group: elasticsearch

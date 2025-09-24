@@ -264,7 +264,7 @@
 - name: Fetch ca certificate from ca host to Ansible controller
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/ca.crt"
-    dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ elasticstack_ca }}.crt"
+    dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ elasticstack_ca_host }}.crt"
     flat: yes
   when: inventory_hostname == elasticstack_ca_host
   tags:

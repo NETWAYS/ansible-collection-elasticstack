@@ -303,7 +303,7 @@
     mode: 0640
   notify:
     - Restart Elasticsearch
-    - Restart kibana if available for elasticsearch certificates
+    - "Global - Restart Kibana"
   tags:
     - certificates
     - renew_ca
@@ -319,7 +319,7 @@
     mode: 0640
   notify:
     - Restart Elasticsearch
-    - Restart kibana if available for elasticsearch certificates
+    - Global - Restart Kibana
   tags:
     - certificates
     - renew_ca

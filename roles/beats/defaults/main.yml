@@ -1,5 +1,4 @@
 ---
-# defaults file for beats
 beats_security: false
 beats_filebeat: true
 beats_auditbeat: false

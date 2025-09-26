@@ -1,5 +1,4 @@
 ---
-# handlers file for kibana
 - name: Restart Kibana
   ansible.builtin.service:
     name: kibana

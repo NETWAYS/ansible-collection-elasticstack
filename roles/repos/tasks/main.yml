@@ -1,9 +1,31 @@
 ---
-
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
   when: not hostvars[inventory_hostname]._elasticstack_role_imported | default(false)
+
+- name: Include OS specific vars
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - "{{ ansible_os_family }}-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        - "{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
+        - "{{ ansible_os_family }}-{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}-{{ ansible_lsb.id if ansible_lsb.id is defined else ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+        - default.yml
+      paths:
+        - "{{ role_path }}/vars"
+
+- name: Install package dependencies
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ repos_packages }}"
+  when:
+    - repos_packages is defined
+    - repos_packages | length > 0
 
 - name: Import RedHat tasks
   ansible.builtin.import_tasks: redhat.yml

@@ -15,7 +15,7 @@
     elasticsearch_monitoring_enabled: false
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticsearch_heap: "2"
-    elasticstack_full_stack: true
+    elasticstack_collection_managed: true
     elasticstack_no_log: false
     logstash_pipeline_unsafe_shutdown: true
     logstash_redis_password: "{{ lookup('ansible.builtin.password', '/tmp/redispassword', chars=['ascii_letters'], length=15) }}"
@@ -28,10 +28,6 @@
     kibana_extra_config: |-
       ops.interval: 5000
   tasks:
-    - name: Enable Elastic installation on RHEL 9
-      ansible.builtin.set_fact:
-        elasticstack_rpm_workaround: true
-      when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= "9"
     - name: Include Redis
       ansible.builtin.include_role:
         name: geerlingguy.redis

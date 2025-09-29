@@ -26,16 +26,16 @@ filebeat.inputs:
   parsers:
     - multiline:
 {% if beats_filebeat_log_inputs[input].multiline.type is defined %}
-      type: {{ beats_filebeat_log_inputs[input].multiline.type }}
+        type: {{ beats_filebeat_log_inputs[input].multiline.type }}
 {% endif %}
 {% if beats_filebeat_log_inputs[input].multiline.pattern is defined %}
-      pattern: '{{ beats_filebeat_log_inputs[input].multiline.pattern }}'
+        pattern: '{{ beats_filebeat_log_inputs[input].multiline.pattern }}'
 {% endif %}
 {% if beats_filebeat_log_inputs[input].multiline.negate is defined %}
-      negate: {{ beats_filebeat_log_inputs[input].multiline.negate }}
+        negate: {{ beats_filebeat_log_inputs[input].multiline.negate }}
 {% endif %}
 {% if beats_filebeat_log_inputs[input].multiline.match is defined %}
-      match: {{ beats_filebeat_log_inputs[input].multiline.match }}
+        match: {{ beats_filebeat_log_inputs[input].multiline.match }}
 {% endif %}
 {% endif %}
 

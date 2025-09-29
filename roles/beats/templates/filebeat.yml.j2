@@ -2,7 +2,8 @@ filebeat.inputs:
 
 {% if beats_filebeat_log_input | bool %}
 {% for input in beats_filebeat_log_inputs %}
-- type: log
+- type: filestream
+  id: {{ input }}-filestream
   enabled: true
   paths:
 {% for path in beats_filebeat_log_inputs[input].paths %}
@@ -22,31 +23,35 @@ filebeat.inputs:
 {% endif %}
 {% endif %}
 {% if beats_filebeat_log_inputs[input].multiline is defined %}
-  multiline:
+  parsers:
+    - multiline:
 {% if beats_filebeat_log_inputs[input].multiline.type is defined %}
-    type: {{ beats_filebeat_log_inputs[input].multiline.type }}
+      type: {{ beats_filebeat_log_inputs[input].multiline.type }}
 {% endif %}
 {% if beats_filebeat_log_inputs[input].multiline.pattern is defined %}
-    pattern: '{{ beats_filebeat_log_inputs[input].multiline.pattern }}'
+      pattern: '{{ beats_filebeat_log_inputs[input].multiline.pattern }}'
 {% endif %}
 {% if beats_filebeat_log_inputs[input].multiline.negate is defined %}
-    negate: {{ beats_filebeat_log_inputs[input].multiline.negate }}
+      negate: {{ beats_filebeat_log_inputs[input].multiline.negate }}
 {% endif %}
 {% if beats_filebeat_log_inputs[input].multiline.match is defined %}
-    match: {{ beats_filebeat_log_inputs[input].multiline.match }}
+      match: {{ beats_filebeat_log_inputs[input].multiline.match }}
 {% endif %}
 {% endif %}
 
 {% endfor %}
 {% endif %}
 {% if beats_filebeat_mysql_slowlog_input | bool %}
-- type: log
+- type: filestream
+  id: mysql-slowlog-filestream
   enabled: true
   paths:
     - /var/log/mysql/*-slow.log
-  multiline.pattern: '^\#[[:space:]]Time'
-  multiline.negate: true
-  multiline.match: after
+  parsers:
+    - multiline:
+        pattern: '^\#[[:space:]]Time'
+        negate: true
+        match: after
   fields:
     mysql:
       logtype: slowquery

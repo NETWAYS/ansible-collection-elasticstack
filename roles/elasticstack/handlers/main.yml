@@ -1,0 +1,7 @@
+---
+- name: "Global - Restart Kibana"
+  ansible.builtin.include_tasks: tasks/global/restart_kibana.yml
+  with_items: "{{ elasticstack_hosts_kibana }}"
+  when:
+    - elasticstack_collection_managed | bool # Only restart if all is managed by the collection
+    - elasticstack_hosts_kibana | length > 0

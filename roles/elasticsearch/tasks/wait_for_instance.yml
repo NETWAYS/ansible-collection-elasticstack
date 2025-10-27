@@ -1,5 +1,4 @@
 ---
-
 - name: Wait for instance
   ansible.builtin.wait_for:
     host: "{{ elasticsearch_api_host }}"

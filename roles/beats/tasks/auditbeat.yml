@@ -1,5 +1,4 @@
 ---
-
 - name: Construct exact name of Auditbeat package
   ansible.builtin.set_fact:
     beats_auditbeat_package: >-
@@ -20,7 +19,7 @@
     - Restart Auditbeat
   when:
     - ansible_os_family == "RedHat"
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
 
 - name: Install Auditbeat - rpm - standalone
   ansible.builtin.package:
@@ -29,7 +28,7 @@
     - Restart Auditbeat
   when:
     - ansible_os_family == "RedHat"
-    - not elasticstack_full_stack | bool
+    - not elasticstack_collection_managed | bool
 
 - name: Install Auditbeat - deb
   ansible.builtin.package:
@@ -54,7 +53,7 @@
     - elasticstack_version is defined
     - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
 
 - name: Install Auditbeat latest version - rpm - standalone
   ansible.builtin.package:
@@ -66,7 +65,7 @@
     - elasticstack_version is defined
     - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
-    - not elasticstack_full_stack | bool
+    - not elasticstack_collection_managed | bool
 
 - name: Install Auditbeat latest version - deb
   ansible.builtin.package:

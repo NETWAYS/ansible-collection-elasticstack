@@ -1,8 +1,11 @@
 ---
-
 elasticstack_elasticsearch_group_name: elasticsearch
 elasticstack_logstash_group_name: logstash
 elasticstack_kibana_group_name: kibana
+
+elasticstack_hosts_elasticsearch: "{{ groups[elasticstack_elasticsearch_group_name] }}"
+elasticstack_hosts_logstash: "{{ groups[elasticstack_logstash_group_name] }}"
+elasticstack_hosts_kibana: "{{ groups[elasticstack_kibana_group_name] }}"
 
 elasticstack_beats_port: 5044
 elasticstack_ca_host: "{{ groups[elasticstack_elasticsearch_group_name][0] }}"
@@ -13,14 +16,12 @@ elasticstack_ca_pass: PleaseChangeMe
 elasticstack_ca_validity_period: 1095
 elasticstack_ca_will_expire_soon: false
 elasticstack_elasticsearch_http_port: 9200
-elasticstack_enable_repos: true
-elasticstack_full_stack: true
+elasticstack_collection_managed: true
 elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
 elasticstack_kibana_port: 5601
 elasticstack_override_beats_tls: false
 elasticstack_release: 8
 elasticstack_repo_key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-elasticstack_rpm_workaround: false
 elasticstack_security: true
 elasticstack_variant: elastic
 elasticstack_force_pip: false

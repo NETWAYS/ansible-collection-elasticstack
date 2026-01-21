@@ -22,6 +22,8 @@ elasticsearch_conf_dir: "/etc/elasticsearch/"
 elasticsearch_user: elasticsearch
 elasticsearch_group: elasticsearch
 elasticsearch_api_host: localhost
+elasticsearch_keystore_extra: {}
+elasticsearch_keystore_purge: false
 
 # JVM custom parameters
 elasticsearch_java_home: ''

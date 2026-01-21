@@ -1,2 +1,15 @@
 ---
 # vars file for elasticsearch
+
+# List all keystore items added by elastic
+# to avoid deleting them if role is set to
+# pruge keystore
+elasticsearch_keystore_builtin:
+  - keystore.seed
+  - autoconfiguration.password_hash
+
+# We always set bootstrap.password
+# Other variables are added to the dict in elasticsearch-keystore.yml
+elasticsearch_keystore_vars: {
+  bootstrap.password: "{{ elasticsearch_bootstrap_pw }}"
+}

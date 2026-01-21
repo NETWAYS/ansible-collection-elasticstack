@@ -1,13 +1,10 @@
-# Ansible
-#
+---
 # Rolling Upgrade of Elasticsearch with security on
 # Source from: author: Jeff Steinmetz, @jeffsteinmetz; Bin Li, @holysoros
 # Modifications: author: Daniel Neuberger @netways.de
 # More modifications: NETWAYS Professional Services GmbH
 # latest tested with Ansible 2.9 and later
-
----
-
+#
 # For now we support upgrade only for clusters with security enabled
 # If you positively need support for safely upgrading clusters without security,
 # feel free to open an issue at https://github.com/NETWAYS/ansible-collection-elasticstack/issues
@@ -31,14 +28,14 @@
           - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
       when:
         - ansible_os_family == "RedHat"
-        - elasticstack_full_stack | bool
+        - elasticstack_collection_managed | bool
 
     - name: Update stopped Elasticsearch - deb or unmanaged repositories rpm
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
       when:
         - ansible_os_family == "Debian" or
-          not elasticstack_full_stack | bool
+          not elasticstack_collection_managed | bool
 
 - name: Update single instances without extra caution
   when:
@@ -49,7 +46,7 @@
         name: "{{ elasticsearch_package }}"
       when:
         - ansible_os_family == "Debian" or
-          not elasticstack_full_stack | bool
+          not elasticstack_collection_managed | bool
       notify:
         - Restart Elasticsearch
 
@@ -60,7 +57,7 @@
           - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
       when:
         - ansible_os_family == "RedHat"
-        - elasticstack_full_stack | bool
+        - elasticstack_collection_managed | bool
       notify:
         - Restart Elasticsearch
 
@@ -138,14 +135,14 @@
           - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
       when:
         - ansible_os_family == "RedHat"
-        - elasticstack_full_stack | bool
+        - elasticstack_collection_managed | bool
 
     - name: Update Elasticsearch - deb or unmanaged repositories rpm
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
       when:
         - ansible_os_family == "Debian" or
-          not elasticstack_full_stack | bool
+          not elasticstack_collection_managed | bool
 
     - name: Start elasticsearch
       ansible.builtin.service:

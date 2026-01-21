@@ -1,5 +1,4 @@
 ---
-
 - name: Print Logstash pipelines in Mermaid syntax on Logstash hosts
   ansible.builtin.template:
     src: pipelines.mermaid.j2

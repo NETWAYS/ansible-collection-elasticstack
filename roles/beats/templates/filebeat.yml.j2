@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 filebeat.inputs:
 
 {% if beats_filebeat_log_input | bool %}
@@ -107,7 +109,7 @@ setup.kibana:
 {% if beats_filebeat_output == "elasticsearch" %}
 output.elasticsearch:
 {% if beats_security | bool %}
-{% if elasticstack_full_stack | bool %}
+{% if elasticstack_collection_managed | bool %}
   hosts: [ {% for host in groups[elasticstack_elasticsearch_group_name] %}"https://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% else %}
   hosts: [ {% for host in beats_target_hosts %}"https://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
@@ -118,7 +120,7 @@ output.elasticsearch:
   ssl.verification_mode: none
   ssl.certificate_authorities: ["/etc/beats/certs/ca.crt"]
 {% else %}
-{% if elasticstack_full_stack | bool %}
+{% if elasticstack_collection_managed | bool %}
   hosts: [ {% for host in groups[elasticstack_elasticsearch_group_name] %}"http://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% else %}
   hosts: [ {% for host in beats_target_hosts %}"http://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
@@ -127,7 +129,7 @@ output.elasticsearch:
 {% endif %}
 {% if beats_filebeat_output == "logstash" %}
 output.logstash:
-{% if elasticstack_full_stack | bool %}
+{% if elasticstack_collection_managed | bool %}
   hosts: [ {% for host in groups[elasticstack_logstash_group_name] %}"{{ host }}:{{ elasticstack_beats_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% else %}
   hosts: [ {% for host in beats_target_hosts %}"{{ host }}:{{ elasticstack_beats_port }}"{% if not loop.last %},{% endif %}{% endfor %}]

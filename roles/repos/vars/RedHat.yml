@@ -1,0 +1,4 @@
+---
+repos_enable_repos: true
+repos_packages:
+  - gnupg

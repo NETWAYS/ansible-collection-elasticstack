@@ -6,7 +6,7 @@
 - name: Converge
   hosts: all
   vars:
-    elasticstack_full_stack: false
+    elasticstack_collection_managed: false
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticstack_no_log: false
   collections:

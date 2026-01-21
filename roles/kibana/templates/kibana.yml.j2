@@ -1,7 +1,9 @@
+{{ ansible_managed | comment }}
+
 server.host: "0.0.0.0"
 server.publicBaseUrl: "http{% if kibana_tls | bool %}s{% endif %}://{{ elasticstack_kibana_host | default( ansible_fqdn ) }}:{{ elasticstack_kibana_port }}"
 
-{% if elasticstack_full_stack is defined and elasticstack_full_stack | bool and elasticstack_variant == "elastic" %}
+{% if elasticstack_collection_managed is defined and elasticstack_collection_managed | bool and elasticstack_variant == "elastic" %}
     {%- if kibana_sniff_on_start | bool %}
 elasticsearch.sniffOnStart: true
     {%- endif %}

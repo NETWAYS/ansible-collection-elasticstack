@@ -7,7 +7,6 @@
     - netways.elasticstack
   vars:
     elasticstack_variant: oss
-    elasticstack_rpm_workaround: true
     elasticstack_release: 7
     elasticstack_no_log: false
   tasks:

@@ -9,7 +9,7 @@ It can optionally configure two types of Logstash pipelines:
 * Pipeline configuration managed in an external git repository
 * A default pipeline which will read from different Redis keys and write into Elasticsearch
 
-For details on how to configure pipelines please refer to our [docs about pipelines](./logstash-pipelines.md).
+For details on how to configure pipelines please refer to our [docs about pipelines](./13-logstash-pipelines.md).
 
 Details about configured pipelines will be written into `pipelines.yml` as comments. Same goes for logging configuration in `log4j.options`.
 
@@ -24,7 +24,7 @@ You will need these packages / libraries installed. Some very basic packages lik
 
 * `passlib` Python library if you do not disable password hashing for logstash user. It should be installed with pip on the Ansible controller.
 
-You need to have the Elastic Repos configured on your system. You can use our [role](./role-repos.md)
+You need to have the Elastic Repos configured on your system. You can use our [role](./14-role-repos.md)
 
 If you want to use the default pipeline configuration you need to have `git` available.
 
@@ -86,7 +86,7 @@ Aside from `logstash.yml` we can manage Logstashs pipelines.
 * *logstash_sniffing*: Enable sniffing (Default: `false`).
 * *logstash_sniffing_delay*: How long to wait, in seconds, between sniffing attempts (Default: `not set`).
 * *logstash_sniffing_path*: HTTP Path to be used for the sniffing requests (Default: `not set`).
-* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_full_stack` is not set. (default: `true`)
+* *logstash_legacy_monitoring*: Enables legacy monitoring - ignored when `elasticstack_collection_managed` is not set. (default: `true`)
 * *logstash_redis_password*: If set this will use this password when connecting our simple inputs and outputs to Redis. (default: not set)
 
 * *logstash_mermaid*: Print overview over Logstash pipelines in Mermaid syntax. (default: `true`)
@@ -114,7 +114,7 @@ The following variables are identical over all our elastic related roles, hence 
 
 The following variables only apply if you use this role together with our Elasticsearch and Kibana roles.
 
-* *elasticstack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`)
+* *elasticstack_collection_managed*: Use `ansible-role-elasticsearch` as well (default: `false`)
 * *elasticstack_ca_dir*: Directory where the CA and certificates lie on the main Elasticsearch host (default: `/opt/es-ca`)
 * *elasticstack_elasticsearch_http_port*: Port of Elasticsearch to send events to (Default: `9200`)
 * *elasticstack_initial_passwords*: File where initial passwords are stored on the main Elasticsearch host (default: `/usr/share/elasticsearch/initial_passwords`)

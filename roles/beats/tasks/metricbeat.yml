@@ -1,5 +1,4 @@
 ---
-
 - name: Construct exact name of Metricbeat package
   ansible.builtin.set_fact:
     beats_metricbeat_package: >-
@@ -20,7 +19,7 @@
     - Restart Metricbeat
   when:
     - ansible_os_family == "RedHat"
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
 
 - name: Install Metricbeat - rpm - standalone
   ansible.builtin.package:
@@ -29,7 +28,7 @@
     - Restart Metricbeat
   when:
     - ansible_os_family == "RedHat"
-    - not elasticstack_full_stack | bool
+    - not elasticstack_collection_managed | bool
 
 - name: Install Metricbeat - deb
   ansible.builtin.package:
@@ -51,7 +50,7 @@
     - elasticstack_version is defined
     - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
-    - elasticstack_full_stack | bool
+    - elasticstack_collection_managed | bool
 
 - name: Install Metricbeat latest version - rpm - standalone
   ansible.builtin.package:
@@ -63,7 +62,7 @@
     - elasticstack_version is defined
     - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
-    - not elasticstack_full_stack | bool
+    - not elasticstack_collection_managed | bool
 
 
 - name: Install Metricbeat latest version - deb

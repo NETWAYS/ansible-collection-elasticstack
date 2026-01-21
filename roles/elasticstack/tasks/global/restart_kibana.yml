@@ -1,0 +1,14 @@
+---
+- name: Restart Kibana (if installed)
+  delegate_to: "{{ item }}"
+  block:
+    - name: Fetch installed packages
+      ansible.builtin.package_facts:
+        manager: "auto"
+      changed_when: false
+
+    - name: Restart Kibana
+      ansible.builtin.service:
+        name: kibana
+        state: restarted
+      when: "'kibana' in ansible_facts.packages"

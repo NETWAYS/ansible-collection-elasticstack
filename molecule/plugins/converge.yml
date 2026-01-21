@@ -42,3 +42,21 @@
     - name: Test no parameters
       cert_info:
       ignore_errors: true
+    - name: Test wrong passphrase with passphrase_check parameter
+      cert_info:
+        path: files/es-ca/elastic-stack-ca.p12
+        passphrase: PleaseChangeMe-wrong
+        passphrase_check: true
+      register: pass_check
+    - name: Debug
+      debug:
+        msg: "{{ pass_check }}"
+    - name: Test correct passphrase with passphrase_check parameter
+      cert_info:
+        path: files/es-ca/elastic-stack-ca.p12
+        passphrase: PleaseChangeMe
+        passphrase_check: true
+      register: pass_check
+    - name: Debug
+      debug:
+        msg: "{{ pass_check }}"

@@ -1,15 +1,12 @@
 # Documentation: netways.elasticstack module_utils
 
-## Overview
-- [`certs` module_util](#cert_info-module)
-
-## `netways.elasticstack.certs` function
+## `netways.elasticstack.certs` functions
 
 ### `bytes_to_hex()` function
 
 Since binascii.hexlify doesn't support a second parameter, which would define a seperator (e.g. ":") for hex strings in older Python versions like 2.6 and 2.7, we implemeted a small function to get similar results.
 
-**Parameter:** A __bytes__ object that represent a hexadecimal value (e.g. b'\\x82S \\x11\\xc7s\\xa7^*w\\xc1\\xdf\"\\xe4#\\xb4\\xc4P\\xba\\xcf')
+**Parameter:** A __bytes__ string that represent a hexadecimal value (e.g. b'\\x82S \\x11\\xc7s\\xa7^*w\\xc1\\xdf\"\\xe4#\\xb4\\xc4P\\xba\\xcf')
 
 **Return:** A hexadecimal __string__ seperated by colons (e.g. "82:53:20:11:C7:73:A7:5E:2A:77:C1:DF:22:E4:23:B4:C4:50:BA:CF") 
 

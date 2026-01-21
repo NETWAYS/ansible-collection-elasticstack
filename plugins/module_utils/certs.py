@@ -76,13 +76,15 @@ class AnalyzeCertificate():
     def __init__(self, module, result):
         self.module = module
         self.result = result
+        self.__passphrase_check = self.module.params['passphrase_check']
         self.__passphrase = self.module.params['passphrase']
         self.__path = self.module.params['path']
         self.__cert = None
         self.__private_key = None
         self.__additional_certs = None
         self.load_certificate()
-        self.load_info()
+        if not self.__passphrase_check:
+            self.load_info()
 
     def load_certificate(self):
         # track if module can load pkcs12
@@ -95,7 +97,7 @@ class AnalyzeCertificate():
         # read the pkcs12 file
         try:
             with open(self.__path, 'rb') as f:
-                pkcs12_data = f.read()
+                __pkcs12_data = f.read()
         except IOError as e:
             self.module.fail_json(
                 msg='IOError: %s' % (to_native(e))
@@ -104,10 +106,16 @@ class AnalyzeCertificate():
         # for cryptography >= 3.1.x
         try:
             __pkcs12_tuple = pkcs12.load_key_and_certificates(
-                pkcs12_data,
+                __pkcs12_data,
                 to_bytes(self.__passphrase),
                 )
             loaded = True
+        except ValueError as e:
+            self.result["passphrase_check"] = False
+            if self.__passphrase_check:
+                self.module.exit_json(**self.result)
+            else:
+                self.module.fail_json(msg='ValueError: %s' % to_native(e))
         except Exception:
             self.module.log(
                 msg="Couldn't load certificate without backend. Trying with backend."
@@ -115,21 +123,30 @@ class AnalyzeCertificate():
         # try to load with 3 parameters for
         # cryptography >= 2.5.x and <= 3.0.x
         if not loaded:
-            # create backend object
-            backend = default_backend()
-            # call load_key_and_certificates with 3 paramters
-            __pkcs12_tuple = pkcs12.load_key_and_certificates(
-                pkcs12_data,
-                to_bytes(self.__passphrase),
-                backend
-                )
-            self.module.log(
-                msg="Loaded certificate with backend."
-                )
-        # map loaded certificate to object
-        self.__private_key = __pkcs12_tuple[0]
-        self.__cert = __pkcs12_tuple[1]
-        self.__additional_certs = __pkcs12_tuple[2]
+            try:
+                # create backend object
+                backend = default_backend()
+                # call load_key_and_certificates with 3 paramters
+                __pkcs12_tuple = pkcs12.load_key_and_certificates(
+                    __pkcs12_data,
+                    to_bytes(self.__passphrase),
+                    backend
+                    )
+                self.module.log(
+                    msg="Loaded certificate with backend."
+                    )
+                loaded = True
+            except ValueError as e:
+                self.result["passphrase_check"] = False
+                if self.__passphrase_check:
+                    self.module.exit_json(**self.result)
+                else:
+                    self.module.fail_json(msg='ValueError: %s' % to_native(e))
+        if loaded and not self.__passphrase_check:
+            # map loaded certificate to object
+            self.__private_key = __pkcs12_tuple[0]
+            self.__cert = __pkcs12_tuple[1]
+            self.__additional_certs = __pkcs12_tuple[2]
 
     def load_info(self):
         self.general_info()

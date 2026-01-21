@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils.common.text.converters import to_bytes
+
 sys.path.append('/home/runner/.ansible/collections/')
 from ansible_collections.netways.elasticstack.plugins.modules import cert_info
 
@@ -55,6 +56,7 @@ class AnsibleExitJson(Exception):
     """Exception class to be raised by module.exit_json and caught by the test case"""
     pass
 
+
 class AnsibleFailJson(Exception):
     """Exception class to be raised by module.fail_json and caught by the test case"""
     pass
@@ -70,12 +72,22 @@ def exit_json(*args, **kwargs):
 
     checks_passed = True
 
-    # check every item in certificate if it matches with the result
-    # and if that fails, don't catch the Exception, so the test will fail
-    for item in certificate:
-        if certificate[item] != kwargs[item]:
+    # only if passphrase_check mode is disabled
+    if args[0].params['passphrase_check'] is not True:
+        # check every item in certificate if it matches with the result
+        # and if that fails, don't catch the Exception, so the test will fail
+        for item in certificate:
+            if certificate[item] != kwargs[item]:
+                checks_passed = False
+    # if passphrase_check mode is enabled
+    else:
+        # fail checks, if passphrase is wrong and passphrase_check kwarg is not False
+        if args[0].params['passphrase'] == 'PleaseChangeMe-Wrong' and kwargs['passphrase_check'] is True:
             checks_passed = False
-    
+        # fail checks, if passphrase is correct and passphrase_check kwarg is not True
+        if args[0].params['passphrase'] == 'PleaseChangeMe' and kwargs['passphrase_check'] is False:
+            checks_passed = False
+
     if checks_passed:
         raise AnsibleExitJson(kwargs)
 
@@ -128,6 +140,25 @@ class TestCertInfo(unittest.TestCase):
             set_module_args({
                 'path': 'molecule/plugins/files/es-ca/elastic-stack-ca.p12',
                 'passphrase': 'PleaseChangeMe'
+            })
+            cert_info.main()
+
+    # Tests with passphrase_check mode set to True (default is False)
+    def test_module_exit_when_password_wrong_with_passphrase_check(self):
+        with self.assertRaises(AnsibleExitJson):
+            set_module_args({
+                'path': 'molecule/plugins/files/es-ca/elastic-stack-ca.p12',
+                'passphrase': 'PleaseChangeMe-Wrong',
+                'passphrase_check': True
+            })
+            cert_info.main()
+
+    def test_module_exit_when_password_correct_with_passphrase_check(self):
+        with self.assertRaises(AnsibleExitJson):
+            set_module_args({
+                'path': 'molecule/plugins/files/es-ca/elastic-stack-ca.p12',
+                'passphrase': 'PleaseChangeMe',
+                'passphrase_check': True
             })
             cert_info.main()
 

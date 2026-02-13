@@ -1,6 +1,6 @@
 ---
 
-- name: Set Custom Default Index 
+- name: Set Custom Default Index
   uri:
     url: 'http://{{ ansible_default_ipv4.address }}:5601/api/kibana/settings'
     method: POST

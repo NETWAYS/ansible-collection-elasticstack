@@ -8,7 +8,7 @@
 - name: Ensure saved encryption key exists
   ansible.builtin.stat:
     path: "{{ elasticstack_ca_dir }}/savedobjects_encryption_key"
-  register: savedobjects_encryption_key_exists  
+  register: savedobjects_encryption_key_exists
 
 - name: Ensure kibana certificate exists
   ansible.builtin.stat:
@@ -142,7 +142,7 @@
         creates: "{{ elasticstack_ca_dir }}/encryption_key"
     - debug:
         msg: "File exists..."
-        when: encryption_key_exists.stat.exits     
+        when: encryption_key_exists.stat.exits
 
     - name: Fetch encryption key
       ansible.builtin.command: cat {{ elasticstack_ca_dir }}/encryption_key

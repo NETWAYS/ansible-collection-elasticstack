@@ -25,6 +25,7 @@ elasticstack_security: true
 elasticstack_variant: elastic
 elasticstack_force_pip: false
 elasticstack_manage_pip: false
+elasticstack_encryption_key_size: 64
 
   # for debugging only
 elasticstack_no_log: true

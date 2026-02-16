@@ -1,7 +1,7 @@
 ---
 
 - name: Set Custom Default Index
-  uri:
+  ansible.builtin.uri:
     url: 'http://{{ ansible_default_ipv4.address }}:5601/api/kibana/settings'
     method: POST
     body:
@@ -12,5 +12,5 @@
       kbn-version: 8.19.11
       Content-Type: application/json
   register: result
-- debug:
+- ansible.builtin.debug:
     msg: "setting new custom Index to {{ kibana_custom_default_index }}"

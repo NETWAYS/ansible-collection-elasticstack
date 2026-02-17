@@ -19,6 +19,18 @@
   changed_when: false
   when: ansible_os_family == 'Debian'
 
+- name: Update dnf cache.
+  ansible.builtin.dnf:
+    update_cache: true
+  changed_when: false
+  when: ansible_os_family == 'RedHat'
+
+- name: Rocky Specific Python Change.
+  ansible.builtin.package:
+    - name: python3
+    - state: present
+  when: ansible_distribution == 'Rocky'
+
 - name: Check-set-parameters
   ansible.builtin.include_tasks: elasticsearch-parameters.yml
 

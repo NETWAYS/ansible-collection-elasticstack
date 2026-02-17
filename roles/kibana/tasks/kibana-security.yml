@@ -140,7 +140,7 @@
       changed_when: false
       args:
         creates: "{{ elasticstack_ca_dir }}/encryption_key"
-    - debug:
+    - ansible.builtin.debug:
         msg: "File exists..."
         when: encryption_key_exists.stat.exits
 
@@ -157,7 +157,7 @@
       changed_when: false
       args:
         creates: "{{ elasticstack_ca_dir }}/savedobjects_encryption_key"
-    - debug:
+    - ansible.builtin.debug:
         msg: "File exists..."
         when: savedobjects_encryption_key_exists.stat.exits
 

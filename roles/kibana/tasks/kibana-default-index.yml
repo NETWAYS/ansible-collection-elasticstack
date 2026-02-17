@@ -6,7 +6,7 @@
     method: POST
     body:
       changes:
-        defaultIndex: {{ kibana_custom_default_index }}
+        defaultIndex: '{{ kibana_custom_default_index }}'
     body_format: json
     headers:
       kbn-version: 8.19.11

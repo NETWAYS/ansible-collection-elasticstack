@@ -10,12 +10,22 @@
   ansible.builtin.apt_key:
     url: "{{ elasticstack_repo_key }}"
     state: absent
+  when: ansible_distribution != "Ubuntu" or ansible_distribution_version is version('24.04', '<')
 
 - name: Ensure Elastic Stack key is available (Debian)
-  ansible.builtin.get_url:
-    url: "{{ elasticstack_repo_key }}"
-    dest: /usr/share/keyrings/elasticsearch.asc
+  ansible.builtin.command:
+    cmd: "curl -fsSL {{ elasticstack_repo_key }} -o /usr/share/keyrings/elasticsearch.asc"
+    creates: /usr/share/keyrings/elasticsearch.asc
+  register: curl_result
+  changed_when: curl_result.rc == 0
+  args:
+    warn: false
+  # Ensure correct permissions
+- name: Set permissions on Elastic Stack key file
+  ansible.builtin.file:
+    path: /usr/share/keyrings/elasticsearch.asc
     mode: "0644"
+    state: file
 
 - name: Ensure Elastic Stack apt repo is absent (Debian legacy format)
   ansible.builtin.file:

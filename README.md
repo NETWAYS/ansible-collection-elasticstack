@@ -67,12 +67,9 @@ You may want the following Ansible roles installed. There other ways to achieve 
 We test the collection on the following Linux distributions. Each one with Elastic Stack 7 and 8.
 
 * Rocky Linux 9
-* Rocky Linux 8
 * Ubuntu 22.04 LTS
-* Ubuntu 20.04 LTS
-* Debian 11
-* Debian 10
-* CentOS 8
+* Ubuntu 24.04 LTS
+* Debian 12
 
 We know from personal experience, that the collections work in following combinations. Missing tests mostly come from incompatibilties between the distribution and our testing environment, not from problems with the collection itself.
 

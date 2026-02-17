@@ -40,13 +40,10 @@ jobs:
       matrix:
 
         distro:
-          - centos7
-          - debian10
-          - debian11
-          - rockylinux8
-          - rockylinux9
-          - ubuntu2004
           - ubuntu2204
+          - ubuntu2404
+          - debian12
+          - rockylinux9
         scenario:
           - repos_default
           - repos_oss

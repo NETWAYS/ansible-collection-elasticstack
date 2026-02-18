@@ -108,7 +108,7 @@
         state: absent
       when: logstash_move_cert_zip_file_ca_host.changed
 
-- name: Backup logstash cert on Ansible controler then remove
+- name: Backup logstash cert on Ansible controller then remove
   when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
   delegate_to: localhost
   tags:
@@ -116,43 +116,43 @@
     - renew_logstash_cert
     - never
   block:
-    - name: Check the existance of cert on Ansible controler
+    - name: Check the existance of cert on Ansible controller
       ansible.builtin.stat:
         path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12"
-      register: logstash_check_temporary_cert_ansible_controler
+      register: logstash_check_temporary_cert_ansible_controller
 
-    - name: Move temporary cert file on Ansible controler
+    - name: Move temporary cert file on Ansible controller
       ansible.builtin.copy:
         src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12"
         dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
-      when: logstash_check_temporary_cert_ansible_controler.stat.exists
-      register: logstash_move_cert_file_ansible_controler
+      when: logstash_check_temporary_cert_ansible_controller.stat.exists
+      register: logstash_move_cert_file_ansible_controller
 
-    - name: Remove temporary cert file on Ansible controler
+    - name: Remove temporary cert file on Ansible controller
       ansible.builtin.file:
         path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12"
         state: absent
-      when: logstash_move_cert_file_ansible_controler.changed
+      when: logstash_move_cert_file_ansible_controller.changed
 
-    - name: Check the existance of cert zip file on Ansible controler
+    - name: Check the existance of cert zip file on Ansible controller
       ansible.builtin.stat:
         path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip"
-      register: logstash_check_temporary_cert_zip_ansible_controler
+      register: logstash_check_temporary_cert_zip_ansible_controller
 
-    - name: Move temporary cert zip file on Ansible controler
+    - name: Move temporary cert zip file on Ansible controller
       ansible.builtin.copy:
         src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip"
         dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
-      when: logstash_check_temporary_cert_zip_ansible_controler.stat.exists
-      register: logstash_move_cert_zip_ansible_controler
+      when: logstash_check_temporary_cert_zip_ansible_controller.stat.exists
+      register: logstash_move_cert_zip_ansible_controller
 
-    - name: Remove temporary cert zip file on Ansible controler
+    - name: Remove temporary cert zip file on Ansible controller
       ansible.builtin.file:
         path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip"
         state: absent
-      when: logstash_move_cert_zip_ansible_controler.changed
+      when: logstash_move_cert_zip_ansible_controller.changed
 
 - name: Create individual certificates for Logstash
   ansible.builtin.command: >
@@ -174,7 +174,7 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Fetch certificate from ca host to Ansible controler
+- name: Fetch certificate from ca host to Ansible controller
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
     dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.p12"
@@ -244,7 +244,7 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Fetch PEM certificate from ca host to Ansible controler
+- name: Fetch PEM certificate from ca host to Ansible controller
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
     dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-ls.zip"
@@ -324,7 +324,7 @@
     - renew_ca
     - renew_logstash_cert
 
-- name: Fetch ca certificate from ca host to Ansible controler
+- name: Fetch ca certificate from ca host to Ansible controller
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/ca.crt"
     dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"

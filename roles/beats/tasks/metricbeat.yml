@@ -10,6 +10,9 @@
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '')
       }}
+  tags:
+    - metricbeat
+    - name
 
 - name: Install Metricbeat - rpm - full stack
   ansible.builtin.package:
@@ -21,6 +24,10 @@
   when:
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
+  tags:
+    - metricbeat
+    - fullstack
+    - rpm
 
 - name: Install Metricbeat - rpm - standalone
   ansible.builtin.package:
@@ -30,6 +37,10 @@
   when:
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
+  tags:
+    - metricbeat
+    - standalone
+    - rpm
 
 - name: Install Metricbeat - deb
   ansible.builtin.package:
@@ -38,6 +49,9 @@
     - Restart Metricbeat
   when:
     - ansible_os_family == "Debian"
+  tags:
+    - metricbeat
+    - deb
 
 - name: Install Metricbeat latest version - rpm - full stack
   ansible.builtin.package:
@@ -52,6 +66,10 @@
     - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
+  tags:
+    - metricbeat
+    - fullstack
+    - rpm
 
 - name: Install Metricbeat latest version - rpm - standalone
   ansible.builtin.package:
@@ -64,7 +82,10 @@
     - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
-
+  tags:
+    - metricbeat
+    - latest
+    - rpm
 
 - name: Install Metricbeat latest version - deb
   ansible.builtin.package:
@@ -76,6 +97,10 @@
     - elasticstack_version is defined
     - elasticstack_version == "latest"
     - ansible_os_family == "Debian"
+  tags:
+    - metricbeat
+    - latest
+    - deb
 
 - name: Configure Metricbeat
   ansible.builtin.template:
@@ -86,6 +111,10 @@
     mode: 0644
   notify:
     - Restart Metricbeat
+  tags:
+    - configuration
+    - beats_metricbeat_configuration
+    - beats_configuration
 
 - name: Enable modules
   ansible.builtin.command: "metricbeat modules enable {{ item }}"
@@ -93,6 +122,9 @@
     creates: "/etc/metricbeat/modules.d/{{ item }}.yml"
   with_items: "{{ beats_metricbeat_modules }}"
   when: beats_metricbeat_modules is defined
+  tags:
+    - metricbeat
+    - metricbeat_enable_module
 
 - name: Enable Ingest Pipelines
   ansible.builtin.command: >
@@ -106,6 +138,9 @@
   when:
     - beats_metricbeat_modules is defined
     - beats_metricbeat_output == "elasticsearch"
+  tags:
+    - metricbeat
+    - metricbeat_ingest_pipelines
 
 - name: Start Metricbeat
   ansible.builtin.service:
@@ -113,3 +148,6 @@
     state: started
     enabled: true
   when: beats_metricbeat_enable | bool
+  tags:
+    - metricbeat
+    - metricbeat_start

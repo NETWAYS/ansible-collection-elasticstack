@@ -13,13 +13,14 @@
   when: ansible_distribution != "Ubuntu" or ansible_distribution_version is version('24.04', '<')
 
 - name: Ensure Elastic Stack key is available (Debian)
-  ansible.builtin.command:
-    cmd: "curl -fsSL {{ elasticstack_repo_key }} -o /usr/share/keyrings/elasticsearch.asc"
-    creates: /usr/share/keyrings/elasticsearch.asc
-  register: curl_result
-  changed_when: curl_result.rc == 0
-  args:
-    warn: false
+  ansible.builtin.get_url:
+    url: "{{ elasticstack_repo_key }}"
+    dest: /usr/share/keyrings/elasticsearch.asc
+    mode: "0644"
+    force: false
+    # Using creates equivalent via dest existence check; get_url is idempotent
+  register: geturl_result
+  changed_when: geturl_result.changed
   # Ensure correct permissions
 - name: Set permissions on Elastic Stack key file
   ansible.builtin.file:
@@ -39,14 +40,14 @@
 
 - name: Ensure Elastic Stack apt repository is configured (Debian)
   ansible.builtin.apt_repository:
-    repo: deb [signed-by=/usr/share/keyrings/elasticsearch.asc] https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/apt stable main
+    repo: deb [signed-by=/usr/share/keyrings/elasticsearch.asc] https://artifacts.elastic.co/packages/{{ elasticstack_release | default(8, true) }}.x/apt stable main
     state: present
     filename: elasticstack
   when: elasticstack_variant == "elastic"
 
 - name: Ensure Elastic Stack OSS apt repository is configured (Debian)
   ansible.builtin.apt_repository:
-    repo: deb [signed-by=/usr/share/keyrings/elasticsearch.asc] https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/apt stable main
+    repo: deb [signed-by=/usr/share/keyrings/elasticsearch.asc] https://artifacts.elastic.co/packages/oss-{{ elasticstack_release | default(8, true) }}.x/apt stable main
     state: present
     filename: elasticstack
   when: elasticstack_variant == "oss"

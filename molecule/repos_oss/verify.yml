@@ -4,6 +4,6 @@
 - name: Verify
   hosts: all
   tasks:
-  - name: Install Kibana
-    ansible.builtin.package:
-      name: kibana-oss
+    - name: Install Kibana
+      ansible.builtin.package:
+        name: kibana-oss

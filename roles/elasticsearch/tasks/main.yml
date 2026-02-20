@@ -212,7 +212,7 @@
     mode: "660"
     force: yes
   notify: Restart Elasticsearch
-  when: (elasticsearch_heap)
+  when: elasticsearch_heap|bool
 
 - name: Set jvm paths
   ansible.builtin.template:
@@ -233,7 +233,7 @@
     mode: "660"
     force: yes
   notify: Restart Elasticsearch
-  when: (elasticsearch_jvm_custom_parameters)
+  when: elasticsearch_jvm_custom_parameters|bool
 
 # On containerized Debian 10 systemd will not recognize elasticsearch service
 - name: Force systemd to reread configs on container
@@ -311,7 +311,7 @@
 - name: Show Info about heap
   ansible.builtin.debug:
     msg: "Using {{ elasticsearch_heap | int * 1024 }} of {{ ansible_memtotal_mb }} MB as heap for Elasticsearch"
-  when: (elasticsearch_heap)
+  when: elasticsearch_heap | bool
 
 - name: Show hint about passwords
   ansible.builtin.debug:

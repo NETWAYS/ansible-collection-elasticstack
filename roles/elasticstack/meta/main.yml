@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  role_name: elasticstack
+  namespace: netways
+  author: Netways GmbH
+  description: Elasticstack collection meta role
+  company: Netways GmbH
+  license: GPL-3.0-or-later
+  min_ansible_version: "2.9"
+  # Maximum Ansible version tested: 2.14
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+    - name: Debian
+      versions:
+        - bullseye
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+  galaxy_tags: []
+dependencies: []

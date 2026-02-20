@@ -75,6 +75,7 @@ We test the collection on the following Linux distributions. Each one with Elast
 * Rocky Linux 9
 * Ubuntu 22.04 LTS
 * Ubuntu 24.04 LTS
++* Ansible >= 2.16 (required for Python 3.12 targets)
 * Debian 12
 
 We know from personal experience, that the collections work in following combinations. Missing tests mostly come from incompatibilties between the distribution and our testing environment, not from problems with the collection itself.

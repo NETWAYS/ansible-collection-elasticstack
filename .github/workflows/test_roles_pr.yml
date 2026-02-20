@@ -28,6 +28,7 @@ jobs:
     env:
       COLLECTION_NAMESPACE: netways
       COLLECTION_NAME: elasticstack
+      DOCKER_HOST: unix:///var/run/docker.sock
 
     strategy:
       fail-fast: false

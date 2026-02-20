@@ -1,5 +1,11 @@
 # Ansible Collection - netways.elasticstack
 
+> **Note**: For local Molecule tests, ensure Docker client uses the Unix socket:
+>
+> ```bash
+> export DOCKER_HOST=unix:///var/run/docker.sock
+> ```
+
 ![Test ElasticStack](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_full_stack.yml/badge.svg)
 
 > [!CAUTION]

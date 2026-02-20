@@ -71,14 +71,14 @@
         state: absent
       when: elasticsearch_move_ca_directory.changed
 
-    - name: Check the existance of ca on Ansible controler
+    - name: Check the existance of ca on Ansible controller
       ansible.builtin.stat:
         path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
       register: elasticsearch_check_temporary_ca
       delegate_to: localhost
       become: false
 
-    - name: Move temporary ca file on Ansible controler
+    - name: Move temporary ca file on Ansible controller
       ansible.builtin.copy:
         src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
         dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt_{{ ansible_date_time.iso8601_micro }}"
@@ -88,7 +88,7 @@
       become: false
       register: elasticsearch_move_ca_file
 
-    - name: Remove temporary ca file on Ansible controler
+    - name: Remove temporary ca file on Ansible controller
       ansible.builtin.file:
         path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
         state: absent
@@ -186,12 +186,12 @@
     - renew_es_cert
     - renew_ca
   block:
-    - name: Check the existance of cert on Ansible controler
+    - name: Check the existance of cert on Ansible controller
       ansible.builtin.stat:
         path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
       register: elasticsearch_check_temporary_cert
 
-    - name: Move temporary cert on Ansible controler
+    - name: Move temporary cert on Ansible controller
       ansible.builtin.copy:
         src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
         dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12_{{ ansible_date_time.iso8601_micro }}"
@@ -199,7 +199,7 @@
       when: elasticsearch_check_temporary_cert.stat.exists
       register: elasticsearch_move_cert_file
 
-    - name: Remove temporary cert on Ansible controler
+    - name: Remove temporary cert on Ansible controller
       ansible.builtin.file:
         path: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
         state: absent

@@ -5,6 +5,7 @@ dependency:
     requirements-file: requirements.yml
 driver:
   name: docker
+  docker_host: unix:///var/run/docker.sock
 platforms:
   - name: elasticsearch_default
     groups:

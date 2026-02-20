@@ -6,7 +6,8 @@
   vars:
     elasticstack_rpm_workaround: true
     elasticstack_full_stack: false
-    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    # Use ELASTIC_RELEASE env var if set, otherwise default to 8
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | default(8, true) | int }}"
     elasticstack_no_log: false
   tasks:
     - name: Include Elastic Repos

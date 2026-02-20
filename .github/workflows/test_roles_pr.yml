@@ -71,3 +71,4 @@ jobs:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           ELASTIC_RELEASE: ${{ matrix.release }}
+          DOCKER_HOST: unix:///var/run/docker.sock

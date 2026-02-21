@@ -37,10 +37,11 @@ jobs:
 
     strategy:
       fail-fast: false
+      max-parallel: 5
       matrix:
 
         distro:
-          - centos7
+          # centos7 removed - no longer supported
           - debian10
           - debian11
           - rockylinux8

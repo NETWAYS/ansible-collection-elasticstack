@@ -23,6 +23,7 @@ tags:
   - monitoring
 dependencies:
   "community.general": "*"
+  "geerlingguy.redis": "*"
 repository: https://github.com/netways/ansible-collection-elasticstack
 documentation: https://github.com/netways/ansible-collection-elasticstack/README.md
 homepage: https://www.netways.de

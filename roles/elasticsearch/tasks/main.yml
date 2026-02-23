@@ -117,28 +117,6 @@
     name: openssl
   when: elasticsearch_security | bool
 
-# the following should be done by the rpm but failed with 7.4
-# NOTE: Workaround for older distributions (e.g., RHEL 8 / Rocky 8) where the
-# community.general.pam_limits module requires Python >= 3.7, which is not
-# available. This uses lineinfile to set the ulimit. Replace with the proper
-# pam_limits module once support for these older platforms is dropped.
-
-- name: Ensure correct permissions for Elasticsearch limits file
-  ansible.builtin.file:
-    path: /etc/security/limits.d/elasticsearch.conf
-    state: file
-    owner: root
-    group: root
-    mode: "0644"
-  when: elasticsearch_pamlimits | bool
-
-- name: Set ulimits for Elasticsearch (workaround)
-  ansible.builtin.lineinfile:
-    path: /etc/security/limits.d/elasticsearch.conf
-    line: "elasticsearch - nofile hard 65535"
-    state: present
-  when: elasticsearch_pamlimits | bool
-
 - name: Construct exact name of Elasticsearch package
   ansible.builtin.set_fact:
     elasticsearch_package: >

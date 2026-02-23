@@ -22,4 +22,5 @@ galaxy_info:
     - logstash
     - logging
     - system
-dependencies: []
+dependencies:
+  - geerlingguy.redis

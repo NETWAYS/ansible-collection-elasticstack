@@ -9,8 +9,6 @@ This collection installs and manages the Elastic Stack. It provides roles for ev
 
 Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/getting-started.md)**
 
-**Please note**: If you are already using this collection before version `1.0.0`, please note that we had to rename a significant amount of variables due to naming schema changes made by Ansible. Please review the variables you have set in your playbooks and variable files.
-
 ## Roles documentation
 
 > [!NOTE]
@@ -78,8 +76,15 @@ We know from personal experience, that the collections work in following combina
 
 * CentOS 7 - Elastic Stack 7
 
-### Known Issues
+## Caveats and information for long time users
 
+### Variable renaming
+
+**Please note**: If you are already using this collection before version `1.0.0`, please note that we had to rename a significant amount of variables due to naming schema changes made by Ansible. Please review the variables you have set in your playbooks and variable files.
+
+### Ulimit management for Elasticsearch
+
+> **Warning**: The role no longer configures `ulimit`. Ensure the system's open file limit is set correctly (e.g., `ulimit -n`). Packages usually handle this, but verify with `ulimit -n` or checking `/proc/<pid>/limits`. If your version does not, open an issue at the collection's issue tracker: https://github.com/netways/ansible-collection-elasticstack/issues
 
 ## Usage
 

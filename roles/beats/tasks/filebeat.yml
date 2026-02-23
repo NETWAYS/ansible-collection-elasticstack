@@ -9,6 +9,9 @@
       elasticstack_version |
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '') }}
+  tags:
+    - filebeat
+    - name
 
 - name: Install Filebeat - rpm - full stack
   ansible.builtin.package:
@@ -20,6 +23,9 @@
   when:
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
+  tags:
+    - filebeat
+    - rpm
 
 - name: Install Filebeat - rpm - standalone
   ansible.builtin.package:
@@ -29,6 +35,10 @@
   when:
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
+  tags:
+    - filebeat
+    - standalone
+    - rpm
 
 - name: Install Filebeat - deb
   ansible.builtin.package:
@@ -37,6 +47,9 @@
     - Restart Filebeat
   when:
     - ansible_os_family == "Debian"
+  tags:
+    - filebeat
+    - deb
 
 - name: Install Filebeat latest version - rpm - full stack
   ansible.builtin.package:
@@ -51,6 +64,10 @@
     - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
+  tags:
+    - filebeat
+    - fullstack
+    - rpm
 
 - name: Install Filebeat latest version - rpm - standalone
   ansible.builtin.package:
@@ -63,6 +80,10 @@
     - elasticstack_version == "latest"
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
+  tags:
+    - filebeat
+    - latest
+    - rpm
 
 - name: Install Filebeat latest version - deb
   ansible.builtin.package:
@@ -74,6 +95,10 @@
     - elasticstack_version is defined
     - elasticstack_version == "latest"
     - ansible_os_family == "Debian"
+  tags:
+    - filebeat
+    - latest
+    - deb
 
 - name: Configure Filebeat
   ansible.builtin.template:
@@ -122,6 +147,9 @@
       with_items: "{{ beats_filebeat_modules }}"
       notify:
         - Restart Filebeat
+      tags:
+        - filebeat
+        - setup
 
 - name: Start Filebeat
   ansible.builtin.service:
@@ -129,3 +157,6 @@
     state: started
     enabled: true
   when: beats_filebeat_enable | bool
+  tags:
+    - filebeat
+    - start

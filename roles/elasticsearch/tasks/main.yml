@@ -124,6 +124,7 @@
 # pam_limits module once support for these older platforms is dropped.
 
 - name: Ensure correct permissions for Elasticsearch limits file
+  ansible.builtin.file:
     path: /etc/security/limits.d/elasticsearch.conf
     state: file
     owner: root

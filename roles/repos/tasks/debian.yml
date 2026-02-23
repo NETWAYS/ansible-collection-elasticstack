@@ -29,14 +29,14 @@
 
 - name: Ensure Elastic Stack apt repository is configured (Debian)
   ansible.builtin.apt_repository:
-    repo: deb [signed-by=/usr/share/keyrings/elasticsearch.asc] https://artifacts.elastic.co/packages/{{ elasticstack_release }}.x/apt stable main
+    repo: deb [signed-by=/usr/share/keyrings/elasticsearch.asc] {{ elasticstack_repo_url }}/{{ elasticstack_release }}.x/apt stable main
     state: present
     filename: elasticstack
   when: elasticstack_variant == "elastic"
 
 - name: Ensure Elastic Stack OSS apt repository is configured (Debian)
   ansible.builtin.apt_repository:
-    repo: deb [signed-by=/usr/share/keyrings/elasticsearch.asc] https://artifacts.elastic.co/packages/oss-{{ elasticstack_release }}.x/apt stable main
+    repo: deb [signed-by=/usr/share/keyrings/elasticsearch.asc] {{ elasticstack_repo_url }}/oss-{{ elasticstack_release }}.x/apt stable main
     state: present
     filename: elasticstack
   when: elasticstack_variant == "oss"

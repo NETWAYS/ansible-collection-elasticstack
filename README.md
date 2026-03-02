@@ -84,7 +84,7 @@ We know from personal experience, that the collections work in following combina
 
 ### Ulimit management for Elasticsearch
 
-> **Warning**: The role no longer configures `ulimit`. Ensure the system's open file limit is set correctly (e.g., `ulimit -n`). Packages usually handle this, but verify with `ulimit -n` or checking `/proc/<pid>/limits`. If your version does not, open an issue at the collection's issue tracker: https://github.com/netways/ansible-collection-elasticstack/issues
+**Warning**: The role no longer configures `ulimit`. Ensure the system's open file limit is set correctly (e.g., `ulimit -n`). Packages usually handle this, but verify with `ulimit -n` or checking `/proc/<pid>/limits`. If your version does not, open an issue at the collection's issue tracker: https://github.com/netways/ansible-collection-elasticstack/issues
 
 ## Usage
 

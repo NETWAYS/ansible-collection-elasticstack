@@ -1,4 +1,5 @@
-# {{ ansible_managed }}
+{{ ansible_managed | comment }}
+
 # Xms represents the initial size of total heap space
 # Xmx represents the maximum size of total heap space
 -Xms{{ elasticsearch_heap }}g

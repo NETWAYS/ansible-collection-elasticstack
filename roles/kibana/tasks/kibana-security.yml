@@ -1,5 +1,4 @@
 ---
-
 - name: Ensure kibana certificate exists
   ansible.builtin.stat:
     path: "/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12"

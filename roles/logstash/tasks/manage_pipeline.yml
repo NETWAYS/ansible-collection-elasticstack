@@ -1,5 +1,4 @@
 ---
-
 - name: Check if Logstash pipeline already exists
   ansible.builtin.stat:
     path: "/etc/logstash/conf.d/{{ pipelinename.name }}"

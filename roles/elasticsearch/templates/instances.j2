@@ -1,3 +1,5 @@
+{{ ansible_managed | comment }}
+
 instances:
 {% for host in groups[elasticstack_elasticsearch_group_name]  %}
   - name: "{{ host }}" 

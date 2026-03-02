@@ -7,7 +7,7 @@
 
 This collection installs and manages the Elastic Stack. It provides roles for every component of the Stack. Furthermore, it is possible to differentiate between Enterprise or OSS releases.
 
-Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/getting-started.md)**
+Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/02-getting-started.md)**
 
 **Please note**: If you are already using this collection before version `1.0.0`, please note that we had to rename a significant amount of variables due to naming schema changes made by Ansible. Please review the variables you have set in your playbooks and variable files.
 
@@ -16,18 +16,21 @@ Every role is documented with all variables, please refer to the documentation f
 > [!NOTE]
 > Some roles have fixed requirements that you must observe. Please have a look at the [requirements](docs/01-requirements.md) before using the collection. (There is a high probability that some of them will be refactored soon)
 
-* [Beats](docs/role-beats.md)
-* [Elasticsearch](docs/role-elasticsearch.md)
-* [Kibana](docs/role-kibana.md)
-* [Logstash](docs/role-logstash.md)
-* [Repos](docs/role-repos.md)
+* [Beats](docs/14-role-beats.md)
+* [Elasticsearch](docs/11-role-elasticsearch.md)
+* [Kibana](docs/15-role-kibana.md)
+* [Logstash](docs/12-role-logstash.md)
+* [Repos](docs/10-role-repos.md)
 
 ## Modules documentation
 
-* [elasticsearch_role](docs/module-elasticsearch_role.md)
-* [elasticsearch_user](docs/module-elasticsearch_user.md)
+* [elasticsearch_role](docs/20-module-elasticsearch_role.md)
+* [elasticsearch_user](docs/21-module-elasticsearch_user.md)
 
 ## Global variables
+
+* `elasticstack_collection_managed`: When set to true, roles inside this collection can fully rely on each other’s default configuration, naming conventions, and managed resources. This means the collection handles repositories, package names, and other components internally, leaving no room for external tools or custom configurations to override these defaults.
+When set to false, you can provide your own repositories, package names, or other configurations, but roles cannot assume defaults from other roles anymore. (Default: `true`)
 
 * `elasticstack_force_pip`: Will force installation of required Python modules via `pip`. This is useful if your package manager doesn't provide current versions of modules. (Default: `false`) See [PEP668](https://peps.python.org/pep-0668/) for more details.
 * `elasticstack_manage_pip`: Will install `pip` on your system. (Default: `false`)
@@ -83,7 +86,7 @@ We know from personal experience, that the collections work in following combina
 
 ## Usage
 
-Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/getting-started.md)**
+Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/02-getting-started.md)**
 
 Make sure all hosts that should be configured are part of your playbook. (See below for details on groups etc.). The collection is built to first collect all facts from all hosts (including those only running beats) and then use facts like hostnames or ip addresses to connect the tools to each other.
 

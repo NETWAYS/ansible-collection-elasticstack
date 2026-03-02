@@ -14,7 +14,7 @@
   collections:
     - netways.elasticstack
   vars:
-    elasticstack_full_stack: true
+    elasticstack_collection_managed: true
     elasticstack_variant: oss
     logstash_security: false
     logstash_pipeline_unsafe_shutdown: true

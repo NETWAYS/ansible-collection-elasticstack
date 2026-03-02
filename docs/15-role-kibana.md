@@ -15,11 +15,11 @@ Role Variables
 * *kibana_tls_key*: Path to the key Kibana should use when communicating with clients (default: `/etc/kibana/certs/key.pem`)
 * *kibana_extra_config*: You can add arbitraty configuration options with this option. Just start it with `|-` and indent the following lines. So you can add as many lines and options to `kibana.yml` as you like. (default: none)
 
-* *kibana_security*: Activate TLS and authentication when connecting to Elasticsearch. **Note**: Only works when `elasticstack_full_stack` is enabled. (default: `true`)
+* *kibana_security*: Activate TLS and authentication when connecting to Elasticsearch. **Note**: Only works when `elasticstack_collection_managed` is enabled. (default: `true`)
 
 These variables are identical over all our elastic related roles, hence the different naming scheme.
 
-* *elasticstack_full_stack*: Use `ansible-role-elasticsearch` as well (default: `false`). If you set to `true`, you will be able to use the following variables:
+* *elasticstack_collection_managed*: Use `ansible-role-elasticsearch` as well (default: `false`). If you set to `true`, you will be able to use the following variables:
     * *kibana_elasticsearch_hosts*: A list of DNS resolvable hostnames of Elasticsearch hosts to connect your Kibana instance to. (default: `- localhost`)
     * *elasticstack_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
     * *kibana_sniff_on_start*: Attempt to find other Elasticsearch nodes on startup (default: `false`)
@@ -50,7 +50,7 @@ If you use `localhost` in `kibana_elasticsearch_hosts` , certificate verificatio
     - netways.elasticstack
   hosts: kibana-host
   vars:
-    elasticstack_full_stack: true
+    elasticstack_collection_managed: true
     elasticstack_variant: oss
   roles:
     - repos

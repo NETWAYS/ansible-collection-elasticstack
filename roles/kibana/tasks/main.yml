@@ -130,10 +130,11 @@
       ansible.builtin.command:
         cmd: journalctl -u kibana -n 100
       register: kibana_logs
+      changed_when: false
+      no_log: true
     - name: Output Kibana logs
       ansible.builtin.debug:
         var: kibana_logs.stdout
-  ignore_errors: true
 
 # Free up some space to let elsticsearch allocate replica in GitHub Action
 - name: Remove cache

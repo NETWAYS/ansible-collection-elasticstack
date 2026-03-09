@@ -3,6 +3,7 @@
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
+  when: not hostvars[inventory_hostname]._elasticstack_role_imported | default(false)
 
 - name: Update apt cache.
   ansible.builtin.apt:

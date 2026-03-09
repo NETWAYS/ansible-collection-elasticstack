@@ -32,7 +32,7 @@ These variables are identical over all our elastic related roles, hence the diff
 * *kibana_cert_will_expire_soon*: Set it to true to renew kibana certificate (default: `false`), Or run the playbook with `--tags renew_kibana_cert` to do that.
 * *elasticstack_kibana_host*: Hostname users use to connect to Kibana (default: FQDN of the host the role is executed on)
 * *elasticstack_kibana_port*: Port Kibana webinterface is listening on (default: `5601`)
-* *elasticstack_ca*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
+* *elasticstack_ca_host*: Set to the inventory hostname of the host that should house the CA for certificates for inter-node communication. (default: First node in the `elasticsearch` host group)
 * *elasticstack_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elasticstack_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)

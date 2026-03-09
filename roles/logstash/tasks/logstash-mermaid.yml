@@ -1,0 +1,36 @@
+---
+
+- name: Print Logstash pipelines in Mermaid syntax on Logstash hosts
+  ansible.builtin.template:
+    src: pipelines.mermaid.j2
+    dest: /etc/logstash/pipelines.mermaid
+    owner: root
+    group: root
+    mode: 0655
+  when:
+    - logstash_mermaid_logstash | bool
+
+- name: Provide Logstash pipelines in Mermaid syntax on control node
+  when:
+    - logstash_mermaid_local | bool
+  block:
+
+    - name: Create temporary directory on control node
+      ansible.builtin.tempfile:
+        prefix: logstash_mermaid
+      register: mermaid_path
+      delegate_to: localhost
+
+    - name: Print Logstash pipelines in Mermaid syntax on control node
+      ansible.builtin.template:
+        src: pipelines.mermaid.j2
+        dest: "{{ mermaid_path.path }}"
+        owner: root
+        group: root
+        mode: 0655
+      delegate_to: localhost
+
+    - name: Send user to Mermaid file
+      ansible.builtin.debug:
+        msg:
+          - "You can find an overview of your pipeline configuration in Mermaid syntax at {{ mermaid_path.path }}"

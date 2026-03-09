@@ -1,7 +1,7 @@
-ansible
+ansible>=2.15
 ansible-lint
 molecule
 molecule-plugins[docker]
 pytest
 passlib
-elasticsearch
+elasticsearch<9

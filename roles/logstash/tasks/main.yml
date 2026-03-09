@@ -3,6 +3,7 @@
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
+  when: not hostvars[inventory_hostname]._elasticstack_role_imported | default(false)
 
 - name: Update apt cache.
   ansible.builtin.apt:
@@ -58,13 +59,13 @@
 
 - name: Construct exact name of Logstash package
   ansible.builtin.set_fact:
-    logstash_package: >
+    logstash_package: >-
       {{
       'logstash' +
       ('-oss' if elasticstack_variant == 'oss' else '') +
-      (elasticstack_versionseparator +
+      ((elasticstack_versionseparator +
       elasticstack_version |
-      string if elasticstack_version is defined else '') |
+      string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '')
       }}
   when:
@@ -72,15 +73,12 @@
 
 - name: Construct exact name of Logstash package
   ansible.builtin.set_fact:
-    logstash_package: >
+    logstash_package: >-
       {{
       'logstash' +
       ('-oss' if elasticstack_variant == 'oss' else '') +
-      (elasticstack_versionseparator +
-      '1:' +
-      elasticstack_version +
-      '-1' |
-      string if elasticstack_version is defined else '') |
+      ((elasticstack_versionseparator + '1:' + elasticstack_version + '-1')
+      if (elasticstack_version is defined and elasticstack_version | length > 0) else '') |
       replace(' ', '')
       }}
   when:
@@ -253,6 +251,13 @@
   tags:
     - configuration
     - logstash_configuration
+
+- name: Print Logstash pipelines in Mermaid syntax
+  ansible.builtin.import_tasks: logstash-mermaid.yml
+  when:
+    - logstash_mermaid | bool
+  tags:
+    - mermaid
 
 - name: Install Logstash plugins
   community.general.logstash_plugin:

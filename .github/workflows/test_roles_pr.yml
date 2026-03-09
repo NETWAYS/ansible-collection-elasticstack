@@ -34,7 +34,6 @@ jobs:
       matrix:
         distro:
           - rockylinux8
-          - rockylinux9
           - ubuntu2204
         scenario:
           - elasticstack_default
@@ -44,10 +43,10 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python 3.8
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.8
 

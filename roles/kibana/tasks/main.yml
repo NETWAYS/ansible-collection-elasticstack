@@ -10,6 +10,7 @@
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
+  when: not hostvars[inventory_hostname]._elasticstack_role_imported | default(false)
 
 - name: Update apt cache.
   ansible.builtin.apt:
@@ -41,13 +42,13 @@
 
 - name: Construct exact name of Kibana package
   ansible.builtin.set_fact:
-    kibana_package: >
+    kibana_package: >-
       {{
       'kibana' +
       ('-oss' if elasticstack_variant == 'oss' else '') +
-      (elasticstack_versionseparator +
+      ((elasticstack_versionseparator +
       elasticstack_version |
-      string if elasticstack_version is defined else '') |
+      string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '') }}
 
 - name: Install Kibana - rpm - full stack
@@ -113,10 +114,27 @@
 # the following is useful when running tests or extra tasks that need to
 # have Kibana running. Escape it on Rocky8, because it gets time out with Elastic 8
 
-- name: Wait for Kibana to start
-  ansible.builtin.wait_for:
-    host: localhost
-    port: 5601
+- name: Wait for Kibana to start (with debug)
+  block:
+    - name: Wait for Kibana to start
+      ansible.builtin.wait_for:
+        host: localhost
+        port: 5601
+        timeout: 300
+      register: kibana_wait
+  rescue:
+    - name: Debug Kibana status on failure
+      ansible.builtin.debug:
+        msg: "Kibana failed to start: {{ kibana_wait }}"
+    - name: Show Kibana logs
+      ansible.builtin.command:
+        cmd: journalctl -u kibana -n 100
+      register: kibana_logs
+      changed_when: false
+      no_log: true
+    - name: Output Kibana logs
+      ansible.builtin.debug:
+        var: kibana_logs.stdout
 
 # Free up some space to let elsticsearch allocate replica in GitHub Action
 - name: Remove cache

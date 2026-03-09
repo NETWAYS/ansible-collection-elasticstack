@@ -2,13 +2,17 @@
 
 ![Test ElasticStack](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_full_stack.yml/badge.svg)
 
+> [!CAUTION]
+> The current main branch has some breaking changes. Be careful using it! Everything after commit 3d6673f6d526afeb0fd7ba382d067d76bd10bbd6 is affected!
+
 This collection installs and manages the Elastic Stack. It provides roles for every component of the Stack. Furthermore, it is possible to differentiate between Enterprise or OSS releases.
 
 Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/getting-started.md)**
 
-**Please note**: If you are already using this collection before version `1.0.0`, please note that we had to rename a significant amount of variables due to naming schema changes made by Ansible. Please review the variables you have set in your playbooks and variable files.
-
 ## Roles documentation
+
+> [!NOTE]
+> Some roles have fixed requirements that you must observe. Please have a look at the [requirements](docs/01-requirements.md) before using the collection. (There is a high probability that some of them will be refactored soon)
 
 * [Beats](docs/role-beats.md)
 * [Elasticsearch](docs/role-elasticsearch.md)
@@ -50,6 +54,7 @@ You will need the following Ansible collections installed
 You will need these packages / libraries installed. Some very basic packages like `openssl` get handled by the collection if needed. The following list contains packages and libraries which only apply to special cases or need for you to decide on the installation method.
 
 * `passlib` Python library if you do not disable password hashing for logstash user and you want to use logstash role from this collection. It should be installed with pip on the Ansible controller.
+* `elasticsearch` Python module. Current versions are either compatible to Elasticsearch 9 or versions lower than 9. There seems to be no version that can serve both. So for now we install a version of the client lower than 9 but need to take care to install the right one when we make this collection compatible to Elastic Stack 9
 
 You may want the following Ansible roles installed. There other ways to achieve what they are doing but using them is easy and convenient.
 
@@ -71,8 +76,15 @@ We know from personal experience, that the collections work in following combina
 
 * CentOS 7 - Elastic Stack 7
 
-### Known Issues
+## Caveats and information for long time users
 
+### Variable renaming
+
+**Please note**: If you are already using this collection before version `1.0.0`, please note that we had to rename a significant amount of variables due to naming schema changes made by Ansible. Please review the variables you have set in your playbooks and variable files.
+
+### Ulimit management for Elasticsearch
+
+**Warning**: The role no longer configures `ulimit`. Ensure the system's open file limit is set correctly (e.g., `ulimit -n`). Packages usually handle this, but verify with `ulimit -n` or checking `/proc/<pid>/limits`. If your version does not, open an issue at the collection's issue tracker: https://github.com/netways/ansible-collection-elasticstack/issues
 
 ## Usage
 

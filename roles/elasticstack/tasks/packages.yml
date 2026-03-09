@@ -45,7 +45,7 @@
     - name: Install Python Modules via pip
       ansible.builtin.pip:
         name:
-          - elasticsearch
+          - 'elasticsearch<9'
           - cryptography
       ignore_errors: true
       register: elasticstack_pip_installation
@@ -61,7 +61,7 @@
 - name: Install Python Modules via pip  - forced
   ansible.builtin.pip:
     name:
-      - elasticsearch
+      - 'elasticsearch<9'
       - cryptography
     break_system_packages: true
   ignore_errors: true

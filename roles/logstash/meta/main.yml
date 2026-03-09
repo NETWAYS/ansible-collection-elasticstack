@@ -22,4 +22,9 @@ galaxy_info:
     - logstash
     - logging
     - system
-dependencies: []
+
+collections:
+  - netways.elasticstack
+
+dependencies:
+  - geerlingguy.redis

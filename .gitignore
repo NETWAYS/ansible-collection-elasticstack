@@ -2,3 +2,7 @@
 *.swp
 __pycache__*
 .vscode
+.roo
+.ansible
+.rooignore
+.venv

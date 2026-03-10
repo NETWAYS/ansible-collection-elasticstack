@@ -23,11 +23,13 @@
   when: logstash_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_cert_expiration_buffer | int
 
 - name: Print the logstash certificate renew message
-  ansible.builtin.debug:
-    msg: |
-      Your logstash certificate will expire in {{ logstash_cert_expiration_days }} days.
-      Ansible will renew it.
   when: logstash_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_cert_expiration_buffer | int
+  block:
+    - name: Print the logstash certificate renew message
+      ansible.builtin.debug:
+        msg: |
+          Your logstash certificate will expire in {{ logstash_cert_expiration_days }} days.
+          Ansible will renew it.
 
 - name: Backup logstash certs then remove
   when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"

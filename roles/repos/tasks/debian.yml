@@ -11,11 +11,52 @@
     url: "{{ elasticstack_repo_key }}"
     state: absent
 
-- name: Ensure Elastic Stack key is available (Debian)
-  ansible.builtin.get_url:
-    url: "{{ elasticstack_repo_key }}"
+# NOTE: Workaround for older ansible-core versions combined with Python 3.12 on managed nodes (e.g. Ubuntu 24.04),
+# where ansible.builtin.get_url may fail with HTTPSConnection/cert_file related errors. We intentionally use curl via
+# ansible.builtin.command here and will switch back to get_url once the Ansible/Python version mismatch in CI and
+# supported environments is resolved.
+- name: Ensure /usr/share/keyrings directory exists (Debian)
+  ansible.builtin.file:
+    path: /usr/share/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Ensure curl is installed (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: curl
+    state: present
+    update_cache: true
+
+- name: Download Elastic Stack GPG key to temporary file
+  ansible.builtin.command: curl -fsSL "{{ elasticstack_repo_key }}" -o /tmp/elasticsearch.asc
+  # noqa: command-instead-of-module
+  changed_when: false
+
+- name: Stat existing key file
+  ansible.builtin.stat:
+    path: /usr/share/keyrings/elasticsearch.asc
+    checksum_algorithm: sha256
+  register: existing_key
+
+- name: Stat downloaded temporary key file
+  ansible.builtin.stat:
+    path: /tmp/elasticsearch.asc
+    checksum_algorithm: sha256
+  register: downloaded_key
+
+- name: Install Elastic Stack key if missing or changed
+  ansible.builtin.copy:
+    src: /tmp/elasticsearch.asc
     dest: /usr/share/keyrings/elasticsearch.asc
+    remote_src: true
     mode: "0644"
+  when: not existing_key.stat.exists or existing_key.stat.checksum != downloaded_key.stat.checksum
+
+- name: Remove temporary key file
+  ansible.builtin.file:
+    path: /tmp/elasticsearch.asc
+    state: absent
+  changed_when: false
 
 - name: Ensure Elastic Stack apt repo is absent (Debian legacy format)
   ansible.builtin.file:

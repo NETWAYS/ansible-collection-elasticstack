@@ -29,7 +29,6 @@ Role Variables
 * *elasticsearch_disable_systemcallfilterchecks*: Disable system call filter checks. This has a security impact but is necessary on some systems. Please refer to the [docs](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/_system_call_filter_check.html) for details. (default: `false`)
 * *elasticsearch_http_publish_host*: (String) The network address for HTTP clients to contact the node using sniffing. Accepts an IP address, a hostname, or a special value. (default: `not set`)
 * *elasticsearch_http_publish_port*: (integer) The port of the HTTP publish address. Configure this setting only if you need the publish port to be different from http.port. (default: `not set`)
-* *elasticsearch_pamlimits*: Set pam_limits neccessary for Elasticsearch. (Default: `true`)
 * *elasticsearch_check_calculation*: End play in checks (Default: `false`)
 * *elasticsearch_network_host*: You can configure multipe network addresses where the networking is bind to. You can assign IP addresses or interfaces by their names. You can also use elasticsearch internal variabels as it set as default. Example: `"_ens190_,_local_"` (Default: `"_local_,"_site_"`) (Optional; if not defined `default` is used)
 * *elasticsearch_api_host*: Hostname or IP elasticsearch is listening on. Only used for connection checks by ansible role. (Default: `localhost`)
@@ -83,3 +82,7 @@ These variables are identical over all our elastic related roles, hence the diff
     - repos
     - elasticsearch
 ```
+
+## Caveats
+
+> **Note**: The role no longer configures `ulimit`. Ensure the system's open file limit is set correctly (e.g., `ulimit -n`). Packages usually handle this, but verify with `ulimit -n` or checking `/proc/<pid>/limits`. If your version does not, open an issue at the collection's issue tracker: https://github.com/netways/ansible-collection-elasticstack/issues

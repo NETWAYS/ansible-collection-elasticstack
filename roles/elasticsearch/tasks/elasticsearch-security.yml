@@ -27,14 +27,16 @@
     elasticstack_ca_expiration_days | int <= elasticstack_ca_expiration_buffer | int
 
 - name: Print the ca renew message
-  ansible.builtin.debug:
-    msg: |
-      Your ca will expire in {{ elasticstack_ca_expiration_days }} days.
-      Ansible will renew it and all elastic stack certificates
   when: >
     inventory_hostname == elasticstack_ca_host and
     elasticstack_ca_expiration_days is defined and
     elasticstack_ca_expiration_days | int <= elasticstack_ca_expiration_buffer | int
+  block:
+    - name: Print the ca renew message
+      ansible.builtin.debug:
+        msg: |
+          Your ca will expire in {{ elasticstack_ca_expiration_days }} days.
+          Ansible will renew it and all elastic stack certificates
 
 - name: Stop Logstash
   ansible.builtin.service:
@@ -120,11 +122,13 @@
   when: elasticsearch_cert_expiration_days is defined and elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
 
 - name: Print the elasticsearch certificate renew message
-  ansible.builtin.debug:
-    msg: |
-      Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }} days.
-      Ansible will renew it.
   when: elasticsearch_cert_expiration_days is defined and elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
+  block:
+    - name: Print the elasticsearch certificate renew message
+      ansible.builtin.debug:
+        msg: |
+          Your elasticsearch certificate will expire in {{ elasticsearch_cert_expiration_days }} days.
+          Ansible will renew it.
 
 - name: Backup elasticsearch certs on node then remove
   when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"

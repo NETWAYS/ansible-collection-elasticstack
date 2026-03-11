@@ -6,7 +6,7 @@ galaxy_info:
   company: Netways GmbH
   license: GPL-3.0-or-later
 
-  min_ansible_version: "2.9"
+  min_ansible_version: "2.14"  # max supported: 2.20  # Minimum version specifications are only for versions we have not had problems with; we will raise them when larger issues arise.
   platforms:
     - name: EL
       versions:

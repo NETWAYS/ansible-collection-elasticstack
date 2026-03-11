@@ -41,7 +41,7 @@ The netways.elasticstack.cert_info module gathers information about pkcs12 certi
 
 ### Tested ansible-core versions
 - 2.11
-- 2.12
+- 2.14
 - 2.13
 - 2.14
 

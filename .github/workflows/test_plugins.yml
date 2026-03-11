@@ -139,7 +139,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ansible_core_version: [ 2.11.12, 2.12.10, 2.13.8, 2.14.4 ]
+        ansible_core_version:
+          - 2.14
+          - 2.20
 
     steps:
       - name: Check out code

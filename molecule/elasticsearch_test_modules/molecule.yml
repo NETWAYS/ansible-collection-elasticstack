@@ -6,7 +6,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: elasticsearch_default
+  - name: "elasticsearch_default-${MOLECULE_DISTRO:-debian12}"
     groups:
       - elasticsearch
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
@@ -22,5 +22,9 @@ provisioner:
   # overwhelming
   #env:
   #  ANSIBLE_VERBOSITY: 3
+  inventory:
+    host_vars:
+      elasticsearch_default-rockylinux8:
+        ansible_python_interpreter: /usr/bin/python3.9
 verifier:
   name: ansible

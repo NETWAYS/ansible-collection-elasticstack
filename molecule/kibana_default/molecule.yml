@@ -4,7 +4,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: kibana_default
+  - name: "kibana_default-${MOLECULE_DISTRO:-debian12}"
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
@@ -14,5 +14,9 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  inventory:
+    host_vars:
+      kibana_default-rockylinux8:
+        ansible_python_interpreter: /usr/bin/python3.9
 verifier:
   name: ansible

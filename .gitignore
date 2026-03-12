@@ -5,3 +5,6 @@ __pycache__*
 .roo
 .ansible
 .venv
+CLAUDE.md
+.claudeignore
+.rooignore

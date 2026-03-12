@@ -23,4 +23,3 @@ galaxy_info:
     - beats
     - logging
     - system
-dependencies: []

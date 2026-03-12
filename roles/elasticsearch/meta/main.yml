@@ -1,7 +1,8 @@
+---
 galaxy_info:
+  role_name: elasticsearch
   author: Netways GmbH
   description: Elasticsearch Ansible role
-  role_name: elasticsearch
   company: Netways GmbH
   namespace: netways
   license: GPL-3.0-or-later
@@ -18,4 +19,5 @@ galaxy_info:
         - focal
         - jammy
   galaxy_tags: []
-dependencies: []
+collections:
+  - netways.elasticstack

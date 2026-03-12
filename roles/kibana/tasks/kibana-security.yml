@@ -1,5 +1,15 @@
 ---
 
+- name: Ensure encryption key exists
+  ansible.builtin.stat:
+    path: "{{ elasticstack_ca_dir }}/encryption_key"
+  register: encryption_key_exists
+
+- name: Ensure saved encryption key exists
+  ansible.builtin.stat:
+    path: "{{ elasticstack_ca_dir }}/savedobjects_encryption_key"
+  register: savedobjects_encryption_key_exists
+
 - name: Ensure kibana certificate exists
   ansible.builtin.stat:
     path: "/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12"
@@ -125,11 +135,14 @@
     - name: Generate encryption key # noqa: risky-shell-pipe
       ansible.builtin.shell: >
         if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-        openssl rand -base64 36 >
+        openssl rand -base64 {{ elasticstack_encryption_key_size }} >
         {{ elasticstack_ca_dir }}/encryption_key
       changed_when: false
       args:
         creates: "{{ elasticstack_ca_dir }}/encryption_key"
+    - debug:
+        msg: "File exists..."
+        when: encryption_key_exists.stat.exits
 
     - name: Fetch encryption key
       ansible.builtin.command: cat {{ elasticstack_ca_dir }}/encryption_key
@@ -139,12 +152,14 @@
     - name: Generate saved objects encryption key # noqa: risky-shell-pipe
       ansible.builtin.shell: >
         if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
-        openssl rand
-        -base64 36 >
+        openssl rand -base64 {{ elasticstack_encryption_key_size }} >
         {{ elasticstack_ca_dir }}/savedobjects_encryption_key
       changed_when: false
       args:
         creates: "{{ elasticstack_ca_dir }}/savedobjects_encryption_key"
+    - debug:
+        msg: "File exists..."
+        when: savedobjects_encryption_key_exists.stat.exits
 
     - name: Fetch saved objects encryption key
       ansible.builtin.command: cat {{ elasticstack_ca_dir }}/savedobjects_encryption_key

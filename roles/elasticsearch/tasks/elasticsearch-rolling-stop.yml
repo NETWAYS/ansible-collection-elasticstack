@@ -1,0 +1,76 @@
+# Ansible
+#
+# Rolling Upgrade of Elasticsearch with security on
+# Source from: author: Jeff Steinmetz, @jeffsteinmetz; Bin Li, @holysoros
+# Modifications: author: Daniel Neuberger @netways.de
+# More modifications: NETWAYS Professional Services GmbH
+# latest tested with Ansible 2.9 and later
+
+---
+
+# For now we support upgrade only for clusters with security enabled
+# If you positively need support for safely upgrading clusters without security,
+# feel free to open an issue at https://github.com/NETWAYS/ansible-collection-elasticstack/issues
+- name: Set connection protocol to https
+  ansible.builtin.set_fact:
+    elasticsearch_http_protocol: "https"
+
+# Usually we should not need this step. It's only there to recover from broken upgrade plays
+# Without this step the cluster would never recover and the play would always fail
+- name: Enable shard allocation for the cluster
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
+    method: PUT
+    body: '{ "persistent": { "cluster.routing.allocation.enable": null }}'
+    body_format: json
+    user: elastic
+    password: "{{ elasticstack_password.stdout }}"
+    validate_certs: no
+  register: response
+  # next line is boolean not string, so no quotes around true
+  # use python truthiness
+  until: "response.json.acknowledged == true"
+  retries: 5
+  delay: 30
+
+  # this step is key!!!  Don't restart more nodes
+  # until all shards have completed recovery
+- name: Wait for cluster health to return to green
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
+    method: GET
+    user: elastic
+    password: "{{ elasticstack_password.stdout }}"
+    validate_certs: no
+  register: response
+  until: "response.json.status == 'green'"
+  retries: 50
+  delay: 30
+
+# Disabling shard allocation right after enabling it seems redundant. Please see above for details.
+- name: Disable shard allocation for the cluster
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/settings"
+    method: PUT
+    body: '{ "persistent": { "cluster.routing.allocation.enable": "none" }}'
+    body_format: json
+    user: elastic
+    password: "{{ elasticstack_password.stdout }}"
+    validate_certs: no
+
+- name: Stop non essential indexing to speed up shard recovery
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_flush"
+    method: POST
+    user: elastic
+    password: "{{ elasticstack_password.stdout }}"
+    validate_certs: no
+  failed_when: false
+
+- name: Shutdown elasticsearch service
+  ansible.builtin.service:
+    name: elasticsearch
+    enabled: yes
+    state: stopped
+  when:
+    - not elasticsearch_unsafe_upgrade_restart | bool

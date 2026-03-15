@@ -3,7 +3,7 @@ dependency:
   name: galaxy
   options:
     requirements-file: requirements.yml
-#    roles-path: ~/.ansible/roles
+    # roles-path: ~/.ansible/roles
 driver:
   name: docker
 platforms:
@@ -34,7 +34,7 @@ platforms:
 provisioner:
   name: ansible
   env:
-    ANSIBLE_ROLES_PATH: $MOLECULE_EPHEMERAL_DIRECTORY/roles:${HOME}/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:$MOLECULE_PROJECT_DIRECTORY/roles
+    ANSIBLE_ROLES_PATH: $MOLECULE_EPHEMERAL_DIRECTORY/roles:${HOME}/.ansible/roles:$MOLECULE_PROJECT_DIRECTORY/roles
   inventory:
     host_vars:
       elasticstack${ELASTIC_RELEASE}-cluster2-${MOLECULE_DISTRO}:

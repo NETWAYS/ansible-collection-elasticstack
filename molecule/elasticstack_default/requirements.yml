@@ -4,5 +4,6 @@ roles:
 
 collections:
   - community.general
-  - community.crypto
+  - name: community.crypto
+    version: ">=2.15.0,<3.0.0" # Support python 3.6 on target host e.g. Rocky 8
 

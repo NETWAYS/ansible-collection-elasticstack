@@ -3,7 +3,7 @@ dependency:
   name: galaxy
   options:
     requirements-file: requirements.yml
-    roles-path: /root/.ansible/roles
+    roles-path: ~/.ansible/roles
 driver:
   name: docker
 platforms:

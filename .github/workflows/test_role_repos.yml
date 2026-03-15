@@ -41,7 +41,6 @@ jobs:
       matrix:
 
         distro:
-          # centos7 removed - no longer supported
           - debian10
           - debian11
           - rockylinux8
@@ -54,19 +53,22 @@ jobs:
         release:
           - 7
           - 8
+        ansible_version:
+          - "ansible>=9.0,<10.0" #Correspond ansible-core>=2.16,<2.17
 
     steps:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
+          python3 -m pip install "${{ matrix.ansible_version }}"
           python3 -m pip install -r requirements-test.txt
           ansible-galaxy collection install community.general
 

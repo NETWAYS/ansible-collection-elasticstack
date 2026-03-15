@@ -1,16 +1,12 @@
 ---
-- name: Bootstrap Python 3.9 on Rocky Linux 8
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Install Python 3.9 if not yet available (Rocky Linux 8)
-      ansible.builtin.raw: |
-        grep -qs "Rocky Linux release 8" /etc/redhat-release && dnf install -y python39 || true
-      changed_when: false
-
 - name: Prepare
   hosts: all
   tasks:
+
+    - name: Show discovered interpreter
+      debug:
+        var: ansible_facts.discovered_interpreter_python
+
     - name: Install packages for RHEL
       ansible.builtin.package:
         name:

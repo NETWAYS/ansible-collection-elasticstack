@@ -28,11 +28,5 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
-  inventory:
-    host_vars:
-      elasticsearch_default1-rockylinux8:
-        ansible_python_interpreter: /usr/bin/python3.9
-      elasticsearch_default2-rockylinux8:
-        ansible_python_interpreter: /usr/bin/python3.9
 verifier:
   name: ansible

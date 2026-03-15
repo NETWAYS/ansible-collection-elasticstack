@@ -14,9 +14,5 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
-  inventory:
-    host_vars:
-      kibana_default-rockylinux8:
-        ansible_python_interpreter: /usr/bin/python3.9
 verifier:
   name: ansible

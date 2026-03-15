@@ -49,17 +49,16 @@ jobs:
           - 7
           - 8
         ansible_version:
-          - "2.14"
-          - "2.20"
+          - "ansible>=9.0,<10.0" #Correspond ansible-core>=2.16,<2.17
 
     steps:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |

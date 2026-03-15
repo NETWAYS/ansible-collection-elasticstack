@@ -1,4 +1,3 @@
-ansible>=2.14
 ansible-lint
 molecule
 molecule-plugins[docker]

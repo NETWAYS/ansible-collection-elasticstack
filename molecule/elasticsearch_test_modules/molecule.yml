@@ -22,9 +22,5 @@ provisioner:
   # overwhelming
   #env:
   #  ANSIBLE_VERBOSITY: 3
-  inventory:
-    host_vars:
-      elasticsearch_default-rockylinux8:
-        ansible_python_interpreter: /usr/bin/python3.9
 verifier:
   name: ansible

@@ -6,7 +6,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: elasticsearch-nosecurity1
+  - name: "elasticsearch-nosecurity1-${MOLECULE_DISTRO:-debian12}"
     groups:
       - elasticsearchXYZ
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
@@ -16,7 +16,7 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
-  - name: elasticsearch-nosecurity2
+  - name: "elasticsearch-nosecurity2-${MOLECULE_DISTRO:-debian12}"
     groups:
       - elasticsearchXYZ
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"

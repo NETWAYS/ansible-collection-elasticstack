@@ -6,7 +6,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: elasticstack_version
+  - name: "elasticstack_version-${MOLECULE_DISTRO:-debian12}"
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:

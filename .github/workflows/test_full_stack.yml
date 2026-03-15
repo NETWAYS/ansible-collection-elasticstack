@@ -35,30 +35,30 @@ jobs:
       matrix:
         distro:
           - rockylinux8
-          - rockylinux9
-          - ubuntu2004
           - ubuntu2204
-          - debian10
-          - debian11
-          - centos8
         scenario:
           - elasticstack_default
         release:
           - 7
           - 8
+        ansible_version:
+          - "ansible>=9.0,<10.0" #Correspond ansible-core>=2.16,<2.17
+        python_version:
+          - "3.11"
 
     steps:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python 3.8
+      - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: 3.8
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
+          python3 -m pip install ansible==${{ matrix.ansible_version }}
           python3 -m pip install -r requirements-test.txt
 
       - name: Install collection

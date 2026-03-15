@@ -10,7 +10,8 @@ authors:
   - Thomas Widhalm <thomas.widhalm@netways.de>
 description: This collection installs and configures components from the Elastic Stack. Every role can be used standalone or in combination with other roles.
 license:
-  - GPL-3.0
+  - GPL-3.0-or-later
+# min_ansible_version: "2.14"  # max supported: 2.20 (commented out for schema compliance)
 license_file: 'LICENSE'
 tags:
   - elastic
@@ -36,3 +37,4 @@ build_ignore:
   - .mailmap
   - '*.tar.gz'
   - 'venv*'
+# Minimum Ansible version required: 2.14, maximum supported: 2.20

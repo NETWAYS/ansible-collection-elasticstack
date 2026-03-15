@@ -1,4 +1,7 @@
 # Requirements
+<!-- Minimum Ansible Core version required: 2.14, maximum supported: 2.20 -->
+
+* Minimum Python version: 3.10
 
 There are some requirements that the user have to fulfill while using the collection. Some of them will be refactored and disappear from the list soon.
 

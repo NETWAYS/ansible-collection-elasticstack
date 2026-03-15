@@ -6,7 +6,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: logstash-full-oss
+  - name: "logstash-full-oss-${MOLECULE_DISTRO:-debian12}"
     groups:
       - elasticsearch
       - logstash

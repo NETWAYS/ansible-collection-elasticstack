@@ -45,9 +45,8 @@ jobs:
        #   - "3.12"
        #   - "3.13"
         ansible_version:
-         # - "ansible>=9.0,<10.0" #Correspond ansible-core>=2.16,<2.17
+          - "ansible-core>=2.16,<2.17" # Correspond "ansible>=9.0,<10.0"
          # - "ansible>=10.0,<11.0" #Correspond ansible-core>=2.17,<2.18
-          - "ansible-core>=2.17,<2.18"
          # - "ansible>=11.0,<12.0" #Correspond ansible-core>=2.18,<2.19
          # - "ansible>=12.0,<13.0" #Correspond ansible-core>=2.19,<2.20
          # - "ansible>=13.0,<14.0" #Correspond ansible-core>=2.20,<2.21

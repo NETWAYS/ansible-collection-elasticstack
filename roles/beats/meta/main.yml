@@ -14,14 +14,14 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - "22.04"
-galaxy_tags:
-  - beats
-  - filebeat
-  - metricbeat
-  - logging
-  - monitoring
-  - shipping
-  - elastic
+  galaxy_tags:
+    - beats
+    - filebeat
+    - metricbeat
+    - logging
+    - monitoring
+    - shipping
+    - elastic
 
 collections:
   - netways.elasticstack

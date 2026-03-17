@@ -1,5 +1,5 @@
 # Requirements
-<!-- Minimum Ansible Core version required: 2.18, maximum supported: 2.20 -->
+<!-- Minimum Ansible Core version required: 2.18, lower version may work, maximum supported: 2.20 -->
 
 * Minimum Python version on Ansible controller: 3.11
 * Minimum Python version on target hosts: 3.9

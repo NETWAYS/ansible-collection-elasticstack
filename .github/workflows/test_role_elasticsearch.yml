@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        distro: 
+        distro:
           - ubuntu2204
         scenario:
           - elasticsearch_default

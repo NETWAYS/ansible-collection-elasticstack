@@ -28,15 +28,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        distro: 
+        distro:
           - ubuntu2204
-        scenario: 
+        scenario:
           - elasticsearch_test_modules
         release:
           - 8
-        python_version: 
+        python_version:
           - "3.11"
-        ansible_version: 
+        ansible_version:
           - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0
 
     steps:

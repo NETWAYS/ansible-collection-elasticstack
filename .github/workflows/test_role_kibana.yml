@@ -45,7 +45,7 @@ jobs:
         scenario:
           - kibana_default
         release:
-          - 7 
+          - 7
           - 8
         ansible_version:
           - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0

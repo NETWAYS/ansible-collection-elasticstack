@@ -69,7 +69,6 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install "${{ matrix.ansible_version }}"
           python3 -m pip install -r requirements-test.txt
-          ansible-galaxy collection install community.general
 
       - name: Install collection
         run: |

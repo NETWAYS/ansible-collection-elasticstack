@@ -17,30 +17,33 @@
   - name: Create Syslog input
     ansible.builtin.copy:
       dest: /etc/logstash/conf.d/syslog/input.conf
-      content: >
-        "input {
-           redis {
-             key => input
-             host => localhost
-             data_type => list
-           }
-         }
+      content: |
+        input {
+          redis {
+            key => "input"
+            host => "localhost"
+            data_type => "list"
+          }
+        }
       mode: preserve
       owner: root
       group: root
-        "
+
   - name: Create Syslog output
     ansible.builtin.copy:
       dest: /etc/logstash/conf.d/syslog/output.conf
-      content: >
-        "output {
-           redis {
-             key => input
-             host => localhost
-             data_type => list
-           }
-         }
-        "
+      content: |
+        output {
+          redis {
+            key => input
+            host => localhost
+            data_type => list
+          }
+        }
+      mode: preserve
+      owner: root
+      group: root
+
   - name: Update Pipeline code
     ansible.builtin.git:
       repo: https://github.com/widhalmt/syslog-logstash-pipeline.git

@@ -26,5 +26,3 @@ galaxy_info:
 collections:
   - netways.elasticstack
 
-dependencies:
-  - geerlingguy.redis

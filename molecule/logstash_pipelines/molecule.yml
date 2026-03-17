@@ -7,6 +7,8 @@ driver:
   name: docker
 platforms:
   - name: "ansible-role-logstash_pipelines-${MOLECULE_DISTRO:-debian12}"
+    groups:
+      - logstash
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
@@ -16,5 +18,7 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: $MOLECULE_EPHEMERAL_DIRECTORY/roles:${HOME}/.ansible/roles:$MOLECULE_PROJECT_DIRECTORY/roles
 verifier:
   name: ansible

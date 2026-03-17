@@ -7,6 +7,8 @@ driver:
   name: docker
 platforms:
   - name: "elastic-repos-default-oss-${MOLECULE_DISTRO:-debian12}"
+    groups:
+      - elasticsearch
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:

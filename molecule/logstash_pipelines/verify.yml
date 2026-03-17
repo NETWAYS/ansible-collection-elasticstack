@@ -35,9 +35,9 @@
       content: |
         output {
           redis {
-            key => input
-            host => localhost
-            data_type => list
+            key => "input"
+            host => "localhost"
+            data_type => "list"
           }
         }
       mode: preserve

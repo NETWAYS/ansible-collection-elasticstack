@@ -19,7 +19,7 @@ galaxy_info:
     - logging
     - pipeline
     - ingestion
-    - data-processing
+    - dataprocessing
     - elastic
 
 collections:

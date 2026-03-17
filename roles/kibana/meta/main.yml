@@ -13,14 +13,14 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - "22.04"
-galaxy_tags:
-  - kibana
-  - elk
-  - visualization
-  - dashboard
-  - monitoring
-  - observability
-  - elastic
+  galaxy_tags:
+    - kibana
+    - elk
+    - visualization
+    - dashboard
+    - monitoring
+    - observability
+    - elastic
 
 collections:
   - netways.elasticstack

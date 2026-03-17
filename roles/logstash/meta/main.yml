@@ -13,14 +13,14 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - "22.04"
-galaxy_tags:
-  - logstash
-  - elk
-  - logging
-  - pipeline
-  - ingestion
-  - data-processing
-  - elastic
+  galaxy_tags:
+    - logstash
+    - elk
+    - logging
+    - pipeline
+    - ingestion
+    - data-processing
+    - elastic
 
 collections:
   - netways.elasticstack

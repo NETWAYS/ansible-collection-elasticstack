@@ -40,8 +40,10 @@ The netways.elasticstack.cert_info module gathers information about pkcs12 certi
 - 3.10
 
 ### Tested ansible-core versions
+- 2.11
+- 2.12
+- 2.13
 - 2.14
-- 2.20
 
 ### Security measures
 - Only supported extensions with its available values will be returned. The available keys and values are applied in the code with the `SUPPORTED_EXTENSIONS` dictionary. The module will loop through it, and only if found, it will save it to the `results` variable.

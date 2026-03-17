@@ -13,15 +13,15 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - "22.04"
-galaxy_tags:
-  - repositories
-  - package-management
-  - linux
-  - elastic
-  - elk
-  - logstash
-  - elasticsearch
-  - kibana
+  galaxy_tags:
+    - repositories
+    - package-management
+    - linux
+    - elastic
+    - elk
+    - logstash
+    - elasticsearch
+    - kibana
 dependencies: []
 
 collections:

@@ -5,21 +5,24 @@ galaxy_info:
   author: Thomas Widhalm <thomas.widhalm@netways.de>
   company: Netways GmbH
   license: GPL-3.0-or-later
-
-  min_ansible_version: "2.14"  # max supported: 2.20  # Minimum version specifications are only for versions we have not had problems with; we will raise them when larger issues arise.
+  min_ansible_version: "2.19" # Lower version may work
   platforms:
     - name: EL
       versions:
-        - "8"
-    - name: Debian
-      versions:
-        - bullseye
+        - "9"
     - name: Ubuntu
       versions:
-        - focal
-        - jammy
-  galaxy_tags:
-    - logmanagement
-    - elasticstack
-
+        - "22.04"
+galaxy_tags:
+  - repositories
+  - package-management
+  - linux
+  - elastic
+  - elk
+  - logstash
+  - elasticsearch
+  - kibana
 dependencies: []
+
+collections:
+  - netways.elasticstack

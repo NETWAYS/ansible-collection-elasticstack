@@ -6,7 +6,7 @@ galaxy_info:
   description: Beats for Linux
   company: "Netways GmbH"
   license: GPL-3.0-or-later
-  min_ansible_version: "2.19" # Lower version may work
+  min_ansible_version: "2.18" # Lower version may work
   platforms:
     - name: EL
       versions:

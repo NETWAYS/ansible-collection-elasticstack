@@ -17,12 +17,12 @@ on:
       - 'feature/**'
       - 'fix/**'
       - '!doc/**'
-    paths:
-      - 'plugins/**'
-      - '.github/workflows/test_plugins.yml'
-      - 'molecule/plugins/**'
-      - '.config/pep8.yml'
-      - 'tests/**'
+#    paths:
+#      - 'plugins/**'
+#      - '.github/workflows/test_plugins.yml'
+#      - 'molecule/plugins/**'
+#      - '.config/pep8.yml'
+#      - 'tests/**'
 # test
 jobs:
   pep8:

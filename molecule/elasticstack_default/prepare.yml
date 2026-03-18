@@ -8,7 +8,7 @@
         var: ansible_facts.discovered_interpreter_python
 
     - name: Install packages for RHEL
-      ansible.builtin.package:
+      ansible.builtin.dnf:
         name:
           - iproute
           - NetworkManager

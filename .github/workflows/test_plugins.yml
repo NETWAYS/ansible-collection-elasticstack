@@ -46,7 +46,7 @@ jobs:
 
   unit-test:
     needs: pep8
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     env:
       COLLECTION_NAMESPACE: netways
@@ -90,7 +90,7 @@ jobs:
 
   python:
     needs: unit-test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     env:
       COLLECTION_NAMESPACE: netways
@@ -129,7 +129,7 @@ jobs:
 
   ansible-core:
     needs: python
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     env:
       COLLECTION_NAMESPACE: netways
@@ -168,7 +168,7 @@ jobs:
 
   python-cryptography:
     needs: ansible-core
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     env:
       COLLECTION_NAMESPACE: netways

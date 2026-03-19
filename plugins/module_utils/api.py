@@ -9,6 +9,7 @@ import ssl
 
 
 class Api():
+
     def new_client_basic_auth(host, auth_user, auth_pass, ca_certs, verify_certs) -> Elasticsearch:
         ctx = ssl.create_default_context(cafile=ca_certs)
         ctx.check_hostname = False

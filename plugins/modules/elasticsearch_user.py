@@ -45,7 +45,7 @@ def run_module():
             roles=dict(type=list, required=True),
             enabled=dict(type=bool, required=False, default=True),
             state=dict(type=str, required=False, default="present"),
-            
+
             # Auth args
             host=dict(type=str, required=True),
             auth_user=dict(type=str, required=True),
@@ -63,9 +63,8 @@ def run_module():
     if module.params['state'] != 'absent' and module.params['state'] != 'present':
         result['stderr'] = "Invalid state given. Please use 'absent' or 'present'"
         result['failed'] = True
-        
-        module.exit_json(**result)
 
+        module.exit_json(**result)
 
     user = User(
         result=result,
@@ -86,6 +85,7 @@ def run_module():
     result = user.return_result()
 
     module.exit_json(**result)
+
 
 if __name__ == "__main__":
     run_module()

@@ -10,21 +10,17 @@ from ansible_collections.netways.elasticstack.plugins.module_utils.api import (
 
 
 class Role():
-    def __init__(self, result, role_name, cluster, indicies, state, host, auth_user, auth_pass, verify_certs, ca_certs): 
+    def __init__(self, result, role_name, cluster, indicies, state, host, auth_user, auth_pass, verify_certs, ca_certs):
         self.role_name = role_name
         self.cluster = cluster
         self.indicies = indicies
         self.state = state
         self.result = result
-
         self.client = Api.new_client_basic_auth(host=host, auth_user=auth_user, auth_pass=auth_pass, verify_certs=verify_certs, ca_certs=ca_certs)
-
         self.handle()
-
 
     def return_result(self) -> dict:
         return self.result
-
 
     def handle(self):
 
@@ -32,21 +28,19 @@ class Role():
             self.handle_absent()
         elif self.state == 'present':
             self.handle_present()
-        
-        return
 
+        return
 
     def handle_absent(self):
         if self.role_name not in self.get_all().raw:
             return
-        
+
         res = self.delete()
         if res['found'] is True:
             self.result['changed'] = True
             self.result['msg'] = self.role_name + " has been deleted"
-        
-        return
 
+        return
 
     def handle_present(self):
         if self.role_name in self.get_all().raw:
@@ -56,7 +50,7 @@ class Role():
 
         res = self.put()
 
-        if res.raw['role']['created'] == True:
+        if res.raw['role']['created'] is True:
             self.result['changed'] = True
             self.result['msg'] = self.role_name + " has been created"
             return
@@ -69,19 +63,15 @@ class Role():
             self.result['msg'] = self.role_name + " has been updated"
 
         return
-        
 
     def get_all(self):
         return self.client.security.get_role()
 
-
     def get(self):
         return self.client.security.get_role(name=self.role_name)
-
 
     def put(self):
         return self.client.security.put_role(name=self.role_name, cluster=self.cluster, indices=self.indicies)
 
-    
     def delete(self):
         return self.client.security.delete_role(name=self.role_name)

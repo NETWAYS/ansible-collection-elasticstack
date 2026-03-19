@@ -12,6 +12,7 @@ from ansible_collections.netways.elasticstack.plugins.module_utils.elasticsearch
     Role
 )
 
+
 def run_module():
     '''
     Elasticsearch user management.
@@ -68,13 +69,12 @@ def run_module():
     if module.params['state'] != 'absent' and module.params['state'] != 'present':
         result['stderr'] = "Invalid state given. Please use 'absent' or 'present'"
         result['failed'] = True
-        
+
         module.exit_json(**result)
 
-
     role = Role(
-        result=result, 
-        role_name=module.params['name'], 
+        result=result,
+        role_name=module.params['name'],
         cluster=module.params['cluster'],
         indicies=module.params['indicies'],
         state=module.params['state'],

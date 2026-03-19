@@ -41,7 +41,7 @@ jobs:
       matrix:
 
         distro:
-          - debian12
+          - debian13
           - rockylinux9
           - ubuntu2204
         scenario:

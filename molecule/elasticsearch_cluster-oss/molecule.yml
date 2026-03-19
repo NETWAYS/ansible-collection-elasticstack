@@ -6,20 +6,20 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: "elasticsearch-cluster1-${MOLECULE_DISTRO:-debian12}"
+  - name: "elasticsearch-cluster1-${MOLECULE_DISTRO:-debian13}"
     groups:
       - elasticsearch
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
-  - name: "elasticsearch-cluster2-${MOLECULE_DISTRO:-debian12}"
+  - name: "elasticsearch-cluster2-${MOLECULE_DISTRO:-debian13}"
     groups:
       - elasticsearch
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw

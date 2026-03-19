@@ -12,7 +12,7 @@ platforms:
       - beats
       - logstash
       - elasticsearch
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
@@ -24,7 +24,7 @@ platforms:
       - beats
       - kibana
       - elasticsearch
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian12}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw

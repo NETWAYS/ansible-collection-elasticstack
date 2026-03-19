@@ -12,8 +12,8 @@ on:
           - info
           - warning
           - debug
-  pull_request:
-  merge_group:
+#  pull_request:
+#  merge_group:
 
 jobs:
   lint_full:

@@ -13,16 +13,16 @@ on:
           - warning
           - debug
   pull_request:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'plugins/**'
-      - '.github/workflows/test_plugins.yml'
-      - 'molecule/plugins/**'
-      - '.config/pep8.yml'
-      - 'tests/**'
+#    branches:
+#      - 'feature/**'
+#      - 'fix/**'
+#      - '!doc/**'
+#    paths:
+#      - 'plugins/**'
+#      - '.github/workflows/test_plugins.yml'
+#      - 'molecule/plugins/**'
+#      - '.config/pep8.yml'
+#      - 'tests/**'
 # test
 jobs:
   pep8:

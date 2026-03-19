@@ -40,7 +40,7 @@ class Role():
             return
         
         res = self.delete()
-        if res['found'] == True:
+        if res['found'] is True:
             self.result['changed'] = True
             self.result['msg'] = self.role_name + " has been deleted"
         

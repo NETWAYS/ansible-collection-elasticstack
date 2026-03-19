@@ -60,7 +60,7 @@ class Role():
             self.result['msg'] = self.role_name + " has been created"
             return
 
-        if pre_role == None:
+        if pre_role is None:
             return
 
         if pre_role.raw != self.get().raw:

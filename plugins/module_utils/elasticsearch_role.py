@@ -23,12 +23,12 @@ class Role():
 
     def return_result(self) -> dict:
         return self.result
-  
+
 
     def handle(self):
 
         if self.state == 'absent':
-           self.handle_absent()
+            self.handle_absent()
         elif self.state == 'present':
             self.handle_present()
         

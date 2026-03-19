@@ -14,7 +14,7 @@ on:
           - debug
   pull_request:
     branches:
-      - 'feature/**'
+      - 'main/**'
 #      - 'fix/**'
 #      - '!doc/**'
     paths:

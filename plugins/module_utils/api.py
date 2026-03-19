@@ -13,3 +13,5 @@ class Api():
         ctx.check_hostname = False
         ctx.verify_mode = False
         return Elasticsearch(hosts=[host], basic_auth=(auth_user, auth_pass), ssl_context=ctx, verify_certs=verify_certs)
+
+# test

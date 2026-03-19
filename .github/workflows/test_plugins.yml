@@ -12,9 +12,9 @@ on:
           - info
           - warning
           - debug
-  push:
+  pull_request:
     branches:
-      - 'feature/**'
+      - 'main'
 #      - 'fix/**'
 #      - '!doc/**'
     paths:

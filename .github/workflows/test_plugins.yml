@@ -13,8 +13,8 @@ on:
           - warning
           - debug
   pull_request:
-#    branches:
-#      - 'feature/**'
+    branches:
+      - 'feature/**'
 #      - 'fix/**'
 #      - '!doc/**'
     paths:

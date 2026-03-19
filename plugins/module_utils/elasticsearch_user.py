@@ -8,6 +8,7 @@ from ansible_collections.netways.elasticstack.plugins.module_utils.api import (
     Api
 )
 
+
 class User():
     def __init__(self, result, user_name, full_name, password, email, roles, enabled, state, host, auth_user, auth_pass, verify_certs, ca_certs):
         self.user_name = user_name

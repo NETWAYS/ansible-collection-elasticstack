@@ -8,6 +8,7 @@ from ansible_collections.netways.elasticstack.plugins.module_utils.api import (
     Api
 )
 
+
 class Role():
     def __init__(self, result, role_name, cluster, indicies, state, host, auth_user, auth_pass, verify_certs, ca_certs): 
         self.role_name = role_name

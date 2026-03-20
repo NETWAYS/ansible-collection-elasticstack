@@ -25,6 +25,10 @@ on:
 jobs:
   ansible_sanity:
     runs-on: ubuntu-latest
+    env:
+      COLLECTION_NAMESPACE: netways
+      COLLECTION_NAME: elasticstack
+      COLLECTION_PATH: ansible_collections/netways/elasticstack
     strategy:
       fail-fast: false
       matrix:
@@ -51,6 +55,7 @@ jobs:
           python3 -m pip install "${{ matrix.ansible_version }}"
 
       - name: Run sanity tests
+        working-directory: ${{ env.COLLECTION_PATH }}
         run: |
           ansible-test sanity --python "${{ matrix.python_version }}" -v
 

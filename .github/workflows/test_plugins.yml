@@ -15,7 +15,6 @@ on:
   pull_request:
     branches:
       - 'main'
-
     paths:
       - 'plugins/**'
       - '.github/workflows/test_plugins.yml'
@@ -26,7 +25,6 @@ on:
 jobs:
   sanity:
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
@@ -38,7 +36,6 @@ jobs:
           - "ansible-core>=2.18,<2.21" #Correspond ansible>=11.0,<12.0
           - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0
           - "ansible-core>=2.20,<2.21" #Correspond ansible>=13.0,<14.0
-
     steps:
       - name: Check out code
         uses: actions/checkout@v6

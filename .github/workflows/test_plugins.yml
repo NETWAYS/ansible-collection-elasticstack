@@ -23,7 +23,7 @@ on:
       - 'tests/**'
 
 jobs:
-  sanity:
+  ansible_sanity:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -55,7 +55,7 @@ jobs:
           ansible-test sanity --python "${{ matrix.python_version }}" -v
 
   unit-test:
-    needs: pep8
+    needs: ansible_sanity
     runs-on: ubuntu-latest
 
     env:

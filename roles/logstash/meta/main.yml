@@ -4,27 +4,23 @@ galaxy_info:
   author: netways
   description: Logstash for Linux
   company: "Netways GmbH"
-  license: license (GPL-3.0-or-later)
-  min_ansible_version: "2.4"
+  license: GPL-3.0
+  min_ansible_version: "2.18"
   platforms:
     - name: EL
       versions:
-        - "8"
-    - name: Debian
-      versions:
-        - bullseye
+        - "9"
     - name: Ubuntu
       versions:
-        - focal
-        - jammy
+        - "22.04"
   galaxy_tags:
-    - elk
     - logstash
+    - elk
     - logging
-    - system
+    - pipeline
+    - ingestion
+    - dataprocessing
+    - elastic
 
 collections:
   - netways.elasticstack
-
-dependencies:
-  - geerlingguy.redis

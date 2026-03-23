@@ -72,7 +72,14 @@ class User():
         return self.client.security.get_user(username=self.user_name)
 
     def put(self):
-        return self.client.security.put_user(username=self.user_name, password=self.password, email=self.email, full_name=self.full_name, enabled=self.enabled, roles=self.roles)
+        return self.client.security.put_user(
+            username=self.user_name,
+            password=self.password,
+            email=self.email,
+            full_name=self.full_name,
+            enabled=self.enabled,
+            roles=self.roles
+        )
 
     def delete(self):
         return self.client.security.delete_user(username=self.user_name)

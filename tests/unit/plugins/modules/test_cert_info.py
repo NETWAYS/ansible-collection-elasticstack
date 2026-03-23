@@ -1,9 +1,8 @@
-import json
 import sys
 import unittest
 from unittest.mock import patch
 from ansible.module_utils import basic
-from ansible.module_utils.common.text.converters import to_bytes
+from ansible.module_utils.testing import set_module_args
 sys.path.append('/home/runner/.ansible/collections/')
 from ansible_collections.netways.elasticstack.plugins.modules import cert_info
 
@@ -44,11 +43,6 @@ certificate = {
     "version": "Version.v3"
 }
 
-
-def set_module_args(args):
-    """prepare arguments so that they will be picked up during module creation"""
-    args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
-    basic._ANSIBLE_ARGS = to_bytes(args)
 
 
 class AnsibleExitJson(Exception):

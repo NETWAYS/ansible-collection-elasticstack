@@ -107,9 +107,9 @@ jobs:
           ANSIBLE_FORCE_COLOR: '1'
 
   unit-test:
-    needs:
-      - sanity_ansible_18_19
-      - sanity_ansible_20
+#    needs:
+#      - sanity_ansible_18_19
+#      - sanity_ansible_20
     runs-on: ubuntu-latest
 
     env:
@@ -123,15 +123,15 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python 3.9.14
+      - name: Set up Python 3.11
         uses: actions/setup-python@v6
         with:
-          python-version: 3.9.14
+          python-version: 3.11
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          #python3 -m pip install install ansible
+          python3 -m pip install "ansible-core>=2.19,<2.20"
 
       - name: Install collection
         run: |
@@ -140,14 +140,14 @@ jobs:
 
       - name: Test `cert_info` module
         run: |
-          python3 tests/unit/plugins/modules/test_cert_info.py
+          PYTHONPATH=$HOME/.ansible/collections python3 tests/unit/plugins/modules/test_cert_info.py
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
 
       - name: Test `certs` module util
         run: |
-          python3 tests/unit/plugins/module_utils/test_certs.py
+          PYTHONPATH=$HOME/.ansible/collections python3 tests/unit/plugins/module_utils/test_certs.py
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

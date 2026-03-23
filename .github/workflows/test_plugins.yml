@@ -107,7 +107,7 @@ jobs:
           ANSIBLE_FORCE_COLOR: '1'
 
   unit-test:
-    needs: 
+    needs:
       - sanity_ansible_18_19
       - sanity_ansible_20
     runs-on: ubuntu-latest

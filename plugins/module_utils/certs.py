@@ -125,7 +125,7 @@ class AnalyzeCertificate():
                 msg="Loaded certificate with backend."
             )
         # map loaded certificate to object
-        _, self.__cert, _ = __pkcs12_tuple
+        self.__cert = __pkcs12_tuple[1]
 
     def load_info(self):
         self.general_info()

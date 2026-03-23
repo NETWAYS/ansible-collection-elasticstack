@@ -7,6 +7,102 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+DOCUMENTATION = r'''
+---
+module: elasticsearch_role
+short_description: Manage Elasticsearch roles
+description:
+  - Creates, updates, or deletes Elasticsearch roles using the Security API.
+  - Requires the C(elasticsearch) Python library on the target host.
+version_added: "1.0.0"
+author:
+  - Tobias Bauriedel (@tbauriedel)
+requirements:
+  - elasticsearch < 9
+options:
+  name:
+    description: Name of the Elasticsearch role.
+    type: str
+    required: true
+  cluster:
+    description: List of cluster-level privileges assigned to the role.
+    type: list
+    elements: str
+    required: false
+  indicies:
+    description: List of index permission objects defining index patterns and privileges.
+    type: list
+    elements: dict
+    required: false
+  state:
+    description: Whether the role should exist or not.
+    type: str
+    required: false
+    default: present
+    choices: [present, absent]
+  host:
+    description: URL of the Elasticsearch host, including protocol and port.
+    type: str
+    required: true
+  auth_user:
+    description: Username for authentication.
+    type: str
+    required: true
+  auth_pass:
+    description: Password for authentication.
+    type: str
+    required: true
+    no_log: true
+  ca_certs:
+    description: Path to the CA certificate file for TLS verification.
+    type: str
+    required: false
+  verify_certs:
+    description: Whether to verify TLS certificates.
+    type: bool
+    required: false
+    default: true
+'''
+
+EXAMPLES = r'''
+- name: Create an Elasticsearch role
+  netways.elasticstack.elasticsearch_role:
+    name: my-role
+    cluster:
+      - manage_own_api_key
+    indicies:
+      - names:
+          - my-index-*
+        privileges:
+          - read
+          - write
+    state: present
+    host: https://localhost:9200
+    auth_user: elastic
+    auth_pass: "{{ elastic_password }}"
+    ca_certs: /etc/elasticsearch/certs/http_ca.crt
+
+- name: Delete an Elasticsearch role
+  netways.elasticstack.elasticsearch_role:
+    name: my-role
+    state: absent
+    host: https://localhost:9200
+    auth_user: elastic
+    auth_pass: "{{ elastic_password }}"
+    verify_certs: false
+'''
+
+RETURN = r'''
+changed:
+  description: Whether the role was created, updated, or deleted.
+  type: bool
+  returned: always
+msg:
+  description: Human-readable status message.
+  type: str
+  returned: on change
+'''
+
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible_collections.netways.elasticstack.plugins.module_utils.api import (
     HAS_ELASTICSEARCH, ELASTICSEARCH_IMPORT_ERROR

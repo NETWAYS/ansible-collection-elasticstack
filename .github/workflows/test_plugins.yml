@@ -62,6 +62,9 @@ jobs:
         run: |
           cd ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
           ansible-test sanity --python "${{ matrix.python_version }}" -v
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
 
   unit-test:
     needs: ansible_sanity

@@ -52,7 +52,6 @@ options:
     description: Password for authentication.
     type: str
     required: true
-    no_log: true
   ca_certs:
     description: Path to the CA certificate file for TLS verification.
     type: str
@@ -113,30 +112,6 @@ from ansible_collections.netways.elasticstack.plugins.module_utils.elasticsearch
 
 
 def run_module():
-    '''
-    Elasticsearch user management.
-
-    ```
-    netways.elasticstack.elasticsearch_role:
-        name: new-role
-        cluster:
-          - manage_own_api_key
-          - delegate_pki
-        indicies:
-          - names:
-              - foobar
-            privileges:
-              - read
-              - write
-        state: present
-        host: https://localhost:9200
-        auth_user: elastic
-        auth_pass: changeMe123!
-        verify_certs: false
-        ca_certs: /etc/elasticsearch/certs/http_ca.crt
-    ```
-    '''
-
     # get role
     # https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-get-role.html
 
@@ -146,17 +121,17 @@ def run_module():
     module = AnsibleModule(
         argument_spec=dict(
             # User args
-            name=dict(type=str, required=True),
-            cluster=dict(type=list, required=False),
-            indicies=dict(type=list, required=False),
-            state=dict(type=str, required=False, default='present'),
+            name=dict(type='str', required=True),
+            cluster=dict(type='list', elements='str', required=False),
+            indicies=dict(type='list', elements='dict', required=False),
+            state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
 
             # Auth args
-            host=dict(type=str, required=True),
-            auth_user=dict(type=str, required=True),
-            auth_pass=dict(type=str, required=True, no_log=True),
-            ca_certs=dict(type=str, required=False),
-            verify_certs=dict(type=bool, required=False, default=True)
+            host=dict(type='str', required=True),
+            auth_user=dict(type='str', required=True),
+            auth_pass=dict(type='str', required=True, no_log=True),
+            ca_certs=dict(type='str', required=False),
+            verify_certs=dict(type='bool', required=False, default=True)
         )
     )
 
@@ -170,12 +145,6 @@ def run_module():
             msg=missing_required_lib('elasticsearch'),
             exception=ELASTICSEARCH_IMPORT_ERROR
         )
-
-    if module.params['state'] != 'absent' and module.params['state'] != 'present':
-        result['stderr'] = "Invalid state given. Please use 'absent' or 'present'"
-        result['failed'] = True
-
-        module.exit_json(**result)
 
     role = Role(
         result=result,

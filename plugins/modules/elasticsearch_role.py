@@ -7,7 +7,10 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import AnsibleModule, missing_required_lib
+from ansible_collections.netways.elasticstack.plugins.module_utils.api import (
+    HAS_ELASTICSEARCH, ELASTICSEARCH_IMPORT_ERROR
+)
 from ansible_collections.netways.elasticstack.plugins.module_utils.elasticsearch_role import (
     Role
 )
@@ -65,6 +68,12 @@ def run_module():
         failed=False,
         changed=False
     )
+
+    if not HAS_ELASTICSEARCH:
+        module.fail_json(
+            msg=missing_required_lib('elasticsearch'),
+            exception=ELASTICSEARCH_IMPORT_ERROR
+        )
 
     if module.params['state'] != 'absent' and module.params['state'] != 'present':
         result['stderr'] = "Invalid state given. Please use 'absent' or 'present'"

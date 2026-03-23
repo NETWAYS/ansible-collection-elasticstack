@@ -4,8 +4,15 @@
 # GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or
 # https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from elasticsearch import Elasticsearch
 import ssl
+
+try:
+    from elasticsearch import Elasticsearch
+    HAS_ELASTICSEARCH = True
+    ELASTICSEARCH_IMPORT_ERROR = None
+except ImportError as import_error:
+    HAS_ELASTICSEARCH = False
+    ELASTICSEARCH_IMPORT_ERROR = import_error
 
 
 class Api():

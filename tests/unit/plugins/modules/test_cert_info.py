@@ -2,9 +2,19 @@ import sys
 import unittest
 from unittest.mock import patch
 from ansible.module_utils import basic
-from ansible.module_utils.testing import set_module_args
 sys.path.append('/home/runner/.ansible/collections/')
 from ansible_collections.netways.elasticstack.plugins.modules import cert_info
+
+_current_module_args = {}
+
+
+def set_module_args(args):
+    global _current_module_args
+    _current_module_args = args
+
+
+def _mock_load_params():
+    return _current_module_args
 
 certificate = {
     "changed": False,
@@ -89,6 +99,11 @@ class TestCertInfo(unittest.TestCase):
                                                  )
         self.mock_module_helper.start()
         self.addCleanup(self.mock_module_helper.stop)
+
+        self.load_params_patcher = patch('ansible.module_utils.basic._load_params',
+                                         side_effect=_mock_load_params)
+        self.load_params_patcher.start()
+        self.addCleanup(self.load_params_patcher.stop)
 
     def test_module_fail_when_required_args_missing(self):
         with self.assertRaises(AnsibleFailJson):

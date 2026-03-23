@@ -79,8 +79,6 @@ class AnalyzeCertificate():
         self.__passphrase = self.module.params['passphrase']
         self.__path = self.module.params['path']
         self.__cert = None
-        self.__private_key = None
-        self.__additional_certs = None
         self.load_certificate()
         self.load_info()
 
@@ -127,9 +125,7 @@ class AnalyzeCertificate():
                 msg="Loaded certificate with backend."
             )
         # map loaded certificate to object
-        self.__private_key = __pkcs12_tuple[0]
-        self.__cert = __pkcs12_tuple[1]
-        self.__additional_certs = __pkcs12_tuple[2]
+        _, self.__cert, _ = __pkcs12_tuple
 
     def load_info(self):
         self.general_info()

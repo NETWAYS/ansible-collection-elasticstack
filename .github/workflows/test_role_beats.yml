@@ -39,22 +39,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        distro: [ubuntu2204]
-        scenario: [beats_default, beats_peculiar]
-        release: [ 7, 8 ]
+        distro:
+          - ubuntu2204
+        scenario:
+          - beats_default
+          - beats_peculiar
+        release:
+          - 7
+          - 8
+        ansible_version:
+          - "ansible>=9.0,<10.0" #Correspond ansible-core>=2.16,<2.17
+        python_version:
+          - "3.11"
 
     steps:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python 3.8
+      - name: Set up Python ${{ matrix.python_version }}
         uses: actions/setup-python@v6
         with:
-          python-version: 3.8
+          python-version: ${{ matrix.python_version }}
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
+          python3 -m pip install "${{ matrix.ansible_version }}"
           python3 -m pip install -r requirements-test.txt
 
       - name: Install collection
@@ -64,6 +74,8 @@ jobs:
 
       - name: Test with molecule
         run: |
+          ansible --version
+          molecule --version
           molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}

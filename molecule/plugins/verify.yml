@@ -1,0 +1,137 @@
+---
+- name: Verify all plugin modules
+  hosts: all
+  vars:
+    elasticstack_elasticsearch_http_port: 9200
+    elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
+  tasks:
+    - name: Fetch Elastic password # noqa: risky-shell-pipe
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
+        awk {' print $4 '}
+      register: elasticstack_password
+      changed_when: false
+
+    # --- cert_info ---
+
+    - name: Test cert_info with valid certificate and passphrase
+      netways.elasticstack.cert_info:
+        path: /tmp/elastic-stack-ca.p12
+        passphrase: PleaseChangeMe
+      register: cert_result
+
+    - name: Assert cert_info returns all expected fields
+      ansible.builtin.assert:
+        that:
+          - cert_result.issuer is defined
+          - cert_result.subject is defined
+          - cert_result.not_valid_after is defined
+          - cert_result.not_valid_before is defined
+          - cert_result.serial_number is defined
+          - cert_result.extensions is defined
+          - not cert_result.failed
+        fail_msg: "cert_info did not return all expected fields"
+
+    - name: Test cert_info fails with wrong passphrase
+      netways.elasticstack.cert_info:
+        path: /tmp/elastic-stack-ca.p12
+        passphrase: wrong-passphrase
+      register: cert_wrong_pass
+      ignore_errors: true
+
+    - name: Assert cert_info failed with wrong passphrase
+      ansible.builtin.assert:
+        that: cert_wrong_pass.failed
+        fail_msg: "cert_info should fail with a wrong passphrase"
+
+    - name: Test cert_info fails with non-existent path
+      netways.elasticstack.cert_info:
+        path: /tmp/does-not-exist.p12
+        passphrase: PleaseChangeMe
+      register: cert_wrong_path
+      ignore_errors: true
+
+    - name: Assert cert_info failed with non-existent path
+      ansible.builtin.assert:
+        that: cert_wrong_path.failed
+        fail_msg: "cert_info should fail with a non-existent path"
+
+    # --- elasticsearch_role ---
+
+    - name: Assert Elasticsearch role exists
+      ansible.builtin.uri:
+        url: "https://localhost:{{ elasticstack_elasticsearch_http_port }}/_security/role/test-role"
+        method: GET
+        force_basic_auth: true
+        user: elastic
+        password: "{{ elasticstack_password.stdout }}"
+        validate_certs: false
+        status_code: 200
+      register: role_result
+
+    - name: Assert role has expected cluster privileges
+      ansible.builtin.assert:
+        that:
+          - "'manage_own_api_key' in role_result.json['test-role'].cluster"
+          - "'delegate_pki' in role_result.json['test-role'].cluster"
+        fail_msg: "Role does not have expected cluster privileges"
+
+    # --- elasticsearch_user ---
+
+    - name: Assert Elasticsearch user exists
+      ansible.builtin.uri:
+        url: "https://localhost:{{ elasticstack_elasticsearch_http_port }}/_security/user/test-user"
+        method: GET
+        force_basic_auth: true
+        user: elastic
+        password: "{{ elasticstack_password.stdout }}"
+        validate_certs: false
+        status_code: 200
+      register: user_result
+
+    - name: Assert user has expected role assigned
+      ansible.builtin.assert:
+        that:
+          - "'test-role' in user_result.json['test-user'].roles"
+        fail_msg: "User does not have expected role assigned"
+
+    # --- test state: absent (user first, then role due to dependency) ---
+
+    - name: Delete Elasticsearch user
+      netways.elasticstack.elasticsearch_user:
+        name: test-user
+        state: absent
+        host: "https://localhost:{{ elasticstack_elasticsearch_http_port }}"
+        auth_user: elastic
+        auth_pass: "{{ elasticstack_password.stdout }}"
+        verify_certs: false
+
+    - name: Assert Elasticsearch user was deleted
+      ansible.builtin.uri:
+        url: "https://localhost:{{ elasticstack_elasticsearch_http_port }}/_security/user/test-user"
+        method: GET
+        force_basic_auth: true
+        user: elastic
+        password: "{{ elasticstack_password.stdout }}"
+        validate_certs: false
+        status_code: 404
+
+    - name: Delete Elasticsearch role
+      netways.elasticstack.elasticsearch_role:
+        name: test-role
+        state: absent
+        host: "https://localhost:{{ elasticstack_elasticsearch_http_port }}"
+        auth_user: elastic
+        auth_pass: "{{ elasticstack_password.stdout }}"
+        verify_certs: false
+
+    - name: Assert Elasticsearch role was deleted
+      ansible.builtin.uri:
+        url: "https://localhost:{{ elasticstack_elasticsearch_http_port }}/_security/role/test-role"
+        method: GET
+        force_basic_auth: true
+        user: elastic
+        password: "{{ elasticstack_password.stdout }}"
+        validate_certs: false
+        status_code: 404

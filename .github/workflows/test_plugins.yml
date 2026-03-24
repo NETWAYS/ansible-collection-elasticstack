@@ -205,11 +205,10 @@ jobs:
       fail-fast: false
       matrix:
         python_cryptography_version:
-          - "38.0.0"
-          - "40.0.1"
-          - "41.0.0"
-          - "42.0.0"
-          - "43.0.0"
+          - "3.4.8" # Test loading certificate with 3 parameter (old way).
+          - "41.0.0" # Last version before not_valid_after() and not_valid_before() deprecation.
+          - "42.0.0" # First release with deprecation https://cryptography.io/en/latest/changelog/
+          - "47.0.0" # Latest release
     steps:
       - name: Check out code
         uses: actions/checkout@v6

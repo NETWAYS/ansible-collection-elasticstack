@@ -5,19 +5,23 @@ galaxy_info:
   description: Elasticsearch Ansible role
   company: Netways GmbH
   namespace: netways
-  license: GPL-3.0-or-later
-  min_ansible_version: "2.4"
+  license: GPL-3.0
+  min_ansible_version: "2.18"
   platforms:
     - name: EL
       versions:
-        - "8"
-    - name: Debian
-      versions:
-        - bullseye
+        - "9"
     - name: Ubuntu
       versions:
-        - focal
-        - jammy
-  galaxy_tags: []
+        - "22.04"
+  galaxy_tags:
+    - elasticsearch
+    - elk
+    - search
+    - database
+    - logging
+    - analytics
+    - elastic
+
 collections:
   - netways.elasticstack

@@ -4,19 +4,23 @@ galaxy_info:
   author: netways
   description: Ansible role for Kibana
   company: Netways GmbH
-  license: GPL-3.0-or-later
-  min_ansible_version: "2.4"
+  license: GPL-3.0
+  min_ansible_version: "2.18"
   platforms:
     - name: EL
       versions:
-        - "8"
-    - name: Debian
-      versions:
-        - bullseye
+        - "9"
     - name: Ubuntu
       versions:
-        - focal
-        - jammy
-  galaxy_tags: []
+        - "22.04"
+  galaxy_tags:
+    - kibana
+    - elk
+    - visualization
+    - dashboard
+    - monitoring
+    - observability
+    - elastic
+
 collections:
   - netways.elasticstack

@@ -33,26 +33,31 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - rockylinux8
+          - rockylinux9
           - ubuntu2204
         scenario:
           - elasticstack_default
         release:
           - 7
           - 8
+        python_version:
+          - "3.11"
+        ansible_version:
+          - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0
 
     steps:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python 3.8
+      - name: Set up Python ${{ matrix.python_version }}
         uses: actions/setup-python@v6
         with:
-          python-version: 3.8
+          python-version: ${{ matrix.python_version }}
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
+          python3 -m pip install "${{ matrix.ansible_version }}"
           python3 -m pip install -r requirements-test.txt
 
       - name: Install collection
@@ -62,6 +67,8 @@ jobs:
 
       - name: Test with molecule
         run: |
+          ansible --version
+          molecule --version
           molecule test -s ${{ matrix.scenario }}
         env:
           MOLECULE_DISTRO: ${{ matrix.distro }}

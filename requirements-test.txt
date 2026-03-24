@@ -1,7 +1,8 @@
-ansible>=2.15
 ansible-lint
 molecule
 molecule-plugins[docker]
 pytest
 passlib
 elasticsearch<9
+docker>=7.1.0
+requests>=2.32.2

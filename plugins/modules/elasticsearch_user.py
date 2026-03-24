@@ -29,18 +29,20 @@ options:
     type: str
     required: false
   password:
-    description: Password for the user.
+    description: Password for the user. Required when (state=present).
     type: str
-    required: true
+    required: false
+    default: null
   email:
     description: Email address of the user.
     type: str
     required: false
   roles:
-    description: List of roles assigned to the user.
+    description: List of roles assigned to the user. Required when (state=present).
     type: list
     elements: str
-    required: true
+    required: false
+    default: null
   enabled:
     description: Whether the user account is enabled.
     type: bool
@@ -94,8 +96,6 @@ EXAMPLES = r'''
 - name: Delete an Elasticsearch user
   netways.elasticstack.elasticsearch_user:
     name: john
-    password: "{{ user_password }}"
-    roles: []
     state: absent
     host: https://localhost:9200
     auth_user: elastic
@@ -130,9 +130,9 @@ def run_module():
             # User args
             name=dict(type='str', required=True),
             fullname=dict(type='str', required=False),
-            password=dict(type='str', required=True, no_log=True),
+            password=dict(type='str', required=False, no_log=True),
             email=dict(type='str', required=False),
-            roles=dict(type='list', elements='str', required=True),
+            roles=dict(type='list', elements='str', required=False),
             enabled=dict(type='bool', required=False, default=True),
             state=dict(type='str', required=False, default='present', choices=['present', 'absent']),
 
@@ -142,7 +142,10 @@ def run_module():
             auth_pass=dict(type='str', required=True, no_log=True),
             ca_certs=dict(type='str', required=False),
             verify_certs=dict(type='bool', required=False, default=True)
-        )
+        ),
+        required_if=[
+            ('state', 'present', ['password', 'roles']),
+        ]
     )
 
     result = dict(

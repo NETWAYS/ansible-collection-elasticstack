@@ -29,16 +29,16 @@ SUPPORTED_EXTENSIONS = {
     'basicConstraints': [
         '_ca',
         '_path_length'
-        ],
+    ],
     'subjectKeyIdentifier': [
         '_digest'
-        ],
+    ],
     'authorityKeyIdentifier': [
         '_authority_cert_issuer',
         '_authority_cert_serial_number',
         '_key_identifier'
-        ]
-    }
+    ]
+}
 
 
 # function returns and converts bytes to a hex string separated with ":"
@@ -50,7 +50,7 @@ def bytes_to_hex(bytes_str):
     # seperate by ":" every two characters and upper()
     value = ':'.join(
         ascii_hex_str[i:i + 2] for i in range(0, len(ascii_hex_str), 2)
-        ).upper()
+    ).upper()
     return value
 
 
@@ -79,8 +79,6 @@ class AnalyzeCertificate():
         self.__passphrase = self.module.params['passphrase']
         self.__path = self.module.params['path']
         self.__cert = None
-        self.__private_key = None
-        self.__additional_certs = None
         self.load_certificate()
         self.load_info()
 
@@ -91,7 +89,7 @@ class AnalyzeCertificate():
         if not HAS_CRYPTOGRAPHY_PKCS12:
             self.module.fail_json(
                 msg=missing_required_lib('cryptography >= 2.5')
-                )
+            )
         # read the pkcs12 file
         try:
             with open(self.__path, 'rb') as f:
@@ -99,19 +97,19 @@ class AnalyzeCertificate():
         except IOError as e:
             self.module.fail_json(
                 msg='IOError: %s' % (to_native(e))
-                )
+            )
         # try to load with 2 parameters
         # for cryptography >= 3.1.x
         try:
             __pkcs12_tuple = pkcs12.load_key_and_certificates(
                 pkcs12_data,
                 to_bytes(self.__passphrase),
-                )
+            )
             loaded = True
         except Exception:
             self.module.log(
                 msg="Couldn't load certificate without backend. Trying with backend."
-                )
+            )
         # try to load with 3 parameters for
         # cryptography >= 2.5.x and <= 3.0.x
         if not loaded:
@@ -122,14 +120,12 @@ class AnalyzeCertificate():
                 pkcs12_data,
                 to_bytes(self.__passphrase),
                 backend
-                )
+            )
             self.module.log(
                 msg="Loaded certificate with backend."
-                )
+            )
         # map loaded certificate to object
-        self.__private_key = __pkcs12_tuple[0]
         self.__cert = __pkcs12_tuple[1]
-        self.__additional_certs = __pkcs12_tuple[2]
 
     def load_info(self):
         self.general_info()
@@ -139,10 +135,10 @@ class AnalyzeCertificate():
         # map object values to result dict
         issuer = to_text(self.__cert.issuer.get_attributes_for_oid(
             NameOID.COMMON_NAME)[0].value
-            )
+        )
         subject = to_text(self.__cert.subject.get_attributes_for_oid(
             NameOID.COMMON_NAME)[0].value
-            )
+        )
         self.result['issuer'] = to_text(issuer)
         self.result['subject'] = to_text(subject)
         self.result['not_valid_after'] = to_text(self.__cert.not_valid_after)

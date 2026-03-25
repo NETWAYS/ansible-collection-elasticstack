@@ -14,94 +14,29 @@ on:
           - debug
   pull_request:
     branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
+      - 'main'
     paths:
       - 'plugins/**'
-      - '.github/workflows/test_plugins.yml'
-      - 'molecule/plugins/**'
-      - '.config/pep8.yml'
       - 'tests/**'
+      - 'molecule/plugins/**'
+      - '.github/workflows/test_plugins.yml'
 
 jobs:
-  pep8:
+  sanity_ansible_18_19:
     runs-on: ubuntu-latest
-    steps:
-      - name: Check out the codebase.
-        uses: actions/checkout@v6
-
-      - name: Set up Python 3.
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.x'
-
-      - name: Install test dependencies.
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install pep8
-
-      - name: Lint code.
-        run: |
-          pep8 plugins/ --config=.config/pep8.cfg --statistics --count
-
-  unit-test:
-    needs: pep8
-    runs-on: ubuntu-20.04
-
     env:
       COLLECTION_NAMESPACE: netways
       COLLECTION_NAME: elasticstack
-
-    strategy:
-      fail-fast: false
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v6
-
-      - name: Set up Python 3.9.14
-        uses: actions/setup-python@v6
-        with:
-          python-version: 3.9.14
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install install ansible
-
-      - name: Install collection
-        run: |
-          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
-          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
-
-      - name: Test `cert_info` module
-        run: |
-          python tests/unit/plugins/modules/test_cert_info.py
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-
-      - name: Test `certs` module util
-        run: |
-          python tests/unit/plugins/module_utils/test_certs.py
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-
-  python:
-    needs: unit-test
-    runs-on: ubuntu-20.04
-
-    env:
-      COLLECTION_NAMESPACE: netways
-      COLLECTION_NAME: elasticstack
-
     strategy:
       fail-fast: false
       matrix:
-        python_version: [ 3.5.10, 3.6.15, 3.7.13, 3.8.16, 3.10.10 ]
-
+        python_version:
+          - "3.11"
+          - "3.12"
+          - "3.13"
+        ansible_version:
+          - "ansible-core>=2.18,<2.19" #Correspond ansible>=11.0,<12.0
+          - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0
     steps:
       - name: Check out code
         uses: actions/checkout@v6
@@ -111,98 +46,192 @@ jobs:
         with:
           python-version: ${{ matrix.python_version }}
 
-      - name: Install dependencies
+      - name: Install Ansible
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install install ansible
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "${{ matrix.ansible_version }}"
 
       - name: Install collection
         run: |
           mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
           cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
 
-      - name: Test with ansible-playbook
+      - name: Run sanity tests
         run: |
-          ansible-playbook molecule/plugins/converge.yml
+          cd ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+          ansible-test sanity --python "${{ matrix.python_version }}" -v
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
 
-  ansible-core:
-    needs: python
-    runs-on: ubuntu-20.04
-
+  sanity_ansible_20:
+    runs-on: ubuntu-latest
     env:
       COLLECTION_NAMESPACE: netways
       COLLECTION_NAME: elasticstack
-
     strategy:
       fail-fast: false
       matrix:
-        ansible_core_version: [ 2.11.12, 2.12.10, 2.13.8, 2.14.4 ]
-
+        python_version:
+          - "3.12"
+          - "3.13"
+          - "3.14"
+        ansible_version:
+          - "ansible-core>=2.20,<2.21" #Correspond ansible>=13.0,<14.0
     steps:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python 3.9.14
+      - name: Set up Python ${{ matrix.python_version }}
         uses: actions/setup-python@v6
         with:
-          python-version: 3.9.14
+          python-version: ${{ matrix.python_version }}
 
-      - name: Install dependencies
+      - name: Install Ansible
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install install ansible-core==${{ matrix.ansible_core_version }}
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "${{ matrix.ansible_version }}"
 
       - name: Install collection
         run: |
           mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
           cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
 
-      - name: Test with ansible-playbook
+      - name: Run sanity tests
         run: |
-          ansible-playbook molecule/plugins/converge.yml
+          cd ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+          ansible-test sanity --python "${{ matrix.python_version }}" -v
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
+
+  unit-test:
+    needs:
+      - sanity_ansible_18_19
+      - sanity_ansible_20
+    runs-on: ubuntu-latest
+    env:
+      COLLECTION_NAMESPACE: netways
+      COLLECTION_NAME: elasticstack
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "ansible-core>=2.19,<2.20"
+
+      - name: Install collection
+        run: |
+          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
+          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+
+      - name: Test `cert_info` module
+        run: |
+          PYTHONPATH=$HOME/.ansible/collections python3 tests/unit/plugins/modules/test_cert_info.py
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+
+      - name: Test `certs` module util
+        run: |
+          PYTHONPATH=$HOME/.ansible/collections python3 tests/unit/plugins/module_utils/test_certs.py
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+
+  molecule_plugins:
+    needs: unit-test
+    runs-on: ubuntu-latest
+    env:
+      COLLECTION_NAMESPACE: netways
+      COLLECTION_NAME: elasticstack
+    strategy:
+      fail-fast: false
+      matrix:
+        distro:
+          - ubuntu2204
+        scenario:
+          - plugins
+        release:
+          - 8
+          # - 9  # add when elasticsearch>=9 is supported by this collection
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "ansible-core>=2.19,<2.20"
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Install collection
+        run: |
+          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
+          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+
+      - name: Test with molecule
+        run: |
+          ansible --version
+          molecule --version
+          molecule test -s ${{ matrix.scenario }}
+        env:
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          ELASTIC_RELEASE: ${{ matrix.release }}
 
   python-cryptography:
-    needs: ansible-core
-    runs-on: ubuntu-20.04
-
+    needs: unit-test
+    runs-on: ubuntu-latest
     env:
       COLLECTION_NAMESPACE: netways
       COLLECTION_NAME: elasticstack
-
     strategy:
       fail-fast: false
       matrix:
-        python_cryptography_version: [ 2.5, 3.0, 3.1, 3.2, 3.3, 3.4, 35.0.0, 36.0.0, 38.0.0, 40.0.1]
-
+        python_cryptography_version:
+          - "3.4.8" # Test loading certificate with 3 parameter (old way).
+          - "41.0.7" # Last version before not_valid_after() and not_valid_before() deprecation.
+          - "42.0.0" # First release with deprecation https://cryptography.io/en/latest/changelog/
+          - "46.0.5" # Latest release
     steps:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Set up Python 3.9.14
+      - name: Set up Python 3.11
         uses: actions/setup-python@v6
         with:
-          python-version: 3.9.14
+          python-version: 3.11
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install install cryptography==${{ matrix.python_cryptography_version }}
-          python -m pip install install ansible
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "ansible-core>=2.19,<2.20"
+          python3 -m pip install "cryptography==${{ matrix.python_cryptography_version }}"
 
       - name: Install collection
         run: |
           mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
           cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
 
-      - name: Test with ansible-playbook
+      - name: Test cert_info with cryptography ${{ matrix.python_cryptography_version }}
         run: |
-          ansible-playbook molecule/plugins/converge.yml
+          PYTHONPATH=$HOME/.ansible/collections python3 tests/unit/plugins/modules/test_cert_info.py
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

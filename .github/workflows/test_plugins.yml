@@ -23,6 +23,7 @@ on:
 
 jobs:
   sanity_ansible_18_19:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
       COLLECTION_NAMESPACE: netways

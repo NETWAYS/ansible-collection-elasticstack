@@ -23,6 +23,7 @@ on:
 
 jobs:
   lint_repos:
+    if: github.event.pull_request.draft == false
     uses: ./.github/workflows/test_linting.yml
     with:
       rolename: repos

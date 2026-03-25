@@ -158,7 +158,7 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - ubuntu2204
+          - debian13
         scenario:
           - plugins
         release:

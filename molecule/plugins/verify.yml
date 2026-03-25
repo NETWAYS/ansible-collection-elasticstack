@@ -18,7 +18,7 @@
     - name: Test cert_info with valid certificate and passphrase
       netways.elasticstack.cert_info:
         path: /tmp/elastic-stack-ca.p12
-        passphrase: PleaseChangeMe
+        passphrase: PleaseChangeMe # uses default value. Change if default is changed
       register: cert_result
 
     - name: Assert cert_info returns all expected fields

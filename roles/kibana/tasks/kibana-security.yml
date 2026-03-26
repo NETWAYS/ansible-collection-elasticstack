@@ -142,7 +142,7 @@
         creates: "{{ elasticstack_ca_dir }}/encryption_key"
     - ansible.builtin.debug:
         msg: "File exists..."
-        when: encryption_key_exists.stat.exits
+      when: encryption_key_exists.stat.exits
 
     - name: Fetch encryption key
       ansible.builtin.command: cat {{ elasticstack_ca_dir }}/encryption_key
@@ -159,7 +159,7 @@
         creates: "{{ elasticstack_ca_dir }}/savedobjects_encryption_key"
     - ansible.builtin.debug:
         msg: "File exists..."
-        when: savedobjects_encryption_key_exists.stat.exits
+      when: savedobjects_encryption_key_exists.stat.exits
 
     - name: Fetch saved objects encryption key
       ansible.builtin.command: cat {{ elasticstack_ca_dir }}/savedobjects_encryption_key

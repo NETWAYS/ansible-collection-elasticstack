@@ -17,7 +17,6 @@ on:
 
 jobs:
   lint_full:
-    # test
     if: github.event.pull_request.draft == false
     uses: ./.github/workflows/test_linting.yml
     with:

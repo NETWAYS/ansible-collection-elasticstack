@@ -41,7 +41,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        distro: [ubuntu2204]
+        distro: [debian13]
         scenario:
           - logstash_specific_version
           - logstash_pipelines

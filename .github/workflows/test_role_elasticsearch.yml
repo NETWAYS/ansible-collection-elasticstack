@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - ubuntu2204
+          - debian13
         scenario:
           - elasticsearch_default
           - elasticsearch_roles_calculation

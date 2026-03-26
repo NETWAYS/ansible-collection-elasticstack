@@ -140,9 +140,12 @@
       changed_when: false
       args:
         creates: "{{ elasticstack_ca_dir }}/encryption_key"
+    - ansible.builtin.stat:
+        path: "{{ elasticstack_ca_dir }}/encryption_key"
+      register: encryption_key_exist
     - ansible.builtin.debug:
         msg: "File exists..."
-        when: encryption_key_exists.stat.exits
+      when: encryption_key_exist.stat.exists
 
     - name: Fetch encryption key
       ansible.builtin.command: cat {{ elasticstack_ca_dir }}/encryption_key
@@ -157,9 +160,12 @@
       changed_when: false
       args:
         creates: "{{ elasticstack_ca_dir }}/savedobjects_encryption_key"
+    - ansible.builtin.stat:
+        path: "{{ elasticstack_ca_dir }}/savedobjects_encryption_key"
+      register: savedobjects_encryption_key
     - ansible.builtin.debug:
         msg: "File exists..."
-        when: savedobjects_encryption_key_exists.stat.exits
+      when: savedobjects_encryption_key.stat.exists
 
     - name: Fetch saved objects encryption key
       ansible.builtin.command: cat {{ elasticstack_ca_dir }}/savedobjects_encryption_key

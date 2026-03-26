@@ -5,6 +5,8 @@ driver:
   name: docker
 platforms:
   - name: "kibana_default-${MOLECULE_DISTRO:-debian13}"
+    groups:
+      - elasticsearch
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:

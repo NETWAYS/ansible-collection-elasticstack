@@ -21,6 +21,7 @@ on:
     - cron: '15 6 * * 4'
 jobs:
   kics:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
 
     steps:

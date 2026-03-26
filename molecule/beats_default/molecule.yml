@@ -5,6 +5,8 @@ driver:
   name: docker
 platforms:
   - name: beats_default_${MOLECULE_DISTRO:-debian13}
+    groups:
+      - elasticsearch
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:

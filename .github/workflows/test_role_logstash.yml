@@ -43,7 +43,6 @@ jobs:
       matrix:
         distro: [ubuntu2204]
         scenario:
-          - logstash_full_stack-oss
           - logstash_specific_version
           - logstash_pipelines
         release:
@@ -84,3 +83,53 @@ jobs:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           ELASTIC_RELEASE: ${{ matrix.release }}
+
+  molecule_logstash_oss:
+    runs-on: ubuntu-latest
+    needs: lint_logstash
+
+    env:
+      COLLECTION_NAMESPACE: netways
+      COLLECTION_NAME: elasticstack
+
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [ubuntu2204]
+        ansible_version:
+          - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0
+        python_version:
+          - "3.11"
+        scenario:
+          - logstash_full_stack-oss
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Set up Python ${{ matrix.python_version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python_version }}
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "${{ matrix.ansible_version }}"
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Install collection
+        run: |
+          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
+          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+
+      - name: Test with molecule
+        run: |
+          ansible --version
+          molecule --version
+          molecule test -s ${{ matrix.scenario }}
+        env:
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          ELASTIC_RELEASE: "7"  # OSS variant discontinued in ES 8

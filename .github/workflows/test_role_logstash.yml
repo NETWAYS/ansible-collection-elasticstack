@@ -13,8 +13,6 @@ on:
           - warning
           - debug
   pull_request:
-    branches:
-      - 'main'
     paths:
       - 'roles/logstash/**'
       - '.github/workflows/test_role_logstash.yml'

@@ -13,9 +13,7 @@ on:
           - debug
   pull_request:
     branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
+      - 'main'
     paths:
       - 'roles/repos/**'
       - '.github/workflows/test_role_repos.yml'

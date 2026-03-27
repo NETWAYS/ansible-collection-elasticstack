@@ -14,9 +14,7 @@ on:
           - debug
   pull_request:
     branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
+      - 'main'
     paths:
       - 'roles/logstash/**'
       - '.github/workflows/test_role_logstash.yml'

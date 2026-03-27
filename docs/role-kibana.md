@@ -37,7 +37,7 @@ These variables are identical over all our elastic related roles, hence the diff
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elasticstack_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
 * *elasticstack_release*: Major release version of Elastic stack to configure. (default: `8`)
-* *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss` (default: `elastic`)
+* *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic`. (default: `elastic`)
 
 
 If you use `localhost` in `kibana_elasticsearch_hosts` , certificate verification will skip hostname checks
@@ -51,7 +51,7 @@ If you use `localhost` in `kibana_elasticsearch_hosts` , certificate verificatio
   hosts: kibana-host
   vars:
     elasticstack_full_stack: true
-    elasticstack_variant: oss
+    elasticstack_variant: elastic
   roles:
     - repos
     - kibana

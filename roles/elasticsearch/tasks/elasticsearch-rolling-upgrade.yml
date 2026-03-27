@@ -28,7 +28,7 @@
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
         enablerepo:
-          - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
+          - 'elastic-{{ elasticstack_release }}.x'
       when:
         - ansible_os_family == "RedHat"
         - elasticstack_full_stack | bool
@@ -57,7 +57,7 @@
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
         enablerepo:
-          - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
+          - 'elastic-{{ elasticstack_release }}.x'
       when:
         - ansible_os_family == "RedHat"
         - elasticstack_full_stack | bool
@@ -135,7 +135,7 @@
       ansible.builtin.package:
         name: "{{ elasticsearch_package }}"
         enablerepo:
-          - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
+          - 'elastic-{{ elasticstack_release }}.x'
       when:
         - ansible_os_family == "RedHat"
         - elasticstack_full_stack | bool

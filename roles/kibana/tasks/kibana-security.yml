@@ -145,7 +145,7 @@
       register: encryption_key_exists
     - ansible.builtin.debug:
         msg: "File exists..."
-      when: encryption_key_exists.stat.exits
+      when: encryption_key_exists.stat.exists
 
     - name: Fetch encryption key
       ansible.builtin.command: cat {{ elasticstack_ca_dir }}/encryption_key
@@ -165,7 +165,7 @@
       register: savedobjects_encryption_key
     - ansible.builtin.debug:
         msg: "File exists..."
-      when: savedobjects_encryption_key.stat.exits
+      when: savedobjects_encryption_key.stat.exists
 
     - name: Fetch saved objects encryption key
       ansible.builtin.command: cat {{ elasticstack_ca_dir }}/savedobjects_encryption_key

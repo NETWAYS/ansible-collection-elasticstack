@@ -17,9 +17,6 @@ on:
       rolename:
         required: true
         type: string
-  pull_request:
-    branches:
-      - '*'
 
 jobs:
   lint:

@@ -31,7 +31,7 @@ node.roles: [ {% for type in elasticsearch_node_types %}{{ type }}{% if not loop
 {% if elasticsearch_seed_hosts is defined %}
 discovery.seed_hosts: {{ elasticsearch_seed_hosts }}
 {% else %}
-{% if elasticstack_release | int < 8 or groups[elasticstack_elasticsearch_group_name] | length > 1 %}
+{% if groups[elasticstack_elasticsearch_group_name] | length > 1 %}
 discovery.seed_hosts: [ {% for host in groups[elasticstack_elasticsearch_group_name]  %}
 "{{ hostvars[host].ansible_default_ipv4.address | default(hostvars[host].ansible_all_ipv4_addresses[0]) }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]

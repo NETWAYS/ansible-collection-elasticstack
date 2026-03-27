@@ -53,7 +53,7 @@ beats_filebeat_log_inputs:
       negate: false
       match: after
 ```
-* *beats_filebeat_journald*: Enable collection of JournalD logs (default: `false`) - available since Filebeat 7.16
+* *beats_filebeat_journald*: Enable collection of JournalD logs (default: `false`)
 * *beats_filebeat_journald_inputs*: List of journald inputs. Use for different filters on events. You can add a list of `include_matches` entries for filtering.
 Default of `beats_filebeat_journald_inputs`:
 ```

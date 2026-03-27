@@ -109,7 +109,7 @@ The following variables configure extra fields in your events that help with ide
 
 The following variables are identical over all our elastic related roles, hence the different naming scheme.
 
-*elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)
+*elasticstack_release*: Major release version of Elastic stack to configure. (default: `8`)
 *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
 
 The following variables only apply if you use this role together with our Elasticsearch and Kibana roles.

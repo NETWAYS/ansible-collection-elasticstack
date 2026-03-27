@@ -65,7 +65,7 @@ These variables are identical over all our elastic related roles, hence the diff
 * *elasticstack_ca_validity_period*: number of days that the generated CA are valid (default: 1095).
 * *elasticstack_ca_expiration_buffer*: Ansible will renew the CA if its validity is shorter than this value, which should be number of days. (default: 30)
 * *elasticstack_ca_will_expire_soon*: Set it to true to renew the CA and the certificate of all Elastic Stack components (default: `false`), Or run the playbook with `--tags renew_ca` to do that.
-* *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)
+* *elasticstack_release*: Major release version of Elastic stack to configure. (default: `8`)
 * *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
 * *elasticstack_elasticsearch_http_port*: Port of Elasticsearch http (Default: `9200`)
 

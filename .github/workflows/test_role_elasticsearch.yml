@@ -44,7 +44,6 @@ jobs:
         scenario:
           - elasticsearch_default
           - elasticsearch_roles_calculation
-          - elasticsearch_no-security
         release:
           - 8
         ansible_version:

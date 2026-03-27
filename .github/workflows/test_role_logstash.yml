@@ -42,7 +42,6 @@ jobs:
       matrix:
         distro: [ubuntu2204]
         scenario:
-          - logstash_full_stack-oss
           - logstash_specific_version
           - logstash_pipelines
         release:

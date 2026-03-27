@@ -35,7 +35,7 @@ If you want to use the default pipeline (or other pipelines communicating via Re
 Role Variables
 --------------
 
-* *elasticstack_version*: Version number of Logstash to install (e.g. `7.10.1`). Only set if you don't want the latest. (default: none). For OSS version see `elasticstack_variant` below.
+* *elasticstack_version*: Version number of Logstash to install (e.g. `8.10.1`). Only set if you don't want the latest. (default: none). For OSS version see `elasticstack_variant` below.
 * *logstash_enable*: Start and enable Logstash service (default: `true`)
 * *logstash_config_backup*: Keep backups of all changed configuration (default: `no`)
 * *logstash_manage_yaml*: Manage and overwrite `logstash.yml` (default: `true`)

@@ -1,6 +1,5 @@
 # Ansible Collection - netways.elasticstack
 
-![Test ElasticStack](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_full_stack.yml/badge.svg)
 
 > [!CAUTION]
 > The current main branch has some breaking changes. Be careful using it! Everything after commit 3d6673f6d526afeb0fd7ba382d067d76bd10bbd6 is affected!

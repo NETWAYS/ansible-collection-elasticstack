@@ -4,7 +4,6 @@ elasticsearch_enable: true
 elasticsearch_ml_enabled: true
 elasticsearch_config_backup: false
 elasticsearch_manage_yaml: true
-elasticsearch_monitoring_enabled: true
 elasticsearch_security: true
 elasticsearch_bootstrap_pw: PleaseChangeMe
 elasticsearch_http_security: true

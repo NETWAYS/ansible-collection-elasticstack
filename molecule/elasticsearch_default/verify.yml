@@ -14,11 +14,6 @@
       changed_when: false
       run_once: true
 
-    - name: Wait for Elasticsearch port to be available
-      ansible.builtin.wait_for:
-        port: "{{ elasticstack_elasticsearch_http_port }}"
-        timeout: 180
-
     - name: Check Elasticsearch cluster health
       ansible.builtin.uri:
         url: "https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
@@ -31,7 +26,7 @@
         return_content: true
       register: cluster_health
       until: cluster_health.json.status == "green"
-      retries: 6
+      retries: 20
       delay: 15
 
     - name: Check all nodes are visible

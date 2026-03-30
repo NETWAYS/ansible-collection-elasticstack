@@ -37,3 +37,7 @@
         that: yum_repo_file.stat.exists
         fail_msg: "Elastic yum repository file not found"
       when: ansible_os_family == "RedHat"
+
+    - name: Install Kibana
+      ansible.builtin.package:
+        name: kibana

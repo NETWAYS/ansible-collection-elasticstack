@@ -25,7 +25,7 @@
         status_code: 200
         return_content: true
       register: cluster_health
-      until: cluster_health.json.status == "green"
+      until: cluster_health.json is defined and cluster_health.json.status == "green"
       retries: 20
       delay: 15
 

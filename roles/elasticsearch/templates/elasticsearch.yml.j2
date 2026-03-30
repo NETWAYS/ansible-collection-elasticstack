@@ -27,6 +27,10 @@ http.publish_port: {{ elasticsearch_http_publish_port }}
 node.roles: [ {% for type in elasticsearch_node_types %}{{ type }}{% if not loop.last %}, {% endif %}{% endfor %} ]
 {% endif %}
 
+{% if and groups[elasticstack_elasticsearch_group_name] | length == 1 %}
+discovery.type: single-node
+{% endif %}
+
 {# Quickfix to override seed_hosts. Otherwise all nodes, not only master nodes are added to seed_hosts #}
 {% if elasticsearch_seed_hosts is defined %}
 discovery.seed_hosts: {{ elasticsearch_seed_hosts }}

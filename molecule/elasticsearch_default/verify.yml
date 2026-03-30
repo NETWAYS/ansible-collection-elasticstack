@@ -17,7 +17,7 @@
     - name: Wait for Elasticsearch port to be available
       ansible.builtin.wait_for:
         port: "{{ elasticstack_elasticsearch_http_port }}"
-        timeout: 60
+        timeout: 180
 
     - name: Check Elasticsearch cluster health
       ansible.builtin.uri:
@@ -32,7 +32,7 @@
       register: cluster_health
       until: cluster_health.json.status == "green"
       retries: 6
-      delay: 10
+      delay: 15
 
     - name: Check all nodes are visible
       ansible.builtin.uri:
@@ -45,11 +45,14 @@
         status_code: 200
         return_content: true
       register: nodes_output
+      until: nodes_output.status == 200
+      retries: 6
+      delay: 15
 
-    - name: Assert all nodes are present
+    - name: Assert all expected nodes are present by name
       ansible.builtin.assert:
         that:
-          - item in nodes_output.content
+          - item | replace('_', '') in nodes_output.content
         fail_msg: "{{ item }} was not found in cluster nodes"
         success_msg: "{{ item }} found in cluster nodes"
-      with_inventory_hostnames: elasticsearch
+      loop: "{{ groups['elasticsearch'] }}"

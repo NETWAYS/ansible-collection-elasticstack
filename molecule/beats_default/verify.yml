@@ -1,9 +1,29 @@
 ---
-# This is an example playbook to execute Ansible tests.
-
-- name: Verify
+- name: Verify Beats deployment
   hosts: all
   tasks:
-  - name: Example assertion
-    ansible.builtin.assert:
-      that: true
+    - name: Check filebeat binary exists
+      ansible.builtin.stat:
+        path: /usr/share/filebeat/bin/filebeat
+      register: filebeat_binary
+
+    - name: Assert filebeat binary exists
+      ansible.builtin.assert:
+        that: filebeat_binary.stat.exists
+        fail_msg: "Filebeat binary not found"
+
+    - name: Check filebeat configuration file exists
+      ansible.builtin.stat:
+        path: /etc/filebeat/filebeat.yml
+      register: filebeat_config
+
+    - name: Assert filebeat config exists
+      ansible.builtin.assert:
+        that: filebeat_config.stat.exists
+        fail_msg: "Filebeat configuration file not found"
+
+    - name: Run filebeat config syntax check
+      ansible.builtin.command: filebeat test config -c /etc/filebeat/filebeat.yml
+      register: filebeat_config_test
+      changed_when: false
+      failed_when: filebeat_config_test.rc != 0

@@ -1,0 +1,74 @@
+---
+- name: Verify Elasticsearch roles calculation
+  hosts: elasticsearch
+  vars:
+    elasticstack_elasticsearch_http_port: 9200
+    elasticstack_initial_passwords: /usr/share/elasticsearch/initial_passwords
+  tasks:
+    - name: Fetch Elastic password # noqa: risky-shell-pipe
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        grep "PASSWORD elastic" {{ elasticstack_initial_passwords }} |
+        awk {' print $4 '}
+      register: elastic_pass
+      changed_when: false
+      run_once: true
+
+    - name: Wait for Elasticsearch port to be available
+      ansible.builtin.wait_for:
+        port: "{{ elasticstack_elasticsearch_http_port }}"
+        timeout: 60
+
+    - name: Check Elasticsearch cluster health
+      ansible.builtin.uri:
+        url: "https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
+        method: GET
+        force_basic_auth: true
+        user: elastic
+        password: "{{ elastic_pass.stdout }}"
+        validate_certs: false
+        status_code: 200
+        return_content: true
+      register: cluster_health
+      until: cluster_health.json.status == "green"
+      retries: 6
+      delay: 10
+
+    - name: Check all nodes are visible
+      ansible.builtin.uri:
+        url: "https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes"
+        method: GET
+        force_basic_auth: true
+        user: elastic
+        password: "{{ elastic_pass.stdout }}"
+        validate_certs: false
+        status_code: 200
+        return_content: true
+      register: nodes_output
+
+    - name: Assert all nodes are present
+      ansible.builtin.assert:
+        that:
+          - item in nodes_output.content
+        fail_msg: "{{ item }} was not found in cluster nodes"
+        success_msg: "{{ item }} found in cluster nodes"
+      with_inventory_hostnames: elasticsearch
+
+    - name: Check node roles via API
+      ansible.builtin.uri:
+        url: "https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes?h=name,node.role"
+        method: GET
+        force_basic_auth: true
+        user: elastic
+        password: "{{ elastic_pass.stdout }}"
+        validate_certs: false
+        status_code: 200
+        return_content: true
+      register: node_roles
+
+    - name: Assert all nodes have master and data roles assigned
+      ansible.builtin.assert:
+        that:
+          - "'m' in node_roles.content"
+          - "'d' in node_roles.content"
+        fail_msg: "Expected master and data roles not found in node roles output"

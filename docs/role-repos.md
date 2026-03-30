@@ -20,7 +20,7 @@ Role Variables
 * *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`).
 * *elasticstack_enable_repos*: Enable repositories after creating them. (default: `true`) Only works on RPM based distributions!
 
-Please note that no `oss` versions are available for Elastic Stack later than `7`. This role will fail if you try to install them.
+Please note that not all tool have `oss` versions available for Elastic Stack later than `7`. This role will fail if you try to install them. Elasticsearch and Kibana are not available as OSS > 7.
 
 Usage
 --------

@@ -17,12 +17,10 @@ on:
       rolename:
         required: true
         type: string
-  pull_request:
-    branches:
-      - '*'
 
 jobs:
   lint:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.

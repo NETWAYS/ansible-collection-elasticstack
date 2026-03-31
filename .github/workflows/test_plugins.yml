@@ -13,8 +13,6 @@ on:
           - warning
           - debug
   pull_request:
-    branches:
-      - 'main'
     paths:
       - 'plugins/**'
       - 'tests/**'
@@ -66,6 +64,7 @@ jobs:
           ANSIBLE_FORCE_COLOR: '1'
 
   sanity_ansible_20:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
       COLLECTION_NAMESPACE: netways

@@ -13,8 +13,12 @@
     logstash_pipelines:
       - name: syslog
         exclusive: false
-        source: https://github.com/widhalmt/syslog-logstash-pipeline.git
-        version: bca66fd6f086a89a4b737103f5c339f66782c78e
+        source: https://github.com/NETWAYS/syslog-logstash-pipeline.git
+        version: 1183c7544d07487ab24c70213b7172133e9bbb6d
+      - name: filebeat
+        exclusive: false
+        source: https://github.com/NETWAYS/filebeat-logstash-pipeline.git
+        version: 97a85f140e0be8d941085b210f7ca9a604088455
       - name: icinga
         exclusive: false
         source: https://github.com/Icinga/icinga-logstash-pipeline.git

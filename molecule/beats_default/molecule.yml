@@ -1,6 +1,8 @@
 ---
 dependency:
   name: galaxy
+  options:
+    requirements-file: requirements.yml
 driver:
   name: docker
 platforms:
@@ -16,5 +18,7 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: $MOLECULE_EPHEMERAL_DIRECTORY/roles:${HOME}/.ansible/roles:$MOLECULE_PROJECT_DIRECTORY/roles
 verifier:
   name: ansible

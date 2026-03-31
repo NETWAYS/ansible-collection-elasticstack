@@ -44,7 +44,7 @@ jobs:
         release:
           - 8
         ansible_version:
-          - "ansible>=9.0,<10.0" #Correspond ansible-core>=2.16,<2.17
+          - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0
         python_version:
           - "3.11"
 

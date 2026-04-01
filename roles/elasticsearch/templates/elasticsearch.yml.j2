@@ -27,7 +27,7 @@ http.publish_port: {{ elasticsearch_http_publish_port }}
 node.roles: [ {% for type in elasticsearch_node_types %}{{ type }}{% if not loop.last %}, {% endif %}{% endfor %} ]
 {% endif %}
 
-{% if elasticstack_release | int > 7 and groups[elasticstack_elasticsearch_group_name] | length == 1 %}
+{% if groups[elasticstack_elasticsearch_group_name] | length == 1 %}
 discovery.type: single-node
 {% endif %}
 
@@ -35,7 +35,7 @@ discovery.type: single-node
 {% if elasticsearch_seed_hosts is defined %}
 discovery.seed_hosts: {{ elasticsearch_seed_hosts }}
 {% else %}
-{% if elasticstack_release | int < 8 or groups[elasticstack_elasticsearch_group_name] | length > 1 %}
+{% if groups[elasticstack_elasticsearch_group_name] | length > 1 %}
 discovery.seed_hosts: [ {% for host in groups[elasticstack_elasticsearch_group_name]  %}
 "{{ hostvars[host].ansible_default_ipv4.address | default(hostvars[host].ansible_all_ipv4_addresses[0]) }}"{% if not loop.last %},{% endif %}
 {% endfor %} ]
@@ -57,14 +57,8 @@ cluster.initial_master_nodes: [ {% for host in groups[elasticstack_elasticsearch
 {% if elasticstack_temperature is defined %}
 node.attr.temp: "{{ elasticstack_temperature }}"
 {% endif %}
-{% if elasticsearch_disable_systemcallfilterchecks | bool and elasticstack_release == 7 %}
-bootstrap.system_call_filter: false
-{% endif %}
 {% if elasticstack_variant == "elastic" %}
 xpack.ml.enabled: {{ elasticsearch_ml_enabled }}
-{% if elasticstack_release == 7 %}
-xpack.monitoring.collection.enabled: {{ elasticsearch_monitoring_enabled }}
-{% endif %}
 {% if elasticsearch_security | bool %}
 xpack.security.enabled: true
 {% if elasticsearch_security_enrollment is defined %}

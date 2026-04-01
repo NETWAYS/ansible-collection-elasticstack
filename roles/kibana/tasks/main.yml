@@ -1,12 +1,5 @@
 ---
 
-- name: Check for versions
-  ansible.builtin.fail:
-    msg: "No OSS package with version later than 7 is available for Kibana"
-  when:
-    - elasticstack_release | int > 7
-    - elasticstack_variant == "oss"
-
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
@@ -45,7 +38,6 @@
     kibana_package: >-
       {{
       'kibana' +
-      ('-oss' if elasticstack_variant == 'oss' else '') +
       ((elasticstack_versionseparator +
       elasticstack_version |
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
@@ -55,7 +47,7 @@
   ansible.builtin.package:
     name: "{{ kibana_package }}"
     enablerepo:
-      - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
+      - 'elastic-{{ elasticstack_release }}.x'
   notify:
     - Restart Kibana
   when:

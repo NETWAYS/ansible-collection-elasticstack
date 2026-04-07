@@ -122,3 +122,35 @@ If you want to use this role with your own TLS certificates, use these variables
     - repos
     - beats
 ```
+
+## Tags
+
+We introduce now tags for more precise actions in the roles itself.
+Example instead of running the auditbeat install with rpm you can run on dedicated debian based systems with `-t "auditbeat, deb"` or `--tags "auditbeat, deb"`
+the role to install directly the debian part.
+
+Here a short list of available Tags:
+
+* *auditbeat*,*filebeat*,*metricbeat* and *beats-security*: Name of the selectable Beat
+* *name*: For debugging purpose if you need the exact Name of the Package which will be installed
+* *rpm*,*deb*: The Choice of the Operating System for quicker and more precise installation
+* *standalone*: As the naming suggests standalone install
+* *latest*: For choice of the latest Version available
+* *configuration*,*beats_auditbeat_configuration*,*beats_configuration*: For creating the configuration file of the beat
+* *setup*: For the elasticsearch auditbeat setup
+* *start*: If you need to trigger the start of the Beat   
+
+```
+- name: Install Elastic Beats
+  hosts: beats-hosts
+  collections:
+    - netways.elasticstack
+  vars:
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
+    beats_install_tags: "auditbeat, deb"
+  roles:
+    - repos
+    - beats
+  tags: "{{ beats_install_tags }}"
+```

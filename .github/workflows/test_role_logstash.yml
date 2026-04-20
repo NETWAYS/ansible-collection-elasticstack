@@ -39,7 +39,7 @@ jobs:
       matrix:
         distro: [debian13]
         scenario:
-          - logstash_specific_version
+          - logstash_pinned_version
           - logstash_pipelines
         release:
           - 8

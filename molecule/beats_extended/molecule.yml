@@ -6,7 +6,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: beats_peculiar_${MOLECULE_DISTRO:-debian13}
+  - name: beats_extended_${MOLECULE_DISTRO:-debian13}
     groups:
       - elasticsearch
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"

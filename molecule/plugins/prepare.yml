@@ -19,8 +19,33 @@
         update_cache: yes
       when: ansible_os_family == "Debian"
 
-    - name: Install Python dependencies
+    # Try pip first for up-to-date packages. On PEP 668 systems (e.g. Debian 13),
+    # pip fails and we fall back to the package manager. If that also fails
+    # (package not in repos), force pip with break_system_packages as last resort.
+
+    - name: Install Python dependencies via pip
       ansible.builtin.pip:
         name:
-          - "elasticsearch<9"  # Version 9+ has breaking API changes incompatible with this collection
-          - cryptography       # latest version; version matrix is tested in the python-cryptography CI job
+          - "elasticsearch<9"
+          - cryptography
+      ignore_errors: true
+      register: plugins_pip_installation
+
+    - name: Install Python dependencies via package manager
+      ansible.builtin.package:
+        name:
+          - python3-elasticsearch
+          - python3-cryptography
+      ignore_errors: true
+      register: plugins_apt_installation
+      when: not plugins_pip_installation is succeeded
+
+    - name: Install Python dependencies via pip - forced
+      ansible.builtin.pip:
+        name:
+          - "elasticsearch<9"
+          - cryptography
+        break_system_packages: true
+      when:
+        - not plugins_pip_installation is succeeded
+        - not plugins_apt_installation is succeeded

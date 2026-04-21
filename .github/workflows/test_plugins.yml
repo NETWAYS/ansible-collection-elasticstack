@@ -20,7 +20,7 @@ on:
       - '.github/workflows/test_plugins.yml'
 
 jobs:
-  sanity_ansible_18_19:
+  sanity_core_2_18_2_19:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
@@ -63,7 +63,7 @@ jobs:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
 
-  sanity_ansible_20:
+  sanity_core_2_20:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     env:
@@ -105,10 +105,10 @@ jobs:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
 
-  unit-test:
+  unit_tests:
     needs:
-      - sanity_ansible_18_19
-      - sanity_ansible_20
+      - sanity_core_2_18_2_19
+      - sanity_core_2_20
     runs-on: ubuntu-latest
     env:
       COLLECTION_NAMESPACE: netways
@@ -149,7 +149,7 @@ jobs:
           ANSIBLE_FORCE_COLOR: '1'
 
   molecule_plugins:
-    needs: unit-test
+    needs: unit_tests
     runs-on: ubuntu-latest
     env:
       COLLECTION_NAMESPACE: netways
@@ -195,8 +195,8 @@ jobs:
           ANSIBLE_FORCE_COLOR: '1'
           ELASTIC_RELEASE: ${{ matrix.release }}
 
-  python-cryptography:
-    needs: unit-test
+  cryptography_compatibility:
+    needs: unit_tests
     runs-on: ubuntu-latest
     env:
       COLLECTION_NAMESPACE: netways

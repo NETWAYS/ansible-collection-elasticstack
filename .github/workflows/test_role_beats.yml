@@ -40,7 +40,7 @@ jobs:
           - debian13
         scenario:
           - beats_default
-          - beats_peculiar
+          - beats_extended
         release:
           - 8
         ansible_version:

@@ -24,15 +24,15 @@ on:
   merge_group:
 
 jobs:
-  lint_full:
+  lint_collection:
     if: github.event.pull_request.draft == false
     uses: ./.github/workflows/test_linting.yml
     with:
       rolename: ''
 
-  molecule_full_stack_ansible_19:
+  molecule_core_2_19:
     runs-on: ubuntu-latest
-    needs: lint_full
+    needs: lint_collection
 
     env:
       COLLECTION_NAMESPACE: netways
@@ -85,9 +85,9 @@ jobs:
           ELASTIC_RELEASE: ${{ matrix.release }}
 
 
-  molecule_full_stack_ansible_20:
+  molecule_core_2_20:
     runs-on: ubuntu-latest
-    needs: lint_full
+    needs: lint_collection
 
     env:
       COLLECTION_NAMESPACE: netways

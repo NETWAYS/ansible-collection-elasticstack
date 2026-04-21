@@ -26,7 +26,7 @@ jobs:
       rolename: logstash
 
 
-  molecule_logstash_extended:
+  molecule_logstash:
     runs-on: ubuntu-latest
     needs: lint_logstash
 

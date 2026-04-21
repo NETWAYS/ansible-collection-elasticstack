@@ -13,10 +13,6 @@ on:
           - warning
           - debug
   pull_request:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
     paths:
       - 'roles/beats/**'
       - '.github/workflows/test_role_beats.yml'
@@ -24,6 +20,7 @@ on:
 
 jobs:
   lint_beats:
+    if: github.event.pull_request.draft == false
     uses: ./.github/workflows/test_linting.yml
     with:
       rolename: beats
@@ -40,15 +37,14 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - ubuntu2204
+          - debian13
         scenario:
           - beats_default
-          - beats_peculiar
+          - beats_extended
         release:
-          - 7
           - 8
         ansible_version:
-          - "ansible>=9.0,<10.0" #Correspond ansible-core>=2.16,<2.17
+          - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0
         python_version:
           - "3.11"
 

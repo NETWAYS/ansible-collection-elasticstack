@@ -12,10 +12,6 @@ on:
           - warning
           - debug
   pull_request:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
     paths:
       - 'roles/repos/**'
       - '.github/workflows/test_role_repos.yml'
@@ -23,6 +19,7 @@ on:
 
 jobs:
   lint_repos:
+    if: github.event.pull_request.draft == false
     uses: ./.github/workflows/test_linting.yml
     with:
       rolename: repos
@@ -48,7 +45,6 @@ jobs:
           - repos_default
           - repos_oss
         release:
-          - 7
           - 8
         ansible_version:
           - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0

@@ -13,14 +13,12 @@ on:
           - warning
           - debug
   pull_request:
-  push:
-    branches:
-      - 'main'
   merge_group:
   schedule:
     - cron: '15 6 * * 4'
 jobs:
-  kics:
+  security_scan:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
 
     steps:

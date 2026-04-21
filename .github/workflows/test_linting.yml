@@ -17,12 +17,10 @@ on:
       rolename:
         required: true
         type: string
-  pull_request:
-    branches:
-      - '*'
 
 jobs:
   lint:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
@@ -37,6 +35,10 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements-test.txt
+
+      - name: Install Ansible collections
+        run: |
+          ansible-galaxy collection install community.crypto community.general
 
       - name: Lint code (yamllint).
         run: |

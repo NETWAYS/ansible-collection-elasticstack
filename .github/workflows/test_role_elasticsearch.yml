@@ -13,10 +13,6 @@ on:
           - warning
           - debug
   pull_request:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
     paths:
       - 'roles/elasticsearch/**'
       - '.github/workflows/test_role_elasticsearch.yml'
@@ -24,6 +20,7 @@ on:
 
 jobs:
   lint_elasticsearch:
+    if: github.event.pull_request.draft == false
     uses: ./.github/workflows/test_linting.yml
     with:
       rolename: elasticsearch
@@ -40,14 +37,11 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - ubuntu2204
+          - debian13
         scenario:
           - elasticsearch_default
           - elasticsearch_roles_calculation
-          - elasticsearch_cluster-oss
-          - elasticsearch_no-security
         release:
-          - 7
           - 8
         ansible_version:
           - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0

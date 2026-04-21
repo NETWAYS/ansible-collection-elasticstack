@@ -1,6 +1,5 @@
 # Ansible Collection - netways.elasticstack
 
-![Test ElasticStack](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_full_stack.yml/badge.svg)
 
 > [!CAUTION]
 > The current main branch has some breaking changes. Be careful using it! Everything after commit 3d6673f6d526afeb0fd7ba382d067d76bd10bbd6 is affected!
@@ -65,16 +64,8 @@ You may want the following Ansible roles installed. There other ways to achieve 
 We test the collection on the following Linux distributions. Each one with Elastic Stack 7 and 8.
 
 * Rocky Linux 9
-* Rocky Linux 8
 * Ubuntu 22.04 LTS
-* Ubuntu 20.04 LTS
-* Debian 11
-* Debian 10
-* CentOS 8
-
-We know from personal experience, that the collections work in following combinations. Missing tests mostly come from incompatibilties between the distribution and our testing environment, not from problems with the collection itself.
-
-* CentOS 7 - Elastic Stack 7
+* Debian 13
 
 ## Caveats and information for long time users
 
@@ -229,12 +220,6 @@ The execution order of the roles is important! (see below)
 ## Contributing
 
 Every kind of contribution is very welcome. Open [issues](https://github.com/NETWAYS/ansible-collection-elasticstack/issues) or provide [pull requests](https://github.com/NETWAYS/ansible-collection-elasticstack/pulls).
-
-Please note that we have some actions bound to specific names of branches. So please stick to the following naming scheme:
-
-* `fix/` as a prefix for every branch that fixes a problem
-* `feature/` for every branch that enhances the code with new features
-* `doc/` as a prefix for every branch that only changes documentation
 
 For now we open pull requests against `main`. We are planning to introduce dedicated branches to support older versions without breaking changes. Since we don't need them for now, please check back with this section because when we decided on how to proceed, you will find the information here. For now `main` always has the newest changes and if you want a stable version, please use the newest release.
 

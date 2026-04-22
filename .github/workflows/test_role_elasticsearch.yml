@@ -18,6 +18,10 @@ on:
       - '.github/workflows/test_role_elasticsearch.yml'
       - 'molecule/elasticsearch_**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint_elasticsearch:
     if: github.event.pull_request.draft == false

@@ -17,6 +17,11 @@ on:
       - '.github/workflows/test_role_repos.yml'
       - 'molecule/repos_**'
 
+# Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint_repos:
     if: github.event.pull_request.draft == false

@@ -23,6 +23,13 @@ on:
       - '.github/workflows/test_roles_pr.yml'
   merge_group:
 
+# Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
+# The merge queue is not affected because each merge attempt uses a new temporary branch with a unique name,
+# so github.ref is different each time.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint_collection:
     if: github.event.pull_request.draft == false

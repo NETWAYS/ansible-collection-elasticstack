@@ -19,6 +19,11 @@ on:
       - 'molecule/plugins/**'
       - '.github/workflows/test_plugins.yml'
 
+# Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sanity_core_2_18_2_19:
     if: github.event.pull_request.draft == false

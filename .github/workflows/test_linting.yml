@@ -18,6 +18,11 @@ on:
         required: true
         type: string
 
+# Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     if: github.event.pull_request.draft == false

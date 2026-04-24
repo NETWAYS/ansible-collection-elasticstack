@@ -98,6 +98,19 @@ jobs:
         if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
         run: echo "Latest Elasticsearch ${{ matrix.release }}.x = ${{ steps.elastic-version.outputs.version }}"
 
+      - name: Debug - list existing apt caches
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          WANT_KEY="${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}"
+          echo "=== Looking for key: ${WANT_KEY} ==="
+          echo "=== All caches with prefix '${{ runner.os }}-apt-elastic-${{ matrix.release }}.' ==="
+          gh api "repos/${{ github.repository }}/actions/caches?key=${{ runner.os }}-apt-elastic-${{ matrix.release }}.&per_page=100" \
+            | jq -r '.actions_caches[] | "\(.key)  size=\(.size_in_bytes)  created=\(.created_at)"'
+          echo "=== Total cache count in repo ==="
+          gh api "repos/${{ github.repository }}/actions/caches?per_page=1" | jq '.total_count'
+
       - name: Restore Elastic apt cache
         id: apt-cache
         if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
@@ -223,6 +236,19 @@ jobs:
       - name: Debug - latest Elasticsearch version
         if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
         run: echo "Latest Elasticsearch ${{ matrix.release }}.x = ${{ steps.elastic-version.outputs.version }}"
+
+      - name: Debug - list existing apt caches
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          WANT_KEY="${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}"
+          echo "=== Looking for key: ${WANT_KEY} ==="
+          echo "=== All caches with prefix '${{ runner.os }}-apt-elastic-${{ matrix.release }}.' ==="
+          gh api "repos/${{ github.repository }}/actions/caches?key=${{ runner.os }}-apt-elastic-${{ matrix.release }}.&per_page=100" \
+            | jq -r '.actions_caches[] | "\(.key)  size=\(.size_in_bytes)  created=\(.created_at)"'
+          echo "=== Total cache count in repo ==="
+          gh api "repos/${{ github.repository }}/actions/caches?per_page=1" | jq '.total_count'
 
       - name: Restore Elastic apt cache
         id: apt-cache

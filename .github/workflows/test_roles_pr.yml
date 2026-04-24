@@ -40,6 +40,8 @@ jobs:
   molecule_core_2_19:
     runs-on: ubuntu-latest
     needs: lint_collection
+    permissions:
+      actions: write
 
     env:
       COLLECTION_NAMESPACE: netways
@@ -114,6 +116,20 @@ jobs:
             -o Dir::Cache::archives=/tmp/elastic-apt-cache \
             elasticsearch logstash kibana filebeat
 
+      - name: Delete outdated Elastic apt caches
+        if: (contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')) && steps.apt-cache.outputs.cache-hit != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CURRENT_KEY="${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}"
+          echo "Keeping cache: ${CURRENT_KEY}"
+          gh api "repos/${{ github.repository }}/actions/caches?key=${{ runner.os }}-apt-elastic-${{ matrix.release }}.&per_page=100" \
+            | jq -r --arg current "${CURRENT_KEY}" '.actions_caches[] | select(.key != $current) | .id' \
+            | while read -r CACHE_ID; do
+                echo "Deleting outdated cache id=${CACHE_ID}"
+                gh api --method DELETE "repos/${{ github.repository }}/actions/caches/${CACHE_ID}"
+              done
+
       - name: Debug - apt cache contents
         if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
         run: |
@@ -145,6 +161,8 @@ jobs:
   molecule_core_2_20:
     runs-on: ubuntu-latest
     needs: lint_collection
+    permissions:
+      actions: write
 
     env:
       COLLECTION_NAMESPACE: netways
@@ -218,6 +236,20 @@ jobs:
           sudo apt-get install -y --download-only \
             -o Dir::Cache::archives=/tmp/elastic-apt-cache \
             elasticsearch logstash kibana filebeat
+
+      - name: Delete outdated Elastic apt caches
+        if: (contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')) && steps.apt-cache.outputs.cache-hit != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CURRENT_KEY="${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}"
+          echo "Keeping cache: ${CURRENT_KEY}"
+          gh api "repos/${{ github.repository }}/actions/caches?key=${{ runner.os }}-apt-elastic-${{ matrix.release }}.&per_page=100" \
+            | jq -r --arg current "${CURRENT_KEY}" '.actions_caches[] | select(.key != $current) | .id' \
+            | while read -r CACHE_ID; do
+                echo "Deleting outdated cache id=${CACHE_ID}"
+                gh api --method DELETE "repos/${{ github.repository }}/actions/caches/${CACHE_ID}"
+              done
 
       - name: Debug - apt cache contents
         if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')

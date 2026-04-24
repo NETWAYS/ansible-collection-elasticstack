@@ -23,6 +23,13 @@ on:
       - '.github/workflows/test_roles_pr.yml'
   merge_group:
 
+# Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
+# The merge queue is not affected because each merge attempt uses a new temporary branch with a unique name,
+# so github.ref is different each time.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint_collection:
     if: github.event.pull_request.draft == false
@@ -61,12 +68,62 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python_version }}
+          cache: 'pip'
+          cache-dependency-path: requirements-test.txt
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install "${{ matrix.ansible_version }}"
           python3 -m pip install -r requirements-test.txt
+
+      - name: Get latest Elasticsearch release
+        id: elastic-version
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        run: |
+          VERSION=$(curl -fsSL \
+            "https://artifacts.elastic.co/packages/${{ matrix.release }}.x/apt/dists/stable/main/binary-amd64/Packages.gz" \
+            | zcat \
+            | awk '/^Package: elasticsearch$/{found=1} found && /^Version:/{print $2; exit}')
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Debug - latest Elasticsearch version
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        run: echo "Latest Elasticsearch ${{ matrix.release }}.x = ${{ steps.elastic-version.outputs.version }}"
+
+      - name: Restore Elastic apt cache
+        id: apt-cache
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        uses: actions/cache@v4
+        with:
+          path: /tmp/elastic-apt-cache
+          key: ${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}
+          restore-keys: |
+            ${{ runner.os }}-apt-elastic-${{ matrix.release }}.
+
+      - name: Pre-download Elastic packages to apt cache
+        if: (contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')) && steps.apt-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/elastic-apt-cache
+          curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch \
+            | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch.gpg
+          echo "deb [signed-by=/usr/share/keyrings/elasticsearch.gpg] https://artifacts.elastic.co/packages/${{ matrix.release }}.x/apt stable main" \
+            | sudo tee /etc/apt/sources.list.d/elastic.list
+          sudo apt-get update -q
+          sudo apt-get install -y --download-only \
+            -o Dir::Cache::archives=/tmp/elastic-apt-cache \
+            elasticsearch logstash kibana filebeat
+
+      - name: Debug - apt cache contents
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        run: |
+          echo "=== /tmp/elastic-apt-cache/ ==="
+          ls -lh /tmp/elastic-apt-cache/ 2>/dev/null || echo "(empty or does not exist)"
+          echo "=== Total size ==="
+          du -sh /tmp/elastic-apt-cache/ 2>/dev/null || echo "(n/a)"
+
+      - name: Ensure apt cache directory exists
+        run: mkdir -p /tmp/elastic-apt-cache
 
       - name: Install collection
         run: |
@@ -116,12 +173,62 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python_version }}
+          cache: 'pip'
+          cache-dependency-path: requirements-test.txt
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install "${{ matrix.ansible_version }}"
           python3 -m pip install -r requirements-test.txt
+
+      - name: Get latest Elasticsearch release
+        id: elastic-version
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        run: |
+          VERSION=$(curl -fsSL \
+            "https://artifacts.elastic.co/packages/${{ matrix.release }}.x/apt/dists/stable/main/binary-amd64/Packages.gz" \
+            | zcat \
+            | awk '/^Package: elasticsearch$/{found=1} found && /^Version:/{print $2; exit}')
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Debug - latest Elasticsearch version
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        run: echo "Latest Elasticsearch ${{ matrix.release }}.x = ${{ steps.elastic-version.outputs.version }}"
+
+      - name: Restore Elastic apt cache
+        id: apt-cache
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        uses: actions/cache@v4
+        with:
+          path: /tmp/elastic-apt-cache
+          key: ${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}
+          restore-keys: |
+            ${{ runner.os }}-apt-elastic-${{ matrix.release }}.
+
+      - name: Pre-download Elastic packages to apt cache
+        if: (contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')) && steps.apt-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/elastic-apt-cache
+          curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch \
+            | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch.gpg
+          echo "deb [signed-by=/usr/share/keyrings/elasticsearch.gpg] https://artifacts.elastic.co/packages/${{ matrix.release }}.x/apt stable main" \
+            | sudo tee /etc/apt/sources.list.d/elastic.list
+          sudo apt-get update -q
+          sudo apt-get install -y --download-only \
+            -o Dir::Cache::archives=/tmp/elastic-apt-cache \
+            elasticsearch logstash kibana filebeat
+
+      - name: Debug - apt cache contents
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        run: |
+          echo "=== /tmp/elastic-apt-cache/ ==="
+          ls -lh /tmp/elastic-apt-cache/ 2>/dev/null || echo "(empty or does not exist)"
+          echo "=== Total size ==="
+          du -sh /tmp/elastic-apt-cache/ 2>/dev/null || echo "(n/a)"
+
+      - name: Ensure apt cache directory exists
+        run: mkdir -p /tmp/elastic-apt-cache
 
       - name: Install collection
         run: |

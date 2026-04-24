@@ -85,11 +85,14 @@ jobs:
         run: |
           curl -fsSL \
             "https://artifacts.elastic.co/packages/${{ matrix.release }}.x/apt/dists/stable/main/binary-amd64/Packages.gz" \
-            -o /tmp/elastic-packages.gz
-          VERSION=$(zcat /tmp/elastic-packages.gz \
-            | awk '/^Package: elasticsearch$/{f=1} f && /^Version:/ && !v{v=$2; f=0} END{print v}')
-          rm -f /tmp/elastic-packages.gz
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+            -o /tmp/Packages.gz
+
+          VERSION=$(zcat /tmp/Packages.gz \
+            | awk '$1=="Package:" && $2=="elasticsearch"{p=1} p && $1=="Version:"{print $2; p=0}' \
+            | sort -V \
+            | tail -n 1)
+          rm -f /tmp/Packages.gz
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Debug - latest Elasticsearch version
         if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
@@ -208,11 +211,14 @@ jobs:
         run: |
           curl -fsSL \
             "https://artifacts.elastic.co/packages/${{ matrix.release }}.x/apt/dists/stable/main/binary-amd64/Packages.gz" \
-            -o /tmp/elastic-packages.gz
-          VERSION=$(zcat /tmp/elastic-packages.gz \
-            | awk '/^Package: elasticsearch$/{f=1} f && /^Version:/ && !v{v=$2; f=0} END{print v}')
-          rm -f /tmp/elastic-packages.gz
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+            -o /tmp/Packages.gz
+
+          VERSION=$(zcat /tmp/Packages.gz \
+            | awk '$1=="Package:" && $2=="elasticsearch"{p=1} p && $1=="Version:"{print $2; p=0}' \
+            | sort -V \
+            | tail -n 1)
+          rm -f /tmp/Packages.gz
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Debug - latest Elasticsearch version
         if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')

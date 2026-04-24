@@ -105,8 +105,8 @@ jobs:
         run: |
           WANT_KEY="${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}"
           echo "=== Looking for key: ${WANT_KEY} ==="
-          echo "=== All caches with prefix '${{ runner.os }}-apt-elastic-${{ matrix.release }}.' ==="
-          gh api "repos/${{ github.repository }}/actions/caches?key=${{ runner.os }}-apt-elastic-${{ matrix.release }}.&per_page=100" \
+          echo "=== All caches in repo ==="
+          gh api "repos/${{ github.repository }}/actions/caches?per_page=100" \
             | jq -r '.actions_caches[] | "\(.key)  size=\(.size_in_bytes)  created=\(.created_at)"'
           echo "=== Total cache count in repo ==="
           gh api "repos/${{ github.repository }}/actions/caches?per_page=1" | jq '.total_count'
@@ -120,6 +120,7 @@ jobs:
           key: ${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}
           restore-keys: |
             ${{ runner.os }}-apt-elastic-${{ matrix.release }}.
+          save-always: true
 
       - name: Pre-download Elastic packages to apt cache
         if: (contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')) && steps.apt-cache.outputs.cache-hit != 'true'
@@ -133,6 +134,8 @@ jobs:
           sudo apt-get install -y --download-only \
             -o Dir::Cache::archives=/tmp/elastic-apt-cache \
             elasticsearch logstash kibana filebeat
+          sudo rm -f /tmp/elastic-apt-cache/lock
+          sudo rm -rf /tmp/elastic-apt-cache/partial
 
       - name: Delete outdated Elastic apt caches
         if: (contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')) && steps.apt-cache.outputs.cache-hit != 'true'
@@ -244,8 +247,8 @@ jobs:
         run: |
           WANT_KEY="${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}"
           echo "=== Looking for key: ${WANT_KEY} ==="
-          echo "=== All caches with prefix '${{ runner.os }}-apt-elastic-${{ matrix.release }}.' ==="
-          gh api "repos/${{ github.repository }}/actions/caches?key=${{ runner.os }}-apt-elastic-${{ matrix.release }}.&per_page=100" \
+          echo "=== All caches in repo ==="
+          gh api "repos/${{ github.repository }}/actions/caches?per_page=100" \
             | jq -r '.actions_caches[] | "\(.key)  size=\(.size_in_bytes)  created=\(.created_at)"'
           echo "=== Total cache count in repo ==="
           gh api "repos/${{ github.repository }}/actions/caches?per_page=1" | jq '.total_count'
@@ -259,6 +262,7 @@ jobs:
           key: ${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}
           restore-keys: |
             ${{ runner.os }}-apt-elastic-${{ matrix.release }}.
+          save-always: true
 
       - name: Pre-download Elastic packages to apt cache
         if: (contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')) && steps.apt-cache.outputs.cache-hit != 'true'
@@ -272,6 +276,8 @@ jobs:
           sudo apt-get install -y --download-only \
             -o Dir::Cache::archives=/tmp/elastic-apt-cache \
             elasticsearch logstash kibana filebeat
+          sudo rm -f /tmp/elastic-apt-cache/lock
+          sudo rm -rf /tmp/elastic-apt-cache/partial
 
       - name: Delete outdated Elastic apt caches
         if: (contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')) && steps.apt-cache.outputs.cache-hit != 'true'

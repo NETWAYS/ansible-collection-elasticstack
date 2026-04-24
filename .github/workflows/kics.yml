@@ -14,8 +14,6 @@ on:
           - debug
   pull_request:
   merge_group:
-  schedule:
-    - cron: '15 6 * * 4'
 jobs:
   security_scan:
     if: github.event.pull_request.draft == false

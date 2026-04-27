@@ -1,0 +1,96 @@
+---
+name: Warm Elastic apt cache
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  warm_cache:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        release:
+          - 8
+
+    steps:
+      - name: Get latest Elasticsearch release
+        id: elastic-version
+        run: |
+          curl -fsSL \
+            "https://artifacts.elastic.co/packages/${{ matrix.release }}.x/apt/dists/stable/main/binary-amd64/Packages.gz" \
+            -o /tmp/Packages.gz
+          VERSION=$(zcat /tmp/Packages.gz \
+            | awk '$1=="Package:" && $2=="elasticsearch"{p=1} p && $1=="Version:"{print $2; p=0}' \
+            | sort -V \
+            | tail -n 1)
+          rm -f /tmp/Packages.gz
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Debug - latest Elasticsearch version
+        run: echo "Latest Elasticsearch ${{ matrix.release }}.x = ${{ steps.elastic-version.outputs.version }}"
+
+      - name: Debug - list existing apt caches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          WANT_KEY="${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}"
+          echo "=== Looking for key: ${WANT_KEY} ==="
+          echo "=== All caches in repo ==="
+          gh api "repos/${{ github.repository }}/actions/caches?per_page=100" \
+            | jq -r '.actions_caches[] | "\(.key)  size=\(.size_in_bytes)  created=\(.created_at)"'
+          echo "=== Total cache count in repo ==="
+          gh api "repos/${{ github.repository }}/actions/caches?per_page=1" | jq '.total_count'
+
+      - name: Restore Elastic apt cache
+        id: apt-cache
+        uses: actions/cache@v5
+        with:
+          path: /tmp/elastic-apt-cache
+          key: ${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}
+          restore-keys: |
+            ${{ runner.os }}-apt-elastic-${{ matrix.release }}.
+          save-always: true
+
+      - name: Pre-download Elastic packages to apt cache
+        if: steps.apt-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/elastic-apt-cache
+          curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch \
+            | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch.gpg
+          echo "deb [signed-by=/usr/share/keyrings/elasticsearch.gpg] https://artifacts.elastic.co/packages/${{ matrix.release }}.x/apt stable main" \
+            | sudo tee /etc/apt/sources.list.d/elastic.list
+          sudo apt-get update -q
+          sudo apt-get install -y --download-only \
+            -o Dir::Cache::archives=/tmp/elastic-apt-cache \
+            elasticsearch logstash kibana filebeat
+          sudo rm -f /tmp/elastic-apt-cache/lock
+          sudo rm -rf /tmp/elastic-apt-cache/partial
+
+      - name: Delete outdated Elastic apt caches
+        if: steps.apt-cache.outputs.cache-hit != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CURRENT_KEY="${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}"
+          echo "Keeping cache: ${CURRENT_KEY}"
+          gh api "repos/${{ github.repository }}/actions/caches?key=${{ runner.os }}-apt-elastic-${{ matrix.release }}.&per_page=100" \
+            | jq -r --arg current "${CURRENT_KEY}" '.actions_caches[] | select(.key != $current) | .id' \
+            | while read -r CACHE_ID; do
+                echo "Deleting outdated cache id=${CACHE_ID}"
+                gh api --method DELETE "repos/${{ github.repository }}/actions/caches/${CACHE_ID}"
+              done
+
+      - name: Debug - apt cache contents
+        run: |
+          echo "=== /tmp/elastic-apt-cache/ ==="
+          ls -lh /tmp/elastic-apt-cache/ 2>/dev/null || echo "(empty or does not exist)"
+          echo "=== Total size ==="
+          du -sh /tmp/elastic-apt-cache/ 2>/dev/null || echo "(n/a)"

@@ -18,6 +18,8 @@ on:
     - cron: '15 6 * * 4'
 jobs:
   security_scan:
+    # For non-PR events (workflow_dispatch, schedule, etc.), github.event.pull_request.draft is null.
+    # GitHub Actions coerces null == false to true (null → 0, false → 0), so the job runs for all non-draft events.
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
 

@@ -47,6 +47,8 @@ collections:
 
 ### Requirements
 
+This collection requires **ansible-core 2.18** or newer, which needs Python 3.11+ on the Ansible control node.
+
 You will need the following Ansible collections installed
 
 * `community.general` (probably already present)

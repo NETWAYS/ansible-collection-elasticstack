@@ -32,6 +32,8 @@ concurrency:
 
 jobs:
   lint_collection:
+    # For non-PR events (workflow_dispatch, merge_group, etc.), github.event.pull_request.draft is null.
+    # GitHub Actions coerces null == false to true (null → 0, false → 0), so the job runs for all non-draft events.
     if: github.event.pull_request.draft == false
     uses: ./.github/workflows/test_linting.yml
     with:

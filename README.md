@@ -47,7 +47,9 @@ collections:
 
 ### Requirements
 
-This collection requires **ansible-core 2.18** or newer, which needs Python 3.11+ on the Ansible control node.
+On the Ansible control node:
+* `Ansible-Core >=2.18.0`
+* `Python >=3.11.0`
 
 You will need the following Ansible collections installed
 

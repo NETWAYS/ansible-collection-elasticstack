@@ -1,44 +1,68 @@
 ---
-# The workaround for arbitrarily named role directory is important because the git repo has one name and the role within it another
-# Found at: https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
 - name: Converge
   collections:
     - netways.elasticstack
-  hosts: localhost
+  hosts: all
+  vars:
+    elasticstack_full_stack: false
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int }}"
+    elasticsearch_heap: "1"
+    elasticstack_no_log: false
   tasks:
-    #
-    # Test modules
-    #
-    - name: Test
-      cert_info:
-        path: files/es-ca/elastic-stack-ca.p12
-        passphrase: PleaseChangeMe
-      register: test
-    - name: Debug
-      ansible.builtin.debug:
-        msg: "{{ test }}"
-    - name: Test required parameters (missing path)
-      cert_info:
-        passphrase: PleaseChangeMe
-      ignore_errors: true
-    - name: Test wrong path
-      cert_info:
-        path: es-ca-wrong
-        passphrase: PleaseChangeMe
-      ignore_errors: true
-    - name: Debug with to_datetime() - (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days
-      ansible.builtin.debug:
-        msg: >-
-          "{{ (( test.not_valid_after | to_datetime()) - (ansible_date_time.date | to_datetime('%Y-%m-%d'))).days }}"
-    - name: Test wrong passphrase
-      cert_info:
-        path: files/es-ca/elastic-stack-ca.p12
-        passphrase: PleaseChangeMe-wrong
-      ignore_errors: true
-    - name: Test no passphrase
-      cert_info:
-        path: files/es-ca/elastic-stack-ca.p12
-      ignore_errors: true
-    - name: Test no parameters
-      cert_info:
-      ignore_errors: true
+    - name: Include Elastic repos role
+      ansible.builtin.include_role:
+        name: repos
+
+    - name: Include Elasticsearch
+      ansible.builtin.include_role:
+        name: elasticsearch
+
+    - name: Fetch Elastic password # noqa: risky-shell-pipe
+      ansible.builtin.shell: >
+        if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
+        grep "PASSWORD elastic" /usr/share/elasticsearch/initial_passwords |
+        awk {' print $4 '}
+      register: elasticstack_password
+      changed_when: false
+
+    - name: Create Elasticsearch role
+      netways.elasticstack.elasticsearch_role:
+        name: test-role
+        cluster:
+          - manage_own_api_key
+          - delegate_pki
+        indicies:
+          - names:
+              - test-index
+            privileges:
+              - read
+              - write
+        state: present
+        host: https://localhost:9200
+        auth_user: elastic
+        auth_pass: "{{ elasticstack_password.stdout }}"
+        verify_certs: false
+
+    - name: Create Elasticsearch user
+      netways.elasticstack.elasticsearch_user:
+        name: test-user
+        fullname: Test User
+        password: "{{ lookup('community.general.random_string', length=12, min_lower=1, min_upper=1, min_numeric=1, min_special=1, override_special='-_=!') }}"
+        email: test@example.com
+        roles:
+          - test-role
+        enabled: true
+        state: present
+        host: https://localhost:9200
+        auth_user: elastic
+        auth_pass: "{{ elasticstack_password.stdout }}"
+        verify_certs: false
+        ca_certs: /etc/elasticsearch/certs/http_ca.crt
+
+    - name: Copy PKCS12 certificate for cert_info testing
+      ansible.builtin.copy:
+        src: files/es-ca/elastic-stack-ca.p12
+        dest: /tmp/elastic-stack-ca.p12
+        mode: '0644'

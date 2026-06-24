@@ -3,14 +3,15 @@ name: elasticstack
 version: 1.0.0
 readme: README.md
 authors:
-  - Alexander Stoll <alexander.stoll@netways.de>
-  - Markus Frosch <markus.frosch@netways.de>
-  - Patrick Dolinic <patrick.dolinic@netways.de>
+- Afeef Ghannam <afeef.ghannam@netways.de>
+- Alexander Stoll <alexander.stoll@netways.de>
+- David Okon <david.okon@netways.de>
   - Thilo Wening <thilo.wening@netways.de>
   - Thomas Widhalm <thomas.widhalm@netways.de>
 description: This collection installs and configures components from the Elastic Stack. Every role can be used standalone or in combination with other roles.
 license:
   - GPL-3.0
+# min_ansible_version: "2.18"  # max supported: 2.20 (commented out for schema compliance)
 license_file: 'LICENSE'
 tags:
   - elastic
@@ -36,3 +37,4 @@ build_ignore:
   - .mailmap
   - '*.tar.gz'
   - 'venv*'
+# Minimum Ansible version required: 2.14, maximum supported: 2.20

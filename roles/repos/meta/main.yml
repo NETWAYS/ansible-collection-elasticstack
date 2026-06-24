@@ -4,22 +4,24 @@ galaxy_info:
   description: Elastic Repositories
   author: Thomas Widhalm <thomas.widhalm@netways.de>
   company: Netways GmbH
-  license: GPL-3.0-or-later
-
-  min_ansible_version: "2.9"
+  license: GPL-3.0
+  min_ansible_version: "2.18"
   platforms:
     - name: EL
       versions:
-        - "8"
-    - name: Debian
-      versions:
-        - bullseye
+        - "9"
     - name: Ubuntu
       versions:
-        - focal
-        - jammy
+        - "22.04"
   galaxy_tags:
-    - logmanagement
-    - elasticstack
-
+    - repositories
+    - linux
+    - elastic
+    - elk
+    - logstash
+    - elasticsearch
+    - kibana
 dependencies: []
+
+collections:
+  - netways.elasticstack

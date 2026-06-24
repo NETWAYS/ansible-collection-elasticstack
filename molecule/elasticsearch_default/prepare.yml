@@ -2,6 +2,10 @@
 - name: Prepare
   hosts: all
   tasks:
+    - name: Show discovered interpreter
+      debug:
+        var: ansible_facts.discovered_interpreter_python
+
     - name: Install packages for Debian
       ansible.builtin.apt:
         name:

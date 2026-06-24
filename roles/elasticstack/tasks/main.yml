@@ -1,34 +1,40 @@
 ---
+- name: Include elasticstack role
+  when: not hostvars[inventory_hostname]._elasticstack_role_imported | default(false) # Ensure the global meta role is only called once for each host
+  block:
+    - name: Include OS specific vars
+      ansible.builtin.include_vars: '{{ item }}'
+      with_first_found:
+        - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
+        - '{{ ansible_os_family }}.yml'
 
-- name: Include OS specific vars
-  ansible.builtin.include_vars: '{{ item }}'
-  with_first_found:
-    - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
-    - '{{ ansible_os_family }}.yml'
+    - name: Set elasticstack_ca_host variable if not already done by user
+      ansible.builtin.set_fact:
+        elasticstack_ca: "{{ groups[elasticstack_elasticsearch_group_name][0] }}"
+      when:
+        - elasticstack_ca_host is undefined
+        - groups[elasticstack_elasticsearch_group_name][0] is defined
 
-- name: Set elasticstack_ca variable if not already done by user
-  ansible.builtin.set_fact:
-    elasticstack_ca: "{{ groups[elasticstack_elasticsearch_group_name][0] }}"
-  when:
-    - elasticstack_ca is undefined
-    - groups[elasticstack_elasticsearch_group_name][0] is defined
+    - name: Set elasticstack_ca_host variable if not already set to Elasticsearch server
+      ansible.builtin.set_fact:
+        elasticstack_ca_host: "{{ groups[elasticstack_logstash_group_name][0] }}"
+      when:
+        - elasticstack_ca_host is undefined
+        - groups[elasticstack_logstash_group_name][0] is defined
 
-- name: Set elasticstack_ca variable if not already set to Elasticsearch server
-  ansible.builtin.set_fact:
-    elasticstack_ca: "{{ groups[elasticstack_logstash_group_name][0] }}"
-  when:
-    - elasticstack_ca is undefined
-    - groups[elasticstack_logstash_group_name][0] is defined
+    - name: Set versions for components
+      ansible.builtin.import_tasks: elasticstack-versions.yml
 
-- name: Set versions for components
-  ansible.builtin.import_tasks: elasticstack-versions.yml
+    - name: Fetch passwords if passwords are initialized
+      ansible.builtin.import_tasks: elasticstack-passwords.yml
 
-- name: Fetch passwords if passwords are initialized
-  ansible.builtin.import_tasks: elasticstack-passwords.yml
+    - name: Set elasticstack_globals_set for other roles to skip this role
+      ansible.builtin.set_fact:
+        elasticstack_globals_set: true
 
-- name: Set elasticstack_globals_set for other roles to skip this role
-  ansible.builtin.set_fact:
-    elasticstack_globals_set: true
+    - name: Install common packages and dependencies
+      ansible.builtin.import_tasks: packages.yml
 
-- name: Install common packages and dependencies
-  ansible.builtin.import_tasks: packages.yml
+    - name: Register elasticstack role has run for that host
+      ansible.builtin.set_fact:
+        _elasticstack_role_imported: true

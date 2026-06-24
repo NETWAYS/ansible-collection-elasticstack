@@ -127,8 +127,8 @@
     - name: Check if all Nodes see each other
       ansible.builtin.assert:
         that:
-          - "'{{ item }}' in nodes.content"
-        fail_msg: "'{{ item }}' was not found in nodes.content"
-        success_msg: "'{{ item }}' was found in nodes.content"
+          - item in nodes.content
+        fail_msg: "{{ item }} was not found in nodes.content"
+        success_msg: "{{ item }} was found in nodes.content"
       with_inventory_hostnames: all
       when: groups[elasticstack_elasticsearch_group_name] | length > 1

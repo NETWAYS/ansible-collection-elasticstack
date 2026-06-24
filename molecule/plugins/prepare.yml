@@ -3,7 +3,7 @@
   hosts: all
   tasks:
     - name: Show discovered interpreter
-      debug:
+      ansible.builtin.debug:
         var: ansible_facts.discovered_interpreter_python
 
     - name: Install packages for Debian
@@ -17,3 +17,10 @@
           - git
           - openssl
         update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install Python dependencies
+      ansible.builtin.pip:
+        name:
+          - "elasticsearch<9"  # Version 9+ has breaking API changes incompatible with this collection
+          - cryptography       # latest version; version matrix is tested in the python-cryptography CI job

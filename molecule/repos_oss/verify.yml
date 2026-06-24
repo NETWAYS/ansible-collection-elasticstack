@@ -4,6 +4,6 @@
 - name: Verify
   hosts: all
   tasks:
-  - name: Install Kibana
+  - name: Install logstash-oss
     ansible.builtin.package:
-      name: kibana-oss
+      name: logstash-oss

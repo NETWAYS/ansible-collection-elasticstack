@@ -17,8 +17,8 @@ on:
       - 'roles/**'
       - 'molecule/elasticstack_default/**'
       - 'requirements-test.txt'
-      - '.config/ansible-lint.yml'
       - '.github/workflows/test_roles_pr.yml'
+      - 'galaxy.yml'
   merge_group:
 
 # Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.

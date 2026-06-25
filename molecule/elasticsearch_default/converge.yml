@@ -13,6 +13,10 @@
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticsearch_heap: "1"
     elasticstack_no_log: false
+    # Passwords with arbitrary special characters (space, single quote, $, backtick) to test
+    # that they reach the keystore (stdin) and certutil/openssl (argv) without mangling.
+    elasticsearch_bootstrap_pw: "Bp'$pa ss`5"
+    elasticsearch_tls_key_passphrase: "Es'$ke y`6"
   tasks:
     - name: Include Elastics repos role
       ansible.builtin.include_role:

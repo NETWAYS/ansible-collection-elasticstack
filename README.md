@@ -47,6 +47,10 @@ collections:
 
 ### Requirements
 
+On the Ansible control node:
+* `Ansible-Core >=2.18.0`
+* `Python >=3.11.0`
+
 You will need the following Ansible collections installed
 
 * `community.general` (probably already present)

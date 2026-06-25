@@ -13,7 +13,6 @@ on:
           - warning
           - debug
   pull_request:
-  merge_group:
 
 # Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
 concurrency:

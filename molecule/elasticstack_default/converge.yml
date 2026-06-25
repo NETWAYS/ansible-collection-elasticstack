@@ -17,6 +17,14 @@
     elasticsearch_heap: "1"
     elasticstack_full_stack: true
     elasticstack_no_log: false
+    # Passphrases with arbitrary special characters (space, single quote, $, backtick) to test
+    # that they reach certutil/openssl/keystore without shell or shlex mangling. ca_pass and
+    # cert_pass are global (cert_pass feeds elasticsearch + kibana); logstash and beats have
+    # their own passphrase variables.
+    elasticstack_ca_pass: "Ca'$pa ss`1"
+    elasticstack_cert_pass: "Es'$ce rt`2"
+    logstash_tls_key_passphrase: "Ls'$pa ss`3"
+    beats_tls_key_passphrase: "Be'$pa ss`4"
     logstash_pipeline_unsafe_shutdown: true
     logstash_redis_password: "{{ lookup('ansible.builtin.password', '/tmp/redispassword', chars=['ascii_letters'], length=15) }}"
     redis_requirepass: "{{ logstash_redis_password }}"

@@ -1,12 +1,5 @@
 ---
 
-- name: Check for versions
-  ansible.builtin.fail:
-    msg: "No OSS package with version later than 7 is available for Elasticsearch"
-  when:
-    - elasticstack_release | int > 7
-    - elasticstack_variant == "oss"
-
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
@@ -18,9 +11,6 @@
     cache_valid_time: 600
   changed_when: false
   when: ansible_os_family == 'Debian'
-
-- name: Check-set-parameters
-  ansible.builtin.include_tasks: elasticsearch-parameters.yml
 
 - name: Include OS specific vars
   ansible.builtin.include_vars: '{{ item }}'
@@ -142,7 +132,7 @@
   ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
     enablerepo:
-      - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
+      - 'elastic-{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool

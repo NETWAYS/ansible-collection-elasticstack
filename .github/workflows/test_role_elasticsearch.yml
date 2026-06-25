@@ -44,10 +44,7 @@ jobs:
         scenario:
           - elasticsearch_default
           - elasticsearch_roles_calculation
-          - elasticsearch_cluster-oss
-          - elasticsearch_no-security
         release:
-          - 7
           - 8
         ansible_version:
           - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0

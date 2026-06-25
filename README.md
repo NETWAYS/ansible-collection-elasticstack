@@ -62,7 +62,7 @@ You may want the following Ansible roles installed. There other ways to achieve 
 
 ### Supported systems
 
-We test the collection on the following Linux distributions. Each one with Elastic Stack 7 and 8.
+We test the collection on the following Linux distributions. Each one with Elastic Stack 8.
 
 * Rocky Linux 9
 * Rocky Linux 8
@@ -71,10 +71,6 @@ We test the collection on the following Linux distributions. Each one with Elast
 * Debian 11
 * Debian 10
 * CentOS 8
-
-We know from personal experience, that the collections work in following combinations. Missing tests mostly come from incompatibilties between the distribution and our testing environment, not from problems with the collection itself.
-
-* CentOS 7 - Elastic Stack 7
 
 ## Caveats and information for long time users
 
@@ -98,9 +94,9 @@ The variable `elasticstack_no_log` can be set to `false` if you want to see the 
 
 ### Versions and upgrades
 
-*elasticstack_version*: Version number of tools to install. Only set if you don't want the latest on new setups. (default: none). If you already have an installation of Elastic Stack, this collection will query the version of Elasticsearch on the CA host and use it for all further installations in the same setup. (Only if you run the `elasticsearch` role before all others) Example: `7.17.2`
+*elasticstack_version*: Version number of tools to install. Only set if you don't want the latest on new setups. (default: none). If you already have an installation of Elastic Stack, this collection will query the version of Elasticsearch on the CA host and use it for all further installations in the same setup. (Only if you run the `elasticsearch` role before all others) Example: `8.11.2`
 
-*elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`) Make sure it corresponds to `elasticstack_version` if you set both.
+*elasticstack_release*: Major release version of Elastic stack to configure. (default: `8`) Make sure it corresponds to `elasticstack_version` if you set both.
 
 For OSS version see `elasticstack_variant` below.
 
@@ -142,8 +138,6 @@ ansible-galaxy install geerlingguy.redis
 
 1) Default: For general Elastic Stack installations using all features use the following. You will need Redis installed and running for the default setup to run. A viable way is using the `geerlingguy.redis` role.
 
-2) Specific: For OSS Installation without X-Pack features you can use the following. _Note_: this is only available for version `7.x`.
-
 Our default configuration will collect filesystem logs placed by `rsyslog`. Therefor our example playbook makes sure, `rsyslog` is installed. If you don't want that, please change the configuration of the `beats` module. Without syslog you won't receive any messages with the default configuration.
 
 There are some comments in the Playbook. Either fill them with the correct values (`remote_user`) or consider them as a hint to commonly used options.
@@ -163,7 +157,7 @@ The execution order of the roles is important! (see below)
     - netways.elasticstack
   vars:
     elasticstack_variant: elastic #oss
-    #  elasticstack_release: 8 #7
+    #  elasticstack_release: 8
   roles:
     - repos
 
@@ -175,7 +169,7 @@ The execution order of the roles is important! (see below)
   vars:
     elasticstack_variant: elastic #oss
     elasticsearch_jna_workaround: true
-    #  elasticstack_release: 8 #7
+    #  elasticstack_release: 8
   roles:
     - elasticsearch
 
@@ -187,7 +181,7 @@ The execution order of the roles is important! (see below)
   vars:
     elasticstack_variant: elastic #oss
     elasticstack_override_beats_tls: true
-    #  elasticstack_release: 8 #7
+    #  elasticstack_release: 8
   roles:
     - geerlingguy.redis
     - logstash
@@ -199,7 +193,7 @@ The execution order of the roles is important! (see below)
     - netways.elasticstack
   vars:
     elasticstack_variant: elastic #oss
-    #  elasticstack_release: 8 #7
+    #  elasticstack_release: 8
   roles:
     - kibana
 
@@ -211,7 +205,7 @@ The execution order of the roles is important! (see below)
   vars:
     elasticstack_variant: elastic #oss
     elasticstack_override_beats_tls: true
-    #  elasticstack_release: 8 #7
+    #  elasticstack_release: 8
   pre_tasks:
     - name: Install Rsyslog
       ansible.builtin.package:

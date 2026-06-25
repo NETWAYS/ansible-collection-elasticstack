@@ -53,7 +53,7 @@ beats_filebeat_log_inputs:
       negate: false
       match: after
 ```
-* *beats_filebeat_journald*: Enable collection of JournalD logs (default: `false`) - available since Filebeat 7.16
+* *beats_filebeat_journald*: Enable collection of JournalD logs (default: `false`)
 * *beats_filebeat_journald_inputs*: List of journald inputs. Use for different filters on events. You can add a list of `include_matches` entries for filtering.
 Default of `beats_filebeat_journald_inputs`:
 ```
@@ -61,7 +61,7 @@ beats_filebeat_journald_inputs:
   everything:
     id: everything
 ```
-* *beats_filebeat_docker*: Enable collection of Docker logs (default: `false`) **ONLY WORKS ON RELEASE 7 SO FAR**
+* *beats_filebeat_docker*: Enable collection of Docker logs (default: `false`)
 * *beats_filebeat_docker_ids*: IDs of containers to collect. (default: `*`)
 
 * *beats_filebeat_loadbalance*: Enable loadbalancing for Filebeats Logstash output (default: `true`)
@@ -95,7 +95,7 @@ The following variables only apply if you use this role together with our other 
 * *elasticstack_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elasticstack_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
-* *elasticstack_version*: Install specific version (Default: none. Possible values: e.g. `7.10.1` or `latest`)
+* *elasticstack_version*: Install specific version (Default: none. Possible values: e.g. `8.10.1` or `latest`)
 
 If you want to use this role with your own TLS certificates, use these variables.
 

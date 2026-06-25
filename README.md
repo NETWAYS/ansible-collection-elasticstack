@@ -1,6 +1,5 @@
 # Ansible Collection - netways.elasticstack
 
-
 > [!CAUTION]
 > The current main branch has some breaking changes. Be careful using it! Everything after commit 3d6673f6d526afeb0fd7ba382d067d76bd10bbd6 is affected!
 
@@ -45,6 +44,10 @@ collections:
 ```
 
 ### Requirements
+
+On the Ansible control node:
+* `Ansible-Core >=2.18.0`
+* `Python >=3.11.0`
 
 You will need the following Ansible collections installed
 

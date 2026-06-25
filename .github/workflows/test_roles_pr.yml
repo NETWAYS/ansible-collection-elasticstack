@@ -17,9 +17,7 @@ on:
       - 'roles/**'
       - 'molecule/elasticstack_default/**'
       - 'requirements-test.txt'
-      - '.yamllint'
       - '.config/ansible-lint.yml'
-      - 'galaxy.yml'
       - '.github/workflows/test_roles_pr.yml'
   merge_group:
 

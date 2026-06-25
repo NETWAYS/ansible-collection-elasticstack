@@ -1,0 +1,5 @@
+# Managed by Ansible
+# Logstash has no jvm.options.d directory, and /etc/logstash/jvm.options is a package
+# config file. So we set the heap via LS_JAVA_OPTS in a systemd drop-in.
+[Service]
+Environment="LS_JAVA_OPTS=-Xms{{ logstash_heap }}g -Xmx{{ logstash_heap }}g"

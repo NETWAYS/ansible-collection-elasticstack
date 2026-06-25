@@ -18,10 +18,25 @@ on:
         required: true
         type: string
 
-# Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+# DO NOT add a concurrency block to this reusable workflow. Keep it disabled.
+#
+# Inside a reusable workflow (called via "uses:"), github.workflow resolves to the
+# CALLER's workflow name, not "Test Linting". So the group below would evaluate to the
+# exact same value as the caller's own concurrency group (e.g.
+# "Test Collection Roles-refs/pull/<n>/merge"). With cancel-in-progress: true the called
+# workflow would then try to cancel the in-progress run of its own parent, which GitHub
+# refuses with:
+#   "Canceling since a deadlock was detected for concurrency group:
+#    'Test Collection Roles-refs/pull/<n>/merge' between a top level workflow and 'lint_collection'"
+# That deadlock cancels the lint job, which in turn skips the molecule jobs (needs: lint_*),
+# and the whole run ends as failure (see PR #430).
+#
+# Concurrency is already handled by every calling workflow (test_roles_pr.yml,
+# test_role_*.yml). Leave it to the callers and never re-enable it here.
+#
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
 
 jobs:
   lint:

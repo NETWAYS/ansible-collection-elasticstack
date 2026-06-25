@@ -18,7 +18,7 @@ on:
       - 'molecule/elasticstack_default/**'
       - 'requirements-test.txt'
       - '.github/workflows/test_roles_pr.yml'
-      - 'galaxy.yml'
+      - 'galaxy.yml' # When changing dependencies parameter
   merge_group:
 
 # Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.

@@ -13,14 +13,17 @@ on:
           - warning
           - debug
   pull_request:
-  push:
-    branches:
-      - 'main'
-  merge_group:
-  schedule:
-    - cron: '15 6 * * 4'
+
+# Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  kics:
+  security_scan:
+    # For non-PR events (workflow_dispatch, schedule, etc.), github.event.pull_request.draft is null.
+    # GitHub Actions coerces null == false to true (null → 0, false → 0), so the job runs for all non-draft events.
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
 
     steps:

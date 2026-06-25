@@ -121,7 +121,7 @@
   ansible.builtin.set_fact:
     elasticsearch_package: >
       {{
-      'elasticsearch' +
+      ('elasticsearch-oss' if elasticstack_variant == 'oss' else 'elasticsearch') +
       ((elasticstack_versionseparator +
       elasticstack_version |
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |

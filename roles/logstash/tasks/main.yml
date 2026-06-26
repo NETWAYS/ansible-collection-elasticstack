@@ -138,6 +138,41 @@
     - configuration
     - logstash_configuration
 
+- name: Create systemd drop-in directory for Logstash
+  ansible.builtin.file:
+    path: /etc/systemd/system/logstash.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags:
+    - configuration
+    - logstash_configuration
+
+- name: Set Logstash JVM heap size via systemd drop-in
+  ansible.builtin.template:
+    src: jvm-heap.conf.j2
+    dest: /etc/systemd/system/logstash.service.d/heap.conf
+    owner: root
+    group: root
+    mode: "0644"
+  register: logstash_heap_dropin
+  notify:
+    - Restart Logstash
+  tags:
+    - configuration
+    - logstash_configuration
+
+# Reload systemd inline (not via handler) so a fresh install picks up the drop-in before
+# "Start Logstash" runs. Handlers only fire at the end of the play, which would be too late.
+- name: Reload systemd to apply Logstash heap drop-in
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: logstash_heap_dropin.changed
+  tags:
+    - configuration
+    - logstash_configuration
+
 - name: Configure Logstash logging
   ansible.builtin.template:
     src: log4j2.properties.j2

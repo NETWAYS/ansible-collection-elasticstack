@@ -1,0 +1,456 @@
+---
+# Role argument specification for the logstash role.
+# This is the single source of truth for the role's variables: Ansible validates
+# the supplied values against it at role start, and ansible-docsmith renders the
+# README variable reference and the comments in defaults/main.yml from it.
+#
+# Only logstash_* variables live here. The shared elasticstack_* variables are
+# documented centrally with the elasticstack role.
+
+argument_specs:
+  main:
+    short_description: Install and configure Logstash
+    description:
+      - Installs and configures Logstash on Linux systems.
+      - >-
+        Can manage logstash.yml, log4j2 logging, pipelines (default Redis/Beats
+        pipelines and pipelines from external git repositories), TLS and the
+        Elasticsearch writer role/user, and the JVM heap size.
+    author:
+      - NETWAYS GmbH
+
+    options:
+
+      # ----- Service & general -----
+      logstash_enable:
+        type: bool
+        default: true
+        description: Start and enable the Logstash service.
+
+      logstash_config_backup:
+        type: bool
+        default: false
+        description: Keep backups of every configuration file the role changes.
+
+      logstash_manage_yaml:
+        type: bool
+        default: true
+        description: Manage and overwrite logstash.yml.
+
+      logstash_manage_logging:
+        type: bool
+        default: false
+        description: Manage the log4j2 logging configuration.
+
+      logstash_heap:
+        type: str
+        default: "1"
+        description:
+          - JVM heap size in GB. Sets both -Xms and -Xmx via an LS_JAVA_OPTS systemd drop-in.
+          - >-
+            Elastic recommends 4-8 GB for typical ingestion and staying below 50-75%
+            of physical memory. Keep it low when Logstash shares a host with
+            Elasticsearch so they do not compete for memory.
+
+      logstash_plugins:
+        type: list
+        elements: str
+        description: List of Logstash plugins to install. Unset by default.
+
+      # ----- logstash.yml settings -----
+      logstash_config_autoreload:
+        type: bool
+        default: true
+        description: Enable automatic reload of the Logstash configuration.
+
+      logstash_config_autoreload_interval:
+        type: str
+        description: >-
+          Interval between configuration reload checks (e.g. "3s"). Only used
+          when logstash_config_autoreload is enabled. Unset by default.
+
+      logstash_config_path_data:
+        type: str
+        default: /var/lib/logstash
+        description: Logstash data directory (path.data).
+
+      logstash_config_path_logs:
+        type: str
+        default: /var/log/logstash
+        description: Logstash log directory (path.logs).
+
+      logstash_http_host:
+        type: str
+        description: Bind address of the Logstash monitoring API (http.host). Unset by default.
+
+      logstash_http_port:
+        type: str
+        description: Port (or port range, e.g. "9600-9700") of the monitoring API (http.port). Unset by default.
+
+      logstash_global_ecs:
+        type: str
+        choices:
+          - disabled
+          - v1
+        description: Set the global ECS compatibility mode (pipeline.ecs_compatibility). Unset by default.
+
+      logstash_pipeline_unsafe_shutdown:
+        type: bool
+        description: Force Logstash to exit during shutdown even if there are in-flight events. Unset by default.
+
+      logstash_legacy_monitoring:
+        type: bool
+        default: true
+        description: >-
+          Enable legacy X-Pack monitoring. Ignored unless elasticstack_full_stack
+          is set and only effective on Elastic Stack releases lower than 8.
+
+      # ----- Pipelines -----
+      logstash_manage_pipelines:
+        type: bool
+        default: true
+        description: Manage pipelines.yml.
+
+      logstash_no_pipelines:
+        type: bool
+        default: false
+        description: Disable all pipeline management entirely.
+
+      logstash_pipelines:
+        type: list
+        elements: dict
+        description:
+          - List of pipelines to configure.
+          - >-
+            Each entry needs a name. A pipeline either points to an external git
+            repository (source/version) or defines simple input/output keys that
+            connect to Redis. See the pipelines documentation for details.
+        default:
+          - name: default
+            exclusive: false
+            queue_type: memory
+            queue_max_bytes: 1gb
+            input:
+              - name: default
+                key: input
+            output:
+              - name: default
+                key: forwarder
+        options:
+          name:
+            type: str
+            required: true
+            description: Unique name of the pipeline. Becomes the pipeline directory and pipeline.id.
+          exclusive:
+            type: bool
+            description: Mark this pipeline as the only one allowed to handle its events.
+          source:
+            type: str
+            description: URL of a git repository holding the pipeline configuration.
+          version:
+            type: str
+            description: Git branch/tag/commit to check out from source (default "main").
+          queue_type:
+            type: str
+            choices:
+              - memory
+              - persisted
+            description: Queue type for this pipeline (default "memory").
+          queue_max_bytes:
+            type: str
+            description: Maximum queue size for this pipeline (default "1gb").
+          input:
+            type: list
+            elements: dict
+            description: Simple Redis inputs for this pipeline.
+            options:
+              name:
+                type: str
+                description: Name of the input.
+              key:
+                type: str
+                description: Redis key to read from.
+          output:
+            type: list
+            elements: dict
+            description: Simple Redis outputs for this pipeline.
+            options:
+              name:
+                type: str
+                description: Name of the output.
+              key:
+                type: str
+                description: Redis key to write to.
+
+      logstash_elasticsearch_output:
+        type: bool
+        default: true
+        description: Create the default pipeline that forwards events to Elasticsearch.
+
+      logstash_beats_input:
+        type: bool
+        default: true
+        description: Create the default pipeline with a Beats input.
+
+      logstash_beats_input_congestion:
+        type: int
+        description: Congestion threshold (seconds) for the Beats input pipeline. Unset by default.
+
+      logstash_beats_timeout:
+        type: str
+        description: Timeout for idle client connections on the Beats input (e.g. "60s"). Unset by default.
+
+      logstash_beats_tls:
+        type: bool
+        description: >-
+          Activate TLS on the Beats input pipeline. Unset by default, but enabled
+          automatically in a full stack setup unless overridden.
+
+      logstash_input_queue_type:
+        type: str
+        choices:
+          - memory
+          - persisted
+        default: memory
+        description: Queue type for the default Beats input pipeline.
+
+      logstash_input_queue_max_bytes:
+        type: str
+        default: 1gb
+        description: Maximum queue size for the default Beats input pipeline.
+
+      logstash_forwarder_queue_type:
+        type: str
+        choices:
+          - memory
+          - persisted
+        default: memory
+        description: Queue type for the default Elasticsearch forwarder pipeline.
+
+      logstash_forwarder_queue_max_bytes:
+        type: str
+        default: 1gb
+        description: Maximum queue size for the default Elasticsearch forwarder pipeline.
+
+      logstash_queue_type:
+        type: str
+        choices:
+          - persisted
+          - memory
+        default: persisted
+        description: Default queue type Logstash uses for pipelines.
+
+      logstash_redis_password:
+        type: str
+        description: Password used when the simple inputs/outputs connect to Redis. Unset by default.
+
+      # ----- Elasticsearch connection / output -----
+      logstash_elasticsearch:
+        type: list
+        elements: str
+        description: >-
+          Elasticsearch hosts for the default output. Defaults to the nodes from
+          the elasticsearch group, or localhost when used standalone.
+
+      logstash_validate_after_inactivity:
+        type: str
+        default: "300"
+        description: >-
+          Seconds Logstash waits before validating a previously idle connection to
+          Elasticsearch.
+
+      logstash_sniffing:
+        type: bool
+        default: false
+        description: Enable sniffing for additional Elasticsearch nodes.
+
+      logstash_sniffing_delay:
+        type: str
+        description: Seconds to wait between sniffing attempts. Unset by default.
+
+      logstash_sniffing_path:
+        type: str
+        description: HTTP path used for the sniffing requests. Unset by default.
+
+      # ----- Security: certificates -----
+      logstash_security:
+        type: bool
+        description: >-
+          Enable X-Pack security (TLS) for Logstash. No default; enabled
+          automatically in full stack mode with the elastic variant.
+
+      logstash_tls_key_passphrase:
+        type: str
+        default: LogstashChangeMe
+        description: Passphrase for the generated Logstash certificates.
+
+      logstash_certs_dir:
+        type: str
+        default: /etc/logstash/certs
+        description: Directory holding the Logstash certificates. Used to build several file paths.
+
+      logstash_cert_validity_period:
+        type: int
+        default: 1095
+        description: Number of days the generated certificates are valid.
+
+      logstash_cert_expiration_buffer:
+        type: int
+        default: 30
+        description: >-
+          Renew the certificate when its remaining validity (in days) drops below
+          this value.
+
+      logstash_cert_will_expire_soon:
+        type: bool
+        default: false
+        description: >-
+          Set to true to force renewal of the Logstash certificate. Alternatively
+          run the playbook with the renew_logstash_cert tag.
+
+      # ----- Security: Elasticsearch role & user -----
+      logstash_create_role:
+        type: bool
+        default: true
+        description: Create the Logstash writer role in Elasticsearch.
+
+      logstash_role_name:
+        type: str
+        default: logstash_writer
+        description: Name of the Logstash writer role.
+
+      logstash_role_cluster_privileges:
+        type: list
+        elements: str
+        default:
+          - manage_index_templates
+          - monitor
+          - manage_ilm
+        description: Cluster privileges granted to the Logstash writer role.
+
+      logstash_role_indicies_names:
+        type: list
+        elements: str
+        default:
+          - "ecs-logstash*"
+          - "logstash*"
+          - "logs*"
+        description: Index patterns the Logstash writer role may access.
+
+      logstash_role_indicies_privileges:
+        type: list
+        elements: str
+        default:
+          - write
+          - create
+          - delete
+          - create_index
+          - manage
+          - manage_ilm
+        description: Index privileges the Logstash writer role holds on its index patterns.
+
+      logstash_reset_writer_role:
+        type: bool
+        default: true
+        description: Reset the writer role and user on every run.
+
+      logstash_create_user:
+        type: bool
+        default: true
+        description: Create the Logstash writer user in Elasticsearch.
+
+      logstash_user_name:
+        type: str
+        default: logstash_writer
+        description: Name of the Logstash user connecting to Elasticsearch.
+
+      logstash_user_password:
+        type: str
+        default: password
+        description: Password of the Logstash user. Must be at least 6 characters long.
+
+      logstash_user_email:
+        type: str
+        default: ""
+        description: Email address linked to the Logstash user.
+
+      logstash_user_fullname:
+        type: str
+        default: Internal Logstash User
+        description: Full name linked to the Logstash user.
+
+      # ----- log4j2 logging -----
+      logstash_logging_console:
+        type: bool
+        default: true
+        description: Log to the console (syslog when run via systemd).
+
+      logstash_logging_file:
+        type: bool
+        default: true
+        description: Log to the log file.
+
+      logstash_logging_slow_console:
+        type: bool
+        default: true
+        description: Log the slowlog to the console (syslog when run via systemd).
+
+      logstash_logging_slow_file:
+        type: bool
+        default: true
+        description: Log the slowlog to the log file.
+
+      # ----- Identifying fields -----
+      logstash_ident:
+        type: bool
+        default: true
+        description: Add a field identifying the node that processed an event.
+
+      logstash_ident_field_name:
+        type: str
+        default: "[netways][instance]"
+        description: Name of the field that identifies the instance.
+
+      logstash_pipeline_identifier:
+        type: bool
+        default: true
+        description: Add a field identifying which pipeline processed an event.
+
+      logstash_pipeline_identifier_field_name:
+        type: str
+        default: "[netways][pipeline]"
+        description: Name of the pipeline identifier field.
+
+      logstash_pipeline_identifier_defaults:
+        type: bool
+        default: false
+        description: >-
+          Also add pipeline identifiers in the default pipelines. This can let the
+          defaults dominate statistics with little value.
+
+      # ----- Mermaid pipeline overview -----
+      logstash_mermaid:
+        type: bool
+        default: true
+        description: Produce an overview of the Logstash pipelines in Mermaid syntax.
+
+      logstash_mermaid_logstash:
+        type: bool
+        default: true
+        description: Place the Mermaid syntax into /etc/logstash/pipelines.mermaid on the Logstash hosts.
+
+      logstash_mermaid_local:
+        type: bool
+        default: false
+        description: Place the Mermaid syntax into a temporary file on the control node.
+
+      logstash_mermaid_extra:
+        type: str
+        description: Extra Mermaid syntax to append to the output (YAML multiline supported). Unset by default.
+
+      # ----- Internal -----
+      logstash_freshstart:
+        type: dict
+        default:
+          changed: false
+        description: Internal state used by the role to detect a fresh install. Do not set manually.

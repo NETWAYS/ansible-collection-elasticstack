@@ -1,7 +1,7 @@
 ---
 # defaults file for logstash
 logstash_enable: true
-logstash_config_backup: no
+logstash_config_backup: false
 logstash_manage_yaml: true
 logstash_manage_logging: false
 

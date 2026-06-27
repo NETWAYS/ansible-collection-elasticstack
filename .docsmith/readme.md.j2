@@ -1,0 +1,17 @@
+{# Compact README variable reference for ansible-docsmith.
+   Shared by all roles in this collection. Renders ONE table with the full
+   description in each cell (no truncation, no per-variable detail sections,
+   no table of contents). Pass it with: --template-readme .docsmith/readme.md.j2 #}
+## Role variables<a id="variables"></a>
+
+{% if has_options %}
+The following variables can be configured for this role:
+
+| Variable | Type | Default | Choices | Description |
+|----------|------|---------|---------|-------------|
+{% for var_name, var_spec in options.items() %}
+| `{{ var_name | ansible_escape }}` | `{{ var_spec.type }}`{% if var_spec.elements %} of `{{ var_spec.elements }}`{% endif %} | {{ var_spec.default | format_default }} | {% if var_spec.choices %}{{ var_spec.choices | map('string') | map('code_escape') | join(', ') }}{% else %}—{% endif %} | {{ var_spec.description | format_table_description(var_name, 0) }} |
+{% endfor %}
+{% else %}
+No variables are defined for this role.
+{% endif %}

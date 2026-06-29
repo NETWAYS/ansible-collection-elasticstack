@@ -93,10 +93,10 @@ The following variables can be configured for this role:
 | `logstash_user_password` | `str` | `"password"` | — | Password of the Logstash user. Must be at least 6 characters long. |
 | `logstash_user_email` | `str` | `""` | — | Email address linked to the Logstash user. |
 | `logstash_user_fullname` | `str` | `"Internal Logstash User"` | — | Full name linked to the Logstash user. |
-| `logstash_logging_console` | `bool` | `true` | — | Log to the console (syslog when run via systemd). |
-| `logstash_logging_file` | `bool` | `true` | — | Log to the log file. |
-| `logstash_logging_slow_console` | `bool` | `true` | — | Log the slowlog to the console (syslog when run via systemd). |
-| `logstash_logging_slow_file` | `bool` | `true` | — | Log the slowlog to the log file. |
+| `logstash_logging_console` | `bool` | `true` | — | Log to the console (syslog when run via systemd). Only effective when logstash_manage_logging is enabled. |
+| `logstash_logging_file` | `bool` | `true` | — | Log to the log file. Only effective when logstash_manage_logging is enabled. |
+| `logstash_logging_slow_console` | `bool` | `true` | — | Log the slowlog to the console (syslog when run via systemd). Only effective when logstash_manage_logging is enabled. |
+| `logstash_logging_slow_file` | `bool` | `true` | — | Log the slowlog to the log file. Only effective when logstash_manage_logging is enabled. |
 | `logstash_ident` | `bool` | `true` | — | Add a field identifying the node that processed an event. |
 | `logstash_ident_field_name` | `str` | `"[netways][instance]"` | — | Name of the field that identifies the instance. |
 | `logstash_pipeline_identifier` | `bool` | `true` | — | Add a field identifying which pipeline processed an event. |

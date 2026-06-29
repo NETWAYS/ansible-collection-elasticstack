@@ -390,26 +390,26 @@ argument_specs:
         default: Internal Logstash User
         description: Full name linked to the Logstash user.
 
-      # ----- log4j2 logging -----
+      # ----- log4j2 logging (only effective when logstash_manage_logging is enabled) -----
       logstash_logging_console:
         type: bool
         default: true
-        description: Log to the console (syslog when run via systemd).
+        description: Log to the console (syslog when run via systemd). Only effective when logstash_manage_logging is enabled.
 
       logstash_logging_file:
         type: bool
         default: true
-        description: Log to the log file.
+        description: Log to the log file. Only effective when logstash_manage_logging is enabled.
 
       logstash_logging_slow_console:
         type: bool
         default: true
-        description: Log the slowlog to the console (syslog when run via systemd).
+        description: Log the slowlog to the console (syslog when run via systemd). Only effective when logstash_manage_logging is enabled.
 
       logstash_logging_slow_file:
         type: bool
         default: true
-        description: Log the slowlog to the log file.
+        description: Log the slowlog to the log file. Only effective when logstash_manage_logging is enabled.
 
       # ----- Identifying fields -----
       logstash_ident:

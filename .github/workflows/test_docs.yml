@@ -32,7 +32,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      # Pin the version: ansible-docsmith is a young, single-maintainer tool, so we
+      # Pin the version: ansible-docsmith is a young tool, so we
       # upgrade deliberately rather than picking up changes on every CI run.
       - name: Install ansible-docsmith
         run: python3 -m pip install ansible-docsmith==2.0.2

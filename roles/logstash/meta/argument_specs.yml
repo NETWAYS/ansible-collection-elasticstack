@@ -243,14 +243,6 @@ argument_specs:
         default: 1gb
         description: Maximum queue size for the default Elasticsearch forwarder pipeline.
 
-      logstash_queue_type:
-        type: str
-        choices:
-          - persisted
-          - memory
-        default: persisted
-        description: Default queue type Logstash uses for pipelines.
-
       logstash_redis_password:
         type: str
         description: Password used when the simple inputs/outputs connect to Redis. Unset by default.

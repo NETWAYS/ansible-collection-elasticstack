@@ -181,6 +181,17 @@ argument_specs:
               key:
                 type: str
                 description: Redis key to write to.
+              condition:
+                type: str
+                description: >-
+                  Optional Logstash conditional. The output only receives events
+                  matching it. With exclusive set, the conditions are chained with
+                  else if.
+              congestion:
+                type: int
+                description: >-
+                  Optional congestion threshold. The output stops once the target
+                  Redis key holds more items than this value.
 
       logstash_elasticsearch_output:
         type: bool

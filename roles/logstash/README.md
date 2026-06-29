@@ -1,7 +1,5 @@
 # Ansible Role: Logstash
 
-![Test Role Logstash](https://github.com/netways/ansible-collection-elasticstack/actions/workflows/test_role_logstash.yml/badge.svg)
-
 Installs and configures [Logstash](https://www.elastic.co/products/logstash) on
 Linux systems. The role can manage `logstash.yml`, the log4j2 logging, the JVM
 heap, TLS, the Elasticsearch writer role/user, and pipelines — both the built-in

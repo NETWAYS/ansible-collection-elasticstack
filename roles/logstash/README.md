@@ -35,6 +35,15 @@ You also need the Elastic repositories configured — use the [`repos`](../repos
 For how to configure pipelines (built-in Redis/Beats and external git
 repositories), see the [pipelines documentation](docs/pipelines.md).
 
+## Tags
+
+Run only parts of the role with `--tags`:
+
+* `configuration` (alias `logstash_configuration`) — only (re)write the configuration, skip installation.
+* `certificates` — only generate and distribute the TLS certificates.
+* `renew_logstash_cert` / `renew_ca` — force renewal of the Logstash certificate.
+* `mermaid` — only regenerate the pipeline overview (`pipelines.mermaid`).
+
 <!-- ANSIBLE DOCSMITH MAIN START -->
 ## Role variables<a id="variables"></a>
 

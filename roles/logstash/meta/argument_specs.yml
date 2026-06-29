@@ -155,7 +155,7 @@ argument_specs:
             choices:
               - memory
               - persisted
-            description: Queue type for this pipeline (default "memory").
+            description: Queue type for this pipeline (default "memory"). Use "persisted" for an on-disk persistent queue.
           queue_max_bytes:
             type: str
             description: Maximum queue size for this pipeline (default "1gb").
@@ -223,7 +223,7 @@ argument_specs:
           - memory
           - persisted
         default: memory
-        description: Queue type for the default Beats input pipeline.
+        description: Queue type for the default Beats input pipeline. Use "persisted" for an on-disk persistent queue.
 
       logstash_input_queue_max_bytes:
         type: str
@@ -236,7 +236,7 @@ argument_specs:
           - memory
           - persisted
         default: memory
-        description: Queue type for the default Elasticsearch forwarder pipeline.
+        description: Queue type for the default Elasticsearch forwarder pipeline. Use "persisted" for an on-disk persistent queue.
 
       logstash_forwarder_queue_max_bytes:
         type: str

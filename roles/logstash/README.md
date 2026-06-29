@@ -47,8 +47,6 @@ Run only parts of the role with `--tags`:
 <!-- ANSIBLE DOCSMITH MAIN START -->
 ## Role variables<a id="variables"></a>
 
-The following variables can be configured for this role:
-
 | Variable | Type | Default | Choices | Description |
 |----------|------|---------|---------|-------------|
 | `logstash_enable` | `bool` | `true` | — | Start and enable the Logstash service. |
@@ -68,15 +66,29 @@ The following variables can be configured for this role:
 | `logstash_legacy_monitoring` | `bool` | `true` | — | Enable legacy X-Pack monitoring. Ignored unless elasticstack_full_stack is set and only effective on Elastic Stack releases lower than 8. |
 | `logstash_manage_pipelines` | `bool` | `true` | — | Manage pipelines.yml. |
 | `logstash_no_pipelines` | `bool` | `false` | — | Disable all pipeline management entirely. |
-| `logstash_pipelines` | `list` of `dict` | `[{'name': 'default', 'exclusive': False, 'queue_type': 'memory', 'queue_max_bytes': '1gb', 'input': [{'name': 'default', 'key': 'input'}], 'output': [{'name': 'default', 'key': 'forwarder'}]}]` | — | List of pipelines to configure.<br><br>Each entry needs a name. A pipeline either points to an external git repository (source/version) or defines simple input/output keys that connect to Redis. See the pipelines documentation for details. |
+| `logstash_pipelines` | `list` of `dict` | … | — | List of pipelines to configure.<br><br>Each entry needs a name. A pipeline either points to an external git repository (source/version) or defines simple input/output keys that connect to Redis. See the pipelines documentation for details. |
+| &nbsp;&nbsp;&nbsp;&nbsp;↳ `name` | `str` | N/A | — | Unique name of the pipeline. Becomes the pipeline directory and pipeline.id. |
+| &nbsp;&nbsp;&nbsp;&nbsp;↳ `exclusive` | `bool` | N/A | — | Mark this pipeline as the only one allowed to handle its events. |
+| &nbsp;&nbsp;&nbsp;&nbsp;↳ `source` | `str` | N/A | — | URL of a git repository holding the pipeline configuration. |
+| &nbsp;&nbsp;&nbsp;&nbsp;↳ `version` | `str` | N/A | — | Git branch/tag/commit to check out from source (default "main"). |
+| &nbsp;&nbsp;&nbsp;&nbsp;↳ `queue_type` | `str` | N/A | `memory`, `persisted` | Queue type for this pipeline (default "memory"). Use "persisted" for an on-disk persistent queue. |
+| &nbsp;&nbsp;&nbsp;&nbsp;↳ `queue_max_bytes` | `str` | N/A | — | Maximum queue size for this pipeline (default "1gb"). |
+| &nbsp;&nbsp;&nbsp;&nbsp;↳ `input` | `list` of `dict` | … | — | Simple Redis inputs for this pipeline. |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ `name` | `str` | N/A | — | Name of the input. |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ `key` | `str` | N/A | — | Redis key to read from. |
+| &nbsp;&nbsp;&nbsp;&nbsp;↳ `output` | `list` of `dict` | … | — | Simple Redis outputs for this pipeline. |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ `name` | `str` | N/A | — | Name of the output. |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ `key` | `str` | N/A | — | Redis key to write to. |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ `condition` | `str` | N/A | — | Optional Logstash conditional. The output only receives events matching it. With exclusive set, the conditions are chained with else if. |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ `congestion` | `int` | N/A | — | Optional congestion threshold. The output stops once the target Redis key holds more items than this value. |
 | `logstash_elasticsearch_output` | `bool` | `true` | — | Create the default pipeline that forwards events to Elasticsearch. |
 | `logstash_beats_input` | `bool` | `true` | — | Create the default pipeline with a Beats input. |
 | `logstash_beats_input_congestion` | `int` | N/A | — | Congestion threshold (seconds) for the Beats input pipeline. Unset by default. |
 | `logstash_beats_timeout` | `str` | N/A | — | Timeout for idle client connections on the Beats input (e.g. "60s"). Unset by default. |
 | `logstash_beats_tls` | `bool` | N/A | — | Activate TLS on the Beats input pipeline. Unset by default, but enabled automatically in a full stack setup unless overridden. |
-| `logstash_input_queue_type` | `str` | `"memory"` | `memory`, `persisted` | Queue type for the default Beats input pipeline. |
+| `logstash_input_queue_type` | `str` | `"memory"` | `memory`, `persisted` | Queue type for the default Beats input pipeline. Use "persisted" for an on-disk persistent queue. |
 | `logstash_input_queue_max_bytes` | `str` | `"1gb"` | — | Maximum queue size for the default Beats input pipeline. |
-| `logstash_forwarder_queue_type` | `str` | `"memory"` | `memory`, `persisted` | Queue type for the default Elasticsearch forwarder pipeline. |
+| `logstash_forwarder_queue_type` | `str` | `"memory"` | `memory`, `persisted` | Queue type for the default Elasticsearch forwarder pipeline. Use "persisted" for an on-disk persistent queue. |
 | `logstash_forwarder_queue_max_bytes` | `str` | `"1gb"` | — | Maximum queue size for the default Elasticsearch forwarder pipeline. |
 | `logstash_redis_password` | `str` | N/A | — | Password used when the simple inputs/outputs connect to Redis. Unset by default. |
 | `logstash_elasticsearch` | `list` of `str` | N/A | — | Elasticsearch hosts for the default output. Defaults to the nodes from the elasticsearch group, or localhost when used standalone. |

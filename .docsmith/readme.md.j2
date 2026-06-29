@@ -1,17 +1,23 @@
-{# Compact README variable reference for ansible-docsmith.
-   Shared by all roles in this collection. Renders ONE table with the full
-   description in each cell (no truncation, no per-variable detail sections,
-   no table of contents). Pass it with: --template-readme .docsmith/readme.md.j2 #}
+{# Compact README variable reference for ansible-docsmith. Shared by all roles.
+   Renders ONE table; nested sub-options (e.g. logstash_pipelines fields) appear as
+   indented rows. No per-variable detail sections, no table of contents.
+   Use with: --template-readme .docsmith/readme.md.j2 #}
+{% macro row(name, spec, depth) -%}
+{% set pad = '&nbsp;&nbsp;&nbsp;&nbsp;' * depth %}
+{% set mark = '↳ ' if depth > 0 else '' %}
+| {{ pad }}{{ mark }}`{{ name | ansible_escape }}` | `{{ spec.type }}`{% if spec.elements %} of `{{ spec.elements }}`{% endif %} | {% if spec.options %}…{% else %}{{ spec.default | format_default }}{% endif %} | {% if spec.choices %}{{ spec.choices | map('string') | map('code_escape') | join(', ') }}{% else %}—{% endif %} | {{ spec.description | format_table_description(name, 0) }} |
+{% for sn, ss in (spec.options or {}).items() %}
+{{ row(sn, ss, depth + 1) }}
+{%- endfor %}
+{%- endmacro %}
 ## Role variables<a id="variables"></a>
 
 {% if has_options %}
-The following variables can be configured for this role:
-
 | Variable | Type | Default | Choices | Description |
 |----------|------|---------|---------|-------------|
-{% for var_name, var_spec in options.items() %}
-| `{{ var_name | ansible_escape }}` | `{{ var_spec.type }}`{% if var_spec.elements %} of `{{ var_spec.elements }}`{% endif %} | {{ var_spec.default | format_default }} | {% if var_spec.choices %}{{ var_spec.choices | map('string') | map('code_escape') | join(', ') }}{% else %}—{% endif %} | {{ var_spec.description | format_table_description(var_name, 0) }} |
-{% endfor %}
+{% for name, spec in options.items() %}
+{{ row(name, spec, 0) }}
+{%- endfor %}
 {% else %}
 No variables are defined for this role.
 {% endif %}

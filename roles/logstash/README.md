@@ -96,7 +96,6 @@ The following variables can be configured for this role:
 | `logstash_role_cluster_privileges` | `list` of `str` | `['manage_index_templates', 'monitor', 'manage_ilm']` | — | Cluster privileges granted to the Logstash writer role. |
 | `logstash_role_indicies_names` | `list` of `str` | `['ecs-logstash*', 'logstash*', 'logs*']` | — | Index patterns the Logstash writer role may access. |
 | `logstash_role_indicies_privileges` | `list` of `str` | `['write', 'create', 'delete', 'create_index', 'manage', 'manage_ilm']` | — | Index privileges the Logstash writer role holds on its index patterns. |
-| `logstash_reset_writer_role` | `bool` | `true` | — | Reset the writer role and user on every run. |
 | `logstash_create_user` | `bool` | `true` | — | Create the Logstash writer user in Elasticsearch. |
 | `logstash_user_name` | `str` | `"logstash_writer"` | — | Name of the Logstash user connecting to Elasticsearch. |
 | `logstash_user_password` | `str` | `"password"` | — | Password of the Logstash user. Must be at least 6 characters long. |

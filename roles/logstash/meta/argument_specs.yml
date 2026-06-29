@@ -360,11 +360,6 @@ argument_specs:
           - manage_ilm
         description: Index privileges the Logstash writer role holds on its index patterns.
 
-      logstash_reset_writer_role:
-        type: bool
-        default: true
-        description: Reset the writer role and user on every run.
-
       logstash_create_user:
         type: bool
         default: true

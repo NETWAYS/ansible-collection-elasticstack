@@ -69,7 +69,6 @@ logstash_user_name: logstash_writer
 logstash_user_password: password
 logstash_user_email: ""
 logstash_user_fullname: "Internal Logstash User"
-logstash_reset_writer_role: true
 
 # logstash security
 logstash_tls_key_passphrase: LogstashChangeMe

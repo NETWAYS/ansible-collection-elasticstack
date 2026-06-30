@@ -2,8 +2,10 @@
 
 Installs and configures [Logstash](https://www.elastic.co/products/logstash) on
 Linux systems. The role can manage `logstash.yml`, the log4j2 logging, the JVM
-heap, TLS, the Elasticsearch writer role/user, and pipelines — both the built-in
-Redis/Beats pipelines and pipelines pulled from external git repositories.
+heap, TLS, and the Elasticsearch writer role/user. For pipelines it can create
+two default pipelines — a Beats input and an Elasticsearch forwarder, both using
+Redis — and manage your own pipelines, whose configuration can be checked out
+from external git repositories.
 
 It works with the standard Elastic Stack packages and with Elastic's OSS variant.
 

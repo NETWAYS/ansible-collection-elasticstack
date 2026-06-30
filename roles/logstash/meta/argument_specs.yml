@@ -13,9 +13,12 @@ argument_specs:
     description:
       - Installs and configures Logstash on Linux systems.
       - >-
-        Can manage logstash.yml, log4j2 logging, pipelines (default Redis/Beats
-        pipelines and pipelines from external git repositories), TLS and the
-        Elasticsearch writer role/user, and the JVM heap size.
+        Can manage logstash.yml, log4j2 logging, the JVM heap, TLS and the
+        Elasticsearch writer role/user.
+      - >-
+        Creates two default pipelines, a Beats input and an Elasticsearch
+        forwarder (both using Redis), and manages user-defined pipelines whose
+        configuration can be checked out from external git repositories.
     author:
       - NETWAYS GmbH
 

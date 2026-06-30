@@ -59,7 +59,7 @@ jobs:
 
       # README freshness: regenerate every role README and fail if anything changed,
       # i.e. the committed README no longer matches argument_specs.yml.
-      - name: Check that every README is up to date
+      - name: Check that every variable in README is up to date
         run: |
           for role in roles/*/; do
             [ -f "${role}meta/argument_specs.yml" ] || continue

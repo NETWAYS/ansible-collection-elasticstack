@@ -18,12 +18,6 @@
     elasticstack_no_log: false
   tasks:
 
-    - name: Set Filebeat version for 7.x
-      ansible.builtin.set_fact:
-        elasticstack_version: "7.17.1"
-      when:
-        - elasticstack_release == 7
-
     - name: Set Filebeat version for 8.x
       ansible.builtin.set_fact:
         elasticstack_version: "8.4.1"

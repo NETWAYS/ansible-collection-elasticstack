@@ -1,9 +1,43 @@
 ---
-# This is an example playbook to execute Ansible tests.
-
-- name: Verify
+- name: Verify Elastic OSS repositories are configured
   hosts: all
   tasks:
-  - name: Install logstash-oss
-    ansible.builtin.package:
-      name: logstash-oss
+    - name: Check Elastic OSS apt repo file exists (Debian)
+      ansible.builtin.stat:
+        path: /etc/apt/sources.list.d/elasticstack.list
+      register: apt_repo_file
+      when: ansible_os_family == "Debian"
+
+    - name: Assert Elastic OSS apt repo file exists (Debian)
+      ansible.builtin.assert:
+        that: apt_repo_file.stat.exists
+        fail_msg: "Elastic OSS apt repository file not found"
+      when: ansible_os_family == "Debian"
+
+    - name: Check Elastic GPG key exists (Debian)
+      ansible.builtin.stat:
+        path: /usr/share/keyrings/elasticsearch.asc
+      register: apt_gpg_key
+      when: ansible_os_family == "Debian"
+
+    - name: Assert Elastic GPG key exists (Debian)
+      ansible.builtin.assert:
+        that: apt_gpg_key.stat.exists
+        fail_msg: "Elastic GPG key not found"
+      when: ansible_os_family == "Debian"
+
+    - name: Check Elastic OSS yum repo file exists (RedHat)
+      ansible.builtin.stat:
+        path: /etc/yum.repos.d/elastic-oss-release.repo
+      register: yum_repo_file
+      when: ansible_os_family == "RedHat"
+
+    - name: Assert Elastic OSS yum repo file exists (RedHat)
+      ansible.builtin.assert:
+        that: yum_repo_file.stat.exists
+        fail_msg: "Elastic OSS yum repository file not found"
+      when: ansible_os_family == "RedHat"
+
+    - name: Install logstash-oss
+      ansible.builtin.package:
+        name: logstash-oss

@@ -37,4 +37,5 @@ build_ignore:
   - .mailmap
   - '*.tar.gz'
   - 'venv*'
+  - .docsmith
 # Minimum Ansible version required: 2.14, maximum supported: 2.20

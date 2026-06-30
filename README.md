@@ -15,7 +15,7 @@ Every role is documented with all variables, please refer to the documentation f
 * [Beats](docs/role-beats.md)
 * [Elasticsearch](docs/role-elasticsearch.md)
 * [Kibana](docs/role-kibana.md)
-* [Logstash](docs/role-logstash.md)
+* [Logstash](roles/logstash/README.md)
 * [Repos](docs/role-repos.md)
 
 ## Modules documentation
@@ -225,6 +225,25 @@ The execution order of the roles is important! (see below)
 Every kind of contribution is very welcome. Open [issues](https://github.com/NETWAYS/ansible-collection-elasticstack/issues) or provide [pull requests](https://github.com/NETWAYS/ansible-collection-elasticstack/pulls).
 
 For now we open pull requests against `main`. We are planning to introduce dedicated branches to support older versions without breaking changes. Since we don't need them for now, please check back with this section because when we decided on how to proceed, you will find the information here. For now `main` always has the newest changes and if you want a stable version, please use the newest release.
+
+### Documentation for role variables
+
+Role variables are documented from each role's `meta/argument_specs.yml`, which is
+the single source of truth. When your pull request changes a role's variables:
+
+1. Update that role's `meta/argument_specs.yml` (type, default, description).
+2. Regenerate the README variable table — please do **not** edit it by hand. The table is
+   produced by [ansible-docsmith](https://github.com/foundata/ansible-docsmith)
+   (install with `pip install ansible-docsmith` if you don't have it):
+
+   ```
+   ansible-docsmith generate roles/<role> --no-defaults --template-readme .docsmith/readme.md.j2
+   ```
+
+3. Commit the regenerated `README.md` together with your change.
+
+The `Test Documentation` workflow checks that each README matches its
+`argument_specs.yml` and fails the pull request if they drift apart.
 
 ## Testing
 

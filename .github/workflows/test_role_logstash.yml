@@ -15,6 +15,7 @@ on:
   pull_request:
     paths:
       - 'roles/logstash/**'
+      - '!roles/logstash/**/*.md'
       - '.github/workflows/test_role_logstash.yml'
       - 'molecule/logstash_**'
 

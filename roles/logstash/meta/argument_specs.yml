@@ -434,7 +434,7 @@ argument_specs:
 
       test:
         type: str
-        default: false
+        default: hi
         description: test 
 
       # ----- Mermaid pipeline overview -----

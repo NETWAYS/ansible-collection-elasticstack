@@ -13,17 +13,21 @@ on:
           - warning
           - debug
   pull_request:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
     paths:
       - 'roles/beats/**'
       - '.github/workflows/test_role_beats.yml'
       - 'molecule/beats_**'
 
+# Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint_beats:
+    # For non-PR events (workflow_dispatch, merge_group, schedule, push, etc.), github.event.pull_request.draft is null.
+    # GitHub Actions coerces null == false to true (null → 0, false → 0), so the job runs for all non-draft events.
+    if: github.event.pull_request.draft == false
     uses: ./.github/workflows/test_linting.yml
     with:
       rolename: beats
@@ -40,15 +44,14 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - ubuntu2204
+          - debian13
         scenario:
           - beats_default
-          - beats_peculiar
+          - beats_extended
         release:
-          - 7
           - 8
         ansible_version:
-          - "ansible>=9.0,<10.0" #Correspond ansible-core>=2.16,<2.17
+          - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0
         python_version:
           - "3.11"
 
@@ -60,12 +63,52 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python_version }}
+          cache: 'pip'
+          cache-dependency-path: requirements-test.txt
 
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install "${{ matrix.ansible_version }}"
           python3 -m pip install -r requirements-test.txt
+
+      - name: Get latest Elasticsearch release
+        id: elastic-version
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        run: |
+          curl -fsSL \
+            "https://artifacts.elastic.co/packages/${{ matrix.release }}.x/apt/dists/stable/main/binary-amd64/Packages.gz" \
+            -o /tmp/Packages.gz
+          VERSION=$(zcat /tmp/Packages.gz \
+            | awk '$1=="Package:" && $2=="elasticsearch"{p=1} p && $1=="Version:"{print $2; p=0}' \
+            | sort -V \
+            | tail -n 1)
+          rm -f /tmp/Packages.gz
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Debug - latest Elasticsearch version
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        run: echo "Latest Elasticsearch ${{ matrix.release }}.x = ${{ steps.elastic-version.outputs.version }}"
+
+      - name: Restore Elastic apt cache
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        uses: actions/cache/restore@v5
+        with:
+          path: /tmp/elastic-apt-cache
+          key: ${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}
+          restore-keys: |
+            ${{ runner.os }}-apt-elastic-${{ matrix.release }}.
+
+      - name: Debug - apt cache contents
+        if: contains(matrix.distro, 'ubuntu') || contains(matrix.distro, 'debian')
+        run: |
+          echo "=== /tmp/elastic-apt-cache/ ==="
+          ls -lh /tmp/elastic-apt-cache/ 2>/dev/null || echo "(empty or does not exist)"
+          echo "=== Total size ==="
+          du -sh /tmp/elastic-apt-cache/ 2>/dev/null || echo "(n/a)"
+
+      - name: Ensure apt cache directory exists
+        run: mkdir -p /tmp/elastic-apt-cache
 
       - name: Install collection
         run: |

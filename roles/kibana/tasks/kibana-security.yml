@@ -184,21 +184,32 @@
     - renew_ca
     - renew_kibana_cert
 
+# argv (a list) instead of a folded string: avoids shlex.split() so passphrases with
+# arbitrary special characters (spaces, quotes, $, `, ...) are passed literally.
 - name: Create individual certificates for Kibana
-  ansible.builtin.command: >
-    /usr/share/elasticsearch/bin/elasticsearch-certutil cert
-    --days {{ kibana_cert_validity_period }}
-    --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
-    --ca-pass {{ elasticstack_ca_pass }}
-    --name {{ ansible_hostname }}
-    --ip {{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}
-    --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
-    --pass {{ kibana_tls_key_passphrase }}
-    --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12
+  ansible.builtin.command:
+    argv:
+      - /usr/share/elasticsearch/bin/elasticsearch-certutil
+      - cert
+      - --days
+      - "{{ kibana_cert_validity_period }}"
+      - --ca
+      - "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
+      - --ca-pass
+      - "{{ elasticstack_ca_pass }}"
+      - --name
+      - "{{ ansible_hostname }}"
+      - --ip
+      - "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+      - --dns
+      - "{{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}"
+      - --pass
+      - "{{ kibana_tls_key_passphrase }}"
+      - --out
+      - "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+    creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
   delegate_to: "{{ elasticstack_ca_host }}"
   no_log: "{{ elasticstack_no_log }}"
-  args:
-    creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
   tags:
     - certificates
     - renew_ca

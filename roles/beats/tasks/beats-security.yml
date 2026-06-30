@@ -121,21 +121,32 @@
     - renew_ca
     - renew_beats_cert
 
+# argv (a list) instead of a folded string: avoids shlex.split() so passphrases with
+# arbitrary special characters (spaces, quotes, $, `, ...) are passed literally.
 - name: Create individual certificates for Beats
-  ansible.builtin.command: >
-    /usr/share/elasticsearch/bin/elasticsearch-certutil cert
-    --days {{ beats_cert_validity_period }}
-    --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
-    --ca-pass {{ elasticstack_ca_pass }}
-    --name {{ ansible_hostname }}
-    --ip {{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}
-    --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
-    --pass {{ beats_tls_key_passphrase }}
-    --pem
-    --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip
-  delegate_to: "{{ elasticstack_ca_host }}"
-  args:
+  ansible.builtin.command:
+    argv:
+      - /usr/share/elasticsearch/bin/elasticsearch-certutil
+      - cert
+      - --days
+      - "{{ beats_cert_validity_period }}"
+      - --ca
+      - "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
+      - --ca-pass
+      - "{{ elasticstack_ca_pass }}"
+      - --name
+      - "{{ ansible_hostname }}"
+      - --ip
+      - "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+      - --dns
+      - "{{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}"
+      - --pass
+      - "{{ beats_tls_key_passphrase }}"
+      - --pem
+      - --out
+      - "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip"
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-beats.zip"
+  delegate_to: "{{ elasticstack_ca_host }}"
   tags:
     - certificates
     - renew_ca

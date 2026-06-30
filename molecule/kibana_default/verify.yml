@@ -1,0 +1,16 @@
+---
+- name: Verify Kibana deployment
+  hosts: all
+  tasks:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Assert Kibana service is running
+      ansible.builtin.assert:
+        that: ansible_facts.services['kibana.service'].state == 'running'
+        fail_msg: "Kibana service is not running"
+
+    - name: Wait for Kibana port to be available
+      ansible.builtin.wait_for:
+        port: 5601
+        timeout: 120

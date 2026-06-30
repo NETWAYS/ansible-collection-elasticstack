@@ -154,21 +154,32 @@
         state: absent
       when: logstash_move_cert_zip_ansible_controller.changed
 
+# argv (a list) instead of a folded string: avoids shlex.split() so passphrases with
+# arbitrary special characters (spaces, quotes, $, `, ...) are passed literally.
 - name: Create individual certificates for Logstash
-  ansible.builtin.command: >
-    /usr/share/elasticsearch/bin/elasticsearch-certutil cert
-    --days {{ logstash_cert_validity_period }}
-    --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
-    --ca-pass {{ elasticstack_ca_pass }}
-    --name {{ ansible_hostname }}
-    --ip {{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}
-    --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
-    --pass {{ logstash_tls_key_passphrase }}
-    --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12
+  ansible.builtin.command:
+    argv:
+      - /usr/share/elasticsearch/bin/elasticsearch-certutil
+      - cert
+      - --days
+      - "{{ logstash_cert_validity_period }}"
+      - --ca
+      - "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
+      - --ca-pass
+      - "{{ elasticstack_ca_pass }}"
+      - --name
+      - "{{ ansible_hostname }}"
+      - --ip
+      - "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+      - --dns
+      - "{{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}"
+      - --pass
+      - "{{ logstash_tls_key_passphrase }}"
+      - --out
+      - "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
+    creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
   delegate_to: "{{ elasticstack_ca_host }}"
   no_log: "{{ elasticstack_no_log }}"
-  args:
-    creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.p12"
   tags:
     - certificates
     - renew_ca
@@ -224,21 +235,30 @@
     - renew_logstash_cert
 
 - name: Create individual PEM certificates for Logstash
-  ansible.builtin.command: >
-    /usr/share/elasticsearch/bin/elasticsearch-certutil cert
-    --days {{ logstash_cert_validity_period }}
-    --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
-    --ca-pass {{ elasticstack_ca_pass }}
-    --name {{ ansible_hostname }}
-    --ip {{ ansible_default_ipv4.address }}
-    --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
-    --pass {{ logstash_tls_key_passphrase }}
-    --pem
-    --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip
+  ansible.builtin.command:
+    argv:
+      - /usr/share/elasticsearch/bin/elasticsearch-certutil
+      - cert
+      - --days
+      - "{{ logstash_cert_validity_period }}"
+      - --ca
+      - "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
+      - --ca-pass
+      - "{{ elasticstack_ca_pass }}"
+      - --name
+      - "{{ ansible_hostname }}"
+      - --ip
+      - "{{ ansible_default_ipv4.address }}"
+      - --dns
+      - "{{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}"
+      - --pass
+      - "{{ logstash_tls_key_passphrase }}"
+      - --pem
+      - --out
+      - "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
+    creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
   delegate_to: "{{ elasticstack_ca_host }}"
   no_log: "{{ elasticstack_no_log }}"
-  args:
-    creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-ls.zip"
   tags:
     - certificates
     - renew_ca
@@ -298,14 +318,18 @@
     - renew_logstash_cert
 
 - name: Create unencrypted Logstash compatible key
-  ansible.builtin.command: >
-    openssl pkcs8
-    -in {{ logstash_certs_dir }}/{{ inventory_hostname }}.key
-    -topk8
-    -passin pass:{{ logstash_tls_key_passphrase }}
-    -out {{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key
-    -nocrypt
-  args:
+  ansible.builtin.command:
+    argv:
+      - openssl
+      - pkcs8
+      - -in
+      - "{{ logstash_certs_dir }}/{{ inventory_hostname }}.key"
+      - -topk8
+      - -passin
+      - "pass:{{ logstash_tls_key_passphrase }}"
+      - -out
+      - "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
+      - -nocrypt
     creates: "{{ logstash_certs_dir }}/{{ inventory_hostname }}-pkcs8.key"
   no_log: "{{ elasticstack_no_log }}"
   tags:

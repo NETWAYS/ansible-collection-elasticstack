@@ -42,6 +42,7 @@ Role Variables
 * *logstash_manage_logging*: Manage log4j configuration (default: `false`)
 * *logstash_plugins*: List of plugins to install (default: none)
 * *logstash_certs_dir*: Path to certificates. Will be used to build paths of several files. (Default: `/etc/logstash/certs`)
+* *logstash_heap*: JVM heap size in GB (default: `1`). Elastic recommends 4-8 GB for typical ingestion and staying below 50-75% of physical memory. Keep it low when Logstash shares a host with Elasticsearch so they do not compete for memory.
 
 If `logstash.yml` is managed, the following settings apply.
 

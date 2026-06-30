@@ -13,14 +13,17 @@ on:
           - warning
           - debug
   pull_request:
-  push:
-    branches:
-      - 'main'
-  merge_group:
-  schedule:
-    - cron: '15 6 * * 4'
+
+# Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  kics:
+  security_scan:
+    # For non-PR events (workflow_dispatch, schedule, etc.), github.event.pull_request.draft is null.
+    # GitHub Actions coerces null == false to true (null → 0, false → 0), so the job runs for all non-draft events.
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
 
     steps:
@@ -29,7 +32,7 @@ jobs:
         # make sure results dir is created
         run: mkdir -p results-dir
       - name: run kics Scan
-        uses: Checkmarx/kics-github-action@4063ea7186bec9fed1bf055e095a4658693f9998 # v2.1.19
+        uses: Checkmarx/kics-github-action@7117906d8779ecaf5180f34c4931a774f10d7625 # v2.1.19
         with:
           # path: 'roles,plugins'
           path: '.'

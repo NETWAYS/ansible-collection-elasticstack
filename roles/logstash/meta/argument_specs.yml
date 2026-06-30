@@ -432,6 +432,11 @@ argument_specs:
           Also add pipeline identifiers in the default pipelines. This can let the
           defaults dominate statistics with little value.
 
+      test:
+        type: str
+        default: false
+        description: test 
+
       # ----- Mermaid pipeline overview -----
       logstash_mermaid:
         type: bool

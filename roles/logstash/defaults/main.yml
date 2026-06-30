@@ -97,4 +97,4 @@ logstash_mermaid_logstash: true
 logstash_freshstart:
   changed: false
 
-test: hallo
+test: hi

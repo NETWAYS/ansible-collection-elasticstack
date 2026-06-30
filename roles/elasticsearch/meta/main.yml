@@ -13,7 +13,10 @@ galaxy_info:
         - "9"
     - name: Ubuntu
       versions:
-        - "22.04"
+        - "jammy"
+    - name: Debian
+      versions:
+        - "trixie"
   galaxy_tags:
     - elasticsearch
     - elk

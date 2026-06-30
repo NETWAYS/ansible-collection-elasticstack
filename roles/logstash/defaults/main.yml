@@ -5,6 +5,8 @@ logstash_config_backup: no
 logstash_manage_yaml: true
 logstash_manage_logging: false
 
+logstash_heap: "1"
+
 # config items in yaml file #
 
 logstash_config_autoreload: true

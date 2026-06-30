@@ -205,7 +205,10 @@ argument_specs:
 
       logstash_beats_input_congestion:
         type: int
-        description: Congestion threshold (seconds) for the Beats input pipeline. Unset by default.
+        description: >-
+          Congestion threshold for the default Beats input pipeline: it stops
+          writing to Redis once the buffer key holds more items than this value.
+          Unset by default.
 
       logstash_beats_timeout:
         type: str

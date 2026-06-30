@@ -83,7 +83,7 @@ Run only parts of the role with `--tags`:
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ `congestion` | `int` | N/A | — | Optional congestion threshold. The output stops once the target Redis key holds more items than this value. |
 | `logstash_elasticsearch_output` | `bool` | `true` | — | Create the default pipeline that forwards events to Elasticsearch. |
 | `logstash_beats_input` | `bool` | `true` | — | Create the default pipeline with a Beats input. |
-| `logstash_beats_input_congestion` | `int` | N/A | — | Congestion threshold (seconds) for the Beats input pipeline. Unset by default. |
+| `logstash_beats_input_congestion` | `int` | N/A | — | Congestion threshold for the default Beats input pipeline: it stops writing to Redis once the buffer key holds more items than this value. Unset by default. |
 | `logstash_beats_timeout` | `str` | N/A | — | Timeout for idle client connections on the Beats input (e.g. "60s"). Unset by default. |
 | `logstash_beats_tls` | `bool` | N/A | — | Activate TLS on the Beats input pipeline. Unset by default, but enabled automatically in a full stack setup unless overridden. |
 | `logstash_input_queue_type` | `str` | `"memory"` | `memory`, `persisted` | Queue type for the default Beats input pipeline. Use "persisted" for an on-disk persistent queue. |

@@ -64,7 +64,7 @@ argument_specs:
 
       kibana_sniff_interval:
         type: str
-        description: Interval between sniffing attempts (elasticsearch.sniffInterval). Unset by default.
+        description: Interval between sniffing attempts (elasticsearch.sniffInterval, in milliseconds). Unset by default.
 
       # ----- Kibana server TLS -----
       kibana_tls:
@@ -86,8 +86,8 @@ argument_specs:
         type: str
         default: PleaseChangeMe
         description: >-
-          Passphrase for the Kibana certificate. Overridden by elasticstack_cert_pass
-          when that is set.
+          Passphrase for the generated Kibana security certificate (X-Pack, full
+          stack). Overridden by elasticstack_cert_pass when that is set.
 
       # ----- Security certificates (X-Pack, full stack) -----
       kibana_cert_validity_period:

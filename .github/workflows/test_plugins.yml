@@ -45,7 +45,7 @@ jobs:
           - "ansible-core>=2.19,<2.20" #Correspond ansible>=12.0,<13.0
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python ${{ matrix.python_version }}
         uses: actions/setup-python@v6
@@ -89,7 +89,7 @@ jobs:
           - "ansible-core>=2.20,<2.21" #Correspond ansible>=13.0,<14.0
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python ${{ matrix.python_version }}
         uses: actions/setup-python@v6
@@ -126,7 +126,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v6
@@ -175,7 +175,7 @@ jobs:
           # - 9  # add when elasticsearch>=9 is supported by this collection
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v6
@@ -260,7 +260,7 @@ jobs:
           - "46.0.5" # Latest release
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v6

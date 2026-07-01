@@ -90,9 +90,10 @@ beats_filebeat_syslog_tcp_port: 514
 Enable with `beats_filebeat_journald` (default `false`, available since Filebeat
 7.16) and configure inputs with `beats_filebeat_journald_inputs`.
 
-Like the log inputs, this is a **dictionary keyed by a free name**. Each entry
-needs an `id`; `include_matches` is optional and is itself a dictionary whose
-values are the match expressions.
+This is a **dictionary keyed by a free name**. Unlike the log inputs, here the
+key is only a label — the input's id comes from the `id` field, which each entry
+needs. `include_matches` is optional and is itself a dictionary whose values are
+the match expressions.
 
 ```yaml
 beats_filebeat_journald_inputs:

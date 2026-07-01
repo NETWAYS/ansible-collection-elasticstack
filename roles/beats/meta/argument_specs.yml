@@ -238,17 +238,17 @@ argument_specs:
 
       beats_tls_key:
         type: str
-        default: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.key"
+        default: "{{ beats_ca_dir | default('') }}/{{ inventory_hostname }}-beats.key"
         description: Path to the private key file for custom certificates.
 
       beats_tls_cert:
         type: str
-        default: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.crt"
+        default: "{{ beats_ca_dir | default('') }}/{{ inventory_hostname }}-beats.crt"
         description: Path to the certificate for custom certificates.
 
       beats_tls_cacert:
         type: str
-        default: "{{ beats_ca_dir }}/ca.crt"
+        default: "{{ beats_ca_dir | default('') }}/ca.crt"
         description: Path to the CA certificate for custom certificates.
 
       beats_tls_key_passphrase:

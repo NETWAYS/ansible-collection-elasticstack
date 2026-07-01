@@ -77,9 +77,9 @@ Run only parts of the role with `--tags`:
 | `beats_metricbeat_loadbalance` | `bool` | `true` | — | Enable load balancing for the Metricbeat Logstash output. |
 | `beats_security` | `bool` | `false` | — | Activate TLS for the connections to the targets. Works with the other roles and elasticstack_full_stack to create certificates automatically, or with the beats_tls_* variables for custom certificates. |
 | `beats_ca_dir` | `str` | N/A | — | Base directory for custom CA certificates and keys. Unset by default; the role fills it depending on the stack variant (/opt/ca standalone, or /etc/beats/certs in a full stack). |
-| `beats_tls_key` | `str` | `"{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.key"` | — | Path to the private key file for custom certificates. |
-| `beats_tls_cert` | `str` | `"{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.crt"` | — | Path to the certificate for custom certificates. |
-| `beats_tls_cacert` | `str` | `"{{ beats_ca_dir }}/ca.crt"` | — | Path to the CA certificate for custom certificates. |
+| `beats_tls_key` | `str` | `"{{ beats_ca_dir | default('') }}/{{ inventory_hostname }}-beats.key"` | — | Path to the private key file for custom certificates. |
+| `beats_tls_cert` | `str` | `"{{ beats_ca_dir | default('') }}/{{ inventory_hostname }}-beats.crt"` | — | Path to the certificate for custom certificates. |
+| `beats_tls_cacert` | `str` | `"{{ beats_ca_dir | default('') }}/ca.crt"` | — | Path to the CA certificate for custom certificates. |
 | `beats_tls_key_passphrase` | `str` | `"BeatsChangeMe"` | — | Passphrase of the private key. |
 | `beats_cert_validity_period` | `int` | `1095` | — | Number of days the generated certificates are valid. |
 | `beats_cert_expiration_buffer` | `str` | `"+30d"` | — | Renew the certificate when it would expire within this period. Uses the community.crypto check_period format (e.g. "+30d"), not a plain number. |

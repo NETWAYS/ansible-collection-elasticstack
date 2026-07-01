@@ -1,0 +1,124 @@
+---
+# Role argument specification for the kibana role.
+# This is the single source of truth for the role's variables: Ansible validates
+# the supplied values against it at role start, and ansible-docsmith renders the
+# README variable reference and the comments in defaults/main.yml from it.
+#
+# Only kibana_* variables live here. The shared elasticstack_* variables are
+# documented centrally with the elasticstack role.
+
+argument_specs:
+  main:
+    short_description: Install and configure Kibana
+    description:
+      - Installs and configures Kibana on Linux systems.
+      - >-
+        Can manage kibana.yml, the connection to Elasticsearch, TLS for the
+        Kibana server, and the X-Pack security certificates.
+    author:
+      - NETWAYS GmbH
+
+    options:
+
+      # ----- Service & general -----
+      kibana_enable:
+        type: bool
+        default: true
+        description: Start and enable the Kibana service.
+
+      kibana_config_backup:
+        type: bool
+        default: true
+        description: Keep a backup of kibana.yml whenever the role changes it.
+
+      kibana_manage_yaml:
+        type: bool
+        default: true
+        description: Manage and overwrite kibana.yml.
+
+      # ----- Elasticsearch connection -----
+      kibana_elasticsearch_hosts:
+        type: list
+        elements: str
+        description: >-
+          Elasticsearch hosts Kibana connects to. Defaults to the nodes from the
+          elasticsearch group, or localhost when used standalone.
+
+      kibana_security:
+        type: bool
+        default: true
+        description: >-
+          Enable X-Pack security: connect to Elasticsearch over HTTPS with
+          authentication and set up the encryption keys. Only effective in a full
+          stack setup with the elastic variant.
+
+      kibana_sniff_on_start:
+        type: bool
+        default: false
+        description: Ask Elasticsearch for the list of nodes at startup (elasticsearch.sniffOnStart).
+
+      kibana_sniff_on_connection_fault:
+        type: bool
+        default: false
+        description: Update the list of Elasticsearch nodes on connection fault (elasticsearch.sniffOnConnectionFault).
+
+      kibana_sniff_interval:
+        type: str
+        description: Interval between sniffing attempts (elasticsearch.sniffInterval). Unset by default.
+
+      # ----- Kibana server TLS -----
+      kibana_tls:
+        type: bool
+        default: false
+        description: Enable TLS on the Kibana server itself (server.ssl).
+
+      kibana_tls_cert:
+        type: str
+        default: /etc/kibana/certs/cert.pem
+        description: Path to the certificate for the Kibana server TLS.
+
+      kibana_tls_key:
+        type: str
+        default: /etc/kibana/certs/key.pem
+        description: Path to the private key for the Kibana server TLS.
+
+      kibana_tls_key_passphrase:
+        type: str
+        default: PleaseChangeMe
+        description: >-
+          Passphrase for the Kibana certificate. Overridden by elasticstack_cert_pass
+          when that is set.
+
+      # ----- Security certificates (X-Pack, full stack) -----
+      kibana_cert_validity_period:
+        type: int
+        default: 1095
+        description: Number of days the generated certificates are valid.
+
+      kibana_cert_expiration_buffer:
+        type: int
+        default: 30
+        description: >-
+          Renew the certificate when its remaining validity (in days) drops below
+          this value.
+
+      kibana_cert_will_expire_soon:
+        type: bool
+        default: false
+        description: >-
+          Set to true to force renewal of the Kibana certificate. Alternatively
+          run the playbook with the renew_kibana_cert tag.
+
+      # ----- Extra configuration -----
+      kibana_extra_config:
+        type: str
+        description: >-
+          Extra configuration appended verbatim to kibana.yml (YAML). Unset by
+          default.
+
+      # ----- Internal -----
+      kibana_freshstart:
+        type: dict
+        default:
+          changed: false
+        description: Internal state used by the role to detect a fresh install. Do not set manually.

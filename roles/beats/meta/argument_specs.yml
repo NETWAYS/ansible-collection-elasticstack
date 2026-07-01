@@ -14,7 +14,7 @@ argument_specs:
       - Installs and configures Filebeat, Auditbeat and Metricbeat on Linux systems.
       - >-
         Can run standalone or together with the other Elastic Stack roles. Beats
-        can ship to Logstash or directly to Elasticsearch, optionally over TLS.
+        can ship to Logstash or directly to Elasticsearch.
       - >-
         The complex Filebeat input structures (log, syslog, journald, docker,
         modules) are described in the Filebeat inputs documentation.

@@ -3,7 +3,7 @@
 Installs and configures the Elastic [Beats](https://www.elastic.co/beats) —
 Filebeat, Auditbeat and Metricbeat — on Linux systems. The role can run
 standalone or together with the other Elastic Stack roles. Beats can ship to
-Logstash or directly to Elasticsearch, optionally secured with TLS.
+Logstash or directly to Elasticsearch.
 
 ## Requirements
 

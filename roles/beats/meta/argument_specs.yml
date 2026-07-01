@@ -50,9 +50,11 @@ argument_specs:
           the other Elastic Stack roles the targets are determined automatically.
 
       beats_fields:
-        type: dict
+        type: list
+        elements: str
         description: >-
-          Fields added to every input in the configuration. Unset by default.
+          Fields added to every input, given as a list of "key: value" strings
+          (the global counterpart to the per-input fields). Unset by default.
           See the Filebeat inputs documentation.
 
       # ----- Logging -----

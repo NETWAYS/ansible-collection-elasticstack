@@ -47,7 +47,7 @@ Or refer to the role with the FQCN of the role.
 Roles
 -------
 
-* [Beats](role-beats.md)
+* [Beats](../roles/beats/README.md)
 * [Elasticsearch](role-elasticsearch.md)
 * [Kibana](role-kibana.md)
 * [Logstash](../roles/logstash/README.md)

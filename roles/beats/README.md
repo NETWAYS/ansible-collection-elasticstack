@@ -34,7 +34,7 @@ modules). For the structure of `beats_filebeat_log_inputs`,
 
 Run only parts of the role with `--tags`:
 
-* `configuration` (alias `beats_configuration`) — only (re)write the Beats configuration, skip installation. Use `beats_filebeat_configuration` or `beats_auditbeat_configuration` to limit it to a single Beat.
+* `configuration` (alias `beats_configuration`) — (re)write the Filebeat and Auditbeat configuration without installing. Use `beats_filebeat_configuration` or `beats_auditbeat_configuration` to limit it to one of them.
 * `certificates` — only generate and distribute the TLS certificates.
 * `renew_beats_cert` / `renew_ca` — force renewal of the Beats certificate.
 

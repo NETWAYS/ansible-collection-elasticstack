@@ -56,7 +56,7 @@ Run only parts of the role with `--tags`:
 | `beats_filebeat_elastic_monitoring` | `bool` | `false` | — | Report Filebeat monitoring data through the Elastic Stack monitoring features. |
 | `beats_filebeat_loadbalance` | `bool` | `true` | — | Enable load balancing for the Filebeat Logstash output. |
 | `beats_filebeat_log_input` | `bool` | `true` | — | Read log files with the inputs from beats_filebeat_log_inputs. |
-| `beats_filebeat_log_inputs` | `dict` | `{'messages': {'name': 'messages', 'paths': ['/var/log/messages', '/var/log/syslog']}}` | — | Log files to read, keyed by a free name that becomes the filestream id. Each entry has paths and optional fields and multiline settings. See the Filebeat inputs documentation. |
+| `beats_filebeat_log_inputs` | `dict` | `{'messages': {'paths': ['/var/log/messages', '/var/log/syslog']}}` | — | Log files to read, keyed by a free name that becomes the filestream id. Each entry has paths and optional fields and multiline settings. See the Filebeat inputs documentation. |
 | `beats_filebeat_syslog_tcp` | `bool` | `false` | — | Enable a TCP syslog input. |
 | `beats_filebeat_syslog_tcp_port` | `int` | `514` | — | Port of the TCP syslog input. |
 | `beats_filebeat_syslog_udp` | `bool` | `false` | — | Enable a UDP syslog input. |

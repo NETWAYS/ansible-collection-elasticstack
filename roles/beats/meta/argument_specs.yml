@@ -108,7 +108,6 @@ argument_specs:
         type: dict
         default:
           messages:
-            name: messages
             paths:
               - /var/log/messages
               - /var/log/syslog

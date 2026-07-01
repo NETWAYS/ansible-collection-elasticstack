@@ -28,7 +28,6 @@ beats_filebeat_syslog_tcp_port: 514
 beats_filebeat_log_input: true
 beats_filebeat_log_inputs:
   messages:
-    name: messages
     paths:
       - /var/log/messages
       - /var/log/syslog

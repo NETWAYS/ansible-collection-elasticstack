@@ -9,18 +9,17 @@ official Filebeat documentation.
 
 Set with `beats_filebeat_log_input` (default `true`) and `beats_filebeat_log_inputs`.
 
-`beats_filebeat_log_inputs` is a **dictionary keyed by a free name**. The name is
-only a label; it becomes the id of the generated
+`beats_filebeat_log_inputs` is a **dictionary keyed by a free name**. That key
+becomes the id of the generated
 [`filestream`](https://www.elastic.co/docs/reference/beats/filebeat/filebeat-input-filestream)
-input (`<name>-filestream`). Each entry needs `paths`; `fields` and `multiline`
-are optional.
+input (`<key>-filestream`) — there is no separate `name` field. Each entry needs
+`paths`; `fields` and `multiline` are optional.
 
 The default reads the system log:
 
 ```yaml
 beats_filebeat_log_inputs:
   messages:
-    name: messages
     paths:
       - /var/log/messages
       - /var/log/syslog
@@ -31,7 +30,6 @@ A longer example with several paths and multiline handling:
 ```yaml
 beats_filebeat_log_inputs:
   messages:
-    name: messages
     paths:
       - /var/log/messages
       - /var/log/secure
@@ -57,7 +55,6 @@ There are two ways to add fields, and they use **different shapes**:
   ```yaml
   beats_filebeat_log_inputs:
     messages:
-      name: messages
       paths:
         - /var/log/messages
       fields:

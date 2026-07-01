@@ -49,7 +49,7 @@ Roles
 
 * [Beats](role-beats.md)
 * [Elasticsearch](role-elasticsearch.md)
-* [Kibana](role-kibana.md)
+* [Kibana](../roles/kibana/README.md)
 * [Logstash](../roles/logstash/README.md)
 * [Repos](role-repos.md)
 

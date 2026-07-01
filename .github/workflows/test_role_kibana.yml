@@ -15,6 +15,7 @@ on:
   pull_request:
     paths:
       - 'roles/kibana/**'
+      - '!roles/kibana/**/*.md'
       - '.github/workflows/test_role_kibana.yml'
       - 'molecule/kibana_**'
 

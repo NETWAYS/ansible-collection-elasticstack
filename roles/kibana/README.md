@@ -8,6 +8,9 @@ Kibana server, and — in a full stack setup — the X-Pack security certificate
 
 * The Elastic repositories configured — use the [`repos`](../repos) role.
 * A reachable Elasticsearch instance for Kibana to connect to.
+* For browser-facing TLS (`kibana_tls: true`): a certificate and key from a CA your
+  users trust (corporate PKI or a public CA), provided via `kibana_tls_cert` and
+  `kibana_tls_key`. The role does **not** generate a browser certificate.
 
 ## Example
 

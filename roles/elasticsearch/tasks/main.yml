@@ -124,9 +124,10 @@
       ('elasticsearch-oss' if elasticstack_variant == 'oss' else 'elasticsearch') +
       ((elasticstack_versionseparator +
       elasticstack_version |
-      string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
+      string ) if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest')) |
       replace(' ', '')
       }}
+    _elasticstack_package_state: "{{ 'present' if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest') else 'latest' }}"
 
 - name: Update Elasticsearch if needed
   ansible.builtin.include_tasks: elasticsearch-rolling-upgrade.yml
@@ -141,6 +142,7 @@
 - name: Install Elasticsearch - rpm - full stack
   ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
+    state: "{{ _elasticstack_package_state }}"
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   when:
@@ -150,6 +152,7 @@
 - name: Install Elasticsearch - rpm - standalone
   ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
+    state: "{{ _elasticstack_package_state }}"
   when:
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
@@ -157,6 +160,7 @@
 - name: Install Elasticsearch - deb
   ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
+    state: "{{ _elasticstack_package_state }}"
   when:
     - ansible_os_family == "Debian"
 

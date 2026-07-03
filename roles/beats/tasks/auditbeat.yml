@@ -7,13 +7,15 @@
       'auditbeat' +
       ((elasticstack_versionseparator +
       elasticstack_version |
-      string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
+      string ) if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest')) |
       replace(' ', '')
       }}
+    _elasticstack_package_state: "{{ 'present' if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest') else 'latest' }}"
 
 - name: Install Auditbeat - rpm - full stack
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
+    state: "{{ _elasticstack_package_state }}"
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
   notify:
@@ -25,6 +27,7 @@
 - name: Install Auditbeat - rpm - standalone
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
+    state: "{{ _elasticstack_package_state }}"
   notify:
     - Restart Auditbeat
   when:
@@ -34,49 +37,10 @@
 - name: Install Auditbeat - deb
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
+    state: "{{ _elasticstack_package_state }}"
   notify:
     - Restart Auditbeat
   when:
-    - ansible_os_family == "Debian"
-
-# KICS complains about "latest" package but this is a dedicated update task
-
-- name: Install Auditbeat latest version - rpm - full stack
-  ansible.builtin.package:
-    name: auditbeat
-# kics-scan ignore-line
-    state: latest
-    enablerepo:
-      - "elastic-{{ elasticstack_release }}.x"
-  notify:
-    - Restart Auditbeat
-  when:
-    - elasticstack_version is defined
-    - elasticstack_version == "latest"
-    - ansible_os_family == "RedHat"
-    - elasticstack_full_stack | bool
-
-- name: Install Auditbeat latest version - rpm - standalone
-  ansible.builtin.package:
-    name: auditbeat
-    state: latest
-  notify:
-    - Restart Auditbeat
-  when:
-    - elasticstack_version is defined
-    - elasticstack_version == "latest"
-    - ansible_os_family == "RedHat"
-    - not elasticstack_full_stack | bool
-
-- name: Install Auditbeat latest version - deb
-  ansible.builtin.package:
-    name: auditbeat
-    state: latest
-  notify:
-    - Restart Auditbeat
-  when:
-    - elasticstack_version is defined
-    - elasticstack_version == "latest"
     - ansible_os_family == "Debian"
 
 - name: Configure Auditbeat

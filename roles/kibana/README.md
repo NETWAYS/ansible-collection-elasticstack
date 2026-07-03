@@ -1,8 +1,10 @@
 # Ansible Role: Kibana
 
 Installs and configures [Kibana](https://www.elastic.co/kibana) on Linux systems.
-The role can manage `kibana.yml`, the connection to Elasticsearch, TLS for the
-Kibana server, and — in a full stack setup — the X-Pack security certificates.
+The role manages `kibana.yml` and can enable TLS for the Kibana web interface,
+using a certificate you provide. In a full stack setup together with the
+elasticsearch role, it also configures the connection to Elasticsearch — the TLS
+trust and the `kibana_system` credentials — using the Elasticsearch CA.
 
 ## Requirements
 

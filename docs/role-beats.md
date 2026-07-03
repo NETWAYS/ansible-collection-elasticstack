@@ -95,7 +95,7 @@ The following variables only apply if you use this role together with our other 
 * *elasticstack_ca_dir*: Directory where on the Elasticsearch CA host certificates are stored. This is only useful in connection with out other Elastic Stack related roles. (default: `/opt/es-ca`)
 * *elasticstack_ca_pass*: Password for Elasticsearch CA (default: `PleaseChangeMe`)
 * *elasticstack_initial_passwords*: Path to file with initical elasticsearch passwords (default: `/usr/share/elasticsearch/initial_passwords`)
-* *elasticstack_version*: Install a specific version; leave unset to install the latest available. (Default: none. Example: `7.10.1`)
+* *elasticstack_version*: Install a (update to) specific version; leave unset to install the latest available. (Default: none. Example: `7.10.1`)
 
 If you want to use this role with your own TLS certificates, use these variables.
 

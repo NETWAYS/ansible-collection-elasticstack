@@ -9,12 +9,11 @@
       elasticstack_version |
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest')) |
       replace(' ', '') }}
-    _elasticstack_package_state: "{{ 'present' if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest') else 'latest' }}"
 
 - name: Install Filebeat - rpm - full stack
   ansible.builtin.package:
     name: "{{ beats_filebeat_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
   notify:
@@ -26,7 +25,7 @@
 - name: Install Filebeat - rpm - standalone
   ansible.builtin.package:
     name: "{{ beats_filebeat_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
   notify:
     - Restart Filebeat
   when:
@@ -36,7 +35,7 @@
 - name: Install Filebeat - deb
   ansible.builtin.package:
     name: "{{ beats_filebeat_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
   notify:
     - Restart Filebeat
   when:

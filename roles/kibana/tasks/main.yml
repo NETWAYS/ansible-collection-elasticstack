@@ -50,12 +50,11 @@
       elasticstack_version |
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest')) |
       replace(' ', '') }}
-    _elasticstack_package_state: "{{ 'present' if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest') else 'latest' }}"
 
 - name: Install Kibana - rpm - full stack
   ansible.builtin.package:
     name: "{{ kibana_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   notify:
@@ -67,7 +66,7 @@
 - name: Install Kibana - rpm - standalone
   ansible.builtin.package:
     name: "{{ kibana_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
   notify:
     - Restart Kibana
   when:
@@ -77,7 +76,7 @@
 - name: Install Kibana - deb
   ansible.builtin.package:
     name: "{{ kibana_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
   notify:
     - Restart Kibana
   when:

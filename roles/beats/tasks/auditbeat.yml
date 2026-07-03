@@ -10,12 +10,11 @@
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest')) |
       replace(' ', '')
       }}
-    _elasticstack_package_state: "{{ 'present' if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest') else 'latest' }}"
 
 - name: Install Auditbeat - rpm - full stack
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
   notify:
@@ -27,7 +26,7 @@
 - name: Install Auditbeat - rpm - standalone
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
   notify:
     - Restart Auditbeat
   when:
@@ -37,7 +36,7 @@
 - name: Install Auditbeat - deb
   ansible.builtin.package:
     name: "{{ beats_auditbeat_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
   notify:
     - Restart Auditbeat
   when:

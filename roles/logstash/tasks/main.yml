@@ -68,7 +68,6 @@
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest')) |
       replace(' ', '')
       }}
-    _elasticstack_package_state: "{{ 'present' if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest') else 'latest' }}"
   when:
     - ansible_os_family != "Debian"
 
@@ -82,14 +81,13 @@
       if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest') else '') |
       replace(' ', '')
       }}
-    _elasticstack_package_state: "{{ 'present' if (elasticstack_version is defined and elasticstack_version | length > 0 and elasticstack_version != 'latest') else 'latest' }}"
   when:
     - ansible_os_family == "Debian"
 
 - name: Install Logstash - rpm - full stack
   ansible.builtin.package:
     name: "{{ logstash_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   notify:
@@ -101,7 +99,7 @@
 - name: Install Logstash - rpm - standalone
   ansible.builtin.package:
     name: "{{ logstash_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
   notify:
     - Restart Logstash
   when:
@@ -111,7 +109,7 @@
 - name: Install Logstash - deb
   ansible.builtin.package:
     name: "{{ logstash_package }}"
-    state: "{{ _elasticstack_package_state }}"
+    state: present
   notify:
     - Restart Logstash
   when:

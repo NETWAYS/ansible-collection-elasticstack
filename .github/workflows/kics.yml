@@ -32,7 +32,7 @@ jobs:
         # make sure results dir is created
         run: mkdir -p results-dir
       - name: run kics Scan
-        uses: Checkmarx/kics-github-action@7117906d8779ecaf5180f34c4931a774f10d7625 # v2.1.19
+        uses: Checkmarx/kics-github-action@bcd2aff52160bfe5a72608452d00326e90da7a9a # v2.1.19
         with:
           # path: 'roles,plugins'
           path: '.'

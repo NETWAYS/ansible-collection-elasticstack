@@ -1,0 +1,293 @@
+---
+# Role argument specification for the elasticsearch role.
+# This is the single source of truth for the role's variables: Ansible validates
+# the supplied values against it at role start, and ansible-docsmith renders the
+# README variable reference from it.
+#
+# Only elasticsearch_* variables live here. The shared elasticstack_* variables
+# (elasticstack_ca_host, elasticstack_ca_pass, elasticstack_release,
+# elasticstack_variant, elasticstack_elasticsearch_http_port, ...) are documented
+# centrally with the elasticstack role.
+
+argument_specs:
+  main:
+    short_description: Install and configure Elasticsearch
+    description:
+      - Installs and configures Elasticsearch on Linux systems.
+      - >-
+        Can manage elasticsearch.yml, the JVM heap and options, X-Pack security
+        with a self-signed CA (certificates for the whole stack), the keystore,
+        and rolling upgrades.
+    author:
+      - NETWAYS GmbH
+
+    options:
+
+      # ----- Service & general -----
+      elasticsearch_enable:
+        type: bool
+        default: true
+        description: Start and enable the Elasticsearch service.
+
+      elasticsearch_manage_yaml:
+        type: bool
+        default: true
+        description: Manage and overwrite elasticsearch.yml.
+
+      elasticsearch_config_backup:
+        type: bool
+        default: false
+        description: Keep a backup of elasticsearch.yml whenever the role changes it.
+
+      elasticsearch_clustername:
+        type: str
+        default: elasticsearch
+        description: Name of the Elasticsearch cluster (cluster.name).
+
+      elasticsearch_nodename:
+        type: str
+        description: Name of this Elasticsearch node (node.name). Defaults to the host's ansible_hostname.
+
+      elasticsearch_node_types:
+        type: list
+        elements: str
+        description: >-
+          Node roles for this node (node.roles), e.g. master, data, ingest. When
+          unset, Elasticsearch uses its own defaults. See the Elasticsearch
+          node-roles documentation for valid values.
+
+      # ----- Paths -----
+      elasticsearch_datapath:
+        type: str
+        default: /var/lib/elasticsearch
+        description: Directory where Elasticsearch stores its data (path.data).
+
+      elasticsearch_create_datapath:
+        type: bool
+        default: false
+        description: Create the data directory if it does not exist. Useful when you change elasticsearch_datapath.
+
+      elasticsearch_logpath:
+        type: str
+        default: /var/log/elasticsearch
+        description: Directory where Elasticsearch stores its logs (path.logs).
+
+      elasticsearch_create_logpath:
+        type: bool
+        default: false
+        description: Create the log directory if it does not exist. Useful when you change elasticsearch_logpath.
+
+      elasticsearch_conf_dir:
+        type: str
+        default: /etc/elasticsearch/
+        description: Elasticsearch configuration directory. Used to place the jvm.options.d drop-ins.
+
+      elasticsearch_group:
+        type: str
+        default: elasticsearch
+        description: >-
+          OS group that owns the jvm.options.d drop-ins. The service reads them
+          through this group, so it must match the group the package runs the
+          service as (elasticsearch). Changing it is not recommended.
+
+      elasticsearch_fs_repo:
+        type: list
+        elements: str
+        description: >-
+          Filesystem paths registered as snapshot repositories (path.repo). Every
+          node must reach the same share under the same path. Unset by default.
+
+      # ----- JVM / heap -----
+      elasticsearch_heap:
+        type: str
+        default: "{{ [[(ansible_memtotal_mb // 1024) // 2, 30] | min, 1] | max }}"
+        description: >-
+          JVM heap size in GB. Sets both -Xms and -Xmx via a jvm.options.d
+          drop-in. The default is half of the host memory, capped between 1 and
+          30 GB. Set to false to leave heap sizing to Elasticsearch/the JVM.
+
+      elasticsearch_heap_dump_path:
+        type: str
+        default: /var/lib/elasticsearch
+        description: Directory for JVM heap dumps (-XX:HeapDumpPath).
+
+      elasticsearch_jvm_custom_parameters:
+        type: raw
+        default: ''
+        description: >-
+          Extra JVM options written to a jvm.options.d drop-in, provided as a list
+          of option lines (e.g. ["-XX:+UseG1GC"]). Empty by default.
+
+      # ----- Networking -----
+      elasticsearch_api_host:
+        type: str
+        default: localhost
+        description: Host or IP the role uses for its own Elasticsearch API connection checks.
+
+      elasticsearch_network_host:
+        type: str
+        description: >-
+          Network addresses Elasticsearch binds to (network.host). Accepts IPs,
+          interface names, or Elasticsearch special values, e.g. "_ens190_,_local_".
+          Defaults to "_local_", "_site_" when unset.
+
+      elasticsearch_http_publish_host:
+        type: str
+        description: Address HTTP clients use to reach this node when sniffing (http.publish_host). Unset by default.
+
+      elasticsearch_http_publish_port:
+        type: int
+        description: HTTP publish port, only needed when it must differ from http.port (http.publish_port). Unset by default.
+
+      elasticsearch_transport_port:
+        type: int
+        description: Port for inter-node transport communication (transport.port). Unset by default.
+
+      elasticsearch_seed_hosts:
+        type: list
+        elements: str
+        description: >-
+          Seed hosts for cluster discovery (discovery.seed_hosts). Overrides the
+          list the role builds from the elasticsearch group. Unset by default.
+
+      # ----- Cluster behaviour -----
+      elasticsearch_check_calculation:
+        type: bool
+        default: false
+        description: >-
+          Only run the node-role validation (derive master/data/other, group
+          nodes, assert an odd number of master-eligible nodes) and then stop on
+          each host. Elasticsearch is not installed or configured. Useful as a
+          pre-flight inventory check.
+
+      elasticsearch_disable_systemcallfilterchecks:
+        type: bool
+        default: false
+        description: >-
+          Disable the system call filter check (bootstrap.system_call_filter).
+          Has a security impact and is only applied on Elastic Stack release 7.
+
+      elasticsearch_jna_workaround:
+        type: bool
+        default: false
+        description: >-
+          Work around systems where JNA cannot load its native library. WARNING
+          this rewrites the sysconfig/default file and overwrites ES_JAVA_OPTS.
+
+      elasticsearch_unsafe_upgrade_restart:
+        type: bool
+        default: false
+        description: >-
+          During upgrades, update the package first and then restart the service,
+          instead of stopping it, upgrading and starting again. Only for
+          non-production clusters, use at your own risk.
+
+      # ----- Security & X-Pack -----
+      elasticsearch_security:
+        type: bool
+        default: true
+        description: >-
+          Enable X-Pack security (transport TLS, keystore, CA and certificates).
+          Required on Elastic Stack release 8 and later with the elastic variant.
+
+      elasticsearch_http_security:
+        type: bool
+        default: true
+        description: Enable TLS on the HTTP layer (xpack.security.http.ssl). Only effective when elasticsearch_security is enabled.
+
+      elasticsearch_security_enrollment:
+        type: bool
+        description: >-
+          Control node/Kibana enrollment on a node autoconfigured for security
+          (xpack.security.enrollment.enabled). Unset by default.
+
+      elasticsearch_ml_enabled:
+        type: bool
+        default: true
+        description: Enable Machine Learning (xpack.ml.enabled). Only applied with the elastic variant.
+
+      elasticsearch_monitoring_enabled:
+        type: bool
+        default: true
+        description: >-
+          Enable X-Pack monitoring collection (xpack.monitoring.collection.enabled).
+          Only applied on Elastic Stack release 7.
+
+      elasticsearch_bootstrap_pw:
+        type: str
+        default: PleaseChangeMe
+        description: >-
+          Bootstrap password stored in the keystore. Only takes effect when
+          Elasticsearch is initialised for the first time; later changes do not
+          update it.
+
+      elasticsearch_http_protocol:
+        type: str
+        default: http
+        choices:
+          - http
+          - https
+        description: >-
+          Protocol the role uses to talk to the Elasticsearch API. Set
+          automatically to https once HTTP security is active.
+
+      elasticsearch_ssl_verification_mode:
+        type: str
+        default: full
+        choices:
+          - full
+          - certificate
+          - none
+        description: How certificates presented by the other party are verified (xpack.security.transport.ssl.verification_mode).
+
+      # ----- Certificates (X-Pack, generated from the stack CA) -----
+      elasticsearch_tls_key_passphrase:
+        type: str
+        default: PleaseChangeMeIndividually
+        description: >-
+          Passphrase for the generated Elasticsearch certificates. Overridden by
+          elasticstack_cert_pass when that is set.
+
+      elasticsearch_cert_validity_period:
+        type: int
+        default: 1095
+        description: Number of days the generated certificates are valid.
+
+      elasticsearch_cert_expiration_buffer:
+        type: int
+        default: 30
+        description: Renew the certificate when its remaining validity (in days) drops below this value.
+
+      elasticsearch_cert_will_expire_soon:
+        type: bool
+        default: false
+        description: >-
+          Set to true to force renewal of the Elasticsearch certificate.
+          Alternatively run the playbook with the renew_es_cert tag.
+
+      # ----- Extra configuration -----
+      elasticsearch_extra_config:
+        type: dict
+        description: >-
+          Additional elasticsearch.yml settings as a mapping, rendered verbatim
+          into the configuration. Unset by default.
+
+      # ----- Internal -----
+      elasticsearch_initialized_file:
+        type: str
+        default: "{{ elasticstack_initial_passwords | default('') | dirname }}/cluster_initialized"
+        description: >-
+          Marker file the role writes once the cluster is initialised, used to
+          detect an existing setup. Advanced; usually left at its default.
+
+      elasticsearch_freshstart:
+        type: dict
+        default:
+          changed: false
+        description: Internal state used by the role to detect a fresh install. Do not set manually.
+
+      elasticsearch_freshstart_security:
+        type: dict
+        default:
+          changed: false
+        description: Internal state used by the role to detect a fresh security setup. Do not set manually.

@@ -5,7 +5,7 @@
 {% macro row(name, spec, depth) -%}
 {% set pad = '&nbsp;&nbsp;&nbsp;&nbsp;' * depth %}
 {% set mark = '↳ ' if depth > 0 else '' %}
-| {{ pad }}{{ mark }}`{{ name | ansible_escape }}` | `{{ spec.type }}`{% if spec.elements %} of `{{ spec.elements }}`{% endif %} | {% if spec.options %}…{% else %}{{ spec.default | format_default }}{% endif %} | {% if spec.choices %}{{ spec.choices | map('string') | map('code_escape') | join(', ') }}{% else %}—{% endif %} | {{ spec.description | format_table_description(name, 0) }} |
+| {{ pad }}{{ mark }}`{{ name | ansible_escape }}` | `{{ spec.type }}`{% if spec.elements %} of `{{ spec.elements }}`{% endif %} | {% if spec.options %}…{% else %}{{ spec.default | format_default | replace('|', '\\|') }}{% endif %} | {% if spec.choices %}{{ spec.choices | map('string') | map('code_escape') | join(', ') }}{% else %}—{% endif %} | {{ spec.description | format_table_description(name, 0) }} |
 {% for sn, ss in (spec.options or {}).items() %}
 {{ row(sn, ss, depth + 1) }}
 {%- endfor %}

@@ -56,7 +56,7 @@ Run only parts of the role with `--tags`:
 | `elasticsearch_conf_dir` | `str` | `"/etc/elasticsearch/"` | — | Elasticsearch configuration directory. Used to place the jvm.options.d drop-ins. |
 | `elasticsearch_group` | `str` | `"elasticsearch"` | — | OS group that owns the jvm.options.d drop-ins. The service reads them through this group, so it must match the group the package runs the service as (elasticsearch). Changing it is not recommended. |
 | `elasticsearch_fs_repo` | `list` of `str` | N/A | — | Filesystem paths registered as snapshot repositories (path.repo). Every node must reach the same share under the same path. Unset by default. |
-| `elasticsearch_heap` | `str` | `"{{ [[(ansible_memtotal_mb // 1024) // 2, 30] | min, 1] | max }}"` | — | JVM heap size in GB. Sets both -Xms and -Xmx via a jvm.options.d drop-in. The default is half of the host memory, capped between 1 and 30 GB. Set to false to leave heap sizing to Elasticsearch/the JVM. |
+| `elasticsearch_heap` | `str` | `"{{ [[(ansible_memtotal_mb // 1024) // 2, 30] \| min, 1] \| max }}"` | — | JVM heap size in GB. Sets both -Xms and -Xmx via a jvm.options.d drop-in. The default is half of the host memory, capped between 1 and 30 GB. Set to false to leave heap sizing to Elasticsearch/the JVM. |
 | `elasticsearch_heap_dump_path` | `str` | `"/var/lib/elasticsearch"` | — | Directory for JVM heap dumps (-XX:HeapDumpPath). |
 | `elasticsearch_jvm_custom_parameters` | `raw` | `""` | — | Extra JVM options written to a jvm.options.d drop-in, provided as a list of option lines (e.g. ["-XX:+UseG1GC"]). Empty by default. |
 | `elasticsearch_api_host` | `str` | `"localhost"` | — | Host or IP the role uses for its own Elasticsearch API connection checks. |
@@ -82,7 +82,7 @@ Run only parts of the role with `--tags`:
 | `elasticsearch_cert_expiration_buffer` | `int` | `30` | — | Renew the certificate when its remaining validity (in days) drops below this value. |
 | `elasticsearch_cert_will_expire_soon` | `bool` | `false` | — | Set to true to force renewal of the Elasticsearch certificate. Alternatively run the playbook with the renew_es_cert tag. |
 | `elasticsearch_extra_config` | `dict` | N/A | — | Additional elasticsearch.yml settings as a mapping, rendered verbatim into the configuration. Unset by default. |
-| `elasticsearch_initialized_file` | `str` | `"{{ elasticstack_initial_passwords | default('') | dirname }}/cluster_initialized"` | — | Marker file the role writes once the cluster is initialised, used to detect an existing setup. Advanced; usually left at its default. |
+| `elasticsearch_initialized_file` | `str` | `"{{ elasticstack_initial_passwords \| default('') \| dirname }}/cluster_initialized"` | — | Marker file the role writes once the cluster is initialised, used to detect an existing setup. Advanced; usually left at its default. |
 | `elasticsearch_freshstart` | `dict` | `{'changed': False}` | — | Internal state used by the role to detect a fresh install. Do not set manually. |
 | `elasticsearch_freshstart_security` | `dict` | `{'changed': False}` | — | Internal state used by the role to detect a fresh security setup. Do not set manually. |
 

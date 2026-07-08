@@ -48,7 +48,7 @@ Roles
 -------
 
 * [Beats](role-beats.md)
-* [Elasticsearch](role-elasticsearch.md)
+* [Elasticsearch](../roles/elasticsearch/README.md)
 * [Kibana](role-kibana.md)
 * [Logstash](../roles/logstash/README.md)
 * [Repos](role-repos.md)

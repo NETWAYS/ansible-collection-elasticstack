@@ -1,11 +1,13 @@
 # Ansible Role: Elasticsearch
 
 Installs and configures [Elasticsearch](https://www.elastic.co/elasticsearch) on
-Linux systems. The role manages `elasticsearch.yml`, the JVM heap and options,
-and the keystore. With security enabled (the default) it creates a self-signed
-CA and node certificates — reused by the Logstash, Kibana and Beats roles —
-configures transport and HTTP TLS, and generates the initial passwords. When you
-raise `elasticstack_version`, it upgrades cluster nodes one by one.
+Linux systems. The role manages `elasticsearch.yml` and the JVM configuration
+(heap and options). With security enabled (the default) it creates a self-signed
+CA and a certificate for each node, enables transport and HTTP TLS, manages the
+keystore, and generates the initial passwords; the same CA is reused by the
+Logstash, Kibana and Beats roles for their own certificates. It configures
+cluster discovery for single- or multi-node setups and upgrades the nodes one at
+a time when you raise `elasticstack_version`.
 
 The OSS variant is only available up to Elastic Stack 7; from release 8 on only
 the default `elastic` variant exists, and security is required.

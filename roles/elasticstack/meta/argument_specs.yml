@@ -35,8 +35,9 @@ argument_specs:
           - oss
         description: >-
           Distribution to install. "elastic" (the default) includes X-Pack; "oss"
-          is the Apache-licensed build without X-Pack and is only available up to
-          release 7.
+          is the Apache-licensed build without X-Pack. OSS Elasticsearch and
+          Kibana exist only up to release 7, while OSS Logstash and Beats are
+          available on later releases too.
 
       elasticstack_version:
         type: str

@@ -35,7 +35,7 @@ The role runs automatically the first time any component role is applied to a ho
 | Variable | Type | Default | Choices | Description |
 |----------|------|---------|---------|-------------|
 | `elasticstack_release` | `int` | `8` | — | Major Elastic Stack release to install and configure (e.g. 7 or 8). Drives the package repository and release-dependent behaviour. |
-| `elasticstack_variant` | `str` | `"elastic"` | `elastic`, `oss` | Distribution to install. "elastic" (the default) includes X-Pack; "oss" is the Apache-licensed build without X-Pack and is only available up to release 7. |
+| `elasticstack_variant` | `str` | `"elastic"` | `elastic`, `oss` | Distribution to install. "elastic" (the default) includes X-Pack; "oss" is the Apache-licensed build without X-Pack. OSS Elasticsearch and Kibana exist only up to release 7, while OSS Logstash and Beats are available on later releases too. |
 | `elasticstack_version` | `str` | N/A | — | Exact package version to install (e.g. "8.8.1"). Unset by default: the collection then installs the latest, or reuses the version already present on the CA host. |
 | `elasticstack_full_stack` | `bool` | `true` | — | Treat the hosts as one coordinated stack (roles read each other's hosts, share the CA and wire the connections). Set to false to run a role standalone. |
 | `elasticstack_security` | `bool` | `true` | — | Enable X-Pack security across the stack. Only effective with the elastic variant. |

@@ -155,10 +155,14 @@ argument_specs:
         type: bool
         default: false
         description: >-
-          Only run the node-role validation (derive master/data/other, group
-          nodes, assert an odd number of master-eligible nodes) and then stop on
-          each host. Elasticsearch is not installed or configured. Useful as a
-          pre-flight inventory check.
+          When true, Elasticsearch is not installed, configured, or started: the
+          role runs only the node-role validation and then stops each host
+          (meta: end_host). The validation derives each node's role
+          (master/data/other) from elasticsearch_node_types, groups the nodes,
+          and asserts an odd number of master-eligible nodes (required for a valid
+          quorum). Requires elasticsearch_node_types. Useful as a pre-flight
+          inventory/topology check (before scaling or in CI) without a full
+          deployment.
 
       elasticsearch_disable_systemcallfilterchecks:
         type: bool

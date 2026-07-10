@@ -83,7 +83,7 @@ Run only parts of the role with `--tags`:
 | `elasticsearch_cert_validity_period` | `int` | `1095` | — | Number of days the generated certificates are valid. |
 | `elasticsearch_cert_expiration_buffer` | `int` | `30` | — | Renew the certificate when its remaining validity (in days) drops below this value. |
 | `elasticsearch_cert_will_expire_soon` | `bool` | `false` | — | Set to true to force renewal of the Elasticsearch certificate. Alternatively run the playbook with the renew_es_cert tag. |
-| `elasticsearch_extra_config` | `dict` | N/A | — | Additional elasticsearch.yml settings as a mapping, rendered verbatim into the configuration. Unset by default. |
+| `elasticsearch_extra_config` | `dict` | N/A | — | Additional elasticsearch.yml settings, given as a mapping and rendered as YAML into the configuration (via to_nice_yaml). Unset by default. |
 | `elasticsearch_initialized_file` | `str` | `"{{ elasticstack_initial_passwords \| default('') \| dirname }}/cluster_initialized"` | — | Marker file the role writes once the cluster is initialised, used to detect an existing setup. Advanced; usually left at its default. |
 | `elasticsearch_freshstart` | `dict` | `{'changed': False}` | — | Internal state used by the role to detect a fresh install. Do not set manually. |
 | `elasticsearch_freshstart_security` | `dict` | `{'changed': False}` | — | Internal state used by the role to detect a fresh security setup. Do not set manually. |

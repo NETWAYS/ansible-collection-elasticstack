@@ -273,8 +273,8 @@ argument_specs:
       elasticsearch_extra_config:
         type: dict
         description: >-
-          Additional elasticsearch.yml settings as a mapping, rendered verbatim
-          into the configuration. Unset by default.
+          Additional elasticsearch.yml settings, given as a mapping and rendered
+          as YAML into the configuration (via to_nice_yaml). Unset by default.
 
       # ----- Internal -----
       elasticsearch_initialized_file:

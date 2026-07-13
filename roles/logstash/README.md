@@ -136,4 +136,4 @@ Run only parts of the role with `--tags`:
 This role also uses the collection-wide `elasticstack_*` variables (e.g.
 `elasticstack_full_stack`, `elasticstack_ca_host`, `elasticstack_ca_pass`,
 `elasticstack_release`, `elasticstack_variant`). They are documented centrally
-with the [elasticstack role](../../docs/role-elasticsearch.md).
+with the [elasticstack role](../elasticstack/README.md).

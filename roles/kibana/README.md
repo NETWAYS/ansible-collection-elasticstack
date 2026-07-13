@@ -64,4 +64,4 @@ This role also uses the collection-wide `elasticstack_*` variables (e.g.
 `elasticstack_full_stack`, `elasticstack_variant`, `elasticstack_release`,
 `elasticstack_ca_host`, `elasticstack_ca_pass`, `elasticstack_kibana_host`,
 `elasticstack_kibana_port`, `elasticstack_elasticsearch_http_port`). They are
-documented centrally with the [elasticsearch role](../../docs/role-elasticsearch.md).
+documented centrally with the [elasticstack role](../elasticstack/README.md).

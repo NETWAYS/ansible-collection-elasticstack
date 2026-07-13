@@ -1,18 +1,28 @@
 # Pipelines #
 
+## Keeping an overview ##
+
+It can be quite difficult to stay on top of your pipeline configuration because they tend to become very complex.
+
+This collection will leave some comments about how pipelines are interconnected within the `/etc/logstash/pipelines.yml` configuration file.
+
+If you set `logstash_mermaid` to `true` (which is the default), then you will also get a new file in `/etc/logstash/pipelines.mermaid`. You can paste it into a Mermaid editor in your documentation tool or in an [online Mermaid editor](https://mermaid.live/). The same content will be available on your control node in a temporary file. You can even add arbitrary code to reflect manually managed pipelines by using `logstash_mermaid_extra`.
+
 ## Git managed ##
+
+`logstash_pipelines` is a **list**. Each entry needs a `name`; everything else is optional.
 
 If you have pipeline code managed in (and available via) Git repositories, you can use this role to check them out and integrate them into `pipelines.yml`.
 
-```
+```yaml
 logstash_pipelines:
-  syslog:
-    name: syslog
-    source: https://github.com/widhalmt/syslog-logstash-pipeline.git
+  - name: syslog
+    source: https://github.com/netways/syslog-logstash-pipeline.git
 ```
 
-You can add a `version` attribute to your pipeline. It defaults to `main`. You can use every string, [Ansibles git](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html) module accepts.
-You can also determine the place for logstash to store the data of each pipeline while processing it by using `queue_type` attribute. It defaults to `memory`, you can use `persisted` to write the data temporarily to the hard disk. Moreover you can limit the maximal size of data in every pipeline throgh `queue_max_bytes` attribute, which is default `1gb`.
+You can add a `version` attribute to your pipeline. It defaults to `main`. You can use every string [Ansible's git](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/git_module.html) module accepts.
+
+You can also determine where Logstash stores the data of each pipeline while processing it by using the `queue_type` attribute. It defaults to `memory`; use `persisted` to write the data temporarily to disk. You can limit the maximum amount of data per pipeline with `queue_max_bytes`, which defaults to `1gb`.
 
 ## Input and Output ##
 
@@ -20,13 +30,12 @@ You can also determine the place for logstash to store the data of each pipeline
 
 To have a single Redis input and output to your files, use this.
 
-```
+```yaml
 logstash_pipelines:
-  syslog:
-    name: syslog
-    source: https://github.com/widhalmt/syslog-logstash-pipeline.git
-    queue.type: memory
-    queue.max_bytes: 1gb
+  - name: syslog
+    source: https://github.com/netways/syslog-logstash-pipeline.git
+    queue_type: memory
+    queue_max_bytes: 1gb
     exclusive: false
     input:
       - name: default
@@ -65,13 +74,10 @@ If you want a bit more control over which outputs are used, the role offers more
 
 If you have several outputs that all have conditions, like just send some messages to a development system or only alerts to a monitoring system.
 
-```
+```yaml
 logstash_pipelines:
-  syslog:
-    name: syslog
-    source: https://github.com/widhalmt/syslog-logstash-pipeline.git
-    queue.type: memory
-    queue.max_bytes: 1gb
+  - name: syslog
+    source: https://github.com/netways/syslog-logstash-pipeline.git
     exclusive: false
     input:
       - name: default
@@ -134,11 +140,10 @@ Note that the `default` output get's **every** event, the other two outputs only
 
 You can combine several outputs with `else`. That's helpful when you want to split events. Like syslog messages depending on which program logged an event. Just change `exclusive` to `true`.
 
-```
+```yaml
 logstash_pipelines:
-  syslog:
-    name: syslog
-    source: https://github.com/widhalmt/syslog-logstash-pipeline.git
+  - name: syslog
+    source: https://github.com/netways/syslog-logstash-pipeline.git
     exclusive: true
     input:
       - name: default
@@ -206,7 +211,11 @@ Here the `default` output only receives the events that haven't already been sen
 
 ### Congestion threshold ###
 
-Every Output can have a `congestion:` option with a numerical value. If the Redis key already holds more items than the value says, the output will stop.
+Every output can have a `congestion` option with a numerical value. If the Redis key already holds more items than the value says, the output will stop.
+
+### Unsafe shutdown ###
+
+If you need unsafe Logstash shutdowns, e.g. for testing, you can set `logstash_pipeline_unsafe_shutdown` to `true`. The variable doesn't have a default so Logstash falls back to its internal default of `false`.
 
 ## Caveats ##
 
@@ -219,13 +228,12 @@ There are still some minor issues you need to keep in mind:
 
 If you have other ways of putting pipeline code into the correct directories, you can just skip the `source` option.
 
-```
+```yaml
 logstash_pipelines:
-  syslog:
-    name: syslog
+  - name: syslog
 ```
 **You have to make sure the code is available or Logstash will constantly log errors!**
 
 This will create the directories and integrate all `*.conf` files within via `pipelines.yml`.
 
-**If you add a source later, the role will delete the directory and recreate it with it's own code. So make sure you have a backup!"
+**If you add a source later, the role will delete the directory and recreate it with its own code. So make sure you have a backup!**

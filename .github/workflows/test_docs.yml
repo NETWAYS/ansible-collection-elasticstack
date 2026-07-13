@@ -1,0 +1,73 @@
+---
+name: Test Documentation
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'roles/**/meta/argument_specs.yml'
+      - 'roles/**/defaults/**'
+      - 'roles/**/README.md'
+      - '.docsmith/**'
+      - '.github/workflows/test_docs.yml'
+
+# Cancel outdated pipeline runs when a new push occurs in the pull request.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    # For non-PR events (workflow_dispatch, etc.), github.event.pull_request.draft is null.
+    # GitHub Actions coerces null == false to true, so the job runs for all non-draft events.
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    env:
+      NO_COLOR: "1"  # make ansible-docsmith print plain text so grep is reliable
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      # Pin the version: ansible-docsmith is a young tool, so we
+      # upgrade deliberately rather than picking up changes on every CI run.
+      - name: Install ansible-docsmith
+        run: python3 -m pip install ansible-docsmith==2.0.2
+
+      # Consistency between meta/argument_specs.yml and defaults/main.yml.
+      # validate exits 1 on ERROR by itself; here we additionally treat any
+      # WARNING (e.g. a default that differs between spec and defaults) as a failure.
+      - name: Validate argument_specs (warnings = errors)
+        run: |
+          set -uo pipefail
+          status=0
+          for role in roles/*/; do
+            [ -f "${role}meta/argument_specs.yml" ] || continue
+            echo "::group::validate ${role}"
+            out=$(ansible-docsmith validate "${role}" 2>&1) && rc=0 || rc=$?
+            echo "$out"
+            echo "::endgroup::"
+            if [ "$rc" -ne 0 ] || grep -q "Warnings:" <<<"$out"; then
+              echo "::error::ansible-docsmith reported errors or warnings for ${role}"
+              status=1
+            fi
+          done
+          exit $status
+
+      # README freshness: regenerate every role README and fail if anything changed,
+      # i.e. the committed README no longer matches argument_specs.yml.
+      - name: Check that every variable in README is up to date
+        run: |
+          for role in roles/*/; do
+            [ -f "${role}meta/argument_specs.yml" ] || continue
+            ansible-docsmith generate "${role}" --no-defaults \
+              --template-readme .docsmith/readme.md.j2
+          done
+          git diff --exit-code -- 'roles/*/README.md' || {
+            echo "::error::A role README is out of date. Run locally:";
+            echo "  ansible-docsmith generate <role> --no-defaults --template-readme .docsmith/readme.md.j2";
+            exit 1;
+          }

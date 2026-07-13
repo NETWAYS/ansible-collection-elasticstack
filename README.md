@@ -14,7 +14,7 @@ Every role is documented with all variables, please refer to the documentation f
 
 * [Beats](roles/beats/README.md)
 * [Elasticsearch](docs/role-elasticsearch.md)
-* [Kibana](docs/role-kibana.md)
+* [Kibana](roles/kibana/README.md)
 * [Logstash](roles/logstash/README.md)
 * [Repos](roles/repos/README.md)
 

@@ -94,6 +94,8 @@ The variable `elasticstack_no_log` can be set to `false` if you want to see the 
 
 *elasticstack_version*: Version number of tools to install. Only set if you don't want the latest on new setups. (default: none). If you already have an installation of Elastic Stack, this collection will query the version of Elasticsearch on the CA host and use it for all further installations in the same setup. (Only if you run the `elasticsearch` role before all others) Example: `7.17.2`
 
+All packages are installed with `state: present`. When `elasticstack_version` is set to a version number (e.g. `7.17.2`), that exact version is installed and pinned. When it is left unset, the package is installed without a version, so a new setup gets the newest available version and existing installations are not upgraded automatically on later runs.
+
 *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`) Make sure it corresponds to `elasticstack_version` if you set both.
 
 For OSS version see `elasticstack_variant` below.

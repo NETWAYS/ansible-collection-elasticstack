@@ -97,4 +97,4 @@ This role also uses the collection-wide `elasticstack_*` variables (e.g.
 `elasticstack_ca_host`, `elasticstack_ca_pass`, `elasticstack_ca_dir`,
 `elasticstack_elasticsearch_http_port`, `elasticstack_initial_passwords`). They
 are documented centrally with the
-[elasticstack role](../../docs/role-elasticsearch.md).
+[elasticstack role](../elasticstack/README.md).

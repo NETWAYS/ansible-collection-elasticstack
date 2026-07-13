@@ -39,4 +39,4 @@ This role is configured through the collection-wide `elasticstack_*` variables â
 mainly `elasticstack_release`, `elasticstack_variant`, `elasticstack_enable_repos`,
 `elasticstack_repo_url`, `elasticstack_repo_key` and `elasticstack_rpm_workaround`.
 They are documented centrally with the
-[elasticsearch role](../../docs/role-elasticsearch.md).
+[elasticstack role](../elasticstack/README.md).

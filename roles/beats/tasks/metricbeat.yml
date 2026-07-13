@@ -14,6 +14,7 @@
 - name: Install Metricbeat - rpm - full stack
   ansible.builtin.package:
     name: "{{ beats_metricbeat_package }}"
+    state: present
     enablerepo:
       - 'elastic-{{ elasticstack_release }}.x'
   notify:
@@ -25,6 +26,7 @@
 - name: Install Metricbeat - rpm - standalone
   ansible.builtin.package:
     name: "{{ beats_metricbeat_package }}"
+    state: present
   notify:
     - Restart Metricbeat
   when:
@@ -34,47 +36,10 @@
 - name: Install Metricbeat - deb
   ansible.builtin.package:
     name: "{{ beats_metricbeat_package }}"
+    state: present
   notify:
     - Restart Metricbeat
   when:
-    - ansible_os_family == "Debian"
-
-- name: Install Metricbeat latest version - rpm - full stack
-  ansible.builtin.package:
-    name: metricbeat
-    state: latest
-    enablerepo:
-      - "elastic-{{ elasticstack_release }}.x"
-  notify:
-    - Restart Metricbeat
-  when:
-    - elasticstack_version is defined
-    - elasticstack_version == "latest"
-    - ansible_os_family == "RedHat"
-    - elasticstack_full_stack | bool
-
-- name: Install Metricbeat latest version - rpm - standalone
-  ansible.builtin.package:
-    name: metricbeat
-    state: latest
-  notify:
-    - Restart Metricbeat
-  when:
-    - elasticstack_version is defined
-    - elasticstack_version == "latest"
-    - ansible_os_family == "RedHat"
-    - not elasticstack_full_stack | bool
-
-
-- name: Install Metricbeat latest version - deb
-  ansible.builtin.package:
-    name: metricbeat
-    state: latest
-  notify:
-    - Restart Metricbeat
-  when:
-    - elasticstack_version is defined
-    - elasticstack_version == "latest"
     - ansible_os_family == "Debian"
 
 - name: Configure Metricbeat

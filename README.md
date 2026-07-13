@@ -12,7 +12,7 @@ Every role is documented with all variables, please refer to the documentation f
 > [!NOTE]
 > Some roles have fixed requirements that you must observe. Please have a look at the [requirements](docs/01-requirements.md) before using the collection. (There is a high probability that some of them will be refactored soon)
 
-* [Beats](docs/role-beats.md)
+* [Beats](roles/beats/README.md)
 * [Elasticsearch](docs/role-elasticsearch.md)
 * [Kibana](docs/role-kibana.md)
 * [Logstash](roles/logstash/README.md)

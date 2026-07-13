@@ -51,7 +51,7 @@ Roles
 * [Elasticsearch](role-elasticsearch.md)
 * [Kibana](role-kibana.md)
 * [Logstash](../roles/logstash/README.md)
-* [Repos](role-repos.md)
+* [Repos](../roles/repos/README.md)
 
 
 Variables

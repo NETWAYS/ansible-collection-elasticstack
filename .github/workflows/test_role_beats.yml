@@ -15,6 +15,7 @@ on:
   pull_request:
     paths:
       - 'roles/beats/**'
+      - '!roles/beats/**/*.md'
       - '.github/workflows/test_role_beats.yml'
       - 'molecule/beats_**'
 

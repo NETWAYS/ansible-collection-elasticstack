@@ -3,6 +3,7 @@ name: Test Documentation
 on:
   workflow_dispatch:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'roles/**/meta/argument_specs.yml'
       - 'roles/**/defaults/**'

@@ -12,6 +12,7 @@ on:
           - warning
           - debug
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'roles/repos/**'
       - '!roles/repos/**/*.md'

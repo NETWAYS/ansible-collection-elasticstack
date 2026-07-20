@@ -59,7 +59,7 @@
 
 - name: Backup kibana certs on elasticstack_ca_host then remove
   when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or kibana_cert_will_expire_soon | bool"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   tags:
     - renew_ca
     - renew_kibana_cert
@@ -115,7 +115,7 @@
       when: kibana_move_cert_file.changed
 
 - name: Block for key generation
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   run_once: true
   tags:
     - certificates
@@ -187,7 +187,7 @@
       - --out
       - "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   no_log: "{{ elasticstack_no_log }}"
   tags:
     - certificates
@@ -199,7 +199,7 @@
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
     dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-kibana.p12"
     flat: yes
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   tags:
     - certificates
     - renew_ca
@@ -227,14 +227,14 @@
   register: kibana_password
   changed_when: false
   no_log: "{{ elasticstack_no_log }}"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
 
 - name: Fetch ca certificate from ca host to master
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/ca.crt"
     dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
     flat: yes
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   tags:
     - certificates
     - renew_ca

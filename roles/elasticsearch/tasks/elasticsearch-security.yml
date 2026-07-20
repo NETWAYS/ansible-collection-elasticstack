@@ -154,7 +154,7 @@
 
 - name: Backup elasticsearch certs on elasticstack_ca_host host then remove
   when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   tags:
     - renew_ca
     - renew_es_cert
@@ -306,7 +306,7 @@
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
     dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
     flat: yes
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   tags:
     - certificates
     - renew_ca
@@ -390,7 +390,7 @@
 - name: Check for passwords being set
   ansible.builtin.stat:
     path: "{{ elasticstack_initial_passwords }}"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   register: elasticsearch_passwords_file
 
 - name: Setting elasticsearch_http_protocol
@@ -441,7 +441,7 @@
   register: elasticstack_password
   changed_when: false
   no_log: "{{ elasticstack_no_log }}"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
 - name: Check for API availability with elastic password

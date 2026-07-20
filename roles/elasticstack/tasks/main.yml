@@ -8,25 +8,13 @@
         - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
         - '{{ ansible_os_family }}.yml'
 
-    - name: Set elasticstack_ca_host variable if not already done by user
-      ansible.builtin.set_fact:
-        elasticstack_ca: "{{ groups[elasticstack_elasticsearch_group_name][0] }}"
-      when:
-        - elasticstack_ca_host is undefined
-        - groups[elasticstack_elasticsearch_group_name][0] is defined
-
-    - name: Set elasticstack_ca_host variable if not already set to Elasticsearch server
-      ansible.builtin.set_fact:
-        elasticstack_ca_host: "{{ groups[elasticstack_logstash_group_name][0] }}"
-      when:
-        - elasticstack_ca_host is undefined
-        - groups[elasticstack_logstash_group_name][0] is defined
-
     - name: Set versions for components
       ansible.builtin.import_tasks: elasticstack-versions.yml
+      when: elasticstack_full_stack | bool
 
     - name: Fetch passwords if passwords are initialized
       ansible.builtin.import_tasks: elasticstack-passwords.yml
+      when: elasticstack_full_stack | bool
 
     - name: Set elasticstack_globals_set for other roles to skip this role
       ansible.builtin.set_fact:

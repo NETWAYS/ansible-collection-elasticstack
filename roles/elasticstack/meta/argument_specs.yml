@@ -124,7 +124,11 @@ argument_specs:
         default: "{{ groups[elasticstack_elasticsearch_group_name][0] | default('') }}"
         description: >-
           Inventory host that holds the stack CA and signs all component
-          certificates. Defaults to the first host in the elasticsearch group.
+          certificates. Must be an Elasticsearch host: signing uses
+          elasticsearch-certutil, which ships with the elasticsearch package.
+          Defaults to the first host in the elasticsearch group; override it
+          only to pin the CA and the initial_passwords file to a specific
+          Elasticsearch node. Only used when elasticstack_full_stack is true.
 
       elasticstack_ca_dir:
         type: str

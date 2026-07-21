@@ -29,3 +29,6 @@ elasticstack_manage_pip: false
 
   # for debugging only
 elasticstack_no_log: true
+
+# Internal test flag: set to true by the molecule scenarios only, never on real installations
+elasticstack_ci: false

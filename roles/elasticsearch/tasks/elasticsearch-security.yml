@@ -461,7 +461,7 @@
   delay: 10
 
 - name: Work around low ressources on CI/CD nodes
-  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
+  when: elasticstack_ci | bool
   block:
     # Free up some space to let elsticsearch allocate replica in GitHub Action
     - name: Remove cache

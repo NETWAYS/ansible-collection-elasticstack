@@ -6,6 +6,7 @@
   collections:
     - netways.elasticstack
   vars:
+    elasticstack_ci: true
     elasticstack_variant: oss
     elasticstack_rpm_workaround: true
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"

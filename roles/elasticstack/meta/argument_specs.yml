@@ -63,7 +63,7 @@ argument_specs:
       elasticstack_override_beats_tls:
         type: bool
         default: false
-        description: Override the automatically derived TLS setting for the Beats input.
+        description: When true, do not auto-enable TLS between Beats and Logstash in a full stack (also skips Beats certificate generation).
 
       # ----- Inventory host groups -----
       elasticstack_elasticsearch_group_name:

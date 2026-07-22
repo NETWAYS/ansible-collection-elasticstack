@@ -39,7 +39,7 @@ The role runs automatically the first time any component role is applied to a ho
 | `elasticstack_version` | `str` | N/A | — | Exact package version to install (e.g. "8.8.1"). Unset by default: the collection then installs the latest, or reuses the version already present on the CA host. |
 | `elasticstack_full_stack` | `bool` | `true` | — | Treat the hosts as one coordinated stack (roles read each other's hosts, share the CA and wire the connections). Set to false to run a role standalone. |
 | `elasticstack_security` | `bool` | `true` | — | Enable X-Pack security across the stack. Only effective with the elastic variant. |
-| `elasticstack_override_beats_tls` | `bool` | `false` | — | Override the automatically derived TLS setting for the Beats input. |
+| `elasticstack_override_beats_tls` | `bool` | `false` | — | When true, do not auto-enable TLS between Beats and Logstash in a full stack (also skips Beats certificate generation). |
 | `elasticstack_elasticsearch_group_name` | `str` | `"elasticsearch"` | — | Inventory group that holds the Elasticsearch hosts. |
 | `elasticstack_logstash_group_name` | `str` | `"logstash"` | — | Inventory group that holds the Logstash hosts. |
 | `elasticstack_kibana_group_name` | `str` | `"kibana"` | — | Inventory group that holds the Kibana hosts. |

@@ -232,29 +232,29 @@ argument_specs:
       beats_ca_dir:
         type: str
         description: >-
-          Base directory for custom CA certificates and keys. Unset by default; the
-          role fills it depending on the stack variant (/opt/ca standalone, or
-          /etc/beats/certs in a full stack).
+          Base directory for the Beats certificate, key and CA file. The role
+          fills it per variant (/opt/ca standalone, /etc/beats/certs in a full
+          stack) if you did not set it.
 
       beats_tls_key:
         type: str
         default: "{{ beats_ca_dir | default('') }}/{{ inventory_hostname }}-beats.key"
-        description: Path to the private key file for custom certificates.
+        description: Path to the Beats private key. Defaults under beats_ca_dir; set it to bring your own.
 
       beats_tls_cert:
         type: str
         default: "{{ beats_ca_dir | default('') }}/{{ inventory_hostname }}-beats.crt"
-        description: Path to the certificate for custom certificates.
+        description: Path to the Beats certificate. Defaults under beats_ca_dir; set it to bring your own.
 
       beats_tls_cacert:
         type: str
         default: "{{ beats_ca_dir | default('') }}/ca.crt"
-        description: Path to the CA certificate for custom certificates.
+        description: Path to the CA certificate Beats trusts. Defaults under beats_ca_dir; set it to bring your own.
 
       beats_tls_key_passphrase:
         type: str
         default: BeatsChangeMe
-        description: Passphrase of the private key.
+        description: Passphrase of the Beats private key.
 
       beats_cert_validity_period:
         type: int

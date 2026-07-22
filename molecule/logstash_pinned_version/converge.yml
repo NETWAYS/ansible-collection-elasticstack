@@ -8,6 +8,7 @@
   collections:
     - netways.elasticstack
   vars:
+    elasticstack_ci: true
     logstash_manage_logging: true
     logstash_logging_console: false
     logstash_logging_slow_file: false

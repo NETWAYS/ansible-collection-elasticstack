@@ -10,6 +10,7 @@
     - netways.elasticstack
   hosts: all
   vars:
+    elasticstack_ci: true
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true
     elasticsearch_monitoring_enabled: false

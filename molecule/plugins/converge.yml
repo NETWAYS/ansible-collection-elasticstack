@@ -4,6 +4,7 @@
     - netways.elasticstack
   hosts: all
   vars:
+    elasticstack_ci: true
     elasticstack_full_stack: false
     elasticsearch_jna_workaround: true
     elasticsearch_disable_systemcallfilterchecks: true

@@ -8,6 +8,7 @@
   collections:
     - netways.elasticstack
   vars:
+    elasticstack_ci: true
     beats_filebeat_log_inputs:
       messages:
         name: messages

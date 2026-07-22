@@ -191,3 +191,13 @@ argument_specs:
         description: >-
           Force installation of the required Python modules via pip (useful when
           the distribution packages are too old). See PEP 668.
+
+      # ----- Testing -----
+      elasticstack_ci:
+        type: bool
+        default: false
+        description: >-
+          Internal test flag. Set to true only by the collection's molecule
+          scenarios to enable resource workarounds needed on constrained test
+          runners (cache cleanup, relaxed Elasticsearch disk watermarks). Never
+          set this on a real installation.

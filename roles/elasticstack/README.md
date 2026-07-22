@@ -62,5 +62,6 @@ The role runs automatically the first time any component role is applied to a ho
 | `elasticstack_no_log` | `bool` | `true` | — | Hide the output of tasks that could reveal passwords. Set to false for debugging. |
 | `elasticstack_manage_pip` | `bool` | `false` | — | Install pip on the target host. |
 | `elasticstack_force_pip` | `bool` | `false` | — | Force installation of the required Python modules via pip (useful when the distribution packages are too old). See PEP 668. |
+| `elasticstack_ci` | `bool` | `false` | — | Internal test flag. Set to true only by the collection's molecule scenarios to enable resource workarounds needed on constrained test runners (cache cleanup, relaxed Elasticsearch disk watermarks). Never set this on a real installation. |
 
 <!-- ANSIBLE DOCSMITH MAIN END -->

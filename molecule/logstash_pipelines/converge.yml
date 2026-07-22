@@ -9,6 +9,7 @@
   collections:
     - netways.elasticstack
   vars:
+    elasticstack_ci: true
     logstash_enable: true
     logstash_pipelines:
       - name: syslog

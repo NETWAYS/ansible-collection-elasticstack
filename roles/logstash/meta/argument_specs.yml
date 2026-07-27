@@ -253,6 +253,21 @@ argument_specs:
         type: str
         description: Password used when the simple inputs/outputs connect to Redis. Unset by default.
 
+      logstash_redis_input_host:
+        type: str
+        default: localhost
+        description: Redis host that the simple pipeline inputs connect to.
+
+      logstash_redis_output_host:
+        type: str
+        default: localhost
+        description: Redis host that the simple pipeline outputs connect to.
+
+      logstash_redis_tls:
+        type: bool
+        default: false
+        description: Whether the simple pipeline inputs/outputs use TLS to connect to Redis.
+
       # ----- Elasticsearch connection / output -----
       logstash_elasticsearch:
         type: list

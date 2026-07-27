@@ -10,7 +10,10 @@ filter {
 {% endif %}
 output {
   redis {
-    host => "localhost"
+    host => "{{ logstash_redis_output_host }}"
+{% if logstash_redis_tls | bool %}
+    ssl_enabled => true
+{% endif %}
     data_type => "list"
     key => "input"
 {% if logstash_beats_input_congestion is defined %}    congestion_threshold => {{ logstash_beats_input_congestion }}{% endif %}

@@ -93,6 +93,9 @@ Run only parts of the role with `--tags`:
 | `logstash_forwarder_queue_type` | `str` | `"memory"` | `memory`, `persisted` | Queue type for the default Elasticsearch forwarder pipeline. Use "persisted" for an on-disk persistent queue. |
 | `logstash_forwarder_queue_max_bytes` | `str` | `"1gb"` | — | Maximum queue size for the default Elasticsearch forwarder pipeline. |
 | `logstash_redis_password` | `str` | N/A | — | Password used when the simple inputs/outputs connect to Redis. Unset by default. |
+| `logstash_redis_input_host` | `str` | `"localhost"` | — | Redis host that simple pipeline inputs (and the default forwarder input) read from. |
+| `logstash_redis_output_host` | `str` | `"localhost"` | — | Redis host that simple pipeline outputs (and the default input pipeline) write to. |
+| `logstash_redis_tls` | `bool` | `false` | — | Enable TLS on the simple Redis inputs/outputs (`ssl`/`ssl_enabled`). |
 | `logstash_elasticsearch` | `list` of `str` | N/A | — | Elasticsearch hosts for the default output. Defaults to the nodes from the elasticsearch group, or localhost when used standalone. |
 | `logstash_validate_after_inactivity` | `str` | `"300"` | — | Seconds Logstash waits before validating a previously idle connection to Elasticsearch. |
 | `logstash_sniffing` | `bool` | `false` | — | Enable sniffing for additional Elasticsearch nodes. |

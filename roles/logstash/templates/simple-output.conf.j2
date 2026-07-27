@@ -16,7 +16,10 @@ output {
 {% if not loop.first and pipelinename.exclusive | bool %}else {% endif %}{% if (not loop.last and pipelinename.exclusive | bool) or not pipelinename.exclusive %}if {% endif %}{% if output.condition is defined %}{{ output.condition }} {% endif %}{
 {% endif %}
   redis {
-    host => "localhost"
+    host => "{{ logstash_redis_output_host }}"
+{% if logstash_redis_tls | bool %}
+    ssl_enabled => true
+{% endif %}
     data_type => "list"
     key => "{{ output.key }}"
 {% if logstash_redis_password is defined %}

@@ -256,17 +256,17 @@ argument_specs:
       logstash_redis_input_host:
         type: str
         default: localhost
-        description: Redis host that the simple pipeline inputs connect to.
+        description: Redis host that simple pipeline inputs (and the default forwarder input) read from.
 
       logstash_redis_output_host:
         type: str
         default: localhost
-        description: Redis host that the simple pipeline outputs connect to.
+        description: Redis host that simple pipeline outputs (and the default input pipeline) write to.
 
       logstash_redis_tls:
         type: bool
         default: false
-        description: Whether the simple pipeline inputs/outputs use TLS to connect to Redis.
+        description: Enable TLS on the simple Redis inputs/outputs (`ssl`/`ssl_enabled`).
 
       # ----- Elasticsearch connection / output -----
       logstash_elasticsearch:

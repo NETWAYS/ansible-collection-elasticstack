@@ -96,6 +96,12 @@ Run only parts of the role with `--tags`:
 | `logstash_redis_input_host` | `str` | `"localhost"` | — | Redis host that simple pipeline inputs (and the default forwarder input) read from. |
 | `logstash_redis_output_host` | `str` | `"localhost"` | — | Redis host that simple pipeline outputs (and the default input pipeline) write to. |
 | `logstash_redis_tls` | `bool` | `false` | — | Enable TLS on the simple Redis inputs/outputs (`ssl`/`ssl_enabled`). |
+| `logstash_redis_ssl_certificate` | `str` | N/A | — | Path to the SSL certificate for the Redis outputs (the redis output plugin only; the input plugin has no such option). Rendered only when logstash_redis_tls is true. |
+| `logstash_redis_ssl_key` | `str` | N/A | — | Path to the SSL key for the Redis outputs. Rendered only when logstash_redis_tls is true. |
+| `logstash_redis_ssl_key_passphrase` | `str` | N/A | — | Passphrase for logstash_redis_ssl_key. Rendered only when logstash_redis_tls is true. |
+| `logstash_redis_ssl_certificate_authorities` | `list` of `str` | N/A | — | List of CA certificate paths used to verify the Redis server on the Redis outputs. Rendered only when logstash_redis_tls is true. |
+| `logstash_redis_ssl_supported_protocols` | `str` | N/A | — | TLS protocol version accepted on the Redis outputs (for example "TLSv1.3"). Rendered only when logstash_redis_tls is true. |
+| `logstash_redis_ssl_verification_mode` | `str` | N/A | — | Certificate verification mode for the Redis outputs ("full" or "none"). Rendered only when logstash_redis_tls is true. |
 | `logstash_elasticsearch` | `list` of `str` | N/A | — | Elasticsearch hosts for the default output. Defaults to the nodes from the elasticsearch group, or localhost when used standalone. |
 | `logstash_validate_after_inactivity` | `str` | `"300"` | — | Seconds Logstash waits before validating a previously idle connection to Elasticsearch. |
 | `logstash_sniffing` | `bool` | `false` | — | Enable sniffing for additional Elasticsearch nodes. |

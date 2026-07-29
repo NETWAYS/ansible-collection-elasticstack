@@ -15,5 +15,16 @@ kibana_cert_will_expire_soon: false
 kibana_sniff_on_start: false
 kibana_sniff_on_connection_fault: false
 
+kibana_manage_logging: false
+kibana_logpath: /var/log/kibana
+kibana_logfile: kibana.log
+kibana_loglevel: info
+kibana_logging_layout: pattern
+kibana_logging_console: true
+kibana_logging_rotate_policy: size-limit
+kibana_logging_rotate_size: 100mb
+kibana_logging_rotate_interval: 24h
+kibana_logging_rotate_keep: 10
+
 kibana_freshstart:
   changed: false

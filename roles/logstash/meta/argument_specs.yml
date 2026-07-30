@@ -253,6 +253,59 @@ argument_specs:
         type: str
         description: Password used when the simple inputs/outputs connect to Redis. Unset by default.
 
+      logstash_redis_input_host:
+        type: str
+        default: localhost
+        description: Redis host that simple pipeline inputs (and the default forwarder input) read from.
+
+      logstash_redis_output_host:
+        type: str
+        default: localhost
+        description: Redis host that simple pipeline outputs (and the default input pipeline) write to.
+
+      logstash_redis_tls:
+        type: bool
+        default: false
+        description: Enable TLS on the simple Redis inputs/outputs (`ssl`/`ssl_enabled`).
+
+      logstash_redis_ssl_certificate:
+        type: str
+        description: >-
+          Path to the SSL certificate for the Redis outputs (the redis output
+          plugin only; the input plugin has no such option). Rendered only when
+          logstash_redis_tls is true.
+
+      logstash_redis_ssl_key:
+        type: str
+        description: >-
+          Path to the SSL key for the Redis outputs. Rendered only when
+          logstash_redis_tls is true.
+
+      logstash_redis_ssl_key_passphrase:
+        type: str
+        description: >-
+          Passphrase for logstash_redis_ssl_key. Rendered only when
+          logstash_redis_tls is true.
+
+      logstash_redis_ssl_certificate_authorities:
+        type: list
+        elements: str
+        description: >-
+          List of CA certificate paths used to verify the Redis server on the
+          Redis outputs. Rendered only when logstash_redis_tls is true.
+
+      logstash_redis_ssl_supported_protocols:
+        type: str
+        description: >-
+          TLS protocol version accepted on the Redis outputs (for example
+          "TLSv1.3"). Rendered only when logstash_redis_tls is true.
+
+      logstash_redis_ssl_verification_mode:
+        type: str
+        description: >-
+          Certificate verification mode for the Redis outputs ("full" or
+          "none"). Rendered only when logstash_redis_tls is true.
+
       # ----- Elasticsearch connection / output -----
       logstash_elasticsearch:
         type: list

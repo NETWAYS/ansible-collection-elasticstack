@@ -109,6 +109,88 @@ argument_specs:
           Set to true to force renewal of the Kibana certificate. Alternatively
           run the playbook with the renew_kibana_cert tag.
 
+      # ----- Logging -----
+      kibana_manage_logging:
+        type: bool
+        default: false
+        description: >-
+          Manage Kibana's own logging configuration and write log files to disk.
+          When disabled, Kibana keeps its default behaviour and only logs to
+          the journal.
+
+      kibana_logpath:
+        type: str
+        default: /var/log/kibana
+        description: >-
+          Directory for the Kibana log files. The role creates it for the kibana
+          user when kibana_manage_logging is enabled.
+
+      kibana_logfile:
+        type: str
+        default: kibana.log
+        description: Name of the log file inside kibana_logpath.
+
+      kibana_loglevel:
+        type: str
+        choices:
+          - all
+          - trace
+          - debug
+          - info
+          - warn
+          - error
+          - fatal
+          - "off"
+        default: info
+        description: Log level of the root logger (logging.root.level).
+
+      kibana_logging_layout:
+        type: str
+        choices:
+          - pattern
+          - json
+        default: pattern
+        description: >-
+          Layout of the log file. Use "pattern" for human readable logs and
+          "json" when the file is picked up by a log shipper.
+
+      kibana_logging_console:
+        type: bool
+        default: true
+        description: >-
+          Keep logging to the console (and therefore the journal) in addition to
+          the log file. Set to false to log to the file only.
+
+      kibana_logging_rotate_policy:
+        type: str
+        choices:
+          - size-limit
+          - time-interval
+        default: size-limit
+        description: >-
+          Rotation policy of the log file. Kibana supports only one policy per
+          appender, either by size (kibana_logging_rotate_size) or by time
+          (kibana_logging_rotate_interval).
+
+      kibana_logging_rotate_size:
+        type: str
+        default: 100mb
+        description: >-
+          Size at which the log file is rotated. Only used when
+          kibana_logging_rotate_policy is "size-limit".
+
+      kibana_logging_rotate_interval:
+        type: str
+        default: 24h
+        description: >-
+          Interval at which the log file is rotated. Only used when
+          kibana_logging_rotate_policy is "time-interval".
+
+      kibana_logging_rotate_keep:
+        type: int
+        default: 10
+        description: Number of rotated log files to keep (strategy max).
+
       # ----- Extra configuration -----
       kibana_extra_config:
         type: str

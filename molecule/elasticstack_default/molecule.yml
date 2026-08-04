@@ -12,6 +12,7 @@ platforms:
       - beats
       - logstash
       - elasticsearch
+      - kibana
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
@@ -25,6 +26,7 @@ platforms:
       - beats
       - kibana
       - elasticsearch
+      - logstash
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:

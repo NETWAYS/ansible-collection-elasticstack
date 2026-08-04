@@ -26,6 +26,31 @@ trust and the `kibana_system` credentials — using the Elasticsearch CA.
     - kibana
 ```
 
+By default Kibana only logs to the journal, readable with
+`journalctl -u kibana`. Set `kibana_manage_logging` to write a log file that
+Kibana rotates itself, no logrotate needed:
+
+```yaml
+- name: Install Kibana with file logging
+  hosts: kibana
+  collections:
+    - netways.elasticstack
+  vars:
+    kibana_manage_logging: true
+    kibana_logpath: /var/log/kibana
+    kibana_loglevel: info
+    kibana_logging_rotate_size: 100mb
+    kibana_logging_rotate_keep: 10
+  roles:
+    - repos
+    - kibana
+```
+
+This writes `/var/log/kibana/kibana.log` in a human readable layout and keeps
+ten rotated files. Set `kibana_logging_layout` to `json` when a log shipper
+reads the file, and `kibana_logging_console` to `false` to stop logging to the
+journal as well.
+
 ## Tags
 
 Run only parts of the role with `--tags`:
@@ -53,6 +78,16 @@ Run only parts of the role with `--tags`:
 | `kibana_cert_validity_period` | `int` | `1095` | — | Number of days the generated certificates are valid. |
 | `kibana_cert_expiration_buffer` | `int` | `30` | — | Renew the certificate when its remaining validity (in days) drops below this value. |
 | `kibana_cert_will_expire_soon` | `bool` | `false` | — | Set to true to force renewal of the Kibana certificate. Alternatively run the playbook with the renew_kibana_cert tag. |
+| `kibana_manage_logging` | `bool` | `false` | — | Manage Kibana's own logging configuration and write log files to disk. When disabled, Kibana keeps its default behaviour and only logs to the journal. |
+| `kibana_logpath` | `str` | `"/var/log/kibana"` | — | Directory for the Kibana log files. The role creates it for the kibana user when kibana_manage_logging is enabled. |
+| `kibana_logfile` | `str` | `"kibana.log"` | — | Name of the log file inside kibana_logpath. |
+| `kibana_loglevel` | `str` | `"info"` | `all`, `trace`, `debug`, `info`, `warn`, `error`, `fatal`, `off` | Log level of the root logger (logging.root.level). |
+| `kibana_logging_layout` | `str` | `"pattern"` | `pattern`, `json` | Layout of the log file. Use "pattern" for human readable logs and "json" when the file is picked up by a log shipper. |
+| `kibana_logging_console` | `bool` | `true` | — | Keep logging to the console (and therefore the journal) in addition to the log file. Set to false to log to the file only. |
+| `kibana_logging_rotate_policy` | `str` | `"size-limit"` | `size-limit`, `time-interval` | Rotation policy of the log file. Kibana supports only one policy per appender, either by size (kibana_logging_rotate_size) or by time (kibana_logging_rotate_interval). |
+| `kibana_logging_rotate_size` | `str` | `"100mb"` | — | Size at which the log file is rotated. Only used when kibana_logging_rotate_policy is "size-limit". |
+| `kibana_logging_rotate_interval` | `str` | `"24h"` | — | Interval at which the log file is rotated. Only used when kibana_logging_rotate_policy is "time-interval". |
+| `kibana_logging_rotate_keep` | `int` | `10` | — | Number of rotated log files to keep (strategy max). |
 | `kibana_extra_config` | `str` | N/A | — | Extra configuration appended verbatim to kibana.yml (YAML). Unset by default. |
 | `kibana_freshstart` | `dict` | `{'changed': False}` | — | Internal state used by the role to detect a fresh install. Do not set manually. |
 

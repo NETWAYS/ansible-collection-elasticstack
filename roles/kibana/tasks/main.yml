@@ -94,6 +94,15 @@
     - renew_ca
     - renew_kibana_cert
 
+- name: Create directory for logging if file logging is activated
+  ansible.builtin.file:
+    path: "{{ kibana_logpath }}"
+    state: directory
+    owner: kibana
+    group: kibana
+    mode: 0750
+  when: kibana_manage_logging | bool
+
 - name: Configure Kibana
   ansible.builtin.template:
     src: kibana.yml.j2

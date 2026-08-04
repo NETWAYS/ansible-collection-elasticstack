@@ -16,7 +16,28 @@ output {
 {% if not loop.first and pipelinename.exclusive | bool %}else {% endif %}{% if (not loop.last and pipelinename.exclusive | bool) or not pipelinename.exclusive %}if {% endif %}{% if output.condition is defined %}{{ output.condition }} {% endif %}{
 {% endif %}
   redis {
-    host => "localhost"
+    host => "{{ logstash_redis_output_host }}"
+{% if logstash_redis_tls | bool %}
+    ssl_enabled => true
+{% if logstash_redis_ssl_certificate is defined %}
+    ssl_certificate => "{{ logstash_redis_ssl_certificate }}"
+{% endif %}
+{% if logstash_redis_ssl_key is defined %}
+    ssl_key => "{{ logstash_redis_ssl_key }}"
+{% endif %}
+{% if logstash_redis_ssl_key_passphrase is defined %}
+    ssl_key_passphrase => "{{ logstash_redis_ssl_key_passphrase }}"
+{% endif %}
+{% if logstash_redis_ssl_certificate_authorities is defined %}
+    ssl_certificate_authorities => [{% for ca in logstash_redis_ssl_certificate_authorities %}"{{ ca }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+{% endif %}
+{% if logstash_redis_ssl_supported_protocols is defined %}
+    ssl_supported_protocols => "{{ logstash_redis_ssl_supported_protocols }}"
+{% endif %}
+{% if logstash_redis_ssl_verification_mode is defined %}
+    ssl_verification_mode => "{{ logstash_redis_ssl_verification_mode }}"
+{% endif %}
+{% endif %}
     data_type => "list"
     key => "{{ output.key }}"
 {% if logstash_redis_password is defined %}

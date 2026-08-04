@@ -43,6 +43,12 @@ logstash_input_queue_type: memory
 logstash_input_queue_max_bytes: 1gb
 logstash_forwarder_queue_type: memory
 logstash_forwarder_queue_max_bytes: 1gb
+
+# redis connection for simple pipeline inputs/outputs
+logstash_redis_input_host: localhost
+logstash_redis_output_host: localhost
+logstash_redis_tls: false
+
 logstash_sniffing: false
 
 # logstash role / user

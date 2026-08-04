@@ -53,9 +53,10 @@ argument_specs:
         type: list
         elements: str
         description: >-
-          Fields added to every input, given as a list of "key: value" strings
-          (the global counterpart to the per-input fields). Unset by default.
-          See the Filebeat inputs documentation.
+          Global fields added to the log and syslog (tcp/udp) inputs (not to the
+          mysql, journald or docker inputs), given as a list of "key: value"
+          strings — the global counterpart to the per-input fields. Unset by
+          default. See the Filebeat inputs documentation.
 
       # ----- Logging -----
       beats_logging:
@@ -187,7 +188,10 @@ argument_specs:
       beats_auditbeat_setup:
         type: bool
         default: true
-        description: Run the Auditbeat setup (index management and pipelines). Only effective with the elasticsearch output.
+        description: >-
+          Run the Auditbeat setup (index management, ingest pipelines and Kibana
+          dashboards). Only effective with the elasticsearch output; loading the
+          dashboards additionally requires Kibana to be reachable.
 
       beats_auditbeat_loadbalance:
         type: bool

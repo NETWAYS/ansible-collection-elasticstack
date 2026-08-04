@@ -57,8 +57,8 @@
     - beats_configuration
 
 - name: Setup Auditbeat in Elasticsearch
-  ansible.builtin.command: >
-    /usr/bin/auditbeat setup --pipelines --index-management &&
+  ansible.builtin.shell: >
+    /usr/bin/auditbeat setup --pipelines --index-management --dashboards &&
     /usr/bin/auditbeat version > /etc/auditbeat/pipeline_created
   run_once: true
   args:

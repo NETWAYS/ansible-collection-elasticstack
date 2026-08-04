@@ -47,7 +47,7 @@ Run only parts of the role with `--tags`:
 | `beats_auditbeat` | `bool` | `false` | — | Install and manage Auditbeat. |
 | `beats_metricbeat` | `bool` | `false` | — | Install and manage Metricbeat. |
 | `beats_target_hosts` | `list` of `str` | `['localhost']` | — | Hosts the Beats ship to. Only used when the role runs standalone; with the other Elastic Stack roles the targets are determined automatically. |
-| `beats_fields` | `list` of `str` | N/A | — | Fields added to every input, given as a list of "key: value" strings (the global counterpart to the per-input fields). Unset by default. See the Filebeat inputs documentation. |
+| `beats_fields` | `list` of `str` | N/A | — | Global fields added to the log and syslog (tcp/udp) inputs (not to the mysql, journald or docker inputs), given as a list of "key: value" strings — the global counterpart to the per-input fields. Unset by default. See the Filebeat inputs documentation. |
 | `beats_logging` | `str` | `"file"` | — | Where the Beats log. Set to "file" to log into beats_logpath; any other value leaves the Beats built-in logging. |
 | `beats_loglevel` | `str` | `"info"` | — | Log level for all Beats. |
 | `beats_logpath` | `str` | `"/var/log/beats"` | — | Directory for the log files when beats_logging is "file". |
@@ -69,7 +69,7 @@ Run only parts of the role with `--tags`:
 | `beats_filebeat_modules` | `list` of `str` | N/A | — | List of Filebeat modules to enable (experimental). Unset by default. |
 | `beats_auditbeat_enable` | `bool` | `true` | — | Start and enable the Auditbeat service. |
 | `beats_auditbeat_output` | `str` | `"elasticsearch"` | `logstash`, `elasticsearch` | Where Auditbeat sends its events. |
-| `beats_auditbeat_setup` | `bool` | `true` | — | Run the Auditbeat setup (index management and pipelines). Only effective with the elasticsearch output. |
+| `beats_auditbeat_setup` | `bool` | `true` | — | Run the Auditbeat setup (index management, ingest pipelines and Kibana dashboards). Only effective with the elasticsearch output; loading the dashboards additionally requires Kibana to be reachable. |
 | `beats_auditbeat_loadbalance` | `bool` | `true` | — | Enable load balancing for the Auditbeat Logstash output. |
 | `beats_metricbeat_enable` | `bool` | `true` | — | Start and enable the Metricbeat service. |
 | `beats_metricbeat_output` | `str` | `"elasticsearch"` | `logstash`, `elasticsearch` | Where Metricbeat sends its events. |

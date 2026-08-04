@@ -81,7 +81,7 @@
 
     - name: Enable Ingest Pipelines
       ansible.builtin.shell: >
-        /usr/bin/filebeat setup --pipelines &&
+        /usr/bin/filebeat setup --pipelines --dashboards &&
         /usr/bin/filebeat version > /etc/filebeat/{{ item }}_pipeline_created
       args:
         creates: "/etc/filebeat/{{ item }}_pipeline_created"

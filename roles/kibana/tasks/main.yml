@@ -134,6 +134,25 @@
         port: 5601
         timeout: 300
       register: kibana_wait
+
+    # An open port only means Kibana is starting; the status API returns 503
+    # ("not ready yet") until it is fully up. Poll it so downstream consumers
+    # (e.g. Beats dashboard setup) do not race an unready Kibana.
+    # Kibana is ready once /api/status stops returning the startup 503 ("not
+    # ready yet"). Whether it then answers 200 (anonymous status allowed) or 401
+    # (auth required) depends on status.allowAnonymous / the version, so treat
+    # both as "ready" and poll unauthenticated (no credentials needed).
+    - name: Wait for Kibana API to be ready
+      ansible.builtin.uri:
+        url: "{{ 'https' if kibana_tls | bool else 'http' }}://localhost:{{ elasticstack_kibana_port }}/api/status"
+        method: GET
+        validate_certs: false
+        status_code: [200, 401, 503]
+      register: kibana_api
+      until: kibana_api.status != 503
+      retries: 60
+      delay: 5
+      changed_when: false
   rescue:
     - name: Debug Kibana status on failure
       ansible.builtin.debug:

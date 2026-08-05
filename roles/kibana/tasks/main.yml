@@ -135,13 +135,11 @@
         timeout: 300
       register: kibana_wait
 
-    # An open port only means Kibana is starting; the status API returns 503
-    # ("not ready yet") until it is fully up. Poll it so downstream consumers
-    # (e.g. Beats dashboard setup) do not race an unready Kibana.
-    # Kibana is ready once /api/status stops returning the startup 503 ("not
-    # ready yet"). Whether it then answers 200 (anonymous status allowed) or 401
-    # (auth required) depends on status.allowAnonymous / the version, so treat
-    # both as "ready" and poll unauthenticated (no credentials needed).
+    # An open port only means Kibana is starting; /api/status returns 503 ("not
+    # ready yet") until it is fully up, so downstream consumers (e.g. Beats
+    # dashboard setup) must not race it. Poll unauthenticated: a ready Kibana
+    # answers 200 (anonymous status allowed) or 401 (auth required but server up)
+    # depending on status.allowAnonymous / the version — treat both as ready.
     - name: Wait for Kibana API to be ready
       ansible.builtin.uri:
         url: "{{ 'https' if kibana_tls | bool else 'http' }}://localhost:{{ elasticstack_kibana_port }}/api/status"
@@ -149,21 +147,25 @@
         validate_certs: false
         status_code: [200, 401, 503]
       register: kibana_api
-      until: kibana_api.status != 503
+      until: kibana_api.status in [200, 401]
       retries: 60
       delay: 5
       changed_when: false
   rescue:
-    - name: Debug Kibana status on failure
+    - name: Show why the Kibana readiness check failed
       ansible.builtin.debug:
-        msg: "Kibana failed to start: {{ kibana_wait }}"
-    - name: Show Kibana logs
+        msg: >-
+          Kibana readiness failed.
+          API check: status={{ kibana_api.status | default('n/a') }},
+          msg={{ kibana_api.msg | default('n/a') }}.
+          Port opened after {{ kibana_wait.elapsed | default('n/a') }}s.
+    - name: Show Kibana warnings and errors
       ansible.builtin.command:
-        cmd: journalctl -u kibana -n 100
+        cmd: journalctl -u kibana -n 100 -p warning
       register: kibana_logs
       changed_when: false
       no_log: true
-    - name: Output Kibana logs
+    - name: Output Kibana warnings and errors
       ansible.builtin.debug:
         var: kibana_logs.stdout
 

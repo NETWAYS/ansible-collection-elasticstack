@@ -33,6 +33,10 @@ setup.template.settings:
 setup.kibana:
 {% if elasticstack_full_stack | bool and groups[elasticstack_kibana_group_name] | default([]) | length > 0 %}
   host: "http://{{ groups[elasticstack_kibana_group_name] | first }}:{{ elasticstack_kibana_port }}"
+{% if beats_security | bool %}
+  username: "elastic"
+  password: "{{ beats_writer_password.stdout }}"
+{% endif %}
 {% endif %}
 {% if beats_auditbeat_output == "elasticsearch" %}
 output.elasticsearch:

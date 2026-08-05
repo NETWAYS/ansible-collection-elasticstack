@@ -87,6 +87,7 @@ logstash_logging_console: true
 logstash_logging_file: true
 logstash_logging_slow_console: true
 logstash_logging_slow_file: true
+logstash_logging_retention: 7D
 
 logstash_ident: true
 logstash_ident_field_name: "[netways][instance]"

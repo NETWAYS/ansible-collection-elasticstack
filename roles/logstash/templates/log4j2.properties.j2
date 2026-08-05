@@ -39,6 +39,12 @@ appender.rolling.policies.size.type = SizeBasedTriggeringPolicy
 appender.rolling.policies.size.size = 100MB
 appender.rolling.strategy.type = DefaultRolloverStrategy
 appender.rolling.strategy.max = 30
+appender.rolling.strategy.action.type = Delete
+appender.rolling.strategy.action.basepath = ${sys:ls.logs}
+appender.rolling.strategy.action.condition.type = IfFileName
+appender.rolling.strategy.action.condition.glob = logstash-plain-*
+appender.rolling.strategy.action.condition.nested_condition.type = IfLastModified
+appender.rolling.strategy.action.condition.nested_condition.age = {{ logstash_logging_retention }}
 appender.rolling.avoid_pipelined_filter.type = PipelineRoutingFilter
 
 appender.json_rolling.type = RollingFile
@@ -56,6 +62,12 @@ appender.json_rolling.policies.size.type = SizeBasedTriggeringPolicy
 appender.json_rolling.policies.size.size = 100MB
 appender.json_rolling.strategy.type = DefaultRolloverStrategy
 appender.json_rolling.strategy.max = 30
+appender.json_rolling.strategy.action.type = Delete
+appender.json_rolling.strategy.action.basepath = ${sys:ls.logs}
+appender.json_rolling.strategy.action.condition.type = IfFileName
+appender.json_rolling.strategy.action.condition.glob = logstash-json-*
+appender.json_rolling.strategy.action.condition.nested_condition.type = IfLastModified
+appender.json_rolling.strategy.action.condition.nested_condition.age = {{ logstash_logging_retention }}
 appender.json_rolling.avoid_pipelined_filter.type = PipelineRoutingFilter
 
 appender.routing.type = PipelineRouting
@@ -70,6 +82,12 @@ appender.routing.pipeline.policy.type = SizeBasedTriggeringPolicy
 appender.routing.pipeline.policy.size = 100MB
 appender.routing.pipeline.strategy.type = DefaultRolloverStrategy
 appender.routing.pipeline.strategy.max = 30
+appender.routing.pipeline.strategy.action.type = Delete
+appender.routing.pipeline.strategy.action.basepath = ${sys:ls.logs}
+appender.routing.pipeline.strategy.action.condition.type = IfFileName
+appender.routing.pipeline.strategy.action.condition.glob = pipeline_${ctx:pipeline.id}*.log.gz
+appender.routing.pipeline.strategy.action.condition.nested_condition.type = IfLastModified
+appender.routing.pipeline.strategy.action.condition.nested_condition.age = {{ logstash_logging_retention }}
 
 rootLogger.level = ${sys:ls.log.level}
 {% if logstash_logging_console | bool %}
@@ -107,6 +125,12 @@ appender.rolling_slowlog.policies.size.type = SizeBasedTriggeringPolicy
 appender.rolling_slowlog.policies.size.size = 100MB
 appender.rolling_slowlog.strategy.type = DefaultRolloverStrategy
 appender.rolling_slowlog.strategy.max = 30
+appender.rolling_slowlog.strategy.action.type = Delete
+appender.rolling_slowlog.strategy.action.basepath = ${sys:ls.logs}
+appender.rolling_slowlog.strategy.action.condition.type = IfFileName
+appender.rolling_slowlog.strategy.action.condition.glob = logstash-slowlog-plain-*
+appender.rolling_slowlog.strategy.action.condition.nested_condition.type = IfLastModified
+appender.rolling_slowlog.strategy.action.condition.nested_condition.age = {{ logstash_logging_retention }}
 
 appender.json_rolling_slowlog.type = RollingFile
 appender.json_rolling_slowlog.name = json_rolling_slowlog
@@ -123,6 +147,12 @@ appender.json_rolling_slowlog.policies.size.type = SizeBasedTriggeringPolicy
 appender.json_rolling_slowlog.policies.size.size = 100MB
 appender.json_rolling_slowlog.strategy.type = DefaultRolloverStrategy
 appender.json_rolling_slowlog.strategy.max = 30
+appender.json_rolling_slowlog.strategy.action.type = Delete
+appender.json_rolling_slowlog.strategy.action.basepath = ${sys:ls.logs}
+appender.json_rolling_slowlog.strategy.action.condition.type = IfFileName
+appender.json_rolling_slowlog.strategy.action.condition.glob = logstash-slowlog-json-*
+appender.json_rolling_slowlog.strategy.action.condition.nested_condition.type = IfLastModified
+appender.json_rolling_slowlog.strategy.action.condition.nested_condition.age = {{ logstash_logging_retention }}
 
 logger.slowlog.name = slowlog
 logger.slowlog.level = trace
@@ -156,6 +186,12 @@ appender.deprecation_rolling.policies.size.type = SizeBasedTriggeringPolicy
 appender.deprecation_rolling.policies.size.size = 100MB
 appender.deprecation_rolling.strategy.type = DefaultRolloverStrategy
 appender.deprecation_rolling.strategy.max = 30
+appender.deprecation_rolling.strategy.action.type = Delete
+appender.deprecation_rolling.strategy.action.basepath = ${sys:ls.logs}
+appender.deprecation_rolling.strategy.action.condition.type = IfFileName
+appender.deprecation_rolling.strategy.action.condition.glob = logstash-deprecation-*
+appender.deprecation_rolling.strategy.action.condition.nested_condition.type = IfLastModified
+appender.deprecation_rolling.strategy.action.condition.nested_condition.age = {{ logstash_logging_retention }}
 
 logger.deprecation.name = org.logstash.deprecation, deprecation
 logger.deprecation.level = WARN

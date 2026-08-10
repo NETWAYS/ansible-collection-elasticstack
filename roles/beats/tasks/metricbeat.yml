@@ -60,14 +60,14 @@
   when: beats_metricbeat_modules is defined
 
 - name: Enable Ingest Pipelines
-  ansible.builtin.command: >
+  ansible.builtin.shell: >
     metricbeat setup &&
     metricbeat version > /etc/metricbeat/pipelines_created
   args:
     creates: "/etc/metricbeat/pipelines_created"
   notify:
     - Restart Metricbeat
-  with_items: "{{ beats_metricbeat_modules }}"
+  run_once: true
   when:
     - beats_metricbeat_modules is defined
     - beats_metricbeat_output == "elasticsearch"

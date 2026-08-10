@@ -64,3 +64,20 @@
         state: latest
         update_cache: yes
       when: ansible_os_family == "Debian"
+
+    # Temporary CI workaround: containers cannot resolve each other by name
+    # (the runner's resolver is Azure's 168.63.129.16, which does not know the
+    # container hostnames). Seed /etc/hosts from gathered facts so name-based
+    # connections work. Remove once #524 (elasticstack_address_mode) lands and
+    # molecule sets elasticstack_address_mode: ip.
+    - name: Seed /etc/hosts from facts for inter-container name resolution
+      ansible.builtin.blockinfile:
+        path: /etc/hosts
+        marker: "# {mark} ANSIBLE CLUSTER HOSTS"
+        # /etc/hosts is a Docker bind-mount, so the default atomic temp+rename
+        # write fails with EBUSY; write in place instead.
+        unsafe_writes: true
+        block: |-
+          {% for h in groups['all'] %}
+          {{ hostvars[h].ansible_default_ipv4.address | default(hostvars[h].ansible_all_ipv4_addresses[0]) }} {{ hostvars[h].ansible_fqdn }} {{ hostvars[h].ansible_hostname }} {{ h }}
+          {% endfor %}

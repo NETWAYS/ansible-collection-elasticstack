@@ -135,7 +135,7 @@
     - "hostvars[item].inventory_hostname == inventory_hostname"
     - elasticstack_version is defined
     - ansible_facts.packages['elasticsearch'][0].version is defined
-    - elasticstack_password.stdout is defined
+    - __elasticstack_password is defined
     - elasticstack_version is version( ansible_facts.packages['elasticsearch'][0].version, '>')
 
 - name: Install Elasticsearch - rpm - full stack
@@ -147,6 +147,8 @@
   when:
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
+    # fresh install only, an upgrade goes through elasticsearch-rolling-upgrade.yml
+    - "'elasticsearch' not in ansible_facts.packages"
 
 - name: Install Elasticsearch - rpm - standalone
   ansible.builtin.package:
@@ -155,6 +157,8 @@
   when:
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
+    # fresh install only, an upgrade goes through elasticsearch-rolling-upgrade.yml
+    - "'elasticsearch' not in ansible_facts.packages"
 
 - name: Install Elasticsearch - deb
   ansible.builtin.package:
@@ -162,6 +166,8 @@
     state: present
   when:
     - ansible_os_family == "Debian"
+    # fresh install only, an upgrade goes through elasticsearch-rolling-upgrade.yml
+    - "'elasticsearch' not in ansible_facts.packages"
 
 - name: Configure Elasticsearch
   ansible.builtin.template:

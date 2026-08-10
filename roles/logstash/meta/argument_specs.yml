@@ -457,6 +457,15 @@ argument_specs:
         default: true
         description: Log the slowlog to the log file. Only effective when logstash_manage_logging is enabled.
 
+      logstash_logging_retention:
+        type: str
+        default: 7D
+        description: >-
+          Age at which rotated log files (plain, json, slowlog, deprecation and
+          per-pipeline routing logs) are deleted by log4j2 at rollover time.
+          Uses log4j2 IfLastModified duration syntax such as "7D", "24H" or
+          "P30D". Only effective when logstash_manage_logging is enabled.
+
       # ----- Identifying fields -----
       logstash_ident:
         type: bool

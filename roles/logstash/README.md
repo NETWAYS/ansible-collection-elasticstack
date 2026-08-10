@@ -127,6 +127,7 @@ Run only parts of the role with `--tags`:
 | `logstash_logging_file` | `bool` | `true` | — | Log to the log file. Only effective when logstash_manage_logging is enabled. |
 | `logstash_logging_slow_console` | `bool` | `true` | — | Log the slowlog to the console (syslog when run via systemd). Only effective when logstash_manage_logging is enabled. |
 | `logstash_logging_slow_file` | `bool` | `true` | — | Log the slowlog to the log file. Only effective when logstash_manage_logging is enabled. |
+| `logstash_logging_retention` | `str` | `"7D"` | — | Age at which rotated log files (plain, json, slowlog, deprecation and per-pipeline routing logs) are deleted by log4j2 at rollover time. Uses log4j2 IfLastModified duration syntax such as "7D", "24H" or "P30D". Only effective when logstash_manage_logging is enabled. |
 | `logstash_ident` | `bool` | `true` | — | Add a field identifying the node that processed an event. |
 | `logstash_ident_field_name` | `str` | `"[netways][instance]"` | — | Name of the field that identifies the instance. |
 | `logstash_pipeline_identifier` | `bool` | `true` | — | Add a field identifying which pipeline processed an event. |

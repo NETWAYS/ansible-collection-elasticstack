@@ -1,7 +1,6 @@
-name: Documentation
-description: Documentation is missing, wrong or unclear
-title: "[Documentation]: "
-labels: ["documentation"]
+name: Maintenance
+description: Internal work with no new capability for users - cleanup, refactoring, consistency, tests
+labels: ["quality"]
 body:
   - type: dropdown
     id: component
@@ -24,19 +23,23 @@ body:
     validations:
       required: true
 
-  - type: input
-    id: where
-    attributes:
-      label: Where
-      description: Which file or page - for example the main README, a role README, meta/argument_specs.yml, or an example playbook.
-      placeholder: roles/elasticsearch/README.md
-    validations:
-      required: true
-
   - type: textarea
     id: change
     attributes:
       label: What should change
-      description: What is wrong or missing, and what should it say instead?
+      description: The current state, and what it should look like instead. Name the files or variables if you already know them.
     validations:
       required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: What goes wrong today, or what does the current shape make harder than it needs to be?
+
+  - type: checkboxes
+    id: breaking
+    attributes:
+      label: Impact
+      options:
+        - label: This changes existing behaviour, variable names or defaults, so users have to adapt.

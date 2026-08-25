@@ -1,37 +1,69 @@
 name: Bug Report
-description: File a bug report
+description: Something in the collection behaves wrong or is broken
 title: "[Bug]: "
-labels: ["bug", "needs-triage"]
+labels: ["bug"]
 body:
   - type: checkboxes
-    id: terms
+    id: searched
     attributes:
-      label: Please try to fill out as much of the information below as you can. Thank you!
+      label: Before you start
       options:
-        - label: Yes, I've searched similar issues on GitHub and didn't find any.
+        - label: I searched the existing issues and did not find this one.
           required: true
-  - type: input
-    id: app_version
+
+  - type: dropdown
+    id: component
     attributes:
-      label: Which version contains the bug?
-      placeholder: 1.0.0
+      label: Component
+      description: Which part of the collection does this concern? Pick more than one if it applies.
+      multiple: true
+      options:
+        - elasticsearch
+        - kibana
+        - logstash
+        - beats (shared, or several beats at once)
+        - filebeat
+        - metricbeat
+        - auditbeat
+        - repos
+        - elasticstack (meta role, shared variables)
+        - plugins (cert_info, elasticsearch_role, elasticsearch_user)
+        - not sure, or affects the whole collection
+    validations:
+      required: true
+
   - type: textarea
     id: description
     attributes:
-      label: Description
-      description: A clear and concise description of what the bug is.
+      label: What happens
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+
   - type: textarea
     id: reproduce
     attributes:
-      label: To Reproduce
-      description: Describe how to reproduce the bug.
+      label: How to reproduce
+      description: The playbook, inventory and variables you used, and the steps you ran.
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Relevant output
+      description: The failing task and its output. Run the play with -v if the message is unclear.
+      render: shell
+
   - type: textarea
     id: environment
     attributes:
-      label: Your Environment
-      description: Include as many relevant details about the environment you experienced the problem in.
+      label: Environment
       value: |
-        * Version (commit) used:
-        * Ansible version:
-        * Python version:
-        * Operating System and version:
+        * Collection version or commit:
+        * Elastic Stack version (elasticstack_version):
+        * ansible-core version:
+        * Python version on the controller:
+        * Target OS and version:
+    validations:
+      required: true

@@ -10,7 +10,6 @@
 
     - name: Set versions for components
       ansible.builtin.import_tasks: elasticstack-versions.yml
-      when: elasticstack_full_stack | bool
 
     - name: Fetch passwords if passwords are initialized
       ansible.builtin.import_tasks: elasticstack-passwords.yml

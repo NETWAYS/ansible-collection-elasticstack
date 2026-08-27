@@ -1,10 +1,38 @@
 name: Question
-description: Ask a question
+description: Ask how something works or how to configure it
 title: "[Question]: "
 labels: ["question"]
 body:
-  - type: textarea
-    id: description
+  - type: dropdown
+    id: component
     attributes:
-      label: Ask a question
-      description: Please provide as much context as possible. You can use markdown.
+      label: Component
+      description: Which part of the collection does this concern? Pick more than one if it applies.
+      multiple: true
+      options:
+        - elasticsearch
+        - kibana
+        - logstash
+        - beats (shared, or several beats at once)
+        - filebeat
+        - metricbeat
+        - auditbeat
+        - repos
+        - elasticstack (meta role, shared variables)
+        - plugins (cert_info, elasticsearch_role, elasticsearch_user)
+        - not sure, or affects the whole collection
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: Please add as much context as you can - the variables you set and what you are trying to achieve.
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you tried already

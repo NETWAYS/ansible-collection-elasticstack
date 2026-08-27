@@ -1,15 +1,52 @@
 name: Feature Request
-description: Request a feature or enhancement
+description: Ask for a new capability or a new variable
 title: "[Feature]: "
-labels: ["feature", "needs-triage"]
+labels: ["feature"]
 body:
   - type: markdown
     attributes:
       value: |
-        Please try to fill out as much of the information below as you can. Thank you!
-        **Note:** If you want to sponsor new features, contact us at info@netways.de
-  - type: textarea
-    id: description
+        If you want to sponsor a feature, contact us at info@netways.de
+
+  - type: checkboxes
+    id: searched
     attributes:
-      label: Describe the feature request
-      description: Please provide a concise description of the feature. You can use markdown.
+      label: Before you start
+      options:
+        - label: I searched the existing issues and did not find this one.
+          required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of the collection does this concern? Pick more than one if it applies.
+      multiple: true
+      options:
+        - elasticsearch
+        - kibana
+        - logstash
+        - beats (shared, or several beats at once)
+        - filebeat
+        - metricbeat
+        - auditbeat
+        - repos
+        - elasticstack (meta role, shared variables)
+        - plugins (cert_info, elasticsearch_role, elasticsearch_user)
+        - not sure, or affects the whole collection
+    validations:
+      required: true
+
+  - type: textarea
+    id: missing
+    attributes:
+      label: What is missing
+      description: What can you not do today, and why does the current behaviour not cover it?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: How it could work
+      description: If you already have an idea - new variables, their defaults, the configuration they should produce.

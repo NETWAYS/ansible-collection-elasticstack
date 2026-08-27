@@ -25,3 +25,5 @@
     - name: Register elasticstack role has run for that host
       ansible.builtin.set_fact:
         _elasticstack_role_imported: true
+      # Keep this the last task in the block. The block's when: is re-evaluated before every
+      # task, so anything below this line is skipped even on the first run.

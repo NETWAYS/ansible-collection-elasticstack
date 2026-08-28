@@ -1,0 +1,51 @@
+---
+# Publishes a tagged version of this collection to Ansible Galaxy.
+#
+# This workflow is triggered manually and never automatically, so that a tag can
+# be created and inspected before an immutable version is uploaded to Galaxy.
+# The tag has to exist before the workflow is started, because the build happens
+# from the checked out tag and galaxy.yml at that tag determines the version.
+#
+# Requires the repository or organization secret GALAXY_API_KEY, holding an API
+# token of an account that owns the "netways" namespace on Ansible Galaxy.
+
+name: publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to build and publish, for example 0.1.0'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install ansible-core
+        run: pip install ansible-core
+
+      - name: Show the version that will be published
+        run: grep '^version:' galaxy.yml
+
+      - name: Build the collection
+        run: ansible-galaxy collection build -vvv
+
+      - name: Publish to Ansible Galaxy
+        env:
+          GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
+        run: ansible-galaxy collection publish --token "$GALAXY_API_KEY" ./netways-elasticstack-*.tar.gz

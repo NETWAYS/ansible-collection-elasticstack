@@ -46,8 +46,10 @@ number of commits. [.mailmap](.mailmap) folds alternative addresses into one ent
 person, so add a line there first if somebody shows up twice:
 
 ```bash
-git shortlog -sn --use-mailmap
+git shortlog -sn HEAD
 ```
+
+`shortlog` applies the mailmap on its own, no extra option needed.
 
 ## 2. Set the version
 

@@ -29,13 +29,29 @@ documentation: https://github.com/netways/ansible-collection-elasticstack/README
 homepage: https://www.netways.de
 issues: https://github.com/netways/ansible-collection-elasticstack/issues
 build_ignore:
+  # CI, tests and local tooling
   - .github
   - .cache
   - molecule
-  - .gitignore
-  - daemon.json
-  - .mailmap
-  - '*.tar.gz'
-  - 'venv*'
+  - results-dir
+  - .config
+  - .yamllint
+  - makefile
+  - 'requirements*.txt'
   - .docsmith
+  # repository housekeeping, not part of the collection
+  - .gitignore
+  - .mailmap
+  - daemon.json
+  - RELEASE.md
+  # changelog working directory - the rendered CHANGELOG.md is shipped
+  - changelogs
+  # local editor and tool directories, never part of a release
+  - .claude
+  - .vscode
+  - .idea
+  - __pycache__
+  - .ansible
+  - 'venv*'
+  - '*.tar.gz'
 # Minimum Ansible version required: 2.14, maximum supported: 2.20

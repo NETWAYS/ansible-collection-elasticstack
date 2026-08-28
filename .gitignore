@@ -7,3 +7,5 @@ __pycache__*
 
 # antsibull-changelog
 changelogs/.plugin-cache.yaml
+.claude
+results-dir

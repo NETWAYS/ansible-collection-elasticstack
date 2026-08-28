@@ -40,6 +40,19 @@ You can easily install the collection with the `ansible-galaxy` command.
 ansible-galaxy collection install git+https://github.com/netways/ansible-collection-elasticstack.git
 ```
 
+To pin a released version instead of the current state of `main`, use a `requirements.yml`:
+
+```yaml
+collections:
+  - name: https://github.com/NETWAYS/ansible-collection-elasticstack.git
+    type: git
+    version: 0.1.0
+```
+
+```bash
+ansible-galaxy collection install -r requirements.yml
+```
+
 Or if you are using Tower or AWX add the collection to your requirements file.
 
 ```
@@ -229,6 +242,10 @@ The execution order of the roles is important! (see below)
 ## Contributing
 
 Every kind of contribution is very welcome. Open [issues](https://github.com/NETWAYS/ansible-collection-elasticstack/issues) or provide [pull requests](https://github.com/NETWAYS/ansible-collection-elasticstack/pulls).
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. It describes
+what a pull request needs, including the changelog fragment that every pull request has to
+bring along.
 
 For now we open pull requests against `main`. We are planning to introduce dedicated branches to support older versions without breaking changes. Since we don't need them for now, please check back with this section because when we decided on how to proceed, you will find the information here. For now `main` always has the newest changes and if you want a stable version, please use the newest release.
 

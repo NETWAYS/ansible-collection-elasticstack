@@ -1,0 +1,67 @@
+---
+# Every pull request has to bring a changelog fragment, so that the changelog can be
+# generated at release time instead of being reconstructed from the commit history.
+#
+# A change that is not worth mentioning to users still needs a fragment, but its entry
+# goes into the "trivial" section, which antsibull-changelog does not render. See
+# CONTRIBUTING.md.
+
+name: Test Changelog
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  fragment:
+    # Dependabot only bumps action and dependency versions, which needs no fragment.
+    if: >-
+      github.event.pull_request.draft == false
+      && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install antsibull-changelog
+        run: pip install antsibull-changelog
+
+      - name: A changelog fragment is present
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          if [ -z "$BASE_REF" ]; then
+            echo "Not a pull request, nothing to compare against."
+            exit 0
+          fi
+          git fetch --no-tags origin "$BASE_REF"
+          changed=$(git diff --name-only --diff-filter=AM \
+            "origin/$BASE_REF...HEAD" -- changelogs/fragments/ \
+            | grep -v '^changelogs/fragments/\.keep$' || true)
+          if [ -z "$changed" ]; then
+            echo "::error::This pull request adds no changelog fragment."
+            echo "Add a file under changelogs/fragments/ describing the change."
+            echo "If the change is not relevant for users, put the entry in the"
+            echo "'trivial' section. See CONTRIBUTING.md."
+            exit 1
+          fi
+          echo "Found:"
+          echo "$changed"
+
+      - name: Fragments are valid
+        run: antsibull-changelog lint

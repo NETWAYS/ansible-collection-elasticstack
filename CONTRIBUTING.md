@@ -42,9 +42,10 @@ The changelog is not generated from commit messages. It is assembled from small 
 that each pull request brings along, so that the description is written by the person who
 knows what changed rather than reconstructed months later at release time.
 
-Add one file per pull request under `changelogs/fragments/`. Name it after the issue or
-the change, for example `546_rolling_upgrade.yml`. Never edit an existing fragment, so
-that every entry can be traced back to the pull request that introduced it.
+Add one **new** file per pull request under `changelogs/fragments/`. Name it after the
+issue or the change, for example `546_rolling_upgrade.yml`. Do not put your entry into an
+existing fragment and do not rename or delete one, so that every entry stays traceable to
+the pull request that introduced it. The pipeline rejects both.
 
 ```yaml
 # changelogs/fragments/546_rolling_upgrade.yml
@@ -67,7 +68,9 @@ Available sections, one or more per file:
 | `known_issues` | Problems shipped with the release on purpose |
 | `trivial` | Not rendered into the changelog. See below |
 
-The pull request pipeline fails when no fragment was added.
+Fragments are consumed at release time: `antsibull-changelog release` folds them into the
+changelog and deletes them, so the directory is empty again after every release. That is
+why a new file is always the right answer, never an edit to an existing one.
 
 ### Changes that do not belong in the changelog
 

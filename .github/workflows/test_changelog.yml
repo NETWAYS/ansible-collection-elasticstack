@@ -50,18 +50,31 @@ jobs:
             exit 0
           fi
           git fetch --no-tags origin "$BASE_REF"
-          changed=$(git diff --name-only --diff-filter=AM \
+          added=$(git diff --name-only --diff-filter=A \
             "origin/$BASE_REF...HEAD" -- changelogs/fragments/ \
             | grep -v '^changelogs/fragments/\.keep$' || true)
-          if [ -z "$changed" ]; then
-            echo "::error::This pull request adds no changelog fragment."
-            echo "Add a file under changelogs/fragments/ describing the change."
+          if [ -z "$added" ]; then
+            echo "::error::This pull request adds no new changelog fragment."
+            echo "Add a NEW file under changelogs/fragments/ describing the change."
+            echo "Do not put the entry into an existing fragment, so that every entry"
+            echo "stays traceable to the pull request that added it."
             echo "If the change is not relevant for users, put the entry in the"
             echo "'trivial' section. See CONTRIBUTING.md."
             exit 1
           fi
-          echo "Found:"
-          echo "$changed"
+          echo "New fragments in this pull request:"
+          echo "$added"
+
+          touched=$(git diff --name-only --diff-filter=MRD \
+            "origin/$BASE_REF...HEAD" -- changelogs/fragments/ \
+            | grep -v '^changelogs/fragments/\.keep$' || true)
+          if [ -n "$touched" ]; then
+            echo "::error::This pull request changes fragments it did not add:"
+            echo "$touched"
+            echo "Fragments belong to the pull request that created them. Add your own"
+            echo "instead of editing, renaming or deleting someone else's."
+            exit 1
+          fi
 
       - name: Fragments are valid
         run: antsibull-changelog lint

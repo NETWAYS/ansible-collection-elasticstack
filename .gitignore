@@ -4,3 +4,6 @@ __pycache__*
 .vscode
 .venv
 .fuse_hidden*
+
+# antsibull-changelog
+changelogs/.plugin-cache.yaml

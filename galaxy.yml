@@ -47,7 +47,6 @@ build_ignore:
   # changelog working directory - the rendered CHANGELOG.md is shipped
   - changelogs
   # local editor and tool directories, never part of a release
-  - .claude
   - .vscode
   - .idea
   - __pycache__

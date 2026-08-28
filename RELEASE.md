@@ -41,13 +41,12 @@ removed, only superseded by a higher version.
 Make sure the last pull requests before the release removed as much lint as possible. The
 same goes for deprecation warnings and linter exceptions.
 
-Update the [AUTHORS](AUTHORS) file. It is generated from the git history and lists
-everyone who contributed. `--use-mailmap` folds the alternative addresses in
-[.mailmap](.mailmap) into one entry per person, so add a line there first if someone shows
-up twice:
+If you want to credit contributors in the release notes, this lists everyone with their
+number of commits. [.mailmap](.mailmap) folds alternative addresses into one entry per
+person, so add a line there first if somebody shows up twice:
 
 ```bash
-git log --use-mailmap | grep '^Author:' | cut -f2- -d' ' | sort | uniq > AUTHORS
+git shortlog -sn --use-mailmap
 ```
 
 ## 2. Set the version

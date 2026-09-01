@@ -1,3 +1,14 @@
+# Maps the different name and email combinations people committed with onto one
+# canonical identity, so that git shortlog and git blame show one entry per person
+# instead of one per address. Git applies this file automatically.
+#
+# Add a line when somebody shows up twice, for example after a change of employer or
+# after a commit made through the GitHub web interface. Check the result with:
+#   git check-mailmap "Name <address>"
+#
+# Syntax: Proper Name <proper@mail> <commit@mail>
+# See https://git-scm.com/docs/gitmailmap
+
 Afeef Ghannam <afeef.ghannam@netways.de> <39904920+afeefghannam89@users.noreply.github.com>
 Alexander Stoll <alexander.stoll@netways.de> <45196568+Crited@users.noreply.github.com>
 Daniel Neuberger <daniel.neuberger@netways.de> <xtruthx@users.noreply.github.com>

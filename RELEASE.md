@@ -2,29 +2,13 @@
 
 How to build, tag and publish a new version of this collection. Maintainers only.
 
-## What a release produces
-
-Two different things, and it helps to keep them apart:
-
-**The git tag** is only a name pointing at a commit. It contains nothing itself, it makes
-a state of the source tree findable again. It is what `version:` resolves to when someone
-installs the collection straight from git, and it is what the publish workflow checks out.
-
-**The archive** `netways-elasticstack-<VERSION>.tar.gz` is the installable product built
-from that state. `ansible-galaxy collection build` packs the collection and adds
-`MANIFEST.json` and `FILES.json`, which hold the metadata from `galaxy.yml` and a checksum
-for every file. This archive is what Galaxy stores and serves, and what
-`ansible-galaxy collection install` unpacks. Whatever `build_ignore` in `galaxy.yml` lists
-is left out of it.
-
-The version comes from `galaxy.yml`, not from the tag. Both have to say the same thing.
 
 ## Prerequisites
 
 * `antsibull-changelog` installed locally:
 
   ```bash
-  pip install antsibull-changelog
+  pip install "antsibull-changelog==0.35.1"
   ```
 
 * The repository or organization secret `GALAXY_API_KEY`, holding an API token of an
@@ -36,27 +20,12 @@ The version comes from `galaxy.yml`, not from the tag. Both have to say the same
 Galaxy versions are **immutable**. Once a version is uploaded it cannot be replaced or
 removed, only superseded by a higher version.
 
-## 1. Prepare the code
-
-Make sure the last pull requests before the release removed as much lint as possible. The
-same goes for deprecation warnings and linter exceptions.
-
-If you want to credit contributors in the release notes, this lists everyone with their
-number of commits. [.mailmap](.mailmap) folds alternative addresses into one entry per
-person, so add a line there first if somebody shows up twice:
-
-```bash
-git shortlog -sn HEAD
-```
-
-`shortlog` applies the mailmap on its own, no extra option needed.
-
-## 2. Set the version
+## 1. Set the version
 
 Set `version:` in **galaxy.yml** to the version you are about to release. Semantic
 versioning, no `v` prefix.
 
-## 3. Write the release summary
+## 2. Write the release summary
 
 This becomes the introductory paragraph of the release in the changelog.
 
@@ -67,7 +36,7 @@ release_summary: |
   Summary text for this release, for example "Bugfix release".
 ```
 
-## 4. Generate the changelog
+## 3. Generate the changelog
 
 Every pull request brings its own fragment under `changelogs/fragments/`. This folds all
 of them into `changelogs/changelog.yaml`, renders `CHANGELOG.md` and deletes the
@@ -78,11 +47,11 @@ antsibull-changelog lint
 antsibull-changelog release --version <VERSION>
 ```
 
-Steps 1 to 4 change files in the repository. `main` requires an approving review, so open
-a pull request with the version bump, the updated `AUTHORS` and the generated changelog.
+Steps 1 to 3 change files in the repository. `main` requires an approving review, so open
+a pull request with the version bump and the generated changelog.
 Do not push this directly, even though repository admins are technically able to.
 
-## 5. Tag the version
+## 4. Tag the version
 
 Tag the merge commit on `main`. No `v` prefix, semantic versioning.
 
@@ -93,26 +62,27 @@ git tag -a <VERSION> -m "<VERSION>"
 git push origin <VERSION>
 ```
 
-If you cannot push tags, skip this and let GitHub create the tag in step 6 instead.
+If you cannot push tags, skip this and let GitHub create the tag in step 5 instead.
 
-## 6. Create the release on GitHub
+## 5. Create the release on GitHub
 
 [Draft a new release](https://github.com/NETWAYS/ansible-collection-elasticstack/releases/new):
 
-* choose the tag from step 5, or enter the version and let GitHub create the tag now
+* choose the tag from step 4, or enter the version and let GitHub create the tag now
 * use the version as the title
 * paste this version's section from `CHANGELOG.md` as the release notes
 * credit people by name where a change came from outside: the author of the pull request,
-  and the reporter of an issue where the report was the contribution
+  and the reporter of an issue where the report was the contribution. `git shortlog -sn HEAD`
+  lists everyone with their number of commits, folded per person through [.mailmap](.mailmap)
 
-The release has to exist before step 7, because the archive is uploaded to it.
+The release has to exist before step 6, because the archive is uploaded to it.
 
-## 7. Publish to Ansible Galaxy
+## 6. Publish to Ansible Galaxy
 
 **Actions** -> **publish** -> **Run workflow**, then enter the tag.
 
 The workflow checks out that tag, builds the collection, publishes it to Galaxy and
-attaches the archive to the release from step 6. It is triggered manually and never
+attaches the archive to the release from step 5. It is triggered manually and never
 automatically, so that a tag can be inspected before an immutable version reaches Galaxy.
 
 Afterwards confirm on

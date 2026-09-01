@@ -39,7 +39,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install antsibull-changelog
-        run: pip install antsibull-changelog
+        run: pip install "antsibull-changelog==0.35.1"
 
       - name: A changelog fragment is present
         env:

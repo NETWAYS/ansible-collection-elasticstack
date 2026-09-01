@@ -1,8 +1,0 @@
-release_summary: |
-  First tagged release. This is the current state of the collection, made
-  referenceable so it can be pinned by version instead of by commit hash.
-
-  It is not a cleaned up release. Variable names are not consistent yet and
-  some of the behaviour in the elasticsearch role is still being reworked,
-  in particular around upgrades. Breaking changes are collected for 1.0.0,
-  so pinning 0.1.0 keeps you unaffected until you move on deliberately.

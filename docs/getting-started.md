@@ -29,7 +29,9 @@ The default Beats configuration collects file system logs written by `rsyslog`, 
 example playbook installs it. Without syslog you will not receive any messages with the default
 configuration. If you do not want that, change the configuration of the beats role.
 
-The OSS variant without X-Pack features is only available for Elastic Stack `7`.
+`elasticstack_variant: oss` is not available for the whole stack on every release. OSS
+Elasticsearch and Kibana exist only up to Elastic Stack `7`, while OSS Logstash and Beats are
+available on later releases too.
 
 ## Variables
 

@@ -21,7 +21,7 @@ description:
     Currently supported are C(basicConstraints) with C(_ca) and C(_path_length),
     C(subjectKeyIdentifier) with C(_digest), and C(authorityKeyIdentifier) with
     C(_key_identifier), C(_authority_cert_issuer) and C(_authority_cert_serial_number).
-version_added: "1.0.0"
+version_added: "0.1.0"
 author:
   - Daniel Patrick (@dpatrick)
 requirements:

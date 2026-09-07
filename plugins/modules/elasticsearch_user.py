@@ -14,7 +14,7 @@ short_description: Manage Elasticsearch users
 description:
   - Creates, updates, or deletes Elasticsearch native users using the Security API.
   - Requires the C(elasticsearch) Python library on the target host.
-version_added: "1.0.0"
+version_added: "0.1.0"
 author:
   - Tobias Bauriedel (@tbauriedel)
 requirements:

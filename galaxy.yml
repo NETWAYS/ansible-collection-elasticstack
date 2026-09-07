@@ -5,10 +5,10 @@ readme: README.md
 authors:
   - NETWAYS GmbH (https://github.com/NETWAYS)
 description: This collection installs and configures components from the Elastic Stack.
+# Mutually exclusive with license_file. SPDX identifier, GPL-3.0 is deprecated.
 license:
-  - GPL-3.0
+  - GPL-3.0-or-later
 # min_ansible_version: "2.18"  # max supported: 2.20 (commented out for schema compliance)
-license_file: 'LICENSE'
 tags:
   - elastic
   - elasticsearch

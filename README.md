@@ -27,9 +27,11 @@ We test on the following Linux distributions, each one with Elastic Stack 8:
 
 ## External requirements
 
-Ansible collections:
+Ansible collections, both are declared as dependencies and installed for you when you install
+this collection with `ansible-galaxy`:
 
-* `community.general` (probably already present)
+* `community.general`, for the `zypper` modules on SUSE hosts and the Logstash plugin module
+* `community.crypto`, used by the beats role to check when a certificate expires
 
 Python libraries on the control node:
 

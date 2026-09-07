@@ -23,9 +23,13 @@ A function to check if the extension is supported. Returns true if extension nam
 
 ### `check_supported_keys` function
 
-A function to check if the extensions key is supported. Returns true if extensions key is found in `SUPPORTED_EXTENSIONS` dict.
+A function to check if the extensions key is supported. Returns true if the key is listed under
+the given extension in the `SUPPORTED_EXTENSIONS` dict. Unlike `check_supported_extensions()`
+this compares exactly, not by substring.
 
-**Parameter:** The key name as __string__.
+**Parameter:** Two, in this order: the key name as __string__, and the extension name as
+__string__. The extension name has to be a key of `SUPPORTED_EXTENSIONS`, otherwise the lookup
+raises a `KeyError`.
 
 **Return:** Returns a __bool__.
 

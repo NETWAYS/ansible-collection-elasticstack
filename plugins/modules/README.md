@@ -8,7 +8,7 @@
   - [Tested ansible-core versions](#tested-ansible-core-versions)
   - [Security measures](#security-measures)
   - [Supported extensions and values](#supported-extensions-and-values)
-  - [Parameters](#paramters)
+  - [Parameters](#parameters)
   - [Returns](#returns)
   - [Example](#example)
 
@@ -66,7 +66,7 @@ Currently, the information of the following extensions and values will be return
 **SubjectKeyIdentifier**:
 - _digest
 
-### Paramters
+### Parameters
 
 `path`:
 Absolute path to certificate. (**Default:** undefined, required)

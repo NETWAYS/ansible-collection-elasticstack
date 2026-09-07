@@ -1,7 +1,7 @@
 # Documentation: netways.elasticstack module_utils
 
 ## Overview
-- [`certs` module_util](#cert_info-module)
+- [`certs` module_util](#netwayselasticstackcerts-function)
 
 ## `netways.elasticstack.certs` function
 

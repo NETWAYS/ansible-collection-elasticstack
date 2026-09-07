@@ -1,7 +1,8 @@
 # Ansible Collection - netways.elasticstack
 
 This collection installs and manages the Elastic Stack. It provides roles for every component
-of the Stack. Furthermore, it is possible to differentiate between Enterprise or OSS releases.
+of the Stack, and it can install either the default Elastic distribution or the Apache-licensed
+OSS packages.
 
 Every role can be used on its own or together with the others. Running a single role against an
 existing or external cluster works, but a few of those paths are still incomplete. See the open

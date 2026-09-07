@@ -6,14 +6,8 @@ This page shows how to run the collection. For installation see the
 
 ## Inventory groups
 
-The roles place services on hosts by inventory group name. Make sure the groups exist and match
-your desired setup:
-
-| Variable | Default group name |
-|---|---|
-| `elasticstack_elasticsearch_group_name` | `elasticsearch` |
-| `elasticstack_logstash_group_name` | `logstash` |
-| `elasticstack_kibana_group_name` | `kibana` |
+The roles place services on hosts by inventory group name. The group names and their defaults
+are listed in [Requirements](requirements.md#inventory-group-names).
 
 Hosts in these groups get the respective services. Restricting your plays to only the
 appropriate hosts does **not** work, because the roles read facts from hosts in other groups,
@@ -27,12 +21,9 @@ You will want reliable DNS resolution, or all hosts of the stack in your systems
 
 ## Before the first run
 
-Redis is needed for the default setup, because the default Logstash pipeline uses it. The
-example below uses the `geerlingguy.redis` role for that:
-
-```bash
-ansible-galaxy install geerlingguy.redis
-```
+Redis has to be running for the default setup, because the default Logstash pipeline uses it.
+The example playbook below gets it there with the `geerlingguy.redis` role, listed under
+external requirements in the [README](../README.md#external-requirements).
 
 The default Beats configuration collects file system logs written by `rsyslog`, which is why the
 example playbook installs it. Without syslog you will not receive any messages with the default

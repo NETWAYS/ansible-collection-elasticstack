@@ -110,6 +110,17 @@ source of truth. When your pull request changes a role's variables:
 The `Test Documentation` workflow checks that each README matches its `argument_specs.yml` and
 fails the pull request if they drift apart.
 
+## Documenting modules
+
+Modules document themselves through the `DOCUMENTATION`, `EXAMPLES` and `RETURN` blocks in
+their own file. That is the only place, so there is nothing to keep in sync. Check your
+changes with `ansible-doc netways.elasticstack.<module>`.
+
+Shared code under `plugins/module_utils/` has no such block, because `ansible-doc` does not
+read it. Those functions are described in
+[plugins/module_utils/README.md](plugins/module_utils/README.md), please keep it current when
+you change them.
+
 ## Testing
 
 Besides testing your change against a real setup, the repository has Molecule scenarios that

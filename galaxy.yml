@@ -22,7 +22,7 @@ dependencies:
   "community.general": "*"
   "community.crypto": "*"
 repository: https://github.com/netways/ansible-collection-elasticstack
-documentation: https://github.com/netways/ansible-collection-elasticstack/README.md
+documentation: https://github.com/netways/ansible-collection-elasticstack/blob/main/README.md
 homepage: https://www.netways.de
 issues: https://github.com/netways/ansible-collection-elasticstack/issues
 build_ignore:

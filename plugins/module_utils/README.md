@@ -35,8 +35,13 @@ raises a `KeyError`.
 
 ### `AnalyzeCertificate()` object
 
-An object to load the certificate and to gather information about it.
+An object to load the certificate and to gather information about it. Constructing it already
+does the work: it reads the file and fills the result dict, so there is no separate call to
+start the analysis.
 
-**Parameter:** The path (required) to the certificate and the passphrase (optional), both as __string__.
+**Parameter:** Two, in this order: the `AnsibleModule` __object__ and the result __dict__ to
+fill. The certificate path and the passphrase are not passed in, the object reads them from
+`module.params`. It also uses the module to log, to warn and to fail.
 
-**Return:** Returns the result dict to the Ansible module.
+**Return:** The constructor returns nothing, it writes into the result dict it was given.
+`return_result()` hands that dict back to the module, which passes it to `exit_json()`.

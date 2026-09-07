@@ -24,8 +24,8 @@ For now all pull requests go against `main`.
   next to it. Please say which Elastic Stack release and which ansible-core version you
   tested with.
 * **New or changed variables** belong in the role's `meta/argument_specs.yml` and in its
-  README table, otherwise the documentation drifts apart from the code. See the
-  Contributing section of the main README for how the table is generated.
+  README table, otherwise the documentation drifts apart from the code. See "Documenting role
+  variables" below.
 * **Comments on anything that is not obvious.** Six months later nobody remembers what a
   clever condition was for, and then it gets analysed again from scratch.
 * **A changelog fragment.** See below.
@@ -90,6 +90,35 @@ Typical cases for `trivial`:
 
 If you are unsure whether something is trivial, ask in the pull request. It is easier to
 move an entry than to notice a missing one after the release.
+
+## Documenting role variables
+
+Role variables are documented from each role's `meta/argument_specs.yml`, which is the single
+source of truth. When your pull request changes a role's variables:
+
+1. Update that role's `meta/argument_specs.yml` with type, default and description.
+2. Regenerate the README variable table. Please do **not** edit it by hand. The table is
+   produced by [ansible-docsmith](https://github.com/foundata/ansible-docsmith), install it
+   with `pip install ansible-docsmith` if you do not have it:
+
+   ```bash
+   ansible-docsmith generate roles/<role> --no-defaults --template-readme .docsmith/readme.md.j2
+   ```
+
+3. Commit the regenerated `README.md` together with your change.
+
+The `Test Documentation` workflow checks that each README matches its `argument_specs.yml` and
+fails the pull request if they drift apart.
+
+## Testing
+
+Besides testing your change against a real setup, the repository has Molecule scenarios that
+exercise the whole stack, and it checks for ansible-lint and yamllint errors. To run the linters
+locally there is a `makefile`:
+
+```bash
+make
+```
 
 ## Releasing
 

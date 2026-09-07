@@ -1,63 +1,137 @@
-Collection Elastic Stack
--------------------------
+# Getting started
 
-Installation
------------
+This page shows how to run the collection. For installation see the
+[README](../README.md#using-this-collection), for what the roles expect from your inventory see
+[Requirements](requirements.md).
 
-You can easily install the collection with the ansible-galaxy command.
+## Inventory groups
 
-```
-ansible-galaxy collection install netways.elasticstack
-```
+The roles place services on hosts by inventory group name. Make sure the groups exist and match
+your desired setup:
 
-Or if you are using Tower or AWX add the collection to your requirements file.
+| Variable | Default group name |
+|---|---|
+| `elasticstack_elasticsearch_group_name` | `elasticsearch` |
+| `elasticstack_logstash_group_name` | `logstash` |
+| `elasticstack_kibana_group_name` | `kibana` |
 
-```
-collections:
-  - name: netways.elasticstack
-```
+Hosts in these groups get the respective services. Restricting your plays to only the
+appropriate hosts does **not** work, because the roles read facts from hosts in other groups,
+for example to generate certificates.
 
-Usage
----------
+Make sure every host that should be configured is part of your playbook, including hosts that
+only run Beats. The collection first gathers facts from all hosts and then uses facts such as
+host names and IP addresses to connect the tools to each other.
 
-To use the collection in your Ansible playbook add the following key to your playbook.
+You will want reliable DNS resolution, or all hosts of the stack in your systems' hosts files.
 
-```
-- name: Playbook
-  hosts: some_host_pattern
-  collections:
-    - netways.elasticstack
-  tasks:
-    - name: import role logstash
-      import_role:
-        name: logstash
-```
+## Before the first run
 
-Or refer to the role with the FQCN of the role.
+Redis is needed for the default setup, because the default Logstash pipeline uses it. The
+example below uses the `geerlingguy.redis` role for that:
 
-```
-- name: Playbook
-  hosts: some_host_pattern
-  tasks:
-    - name: import role by FQCN  from a collection
-      import_role:
-        name: netways.elasticstack.logstash
+```bash
+ansible-galaxy install geerlingguy.redis
 ```
 
-Roles
--------
+The default Beats configuration collects file system logs written by `rsyslog`, which is why the
+example playbook installs it. Without syslog you will not receive any messages with the default
+configuration. If you do not want that, change the configuration of the beats role.
 
-* [Beats](../roles/beats/README.md)
-* [Elasticsearch](../roles/elasticsearch/README.md)
-* [Kibana](../roles/kibana/README.md)
-* [Logstash](../roles/logstash/README.md)
-* [Repos](../roles/repos/README.md)
+The OSS variant without X-Pack features is only available for Elastic Stack `7`.
 
+## Variables
 
-Variables
------------
+Every role has its own set of variables, documented in the role's README. In addition the
+collection-wide `elasticstack_*` variables apply to any role and are documented centrally with
+the [elasticstack role](../roles/elasticstack/README.md). Two common ones:
 
-Every role got its own set of variables, in addition a few variables are useable on any role. The collection-wide `elasticstack_*` variables are documented centrally with the [elasticstack role](../roles/elasticstack/README.md). Two common ones:
+* `elasticstack_release`: major release version of the Elastic Stack to configure
+  (default: `8`)
+* `elasticstack_variant`: variant of the stack to install, `elastic` or `oss`
+  (default: `elastic`)
 
-* *elasticstack_release*: Major release version of Elastic stack to configure. (default: `8`)
-* *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
+For pinning a specific version and for upgrading, see [Versions and upgrades](upgrades.md).
+
+## Example playbook
+
+The execution order of the plays matters. There are comments in the playbook below: either fill
+them with the correct values, such as `remote_user`, or take them as a hint about commonly used
+options.
+
+```yaml
+---
+- hosts: all
+  # remote_user: my_username
+  become: true
+  vars:
+    elasticstack_variant: elastic # oss
+    #  elasticstack_release: 8
+  roles:
+    - netways.elasticstack.repos
+
+- hosts: elasticsearch
+  # remote_user: my_username
+  become: true
+  vars:
+    elasticstack_variant: elastic # oss
+    elasticsearch_jna_workaround: true
+    #  elasticstack_release: 8
+  roles:
+    - netways.elasticstack.elasticsearch
+
+- hosts: logstash
+  # remote_user: my_username
+  become: true
+  vars:
+    elasticstack_variant: elastic # oss
+    elasticstack_override_beats_tls: true
+    #  elasticstack_release: 8
+  roles:
+    - geerlingguy.redis
+    - netways.elasticstack.logstash
+
+- hosts: kibana
+  # remote_user: my_username
+  become: true
+  vars:
+    elasticstack_variant: elastic # oss
+    #  elasticstack_release: 8
+  roles:
+    - netways.elasticstack.kibana
+
+- hosts: all
+  # remote_user: my_username
+  become: true
+  vars:
+    elasticstack_variant: elastic # oss
+    elasticstack_override_beats_tls: true
+    #  elasticstack_release: 8
+  pre_tasks:
+    - name: Install Rsyslog
+      ansible.builtin.package:
+        name: rsyslog
+    - name: Start rsyslog
+      ansible.builtin.service:
+        name: rsyslog
+        state: started
+        enabled: true
+  roles:
+    - netways.elasticstack.beats
+```
+
+## Generated passwords
+
+Passwords for the built-in users are generated on the CA host during the first run. They are
+printed while they are generated and stored in the file that `elasticstack_initial_passwords`
+points to, by default `/usr/share/elasticsearch/initial_passwords`.
+
+Security is on by default and controlled by `elasticstack_security`. A related but much
+narrower switch is `elasticstack_override_beats_tls`: it only stops TLS between Beats and
+Logstash from being enabled automatically, and skips the Beats certificate generation. It does
+not turn off security anywhere else.
+
+## Seeing what the tasks do
+
+`elasticstack_no_log` defaults to `true`, because some tasks could reveal passwords in
+production. Set it to `false` if you want to see the output of all tasks.

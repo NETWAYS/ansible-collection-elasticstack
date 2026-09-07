@@ -81,7 +81,7 @@ You may want the following Ansible roles installed. There other ways to achieve 
 
 ### Supported systems
 
-We test the collection on the following Linux distributions. Each one with Elastic Stack 7 and 8.
+We test the collection on the following Linux distributions, each one with Elastic Stack 8.
 
 * Rocky Linux 9
 * Ubuntu 22.04 LTS
@@ -113,7 +113,7 @@ The variable `elasticstack_no_log` can be set to `false` if you want to see the 
 
 All packages are installed with `state: present`. When `elasticstack_version` is set to a version number (e.g. `7.17.2`), that exact version is installed and pinned. When it is left unset, the package is installed without a version, so a new setup gets the newest available version and existing installations are not upgraded automatically on later runs.
 
-*elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`) Make sure it corresponds to `elasticstack_version` if you set both.
+*elasticstack_release*: Major release version of Elastic stack to configure. (default: `8`) Make sure it corresponds to `elasticstack_version` if you set both.
 
 For OSS version see `elasticstack_variant` below.
 
@@ -139,11 +139,14 @@ The collection will make sure to upgrade Elasticsearch nodes one by one.
 
 ### Default Passwords
 
-Default passwords can be seen during generation, or found later in `/usr/share/elasticsearch/initial_passwords`
+Default passwords are generated on the CA host and can be seen during generation, or found
+later in the file that `elasticstack_initial_passwords` points to (default
+`/usr/share/elasticsearch/initial_passwords`).
 
-To turn off security:
-
-`elasticstack_override_beats_tls: true`
+Security is on by default and controlled by `elasticstack_security`. A related but much
+narrower switch is `elasticstack_override_beats_tls`: it only stops TLS between Beats and
+Logstash from being enabled automatically, and skips the Beats certificate generation. It does
+not turn off security anywhere else.
 
 ### Requirements
 
@@ -230,7 +233,7 @@ The execution order of the roles is important! (see below)
       ansible.builtin.package:
         name: rsyslog
     - name: Start rsyslog
-       ansible.builtin.service:
+      ansible.builtin.service:
         name: rsyslog
         state: started
         enabled: true

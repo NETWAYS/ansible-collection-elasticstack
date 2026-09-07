@@ -34,11 +34,11 @@ build_ignore:
   - daemon.json
   - RELEASE.md
   - CONTRIBUTING.md
-  # changelog working directory - the rendered CHANGELOG.md is shipped
+  # The changelog working directory, used to build the CHANGELOG.md in the repository.
   - changelogs
   # no dot files or directories belong in a published collection
   - '.*'
   - __pycache__
   - 'venv*'
   - '*.tar.gz'
-# Minimum Ansible version required: 2.14, maximum supported: 2.20
+# Minimum Ansible version is declared in meta/runtime.yml (requires_ansible). Maximum tested: 2.20

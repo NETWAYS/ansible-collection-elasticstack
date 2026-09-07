@@ -16,10 +16,10 @@ For now all pull requests go against `main`.
 
 * **One topic per pull request.** Touching several roles is fine when it is the same
   change in each of them, for example the same fix applied to beats, logstash, kibana and
-  elasticsearch. What is hard to review is a pull request that bundles unrelated changes,
-  because then a problem in one part holds up all the others.
-* **A description that says precisely what changes and why.** If the diff is the only
-  place where the purpose can be found, the review is already too slow.
+  elasticsearch. A pull request that bundles unrelated changes gets sent back.
+* **A description that says precisely what changes and why.** This is required, not
+  optional. A pull request whose purpose can only be reconstructed from the diff gets sent
+  back.
 * **Evidence that it was tested**, against the new feature or fix and against what sits
   next to it. Please say which Elastic Stack release and which ansible-core version you
   tested with.
@@ -32,9 +32,6 @@ For now all pull requests go against `main`.
 * If a change **claims something about how Elastic behaves**, please link the Elastic
   documentation for it.
 
-Contributions written with the help of AI tools are welcome under the same rules. One
-addition: be able to explain any line if we ask. That is the whole difference between a
-vetted change and something nobody understands.
 
 ## Changelog fragments
 

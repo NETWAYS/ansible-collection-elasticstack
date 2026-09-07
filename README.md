@@ -69,8 +69,16 @@ Roles:
 
 Modules:
 
-* [elasticsearch_role](docs/module-elasticsearch_role.md)
-* [elasticsearch_user](docs/module-elasticsearch_user.md)
+* `cert_info`, reads information from a PKCS12 certificate
+* `elasticsearch_role`, creates, updates and deletes roles in Elasticsearch
+* `elasticsearch_user`, creates, updates and deletes users in Elasticsearch
+
+Each module documents its own parameters, return values and examples. Read them with
+`ansible-doc`, for example:
+
+```bash
+ansible-doc netways.elasticstack.elasticsearch_role
+```
 
 ## Collection documentation
 
@@ -79,7 +87,8 @@ Modules:
 * [Versions and upgrades](docs/upgrades.md), pinning versions and upgrading the stack
 
 Every role documents all of its variables in its own README, linked above. Those tables are
-generated from each role's `meta/argument_specs.yml`.
+generated from each role's `meta/argument_specs.yml`. Module documentation comes from the
+modules themselves and is read with `ansible-doc`.
 
 ## Using this collection
 

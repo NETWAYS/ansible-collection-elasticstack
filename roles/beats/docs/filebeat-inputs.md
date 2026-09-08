@@ -1,11 +1,11 @@
-# Filebeat inputs #
+# Filebeat inputs
 
 Filebeat can read from several sources. Each source is turned into a Filebeat
 input by the role. This document describes the variables that configure them.
 For the meaning of the individual Filebeat options, follow the links to the
 official Filebeat documentation.
 
-## Log files ##
+## Log files
 
 Set with `beats_filebeat_log_input` (default `true`) and `beats_filebeat_log_inputs`.
 
@@ -45,7 +45,7 @@ beats_filebeat_log_inputs:
 `negate`, `match`). See
 [Manage multiline messages](https://www.elastic.co/docs/reference/beats/filebeat/multiline-examples).
 
-## Fields ##
+## Fields
 
 There are two ways to add fields, and they use **different shapes**:
 
@@ -71,7 +71,7 @@ There are two ways to add fields, and they use **different shapes**:
     - "team: platform"
   ```
 
-## Syslog over TCP/UDP ##
+## Syslog over TCP/UDP
 
 Enable a listening syslog input with `beats_filebeat_syslog_tcp` /
 `beats_filebeat_syslog_udp` and set the port with `beats_filebeat_syslog_tcp_port`
@@ -85,7 +85,7 @@ beats_filebeat_syslog_tcp: true
 beats_filebeat_syslog_tcp_port: 514
 ```
 
-## Journald ##
+## Journald
 
 Enable with `beats_filebeat_journald` (default `false`, available since Filebeat
 7.16) and configure inputs with `beats_filebeat_journald_inputs`.
@@ -109,7 +109,7 @@ See the
 [`journald`](https://www.elastic.co/docs/reference/beats/filebeat/filebeat-input-journald)
 input.
 
-## Docker ##
+## Docker
 
 Enable with `beats_filebeat_docker` (default `false`) and select containers with
 `beats_filebeat_docker_ids` (default `*`). **Only works on Elastic Stack release
@@ -120,13 +120,13 @@ beats_filebeat_docker: true
 beats_filebeat_docker_ids: "*"
 ```
 
-## MySQL/MariaDB slow log ##
+## MySQL/MariaDB slow log
 
 Set `beats_filebeat_mysql_slowlog_input` to `true` to collect
 `/var/log/mysql/*-slow.log` with the matching multiline pattern already
 configured. The events are tagged with `mysql.logtype: slowquery`.
 
-## Modules ##
+## Modules
 
 `beats_filebeat_modules` is a list of Filebeat module names to enable
 (**experimental**, unset by default). The role runs `filebeat modules enable`

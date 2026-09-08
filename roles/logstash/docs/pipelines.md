@@ -1,6 +1,6 @@
-# Pipelines #
+# Pipelines
 
-## Keeping an overview ##
+## Keeping an overview
 
 It can be quite difficult to stay on top of your pipeline configuration because they tend to become very complex.
 
@@ -8,7 +8,7 @@ This collection will leave some comments about how pipelines are interconnected 
 
 If you set `logstash_mermaid` to `true` (which is the default), then you will also get a new file in `/etc/logstash/pipelines.mermaid`. You can paste it into a Mermaid editor in your documentation tool or in an [online Mermaid editor](https://mermaid.live/). The same content will be available on your control node in a temporary file. You can even add arbitrary code to reflect manually managed pipelines by using `logstash_mermaid_extra`.
 
-## Git managed ##
+## Git managed
 
 `logstash_pipelines` is a **list**. Each entry needs a `name`; everything else is optional.
 
@@ -24,9 +24,9 @@ You can add a `version` attribute to your pipeline. It defaults to `main`. You c
 
 You can also determine where Logstash stores the data of each pipeline while processing it by using the `queue_type` attribute. It defaults to `memory`; use `persisted` to write the data temporarily to disk. You can limit the maximum amount of data per pipeline with `queue_max_bytes`, which defaults to `1gb`.
 
-## Input and Output ##
+## Input and Output
 
-### Basic configuration ###
+### Basic configuration
 
 To have a single Redis input and output to your files, use this.
 
@@ -64,11 +64,11 @@ output {
 }
 ```
 
-### Multiple inputs ###
+### Multiple inputs
 
 Just give more inputs with `name` and `key`. Every key will be read.
 
-### More complex configuration ###
+### More complex configuration
 
 If you want a bit more control over which outputs are used, the role offers more sophisticated configuration.
 
@@ -207,24 +207,24 @@ else  {
 
 Here the `default` output only receives the events that haven't already been sent to one of the others.
 
-## Extra configuration ##
+## Extra configuration
 
-### Congestion threshold ###
+### Congestion threshold
 
 Every output can have a `congestion` option with a numerical value. If the Redis key already holds more items than the value says, the output will stop.
 
-### Unsafe shutdown ###
+### Unsafe shutdown
 
 If you need unsafe Logstash shutdowns, e.g. for testing, you can set `logstash_pipeline_unsafe_shutdown` to `true`. The variable doesn't have a default so Logstash falls back to its internal default of `false`.
 
-## Caveats ##
+## Caveats
 
 There are still some minor issues you need to keep in mind:
 
 * The default output in an `exclusive: true` setup must be the last in the YAML configuration. There's no sorting, the role simply expects the default to be the last one.
 * The configuration *should* work but will make no sense if you have `exclusive: true` but two or more outputs without `condition`.
 
-## Custom pipelines ##
+## Custom pipelines
 
 If you have other ways of putting pipeline code into the correct directories, you can just skip the `source` option.
 

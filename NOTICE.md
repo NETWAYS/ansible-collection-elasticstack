@@ -1,6 +1,6 @@
-# Notice and Acknowledgements #
+# Notice and Acknowledgements
 
-## Sponsoring ##
+## Sponsoring
 
 Here's a list of sponsors who contributed by having the collection improved via outsourcing to NETWAYS.
 

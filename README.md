@@ -120,14 +120,19 @@ the current state of `main` instead of a release:
 ansible-galaxy collection install git+https://github.com/NETWAYS/ansible-collection-elasticstack.git
 ```
 
-Then refer to the roles by their fully qualified name:
+Then name the collection in the play and refer to the roles by their short name:
 
 ```yaml
 - hosts: elasticsearch
   become: true
+  collections:
+    - netways.elasticstack
   roles:
-    - netways.elasticstack.elasticsearch
+    - elasticsearch
 ```
+
+Fully qualified role names such as `netways.elasticstack.elasticsearch` work as well and need no
+`collections` entry.
 
 The execution order of the roles matters, and the roles interact with hosts from other inventory
 groups. Read [Getting started](docs/getting-started.md) before your first run.

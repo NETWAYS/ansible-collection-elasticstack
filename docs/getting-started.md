@@ -57,45 +57,55 @@ options.
 - hosts: all
   # remote_user: my_username
   become: true
+  collections:
+    - netways.elasticstack
   vars:
     elasticstack_variant: elastic # oss
     #  elasticstack_release: 8
   roles:
-    - netways.elasticstack.repos
+    - repos
 
 - hosts: elasticsearch
   # remote_user: my_username
   become: true
+  collections:
+    - netways.elasticstack
   vars:
     elasticstack_variant: elastic # oss
     elasticsearch_jna_workaround: true
     #  elasticstack_release: 8
   roles:
-    - netways.elasticstack.elasticsearch
+    - elasticsearch
 
 - hosts: logstash
   # remote_user: my_username
   become: true
+  collections:
+    - netways.elasticstack
   vars:
     elasticstack_variant: elastic # oss
     elasticstack_override_beats_tls: true
     #  elasticstack_release: 8
   roles:
     - geerlingguy.redis
-    - netways.elasticstack.logstash
+    - logstash
 
 - hosts: kibana
   # remote_user: my_username
   become: true
+  collections:
+    - netways.elasticstack
   vars:
     elasticstack_variant: elastic # oss
     #  elasticstack_release: 8
   roles:
-    - netways.elasticstack.kibana
+    - kibana
 
 - hosts: all
   # remote_user: my_username
   become: true
+  collections:
+    - netways.elasticstack
   vars:
     elasticstack_variant: elastic # oss
     elasticstack_override_beats_tls: true
@@ -110,8 +120,12 @@ options.
         state: started
         enabled: true
   roles:
-    - netways.elasticstack.beats
+    - beats
 ```
+
+The `collections` entry only makes the short role names resolvable. It is per play, which is why
+it appears in every one of them. Inside a role it has no effect, so keep using fully qualified
+module names such as `ansible.builtin.package` in your own tasks.
 
 ## Generated passwords
 

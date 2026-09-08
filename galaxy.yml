@@ -14,9 +14,10 @@ tags:
   - elasticsearch
   - kibana
   - logstash
-  - beat
-  - metricbeat
+  - beats
   - filebeat
+  - metricbeat
+  - auditbeat
   - monitoring
 dependencies:
   "community.general": "*"

@@ -4,8 +4,6 @@ Software requirements, supported Ansible and Python versions and external librar
 in the [README](../README.md#tested-with-ansible). This page describes what the roles expect
 from your setup.
 
-Some of these will be refactored and disappear from this list.
-
 ## Inventory group names
 
 The collection provides roles for several tools, and some tasks fetch hosts from a specific

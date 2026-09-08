@@ -61,7 +61,7 @@ class User():
 
         if pre_user.raw != self.get().raw:
             self.result['changed'] = True
-            self.result['msg'] = self.user_name + " has beed updated"
+            self.result['msg'] = self.user_name + " has been updated"
 
         return
 

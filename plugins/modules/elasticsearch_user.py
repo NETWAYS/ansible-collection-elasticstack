@@ -29,7 +29,7 @@ options:
     type: str
     required: false
   password:
-    description: Password for the user. Required when (state=present).
+    description: Password for the user. Required when O(state=present).
     type: str
     required: false
     default: null
@@ -38,7 +38,7 @@ options:
     type: str
     required: false
   roles:
-    description: List of roles assigned to the user. Required when (state=present).
+    description: List of roles assigned to the user. Required when O(state=present).
     type: list
     elements: str
     required: false

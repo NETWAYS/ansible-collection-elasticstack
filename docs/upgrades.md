@@ -25,11 +25,13 @@ For the OSS variant see `elasticstack_variant`, described with the
 Both variables can be set per role, which is how you keep components on different versions:
 
 ```yaml
+collections:
+  - netways.elasticstack
 roles:
-  - role: netways.elasticstack.kibana
+  - role: kibana
     vars:
       elasticstack_version: 8.7.1
-  - role: netways.elasticstack.elasticsearch
+  - role: elasticsearch
     vars:
       elasticstack_version: 8.8.1
 ```

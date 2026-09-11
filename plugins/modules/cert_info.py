@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2023, Daniel Patrick <daniel.patrick@netways.de>
-# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or
+# GNU General Public License v3.0+ (see LICENSE or
 # https://www.gnu.org/licenses/gpl-3.0.txt)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -17,11 +17,26 @@ description:
   - Reads a PKCS12 certificate file and returns details such as issuer, subject,
     validity dates, serial number, and supported X.509 extensions.
   - Requires the C(cryptography) Python library (>= 2.5) on the target host.
-version_added: "1.0.0"
+  - Only a fixed set of X.509 extensions is returned, everything else is skipped.
+    Currently supported are C(basicConstraints) with C(_ca) and C(_path_length),
+    C(subjectKeyIdentifier) with C(_digest), and C(authorityKeyIdentifier) with
+    C(_key_identifier), C(_authority_cert_issuer) and C(_authority_cert_serial_number).
+version_added: "0.1.0"
 author:
   - Daniel Patrick (@dpatrick)
 requirements:
   - cryptography >= 2.5
+notes:
+  - The supported extensions and their values are defined in the C(SUPPORTED_EXTENSIONS)
+    dictionary in the module code. The module iterates over it and only stores a value in
+    the result when it is found there, so an unexpected extension can never leak into the
+    output.
+  - Both O(path) and O(passphrase) are marked C(no_log), so they do not appear in task
+    output or logs.
+  - The path, the passphrase and the certificate are held in private attributes of the
+    analyzing object. The private key and any additional certificates from the PKCS12 file
+    are only kept in a local variable while the file is read and are never stored on the
+    object at all.
 options:
   path:
     description: Absolute path to the PKCS12 certificate file on the target host.

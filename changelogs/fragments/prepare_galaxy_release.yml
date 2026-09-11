@@ -1,0 +1,23 @@
+minor_changes:
+  - The collection declares ``community.crypto`` as a dependency now, so installing it with
+    ``ansible-galaxy`` pulls in what the beats role needs to check certificate expiration.
+  - "``elasticstack_kibana_host`` is a declared and documented variable now, defaulting to the
+    fully qualified domain name of the Kibana host. The Kibana template referenced it ad hoc
+    before, without a default of its own."
+  - The documentation was restructured along the collection template. ``docs/01-requirements.md``
+    became ``docs/requirements.md``, version pinning and upgrading moved to ``docs/upgrades.md``,
+    and the role pages under ``docs/`` that only linked to the role READMEs were removed. Module
+    documentation is read with ``ansible-doc`` instead of from copies under ``docs/``.
+
+trivial:
+  - Added the release tooling, namely an antsibull-changelog configuration, a manually triggered
+    workflow that publishes to Ansible Galaxy and attaches the archive to the GitHub release, a
+    check that every pull request brings a changelog fragment, and a contributing guide.
+  - Corrected the collection metadata in galaxy.yml, namely one current SPDX license identifier,
+    a documentation URL that resolves, the organization as the author, tags that name the Beats
+    correctly, and build_ignore keeping local tooling and CI files out of the built archive.
+  - Documented the three files under ``plugins/module_utils/`` that had no description, corrected
+    the parameters of ``check_supported_keys`` and ``AnalyzeCertificate``, and set
+    ``version_added`` of the modules to the first released version.
+  - Corrected factual errors in the README, removed documentation that was duplicated or only
+    redirected, and made the role examples use one way of addressing the roles.

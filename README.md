@@ -1,257 +1,175 @@
 # Ansible Collection - netways.elasticstack
 
-> [!CAUTION]
-> The current main branch has some breaking changes. Be careful using it! Everything after commit 3d6673f6d526afeb0fd7ba382d067d76bd10bbd6 is affected!
+This collection installs and manages the Elastic Stack. It provides roles for every component
+of the Stack, and it can install either the default Elastic distribution or the Apache-licensed
+OSS packages.
 
-This collection installs and manages the Elastic Stack. It provides roles for every component of the Stack. Furthermore, it is possible to differentiate between Enterprise or OSS releases.
+Every role can be used on its own or together with the others. Running a single role against an
+existing or external cluster works, but a few of those paths are still incomplete. See the open
+issues for details.
 
-Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/getting-started.md)**
+## Tested with Ansible
 
-## Roles documentation
+The minimum required version is declared in [meta/runtime.yml](meta/runtime.yml) and enforced by
+`ansible-galaxy` on install.
 
-> [!NOTE]
-> Some roles have fixed requirements that you must observe. Please have a look at the [requirements](docs/01-requirements.md) before using the collection. (There is a high probability that some of them will be refactored soon)
+| | |
+|---|---|
+| ansible-core | `>= 2.18`, tested with 2.19 and 2.20 |
+| Python on the control node | `>= 3.11` |
+| Python on the target hosts | `>= 3.9` |
+| Elastic Stack | release 8 |
 
-* [Beats](roles/beats/README.md)
-* [Elasticsearch](roles/elasticsearch/README.md)
-* [Kibana](roles/kibana/README.md)
-* [Logstash](roles/logstash/README.md)
-* [Repos](roles/repos/README.md)
-
-## Modules documentation
-
-* [elasticsearch_role](docs/module-elasticsearch_role.md)
-* [elasticsearch_user](docs/module-elasticsearch_user.md)
-
-## Global variables
-
-The collection-wide `elasticstack_*` variables (release, variant, inventory host
-groups, ports, package repositories, and the shared CA) are documented centrally
-with the [elasticstack role](roles/elasticstack/README.md).
-
-* `elasticstack_force_pip`: Will force installation of required Python modules via `pip`. This is useful if your package manager doesn't provide current versions of modules. (Default: `false`) See [PEP668](https://peps.python.org/pep-0668/) for more details.
-* `elasticstack_manage_pip`: Will install `pip` on your system. (Default: `false`)
-
-## Installation
-
-You can easily install the collection with the `ansible-galaxy` command.
-
-```
-ansible-galaxy collection install git+https://github.com/netways/ansible-collection-elasticstack.git
-```
-
-Or if you are using Tower or AWX add the collection to your requirements file.
-
-```
-collections:
-  - name: netways.elasticstack
-```
-
-### Requirements
-
-On the Ansible control node:
-* `Ansible-Core >=2.18.0`
-* `Python >=3.11.0`
-
-You will need the following Ansible collections installed
-
-* `community.general` (probably already present)
-
-You will need these packages / libraries installed. Some very basic packages like `openssl` get handled by the collection if needed. The following list contains packages and libraries which only apply to special cases or need for you to decide on the installation method.
-
-* `passlib` Python library if you do not disable password hashing for logstash user and you want to use logstash role from this collection. It should be installed with pip on the Ansible controller.
-* `elasticsearch` Python module. Current versions are either compatible to Elasticsearch 9 or versions lower than 9. There seems to be no version that can serve both. So for now we install a version of the client lower than 9 but need to take care to install the right one when we make this collection compatible to Elastic Stack 9
-
-You may want the following Ansible roles installed. There other ways to achieve what they are doing but using them is easy and convenient.
-
-* `geerlingguy.redis` if you want to use logstash role
-
-### Supported systems
-
-We test the collection on the following Linux distributions. Each one with Elastic Stack 7 and 8.
+We test on the following Linux distributions, each one with Elastic Stack 8:
 
 * Rocky Linux 9
 * Ubuntu 22.04 LTS
 * Debian 13
 
+## External requirements
+
+Ansible collections, both are declared as dependencies and installed for you when you install
+this collection with `ansible-galaxy`:
+
+* `community.general`, for the `zypper` modules on SUSE hosts and the Logstash plugin module
+* `community.crypto`, used by the beats role to check when a certificate expires
+
+Python libraries on the control node:
+
+* `passlib`, unless you disable password hashing for the Logstash user and you want to use the
+  logstash role. Install it with `pip`.
+* `elasticsearch`. Current versions are compatible either with Elasticsearch 9 or with versions
+  lower than 9, there seems to be no version that serves both. For now we install a client
+  older than 9, and this needs revisiting when the collection becomes compatible with Elastic
+  Stack 9.
+
+Ansible roles:
+
+* `geerlingguy.redis` if you want to use the logstash role. There are other ways to get Redis
+  running, but this one is easy and convenient.
+
+  ```bash
+  ansible-galaxy install geerlingguy.redis
+  ```
+
+Some very basic packages such as `openssl` are handled by the collection itself. The list above
+only contains what applies to special cases or what you need to decide about yourself.
+
+Beyond software, the roles expect a few things from your inventory. See
+[Requirements](docs/requirements.md).
+
+## Included content
+
+Roles:
+
+* [beats](roles/beats/README.md)
+* [elasticsearch](roles/elasticsearch/README.md)
+* [kibana](roles/kibana/README.md)
+* [logstash](roles/logstash/README.md)
+* [repos](roles/repos/README.md)
+* [elasticstack](roles/elasticstack/README.md), the meta role that holds the collection-wide
+  `elasticstack_*` variables
+
+Modules:
+
+* `cert_info`, reads information from a PKCS12 certificate
+* `elasticsearch_role`, creates, updates and deletes roles in Elasticsearch
+* `elasticsearch_user`, creates, updates and deletes users in Elasticsearch
+
+Each module documents its own parameters, return values and examples. Read them with
+`ansible-doc`, for example:
+
+```bash
+ansible-doc netways.elasticstack.elasticsearch_role
+```
+
+## Collection documentation
+
+* [Getting started](docs/getting-started.md), example playbook, inventory groups, first run
+* [Requirements](docs/requirements.md), what the roles expect from your inventory
+* [Versions and upgrades](docs/upgrades.md), pinning versions and upgrading the stack
+
+Every role documents all of its variables in its own README, linked above. Those tables are
+generated from each role's `meta/argument_specs.yml`. Module documentation comes from the
+modules themselves and is read with `ansible-doc`.
+
+## Using this collection
+
+Install the collection with `ansible-galaxy`:
+
+```bash
+ansible-galaxy collection install netways.elasticstack
+```
+
+To pin a version, use a `requirements.yml`:
+
+```yaml
+collections:
+  - name: netways.elasticstack
+    version: 0.1.0
+```
+
+```bash
+ansible-galaxy collection install -r requirements.yml
+```
+
+The same file works for Tower and AWX. You can also install straight from git, which gives you
+the current state of `main` instead of a release:
+
+```bash
+ansible-galaxy collection install git+https://github.com/NETWAYS/ansible-collection-elasticstack.git
+```
+
+Then name the collection in the play and refer to the roles by their short name:
+
+```yaml
+- hosts: elasticsearch
+  become: true
+  collections:
+    - netways.elasticstack
+  roles:
+    - elasticsearch
+```
+
+Fully qualified role names such as `netways.elasticstack.elasticsearch` work as well and need no
+`collections` entry.
+
+The execution order of the roles matters, and the roles interact with hosts from other inventory
+groups. Read [Getting started](docs/getting-started.md) before your first run.
+
 ## Caveats and information for long time users
 
 ### Variable renaming
 
-**Please note**: If you are already using this collection before version `1.0.0`, please note that we had to rename a significant amount of variables due to naming schema changes made by Ansible. Please review the variables you have set in your playbooks and variable files.
+If you have been using this collection before version `1.0.0`, note that a significant number of
+variables had to be renamed because of naming schema changes made by Ansible. Please review the
+variables you set in your playbooks and variable files.
 
 ### Ulimit management for Elasticsearch
 
-**Warning**: The role no longer configures `ulimit`. Ensure the system's open file limit is set correctly (e.g., `ulimit -n`). Packages usually handle this, but verify with `ulimit -n` or checking `/proc/<pid>/limits`. If your version does not, open an issue at the collection's issue tracker: https://github.com/netways/ansible-collection-elasticstack/issues
+The role no longer configures `ulimit`. Make sure the system's open file limit is set correctly,
+packages usually handle this. Verify with `ulimit -n` or by checking `/proc/<pid>/limits`. If
+your version does not, please
+[open an issue](https://github.com/NETWAYS/ansible-collection-elasticstack/issues).
 
-## Usage
+## Contributing to this collection
 
-Every role is documented with all variables, please refer to the documentation found in **[Getting-Started](./docs/getting-started.md)**
+Every kind of contribution is welcome. Open
+[issues](https://github.com/NETWAYS/ansible-collection-elasticstack/issues) or provide
+[pull requests](https://github.com/NETWAYS/ansible-collection-elasticstack/pulls).
 
-Make sure all hosts that should be configured are part of your playbook. (See below for details on groups etc.). The collection is built to first collect all facts from all hosts (including those only running beats) and then use facts like hostnames or ip addresses to connect the tools to each other.
+Pull requests go against `main`. If you need a stable state, pin a release tag.
 
-You will want to have reliable DNS resolution or enter all hosts of the stack into your systems hosts files.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) first. It describes what a pull request needs,
+including the changelog fragment that every pull request has to bring along, how role variables
+are documented and how to run the tests.
 
-The variable `elasticstack_no_log` can be set to `false` if you want to see the output of all tasks. It defaults to `true` because some tasks could reveal passwords in production.
+## Release notes
 
-### Versions and upgrades
+See the [releases page](https://github.com/NETWAYS/ansible-collection-elasticstack/releases).
+The same notes are collected in `CHANGELOG.md`, which is generated from the changelog fragments
+when a version is released.
 
-*elasticstack_version*: Version number of tools to install. Only set if you don't want the latest on new setups. (default: none). If you already have an installation of Elastic Stack, this collection will query the version of Elasticsearch on the CA host and use it for all further installations in the same setup. (Only if you run the `elasticsearch` role before all others) Example: `7.17.2`
+## Licensing
 
-All packages are installed with `state: present`. When `elasticstack_version` is set to a version number (e.g. `7.17.2`), that exact version is installed and pinned. When it is left unset, the package is installed without a version, so a new setup gets the newest available version and existing installations are not upgraded automatically on later runs.
-
-*elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`) Make sure it corresponds to `elasticstack_version` if you set both.
-
-For OSS version see `elasticstack_variant` below.
-
-*elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)
-
-```yaml
-roles:
-   - role: netways.elasticstack.kibana
-     vars:
-        elasticstack_version: 8.7.1
-   - role: netways.elasticstack.elasticsearch
-     vars:
-        elasticstack_version: 8.8.1
-```
-
-#### Upgrades ####
-
-Set `elasticstack_version` to the version you want to upgrade to. Positively do read and understand Elastics changelog and "breaking changes" of your target version and all between your current and the target version. Do not use unless you have a valid backup.
-
-If an upgrade fails, you can try re-running the collection with the same settings. There are several tasks that can provide "self-healing". Please do not rely on these mechanisms, they are more of a "convenience recovery" for easier steps.
-
-The collection will make sure to upgrade Elasticsearch nodes one by one.
-
-### Default Passwords
-
-Default passwords can be seen during generation, or found later in `/usr/share/elasticsearch/initial_passwords`
-
-To turn off security:
-
-`elasticstack_override_beats_tls: true`
-
-### Requirements
-
-0) You need to install the redis role which is maintained by geerlingguy.
-
-```
-ansible-galaxy install geerlingguy.redis
-```
-
-1) Default: For general Elastic Stack installations using all features use the following. You will need Redis installed and running for the default setup to run. A viable way is using the `geerlingguy.redis` role.
-
-2) Specific: For OSS Installation without X-Pack features you can use the following. _Note_: this is only available for version `7.x`.
-
-Our default configuration will collect filesystem logs placed by `rsyslog`. Therefor our example playbook makes sure, `rsyslog` is installed. If you don't want that, please change the configuration of the `beats` module. Without syslog you won't receive any messages with the default configuration.
-
-There are some comments in the Playbook. Either fill them with the correct values (`remote_user`) or consider them as a hint to commonly used options.
-
-### Inventory
-
-_Note_: The roles rely on group names for placing services on hosts. Please make sure you have group names defined: `elasticstack_elasticsearch_group_name` (default: `elasticsearch`), `elasticstack_logstash_group_name` (default: `logstash`) and `elasticstack_kibana_group_name` (default: `kibana`) that will match your desired setup in your Ansible inventory. Hosts in these groups will get the respective services. Just restricting your plays to the appropriate hosts will not work because the roles interact with hosts from other groups e.g. for certificate generation.
-
-The execution order of the roles is important! (see below)
-
-```yaml
----
-- hosts: all
-  # remote_user: my_username
-  become: true
-  collections:
-    - netways.elasticstack
-  vars:
-    elasticstack_variant: elastic #oss
-    #  elasticstack_release: 8 #7
-  roles:
-    - repos
-
-- hosts: elasticsearch
-  # remote_user: my_username
-  become: true
-  collections:
-    - netways.elasticstack
-  vars:
-    elasticstack_variant: elastic #oss
-    elasticsearch_jna_workaround: true
-    #  elasticstack_release: 8 #7
-  roles:
-    - elasticsearch
-
-- hosts: logstash
-  # remote_user: my_username
-  become: true
-  collections:
-    - netways.elasticstack
-  vars:
-    elasticstack_variant: elastic #oss
-    elasticstack_override_beats_tls: true
-    #  elasticstack_release: 8 #7
-  roles:
-    - geerlingguy.redis
-    - logstash
-
-- hosts: kibana
-  # remote_user: my_username
-  become: true
-  collections:
-    - netways.elasticstack
-  vars:
-    elasticstack_variant: elastic #oss
-    #  elasticstack_release: 8 #7
-  roles:
-    - kibana
-
-- hosts: all
-  # remote_user: my_username
-  become: true
-  collections:
-    - netways.elasticstack
-  vars:
-    elasticstack_variant: elastic #oss
-    elasticstack_override_beats_tls: true
-    #  elasticstack_release: 8 #7
-  pre_tasks:
-    - name: Install Rsyslog
-      ansible.builtin.package:
-        name: rsyslog
-    - name: Start rsyslog
-       ansible.builtin.service:
-        name: rsyslog
-        state: started
-        enabled: true
-  roles:
-    - beats
-
-```
-
-## Contributing
-
-Every kind of contribution is very welcome. Open [issues](https://github.com/NETWAYS/ansible-collection-elasticstack/issues) or provide [pull requests](https://github.com/NETWAYS/ansible-collection-elasticstack/pulls).
-
-For now we open pull requests against `main`. We are planning to introduce dedicated branches to support older versions without breaking changes. Since we don't need them for now, please check back with this section because when we decided on how to proceed, you will find the information here. For now `main` always has the newest changes and if you want a stable version, please use the newest release.
-
-### Documentation for role variables
-
-Role variables are documented from each role's `meta/argument_specs.yml`, which is
-the single source of truth. When your pull request changes a role's variables:
-
-1. Update that role's `meta/argument_specs.yml` (type, default, description).
-2. Regenerate the README variable table — please do **not** edit it by hand. The table is
-   produced by [ansible-docsmith](https://github.com/foundata/ansible-docsmith)
-   (install with `pip install ansible-docsmith` if you don't have it):
-
-   ```
-   ansible-docsmith generate roles/<role> --no-defaults --template-readme .docsmith/readme.md.j2
-   ```
-
-3. Commit the regenerated `README.md` together with your change.
-
-The `Test Documentation` workflow checks that each README matches its
-`argument_specs.yml` and fails the pull request if they drift apart.
-
-## Testing
-
-Besides real tests that the developer should do before creating a PR, we built molecule scenarios to test the complete stack.
-In parallel, we check for ansible and yaml lint errors. To do this pro-actively, a `makefile` is included. You can use this by calling `make`.
+GPL-3.0-or-later, see [LICENSE](LICENSE).

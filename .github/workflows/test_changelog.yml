@@ -1,0 +1,80 @@
+---
+# Every pull request has to bring a changelog fragment, so that the changelog can be
+# generated at release time instead of being reconstructed from the commit history.
+#
+# A change that is not worth mentioning to users still needs a fragment, but its entry
+# goes into the "trivial" section, which antsibull-changelog does not render. See
+# CONTRIBUTING.md.
+
+name: Test Changelog
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  fragment:
+    # Dependabot only bumps action and dependency versions, which needs no fragment.
+    if: >-
+      github.event.pull_request.draft == false
+      && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install antsibull-changelog
+        run: pip install "antsibull-changelog==0.35.1"
+
+      - name: A changelog fragment is present
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          if [ -z "$BASE_REF" ]; then
+            echo "Not a pull request, nothing to compare against."
+            exit 0
+          fi
+          git fetch --no-tags origin "$BASE_REF"
+          added=$(git diff --name-only --diff-filter=A \
+            "origin/$BASE_REF...HEAD" -- changelogs/fragments/ \
+            | grep -v '^changelogs/fragments/\.keep$' || true)
+          if [ -z "$added" ]; then
+            echo "::error::This pull request adds no new changelog fragment."
+            echo "Add a NEW file under changelogs/fragments/ describing the change."
+            echo "Do not put the entry into an existing fragment, so that every entry"
+            echo "stays traceable to the pull request that added it."
+            echo "If the change is not relevant for users, put the entry in the"
+            echo "'trivial' section. See CONTRIBUTING.md."
+            exit 1
+          fi
+          echo "New fragments in this pull request:"
+          echo "$added"
+
+          touched=$(git diff --name-only --diff-filter=MRD \
+            "origin/$BASE_REF...HEAD" -- changelogs/fragments/ \
+            | grep -v '^changelogs/fragments/\.keep$' || true)
+          if [ -n "$touched" ]; then
+            echo "::error::This pull request changes fragments it did not add:"
+            echo "$touched"
+            echo "Fragments belong to the pull request that created them. Add your own"
+            echo "instead of editing, renaming or deleting someone else's."
+            exit 1
+          fi
+
+      - name: Fragments are valid
+        run: antsibull-changelog lint

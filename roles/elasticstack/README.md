@@ -44,6 +44,7 @@ The role runs automatically the first time any component role is applied to a ho
 | `elasticstack_logstash_group_name` | `str` | `"logstash"` | — | Inventory group that holds the Logstash hosts. |
 | `elasticstack_kibana_group_name` | `str` | `"kibana"` | — | Inventory group that holds the Kibana hosts. |
 | `elasticstack_elasticsearch_http_port` | `int` | `9200` | — | Elasticsearch HTTP API port. |
+| `elasticstack_kibana_host` | `str` | `"{{ ansible_fqdn }}"` | — | Host name Kibana publishes itself under (server.publicBaseUrl). Defaults to the fully qualified domain name of the Kibana host. Set it when users reach Kibana under a different name, for example behind a reverse proxy or a load balancer. |
 | `elasticstack_kibana_port` | `int` | `5601` | — | Kibana HTTP port (also used to build the public base URL). |
 | `elasticstack_beats_port` | `int` | `5044` | — | Port of the Logstash Beats input that the Beats ship to. |
 | `elasticstack_enable_repos` | `bool` | `true` | — | Configure the Elastic package repositories (see the repos role). |

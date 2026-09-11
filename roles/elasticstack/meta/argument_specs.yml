@@ -87,6 +87,14 @@ argument_specs:
         default: 9200
         description: Elasticsearch HTTP API port.
 
+      elasticstack_kibana_host:
+        type: str
+        default: "{{ ansible_fqdn }}"
+        description:
+          Host name Kibana publishes itself under (server.publicBaseUrl). Defaults to the
+          fully qualified domain name of the Kibana host. Set it when users reach Kibana
+          under a different name, for example behind a reverse proxy or a load balancer.
+
       elasticstack_kibana_port:
         type: int
         default: 5601

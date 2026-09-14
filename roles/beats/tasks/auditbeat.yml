@@ -10,6 +10,9 @@
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '')
       }}
+  tags:
+    - auditbeat
+    - name
 
 - name: Install Auditbeat - rpm - full stack
   ansible.builtin.package:
@@ -22,6 +25,9 @@
   when:
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
+  tags:
+    - auditbeat
+    - rpm
 
 - name: Install Auditbeat - rpm - standalone
   ansible.builtin.package:
@@ -32,6 +38,10 @@
   when:
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
+  tags:
+    - auditbeat
+    - standalone
+    - rpm
 
 - name: Install Auditbeat - deb
   ansible.builtin.package:
@@ -41,6 +51,9 @@
     - Restart Auditbeat
   when:
     - ansible_os_family == "Debian"
+  tags:
+    - auditbeat
+    - deb
 
 - name: Configure Auditbeat
   ansible.builtin.template:
@@ -68,6 +81,9 @@
   when:
     - beats_auditbeat_setup | bool
     - beats_auditbeat_output == "elasticsearch"
+  tags:
+    - auditbeat
+    - setup
 
 - name: Start Auditbeat
   ansible.builtin.service:
@@ -75,3 +91,6 @@
     state: started
     enabled: true
   when: beats_auditbeat_enable | bool
+  tags:
+    - auditbeat
+    - start

@@ -5,5 +5,8 @@ __pycache__*
 .venv
 .fuse_hidden*
 
+# ansible-lint working directory, also removed by "make cleanup"
+.ansible
+
 # antsibull-changelog
 changelogs/.plugin-cache.yaml

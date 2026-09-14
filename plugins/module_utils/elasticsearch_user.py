@@ -1,5 +1,5 @@
 # Copyright (c) 2024, Tobias Bauriedel <tobias.bauriedel@netways.de>
-# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or
+# GNU General Public License v3.0+ (see LICENSE or
 # https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from ansible_collections.netways.elasticstack.plugins.module_utils.api import (
@@ -61,7 +61,7 @@ class User():
 
         if pre_user.raw != self.get().raw:
             self.result['changed'] = True
-            self.result['msg'] = self.user_name + " has beed updated"
+            self.result['msg'] = self.user_name + " has been updated"
 
         return
 

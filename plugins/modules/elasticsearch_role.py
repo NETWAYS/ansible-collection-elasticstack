@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # Copyright (c) 2024, Tobias Bauriedel <tobias.bauriedel@netways.de>
-# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or
+# GNU General Public License v3.0+ (see LICENSE or
 # https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
@@ -14,7 +14,7 @@ short_description: Manage Elasticsearch roles
 description:
   - Creates, updates, or deletes Elasticsearch roles using the Security API.
   - Requires the C(elasticsearch) Python library on the target host.
-version_added: "1.0.0"
+version_added: "0.1.0"
 author:
   - Tobias Bauriedel (@tbauriedel)
 requirements:

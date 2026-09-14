@@ -1,0 +1,40 @@
+---
+# Configuration for antsibull-changelog.
+# See https://docs.ansible.com/projects/antsibull-changelog/changelog-configuration/
+#
+# Contributors add one fragment per pull request under changelogs/fragments/.
+# `antsibull-changelog release --version <VERSION>` folds all fragments into
+# changelogs/changelog.yaml, renders CHANGELOG.md and removes the fragments.
+
+changes_file: changelog.yaml
+changes_format: combined
+ignore_other_fragment_extensions: true
+keep_fragments: false
+mention_ancestor: true
+notes_dir: fragments
+output:
+  - file: CHANGELOG.md
+    format: md
+prelude_name: release_summary
+prelude_title: Release Summary
+sanitize_changelog: true
+sections:
+  - - major_changes
+    - Major Changes
+  - - minor_changes
+    - Minor Changes
+  - - breaking_changes
+    - Breaking Changes / Porting Guide
+  - - deprecated_features
+    - Deprecated Features
+  - - removed_features
+    - Removed Features (previously deprecated)
+  - - security_fixes
+    - Security Fixes
+  - - bugfixes
+    - Bugfixes
+  - - known_issues
+    - Known Issues
+title: Netways.Elasticstack
+trivial_section_name: trivial
+use_fqcn: true

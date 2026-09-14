@@ -25,3 +25,7 @@ trivial:
     resources this collection does not touch, and of the remaining ones only two ever fired,
     one of them a false positive caused by the query not recognising fully qualified module
     names.
+  - The role variable tables now have two columns, with type, required, default and choices
+    stacked under the variable name. Five columns left the description too narrow to read
+    without scrolling the table sideways. Required is only rendered where a variable actually
+    is required.

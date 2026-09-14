@@ -29,7 +29,6 @@ issues: https://github.com/netways/ansible-collection-elasticstack/issues
 build_ignore:
   # CI, tests and local tooling
   - molecule
-  - results-dir
   - makefile
   - 'requirements*.txt'
   # repository housekeeping, not part of the collection

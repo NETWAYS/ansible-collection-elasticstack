@@ -21,3 +21,7 @@ trivial:
     ``version_added`` of the modules to the first released version.
   - Corrected factual errors in the README, removed documentation that was duplicated or only
     redirected, and made the role examples use one way of addressing the roles.
+  - Removed the KICS security scan. Of its 226 Ansible queries, 215 cover AWS, Azure and GCP
+    resources this collection does not touch, and of the remaining ones only two ever fired,
+    one of them a false positive caused by the query not recognising fully qualified module
+    names.

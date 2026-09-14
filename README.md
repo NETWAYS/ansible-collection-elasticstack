@@ -1,4 +1,4 @@
-# Ansible Collection - netways.elasticstack
+# Ansible Collection Elasticstack
 
 This collection installs and manages the Elastic Stack. It provides roles for every component of the Stack, and it can install either the default Elastic distribution or the Apache-licensed OSS packages.
 

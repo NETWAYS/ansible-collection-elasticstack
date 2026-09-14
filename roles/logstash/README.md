@@ -1,11 +1,6 @@
 # Ansible Role: Logstash
 
-Installs and configures [Logstash](https://www.elastic.co/products/logstash) on
-Linux systems. The role can manage `logstash.yml`, the log4j2 logging, the JVM
-heap, TLS, and the Elasticsearch writer role/user. For pipelines it can create
-two default pipelines — a Beats input and an Elasticsearch forwarder, both using
-Redis — and manage your own pipelines, whose configuration can be checked out
-from external git repositories.
+Installs and configures [Logstash](https://www.elastic.co/products/logstash) on Linux systems. The role can manage `logstash.yml`, the log4j2 logging, the JVM heap, TLS, and the Elasticsearch writer role/user. For pipelines it can create two default pipelines — a Beats input and an Elasticsearch forwarder, both using Redis — and manage your own pipelines, whose configuration can be checked out from external git repositories.
 
 It works with the standard Elastic Stack packages and with Elastic's OSS variant.
 
@@ -15,8 +10,7 @@ It works with the standard Elastic Stack packages and with Elastic's OSS variant
 * `passlib` (Python, on the controller) unless you disable password hashing for the Logstash user.
 * `curl` on the target host.
 * `git` on the target host if you use git-based pipelines.
-* Redis if you use the default pipeline or other pipelines that talk to Redis
-  (e.g. via the [`geerlingguy.redis`](https://galaxy.ansible.com/geerlingguy/redis) role).
+* Redis if you use the default pipeline or other pipelines that talk to Redis (e.g. via the [`geerlingguy.redis`](https://galaxy.ansible.com/geerlingguy/redis) role).
 
 You also need the Elastic repositories configured — use the [`repos`](../repos) role.
 
@@ -34,8 +28,7 @@ You also need the Elastic repositories configured — use the [`repos`](../repos
 
 ## Pipelines
 
-For how to configure pipelines (built-in Redis/Beats and external git
-repositories), see the [pipelines documentation](docs/pipelines.md).
+For how to configure pipelines (built-in Redis/Beats and external git repositories), see the [pipelines documentation](docs/pipelines.md).
 
 ## Tags
 
@@ -143,7 +136,4 @@ Run only parts of the role with `--tags`:
 
 ## Shared variables
 
-This role also uses the collection-wide `elasticstack_*` variables (e.g.
-`elasticstack_full_stack`, `elasticstack_ca_host`, `elasticstack_ca_pass`,
-`elasticstack_release`, `elasticstack_variant`). They are documented centrally
-with the [elasticstack role](../elasticstack/README.md).
+This role also uses the collection-wide `elasticstack_*` variables (e.g. `elasticstack_full_stack`, `elasticstack_ca_host`, `elasticstack_ca_pass`, `elasticstack_release`, `elasticstack_variant`). They are documented centrally with the [elasticstack role](../elasticstack/README.md).

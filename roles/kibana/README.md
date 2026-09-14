@@ -1,18 +1,12 @@
 # Ansible Role: Kibana
 
-Installs and configures [Kibana](https://www.elastic.co/kibana) on Linux systems.
-The role manages `kibana.yml` and can enable TLS for the Kibana web interface,
-using a certificate you provide. In a full stack setup together with the
-elasticsearch role, it also configures the connection to Elasticsearch — the TLS
-trust and the `kibana_system` credentials — using the Elasticsearch CA.
+Installs and configures [Kibana](https://www.elastic.co/kibana) on Linux systems. The role manages `kibana.yml` and can enable TLS for the Kibana web interface, using a certificate you provide. In a full stack setup together with the elasticsearch role, it also configures the connection to Elasticsearch — the TLS trust and the `kibana_system` credentials — using the Elasticsearch CA.
 
 ## Requirements
 
 * The Elastic repositories configured — use the [`repos`](../repos) role.
 * A reachable Elasticsearch instance for Kibana to connect to.
-* For browser-facing TLS (`kibana_tls: true`): a certificate and key from a CA your
-  users trust (corporate PKI or a public CA), provided via `kibana_tls_cert` and
-  `kibana_tls_key`. The role does **not** generate a browser certificate.
+* For browser-facing TLS (`kibana_tls: true`): a certificate and key from a CA your users trust (corporate PKI or a public CA), provided via `kibana_tls_cert` and `kibana_tls_key`. The role does **not** generate a browser certificate.
 
 ## Example
 
@@ -26,9 +20,7 @@ trust and the `kibana_system` credentials — using the Elasticsearch CA.
     - kibana
 ```
 
-By default Kibana only logs to the journal, readable with
-`journalctl -u kibana`. Set `kibana_manage_logging` to write a log file that
-Kibana rotates itself, no logrotate needed:
+By default Kibana only logs to the journal, readable with `journalctl -u kibana`. Set `kibana_manage_logging` to write a log file that Kibana rotates itself, no logrotate needed:
 
 ```yaml
 - name: Install Kibana with file logging
@@ -46,10 +38,7 @@ Kibana rotates itself, no logrotate needed:
     - kibana
 ```
 
-This writes `/var/log/kibana/kibana.log` in a human readable layout and keeps
-ten rotated files. Set `kibana_logging_layout` to `json` when a log shipper
-reads the file, and `kibana_logging_console` to `false` to stop logging to the
-journal as well.
+This writes `/var/log/kibana/kibana.log` in a human readable layout and keeps ten rotated files. Set `kibana_logging_layout` to `json` when a log shipper reads the file, and `kibana_logging_console` to `false` to stop logging to the journal as well.
 
 ## Tags
 
@@ -95,8 +84,4 @@ Run only parts of the role with `--tags`:
 
 ## Shared variables
 
-This role also uses the collection-wide `elasticstack_*` variables (e.g.
-`elasticstack_full_stack`, `elasticstack_variant`, `elasticstack_release`,
-`elasticstack_ca_host`, `elasticstack_ca_pass`, `elasticstack_kibana_host`,
-`elasticstack_kibana_port`, `elasticstack_elasticsearch_http_port`). They are
-documented centrally with the [elasticstack role](../elasticstack/README.md).
+This role also uses the collection-wide `elasticstack_*` variables (e.g. `elasticstack_full_stack`, `elasticstack_variant`, `elasticstack_release`, `elasticstack_ca_host`, `elasticstack_ca_pass`, `elasticstack_kibana_host`, `elasticstack_kibana_port`, `elasticstack_elasticsearch_http_port`). They are documented centrally with the [elasticstack role](../elasticstack/README.md).

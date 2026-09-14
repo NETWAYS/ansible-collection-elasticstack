@@ -1,15 +1,11 @@
 # Ansible Role: Beats
 
-Installs and configures the Elastic [Beats](https://www.elastic.co/beats) —
-Filebeat, Auditbeat and Metricbeat — on Linux systems. The role can run
-standalone or together with the other Elastic Stack roles. Beats can ship to
-Logstash or directly to Elasticsearch.
+Installs and configures the Elastic [Beats](https://www.elastic.co/beats) — Filebeat, Auditbeat and Metricbeat — on Linux systems. The role can run standalone or together with the other Elastic Stack roles. Beats can ship to Logstash or directly to Elasticsearch.
 
 ## Requirements
 
 * The `community.crypto` collection (used to check certificate expiration).
-* The Beats you want to install must be available in your software repositories —
-  use the [`repos`](../repos) role or provide them yourself.
+* The Beats you want to install must be available in your software repositories — use the [`repos`](../repos) role or provide them yourself.
 
 ## Example
 
@@ -25,10 +21,7 @@ Logstash or directly to Elasticsearch.
 
 ## Filebeat inputs
 
-Filebeat can read from several sources (log files, syslog, journald, Docker,
-modules). For the structure of `beats_filebeat_log_inputs`,
-`beats_filebeat_journald_inputs` and the other input variables, see the
-[Filebeat inputs documentation](docs/filebeat-inputs.md).
+Filebeat can read from several sources (log files, syslog, journald, Docker, modules). For the structure of `beats_filebeat_log_inputs`, `beats_filebeat_journald_inputs` and the other input variables, see the [Filebeat inputs documentation](docs/filebeat-inputs.md).
 
 ## Tags
 
@@ -89,8 +82,4 @@ Run only parts of the role with `--tags`:
 
 ## Shared variables
 
-This role also uses the collection-wide `elasticstack_*` variables (e.g.
-`elasticstack_full_stack`, `elasticstack_variant`, `elasticstack_ca_host`,
-`elasticstack_ca_pass`, `elasticstack_release`, `elasticstack_version`,
-`elasticstack_elasticsearch_http_port`, `elasticstack_beats_port`). They are
-documented centrally with the [elasticstack role](../elasticstack/README.md).
+This role also uses the collection-wide `elasticstack_*` variables (e.g. `elasticstack_full_stack`, `elasticstack_variant`, `elasticstack_ca_host`, `elasticstack_ca_pass`, `elasticstack_release`, `elasticstack_version`, `elasticstack_elasticsearch_http_port`, `elasticstack_beats_port`). They are documented centrally with the [elasticstack role](../elasticstack/README.md).

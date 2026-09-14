@@ -1,24 +1,13 @@
 # Ansible Role: Elasticsearch
 
-Installs and configures [Elasticsearch](https://www.elastic.co/elasticsearch) on
-Linux systems. The role manages `elasticsearch.yml` and the JVM configuration
-(heap and options). With security enabled (the default) it creates a self-signed
-CA and a certificate for each node, enables transport and HTTP TLS, manages the
-keystore, and generates the initial passwords; the same CA is reused by the
-Logstash, Kibana and Beats roles for their own certificates. It configures
-cluster discovery for single- or multi-node setups and upgrades the nodes one at
-a time when you raise `elasticstack_version`.
+Installs and configures [Elasticsearch](https://www.elastic.co/elasticsearch) on Linux systems. The role manages `elasticsearch.yml` and the JVM configuration (heap and options). With security enabled (the default) it creates a self-signed CA and a certificate for each node, enables transport and HTTP TLS, manages the keystore, and generates the initial passwords; the same CA is reused by the Logstash, Kibana and Beats roles for their own certificates. It configures cluster discovery for single- or multi-node setups and upgrades the nodes one at a time when you raise `elasticstack_version`.
 
-The OSS variant is only available up to Elastic Stack 7; from release 8 on only
-the default `elastic` variant exists, and security is required.
+The OSS variant is only available up to Elastic Stack 7; from release 8 on only the default `elastic` variant exists, and security is required.
 
 ## Requirements
 
 * The Elastic repositories configured — use the [`repos`](../repos) role.
-* For the default security setup the role generates certificates with the
-  bundled `elasticsearch-certutil` and `openssl`. The required Python libraries
-  (`cryptography`, `elasticsearch`) are installed for you by the shared
-  `elasticstack` role.
+* For the default security setup the role generates certificates with the bundled `elasticsearch-certutil` and `openssl`. The required Python libraries (`cryptography`, `elasticsearch`) are installed for you by the shared `elasticstack` role.
 
 ## Example
 
@@ -92,9 +81,4 @@ Run only parts of the role with `--tags`:
 
 ## Shared variables
 
-This role also uses the collection-wide `elasticstack_*` variables (e.g.
-`elasticstack_full_stack`, `elasticstack_variant`, `elasticstack_release`,
-`elasticstack_ca_host`, `elasticstack_ca_pass`, `elasticstack_ca_dir`,
-`elasticstack_elasticsearch_http_port`, `elasticstack_initial_passwords`). They
-are documented centrally with the
-[elasticstack role](../elasticstack/README.md).
+This role also uses the collection-wide `elasticstack_*` variables (e.g. `elasticstack_full_stack`, `elasticstack_variant`, `elasticstack_release`, `elasticstack_ca_host`, `elasticstack_ca_pass`, `elasticstack_ca_dir`, `elasticstack_elasticsearch_http_port`, `elasticstack_initial_passwords`). They are documented centrally with the [elasticstack role](../elasticstack/README.md).

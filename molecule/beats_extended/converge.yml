@@ -1,0 +1,62 @@
+---
+# The workaround for arbitrarily named role directory is important because the
+# git repo has one name and the role within it another
+# Found at:
+# https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+- name: Converge
+  hosts: all
+  collections:
+    - netways.elasticstack
+  vars:
+    elasticstack_ci: true
+    beats_filebeat_log_inputs:
+      messages:
+        name: messages
+        paths:
+          - /var/log/messages
+        multiline:
+          type: pattern
+          pattern: '^[[:space:]]+(at|\.{3})[[:space:]]+\b|^Caused by:'
+          negate: false
+          match: after
+        fields:
+          testfield: thisisatest
+          testfield2: thisisanothertest
+    elasticsearch_jna_workaround: true
+    elasticsearch_disable_systemcallfilterchecks: true
+    elasticstack_full_stack: false
+    elasticstack_no_log: false
+    beats_filebeat_mysql_slowlog_input: true
+    beats_auditbeat: true
+    beats_auditbeat_output: logstash
+    beats_auditbeat_enable: false # can't run on GitHub because of permissions
+    beats_filebeat_journald_inputs:
+      everything:
+        id: service-vault
+        include_matches:
+          - _SYSTEMD_UNIT=vault.service
+    beats_metricbeat: true
+    beats_metricbeat_output: logstash
+    #beats_filebeat_docker: true
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+  tasks:
+
+    - name: Set Filebeat version for 8.x
+      ansible.builtin.set_fact:
+        elasticstack_version: "8.4.1"
+      when:
+        - elasticstack_release == 8
+
+    - name: "Include Elastics repos role"
+      ansible.builtin.include_role:
+        name: repos
+
+    - name: Refresh apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+      changed_when: false
+      when: ansible_os_family == "Debian"
+
+    - name: "Include Beats"
+      ansible.builtin.include_role:
+        name: beats

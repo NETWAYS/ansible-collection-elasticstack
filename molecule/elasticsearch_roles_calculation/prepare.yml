@@ -6,6 +6,11 @@
       debug:
         var: ansible_facts.discovered_interpreter_python
 
+    - name: Populate apt cache from runner pre-downloaded packages
+      ansible.builtin.shell: |
+        cp /opt/elastic-apt-cache/*.deb /var/cache/apt/archives/ 2>/dev/null || true
+      when: ansible_os_family == "Debian"
+
     - name: Refresh apt cache
       ansible.builtin.apt:
         update_cache: yes

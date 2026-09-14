@@ -154,7 +154,7 @@
 
 - name: Backup elasticsearch certs on elasticstack_ca_host host then remove
   when: "'renew_es_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or elasticsearch_cert_will_expire_soon | bool"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   tags:
     - renew_ca
     - renew_es_cert
@@ -228,40 +228,65 @@
     - renew_ca
     - renew_es_cert
   block:
+    # Pass passphrases via argv (a list), not a folded shell string. A string command is
+    # tokenized by shlex.split() (shell-like word splitting and quote parsing), which mangles
+    # passphrases containing spaces or quotes. With argv every element is handed to the binary
+    # literally — no shell, no shlex — so arbitrary special characters work.
     - name: Configure ca on elasticstack_ca_host
-      ansible.builtin.command: >
-        /usr/share/elasticsearch/bin/elasticsearch-certutil ca
-        --ca-dn {{ elasticstack_ca_name }}
-        --days {{ elasticstack_ca_validity_period }}
-        --pass {{ elasticstack_ca_pass }}
-        --out {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
-        --silent
-      args:
+      ansible.builtin.command:
+        argv:
+          - /usr/share/elasticsearch/bin/elasticsearch-certutil
+          - ca
+          - --ca-dn
+          - "{{ elasticstack_ca_name }}"
+          - --days
+          - "{{ elasticstack_ca_validity_period }}"
+          - --pass
+          - "{{ elasticstack_ca_pass }}"
+          - --out
+          - "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
+          - --silent
         creates: "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
       no_log: "{{ elasticstack_no_log }}"
 
     - name: Create node certificates on elasticstack_ca_host
-      ansible.builtin.command: >
-        /usr/share/elasticsearch/bin/elasticsearch-certutil cert
-        --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
-        --days {{ elasticsearch_cert_validity_period }}
-        --ca-pass {{ elasticstack_ca_pass }}
-        --name {{ hostvars[item].ansible_hostname }}
-        --ip {{ hostvars[item].ansible_default_ipv4.address | default(hostvars[item].ansible_all_ipv4_addresses[0]) }}
-        --dns {{ hostvars[item].ansible_hostname }},{{ hostvars[item].ansible_fqdn }},{{ hostvars[item].inventory_hostname }}
-        --pass {{ (hostvars[item].elasticsearch_tls_key_passphrase is defined) | ternary(hostvars[item].elasticsearch_tls_key_passphrase, elasticsearch_tls_key_passphrase) }}
-        --out {{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12
+      ansible.builtin.command:
+        argv:
+          - /usr/share/elasticsearch/bin/elasticsearch-certutil
+          - cert
+          - --ca
+          - "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
+          - --days
+          - "{{ elasticsearch_cert_validity_period }}"
+          - --ca-pass
+          - "{{ elasticstack_ca_pass }}"
+          - --name
+          - "{{ hostvars[item].ansible_hostname }}"
+          - --ip
+          - "{{ hostvars[item].ansible_default_ipv4.address | default(hostvars[item].ansible_all_ipv4_addresses[0]) }}"
+          - --dns
+          - "{{ hostvars[item].ansible_hostname }},{{ hostvars[item].ansible_fqdn }},{{ hostvars[item].inventory_hostname }}"
+          - --pass
+          - "{{ (hostvars[item].elasticsearch_tls_key_passphrase is defined) | ternary(hostvars[item].elasticsearch_tls_key_passphrase, elasticsearch_tls_key_passphrase) }}"
+          - --out
+          - "{{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
+        creates: "{{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
       loop: "{{ groups[elasticstack_elasticsearch_group_name] }}"
       no_log: "{{ elasticstack_no_log }}"
-      args:
-        creates: "{{ elasticstack_ca_dir }}/{{ hostvars[item].ansible_hostname }}.p12"
 
     - name: Extract CA certificate on elasticstack_ca host
-      ansible.builtin.command: >
-        openssl pkcs12 -in {{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12
-        -cacerts -nokeys -out {{ elasticstack_ca_dir }}/ca.crt
-        -password pass:{{ elasticsearch_tls_key_passphrase }}
-      args:
+      ansible.builtin.command:
+        argv:
+          - openssl
+          - pkcs12
+          - -in
+          - "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
+          - -cacerts
+          - -nokeys
+          - -out
+          - "{{ elasticstack_ca_dir }}/ca.crt"
+          - -password
+          - "pass:{{ elasticsearch_tls_key_passphrase }}"
         creates: "{{ elasticstack_ca_dir }}/ca.crt"
       no_log: "{{ elasticstack_no_log }}"
 
@@ -281,7 +306,7 @@
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}.p12"
     dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}.p12"
     flat: yes
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   tags:
     - certificates
     - renew_ca
@@ -365,7 +390,7 @@
 - name: Check for passwords being set
   ansible.builtin.stat:
     path: "{{ elasticstack_initial_passwords }}"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   register: elasticsearch_passwords_file
 
 - name: Setting elasticsearch_http_protocol
@@ -416,7 +441,7 @@
   register: elasticstack_password
   changed_when: false
   no_log: "{{ elasticstack_no_log }}"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   when: elasticsearch_passwords_file.stat.exists | bool
 
 - name: Check for API availability with elastic password
@@ -436,7 +461,7 @@
   delay: 10
 
 - name: Work around low ressources on CI/CD nodes
-  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
+  when: elasticstack_ci | bool
   block:
     # Free up some space to let elsticsearch allocate replica in GitHub Action
     - name: Remove cache

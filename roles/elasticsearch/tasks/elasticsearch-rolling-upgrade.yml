@@ -80,7 +80,7 @@
         body: '{ "persistent": { "cluster.routing.allocation.enable": null }}'
         body_format: json
         user: elastic
-        password: "{{ elasticstack_password.stdout }}"
+        password: "{{ __elasticstack_password }}"
         validate_certs: no
       register: response
       # next line is boolean not string, so no quotes around true
@@ -96,7 +96,7 @@
         url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
         method: GET
         user: elastic
-        password: "{{ elasticstack_password.stdout }}"
+        password: "{{ __elasticstack_password }}"
         validate_certs: no
       register: response
       until: "response.json.status == 'green'"
@@ -111,7 +111,7 @@
         body: '{ "persistent": { "cluster.routing.allocation.enable": "none" }}'
         body_format: json
         user: elastic
-        password: "{{ elasticstack_password.stdout }}"
+        password: "{{ __elasticstack_password }}"
         validate_certs: no
 
     - name: Stop non essential indexing to speed up shard recovery
@@ -119,7 +119,7 @@
         url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_flush"
         method: POST
         user: elastic
-        password: "{{ elasticstack_password.stdout }}"
+        password: "{{ __elasticstack_password }}"
         validate_certs: no
       failed_when: false
 
@@ -176,7 +176,7 @@
         if test -n "$(ps -p $$ | grep bash)"; then set -o pipefail; fi;
         curl
         -k
-        -u elastic:{{ elasticstack_password.stdout }}
+        -u elastic:{{ __elasticstack_password }}
         -s
         -m 2
         '{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cat/nodes?h=name'
@@ -196,7 +196,7 @@
         body: '{ "persistent": { "cluster.routing.allocation.enable": null }}'
         body_format: json
         user: elastic
-        password: "{{ elasticstack_password.stdout }}"
+        password: "{{ __elasticstack_password }}"
         validate_certs: no
       register: response
       # next line is boolean not string, so no quotes around true
@@ -210,7 +210,7 @@
         url: "{{ elasticsearch_http_protocol }}://{{ elasticsearch_api_host }}:{{ elasticstack_elasticsearch_http_port }}/_cluster/health"
         method: GET
         user: elastic
-        password: "{{ elasticstack_password.stdout }}"
+        password: "{{ __elasticstack_password }}"
         validate_certs: no
       register: response
       until: "response.json.status == 'yellow' or response.json.status == 'green'"

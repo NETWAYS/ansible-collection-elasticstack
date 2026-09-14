@@ -1,7 +1,5 @@
 # Ansible Collection - netways.elasticstack
 
-![Test ElasticStack](https://github.com/NETWAYS/ansible-collection-elasticstack/actions/workflows/test_full_stack.yml/badge.svg)
-
 > [!CAUTION]
 > The current main branch has some breaking changes. Be careful using it! Everything after commit 3d6673f6d526afeb0fd7ba382d067d76bd10bbd6 is affected!
 
@@ -14,11 +12,11 @@ Every role is documented with all variables, please refer to the documentation f
 > [!NOTE]
 > Some roles have fixed requirements that you must observe. Please have a look at the [requirements](docs/01-requirements.md) before using the collection. (There is a high probability that some of them will be refactored soon)
 
-* [Beats](docs/role-beats.md)
-* [Elasticsearch](docs/role-elasticsearch.md)
-* [Kibana](docs/role-kibana.md)
-* [Logstash](docs/role-logstash.md)
-* [Repos](docs/role-repos.md)
+* [Beats](roles/beats/README.md)
+* [Elasticsearch](roles/elasticsearch/README.md)
+* [Kibana](roles/kibana/README.md)
+* [Logstash](roles/logstash/README.md)
+* [Repos](roles/repos/README.md)
 
 ## Modules documentation
 
@@ -26,6 +24,10 @@ Every role is documented with all variables, please refer to the documentation f
 * [elasticsearch_user](docs/module-elasticsearch_user.md)
 
 ## Global variables
+
+The collection-wide `elasticstack_*` variables (release, variant, inventory host
+groups, ports, package repositories, and the shared CA) are documented centrally
+with the [elasticstack role](roles/elasticstack/README.md).
 
 * `elasticstack_force_pip`: Will force installation of required Python modules via `pip`. This is useful if your package manager doesn't provide current versions of modules. (Default: `false`) See [PEP668](https://peps.python.org/pep-0668/) for more details.
 * `elasticstack_manage_pip`: Will install `pip` on your system. (Default: `false`)
@@ -47,6 +49,10 @@ collections:
 
 ### Requirements
 
+On the Ansible control node:
+* `Ansible-Core >=2.18.0`
+* `Python >=3.11.0`
+
 You will need the following Ansible collections installed
 
 * `community.general` (probably already present)
@@ -65,16 +71,8 @@ You may want the following Ansible roles installed. There other ways to achieve 
 We test the collection on the following Linux distributions. Each one with Elastic Stack 7 and 8.
 
 * Rocky Linux 9
-* Rocky Linux 8
 * Ubuntu 22.04 LTS
-* Ubuntu 20.04 LTS
-* Debian 11
-* Debian 10
-* CentOS 8
-
-We know from personal experience, that the collections work in following combinations. Missing tests mostly come from incompatibilties between the distribution and our testing environment, not from problems with the collection itself.
-
-* CentOS 7 - Elastic Stack 7
+* Debian 13
 
 ## Caveats and information for long time users
 
@@ -99,6 +97,8 @@ The variable `elasticstack_no_log` can be set to `false` if you want to see the 
 ### Versions and upgrades
 
 *elasticstack_version*: Version number of tools to install. Only set if you don't want the latest on new setups. (default: none). If you already have an installation of Elastic Stack, this collection will query the version of Elasticsearch on the CA host and use it for all further installations in the same setup. (Only if you run the `elasticsearch` role before all others) Example: `7.17.2`
+
+All packages are installed with `state: present`. When `elasticstack_version` is set to a version number (e.g. `7.17.2`), that exact version is installed and pinned. When it is left unset, the package is installed without a version, so a new setup gets the newest available version and existing installations are not upgraded automatically on later runs.
 
 *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`) Make sure it corresponds to `elasticstack_version` if you set both.
 
@@ -230,13 +230,26 @@ The execution order of the roles is important! (see below)
 
 Every kind of contribution is very welcome. Open [issues](https://github.com/NETWAYS/ansible-collection-elasticstack/issues) or provide [pull requests](https://github.com/NETWAYS/ansible-collection-elasticstack/pulls).
 
-Please note that we have some actions bound to specific names of branches. So please stick to the following naming scheme:
-
-* `fix/` as a prefix for every branch that fixes a problem
-* `feature/` for every branch that enhances the code with new features
-* `doc/` as a prefix for every branch that only changes documentation
-
 For now we open pull requests against `main`. We are planning to introduce dedicated branches to support older versions without breaking changes. Since we don't need them for now, please check back with this section because when we decided on how to proceed, you will find the information here. For now `main` always has the newest changes and if you want a stable version, please use the newest release.
+
+### Documentation for role variables
+
+Role variables are documented from each role's `meta/argument_specs.yml`, which is
+the single source of truth. When your pull request changes a role's variables:
+
+1. Update that role's `meta/argument_specs.yml` (type, default, description).
+2. Regenerate the README variable table — please do **not** edit it by hand. The table is
+   produced by [ansible-docsmith](https://github.com/foundata/ansible-docsmith)
+   (install with `pip install ansible-docsmith` if you don't have it):
+
+   ```
+   ansible-docsmith generate roles/<role> --no-defaults --template-readme .docsmith/readme.md.j2
+   ```
+
+3. Commit the regenerated `README.md` together with your change.
+
+The `Test Documentation` workflow checks that each README matches its
+`argument_specs.yml` and fails the pull request if they drift apart.
 
 ## Testing
 

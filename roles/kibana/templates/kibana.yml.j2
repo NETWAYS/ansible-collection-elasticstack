@@ -31,6 +31,24 @@ server.ssl.certificate: "{{ kibana_tls_cert }}"
 server.ssl.key: "{{ kibana_tls_key }}"
 {% endif %}
 
+{% if kibana_manage_logging | bool %}
+logging.root.level: "{{ kibana_loglevel }}"
+logging.root.appenders: [{% if kibana_logging_console | bool %}default, {% endif %}file]
+logging.appenders.file.type: rolling-file
+logging.appenders.file.fileName: "{{ kibana_logpath }}/{{ kibana_logfile }}"
+logging.appenders.file.layout.type: {{ kibana_logging_layout }}
+logging.appenders.file.policy.type: {{ kibana_logging_rotate_policy }}
+{% if kibana_logging_rotate_policy == "size-limit" %}
+logging.appenders.file.policy.size: {{ kibana_logging_rotate_size }}
+{% else %}
+logging.appenders.file.policy.interval: {{ kibana_logging_rotate_interval }}
+logging.appenders.file.policy.modulate: true
+{% endif %}
+logging.appenders.file.strategy.type: numeric
+logging.appenders.file.strategy.pattern: ".%i"
+logging.appenders.file.strategy.max: {{ kibana_logging_rotate_keep }}
+{% endif %}
+
 {% if kibana_extra_config is defined %}
 {{ kibana_extra_config }}
 {% endif %}

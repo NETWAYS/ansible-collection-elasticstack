@@ -1,0 +1,45 @@
+name: Maintenance
+description: Internal work with no new capability for users - cleanup, refactoring, consistency, tests
+labels: ["quality"]
+body:
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of the collection does this concern? Pick more than one if it applies.
+      multiple: true
+      options:
+        - elasticsearch
+        - kibana
+        - logstash
+        - beats (shared, or several beats at once)
+        - filebeat
+        - metricbeat
+        - auditbeat
+        - repos
+        - elasticstack (meta role, shared variables)
+        - plugins (cert_info, elasticsearch_role, elasticsearch_user)
+        - not sure, or affects the whole collection
+    validations:
+      required: true
+
+  - type: textarea
+    id: change
+    attributes:
+      label: What should change
+      description: The current state, and what it should look like instead. Name the files or variables if you already know them.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: What goes wrong today, or what does the current shape make harder than it needs to be?
+
+  - type: checkboxes
+    id: breaking
+    attributes:
+      label: Impact
+      options:
+        - label: This changes existing behaviour, variable names or defaults, so users have to adapt.

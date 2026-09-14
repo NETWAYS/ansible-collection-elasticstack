@@ -6,9 +6,10 @@
   collections:
     - netways.elasticstack
   vars:
+    elasticstack_ci: true
     elasticstack_variant: oss
     elasticstack_rpm_workaround: true
-    elasticstack_release: 7
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticstack_no_log: false
   tasks:
     - name: "Include Elastic Repos"

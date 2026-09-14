@@ -19,7 +19,9 @@ auditbeat.modules:
     - host    # General host information, e.g. uptime, IPs
     - login   # User logins, logouts, and system boots.
     - process # Started and stopped processes
-    - socket  # Opened and closed sockets
+{% if ansible_architecture == 'x86_64' %}
+    - socket  # Opened and closed sockets (metricset not available in the arm64/aarch64 auditbeat build)
+{% endif %}
     - user    # User information
   state.period: 12h
   user.detect_password_changes: true
@@ -29,6 +31,13 @@ auditbeat.modules:
 setup.template.settings:
   index.number_of_shards: 1
 setup.kibana:
+{% if elasticstack_full_stack | bool and groups[elasticstack_kibana_group_name] | default([]) | length > 0 %}
+  host: "http://{{ groups[elasticstack_kibana_group_name] | first }}:{{ elasticstack_kibana_port }}"
+{% if beats_security | bool %}
+  username: "elastic"
+  password: "{{ beats_writer_password.stdout }}"
+{% endif %}
+{% endif %}
 {% if beats_auditbeat_output == "elasticsearch" %}
 output.elasticsearch:
 {% if beats_security | bool %}

@@ -69,7 +69,7 @@
 
 - name: Backup kibana certs on elasticstack_ca_host then remove
   when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or kibana_cert_will_expire_soon | bool"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   tags:
     - renew_ca
     - renew_kibana_cert
@@ -125,7 +125,7 @@
       when: kibana_move_cert_file.changed
 
 - name: Block for key generation
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   run_once: true
   tags:
     - certificates
@@ -184,21 +184,32 @@
     - renew_ca
     - renew_kibana_cert
 
+# argv (a list) instead of a folded string: avoids shlex.split() so passphrases with
+# arbitrary special characters (spaces, quotes, $, `, ...) are passed literally.
 - name: Create individual certificates for Kibana
-  ansible.builtin.command: >
-    /usr/share/elasticsearch/bin/elasticsearch-certutil cert
-    --days {{ kibana_cert_validity_period }}
-    --ca {{ elasticstack_ca_dir }}/elastic-stack-ca.p12
-    --ca-pass {{ elasticstack_ca_pass }}
-    --name {{ ansible_hostname }}
-    --ip {{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}
-    --dns {{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}
-    --pass {{ kibana_tls_key_passphrase }}
-    --out {{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12
-  delegate_to: "{{ elasticstack_ca_host }}"
-  no_log: "{{ elasticstack_no_log }}"
-  args:
+  ansible.builtin.command:
+    argv:
+      - /usr/share/elasticsearch/bin/elasticsearch-certutil
+      - cert
+      - --days
+      - "{{ kibana_cert_validity_period }}"
+      - --ca
+      - "{{ elasticstack_ca_dir }}/elastic-stack-ca.p12"
+      - --ca-pass
+      - "{{ elasticstack_ca_pass }}"
+      - --name
+      - "{{ ansible_hostname }}"
+      - --ip
+      - "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+      - --dns
+      - "{{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}"
+      - --pass
+      - "{{ kibana_tls_key_passphrase }}"
+      - --out
+      - "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
     creates: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
+  no_log: "{{ elasticstack_no_log }}"
   tags:
     - certificates
     - renew_ca
@@ -209,7 +220,7 @@
     src: "{{ elasticstack_ca_dir }}/{{ ansible_hostname }}-kibana.p12"
     dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-kibana.p12"
     flat: yes
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   tags:
     - certificates
     - renew_ca
@@ -237,14 +248,14 @@
   register: kibana_password
   changed_when: false
   no_log: "{{ elasticstack_no_log }}"
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
 
 - name: Fetch ca certificate from ca host to master
   ansible.builtin.fetch:
     src: "{{ elasticstack_ca_dir }}/ca.crt"
     dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
     flat: yes
-  delegate_to: "{{ elasticstack_ca_host }}"
+  delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
   tags:
     - certificates
     - renew_ca

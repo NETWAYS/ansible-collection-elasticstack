@@ -87,6 +87,7 @@
 - name: Install Logstash - rpm - full stack
   ansible.builtin.package:
     name: "{{ logstash_package }}"
+    state: present
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   notify:
@@ -98,6 +99,7 @@
 - name: Install Logstash - rpm - standalone
   ansible.builtin.package:
     name: "{{ logstash_package }}"
+    state: present
   notify:
     - Restart Logstash
   when:
@@ -107,6 +109,7 @@
 - name: Install Logstash - deb
   ansible.builtin.package:
     name: "{{ logstash_package }}"
+    state: present
   notify:
     - Restart Logstash
   when:
@@ -134,6 +137,41 @@
   notify:
     - Restart Logstash
   when: logstash_manage_yaml | bool
+  tags:
+    - configuration
+    - logstash_configuration
+
+- name: Create systemd drop-in directory for Logstash
+  ansible.builtin.file:
+    path: /etc/systemd/system/logstash.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags:
+    - configuration
+    - logstash_configuration
+
+- name: Set Logstash JVM heap size via systemd drop-in
+  ansible.builtin.template:
+    src: jvm-heap.conf.j2
+    dest: /etc/systemd/system/logstash.service.d/heap.conf
+    owner: root
+    group: root
+    mode: "0644"
+  register: logstash_heap_dropin
+  notify:
+    - Restart Logstash
+  tags:
+    - configuration
+    - logstash_configuration
+
+# Reload systemd inline (not via handler) so a fresh install picks up the drop-in before
+# "Start Logstash" runs. Handlers only fire at the end of the play, which would be too late.
+- name: Reload systemd to apply Logstash heap drop-in
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: logstash_heap_dropin.changed
   tags:
     - configuration
     - logstash_configuration
@@ -279,4 +317,4 @@
   ansible.builtin.command: >
     rm -rf /var/cache/*
   changed_when: false
-  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
+  when: elasticstack_ci | bool

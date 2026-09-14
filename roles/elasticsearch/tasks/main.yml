@@ -121,7 +121,7 @@
   ansible.builtin.set_fact:
     elasticsearch_package: >
       {{
-      'elasticsearch' +
+      ('elasticsearch-oss' if elasticstack_variant == 'oss' else 'elasticsearch') +
       ((elasticstack_versionseparator +
       elasticstack_version |
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
@@ -135,30 +135,39 @@
     - "hostvars[item].inventory_hostname == inventory_hostname"
     - elasticstack_version is defined
     - ansible_facts.packages['elasticsearch'][0].version is defined
-    - elasticstack_password.stdout is defined
+    - __elasticstack_password is defined
     - elasticstack_version is version( ansible_facts.packages['elasticsearch'][0].version, '>')
 
 - name: Install Elasticsearch - rpm - full stack
   ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
+    state: present
     enablerepo:
       - 'elastic-{% if elasticstack_variant == "oss" %}oss-{% endif %}{{ elasticstack_release }}.x'
   when:
     - ansible_os_family == "RedHat"
     - elasticstack_full_stack | bool
+    # fresh install only, an upgrade goes through elasticsearch-rolling-upgrade.yml
+    - "'elasticsearch' not in ansible_facts.packages"
 
 - name: Install Elasticsearch - rpm - standalone
   ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
+    state: present
   when:
     - ansible_os_family == "RedHat"
     - not elasticstack_full_stack | bool
+    # fresh install only, an upgrade goes through elasticsearch-rolling-upgrade.yml
+    - "'elasticsearch' not in ansible_facts.packages"
 
 - name: Install Elasticsearch - deb
   ansible.builtin.package:
     name: "{{ elasticsearch_package }}"
+    state: present
   when:
     - ansible_os_family == "Debian"
+    # fresh install only, an upgrade goes through elasticsearch-rolling-upgrade.yml
+    - "'elasticsearch' not in ansible_facts.packages"
 
 - name: Configure Elasticsearch
   ansible.builtin.template:
@@ -236,7 +245,7 @@
   ansible.builtin.command: >
     rm -rf /var/cache/*
   changed_when: false
-  when: ansible_virtualization_type == "container" or ansible_virtualization_type == "docker"
+  when: elasticstack_ci | bool
 
 - name: Import Tasks elasticsearch-security.yml
   ansible.builtin.import_tasks: elasticsearch-security.yml

@@ -13,6 +13,7 @@ platforms:
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /tmp/elastic-apt-cache:/opt/elastic-apt-cache:ro
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
@@ -23,6 +24,7 @@ platforms:
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /tmp/elastic-apt-cache:/opt/elastic-apt-cache:ro
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
@@ -33,6 +35,7 @@ platforms:
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /tmp/elastic-apt-cache:/opt/elastic-apt-cache:ro
     cgroupns_mode: host
     privileged: true
     pre_build_image: true

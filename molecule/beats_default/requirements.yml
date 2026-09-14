@@ -1,0 +1,4 @@
+---
+collections:
+  - name: community.crypto
+    version: ">=2.15.0,<3.0.0" # Support python 3.9 on target host e.g. Rocky 9

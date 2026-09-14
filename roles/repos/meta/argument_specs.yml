@@ -1,0 +1,20 @@
+---
+# Role argument specification for the repos role.
+# This is the single source of truth for the role's variables: Ansible validates
+# the supplied values against it at role start, and ansible-docsmith renders the
+# README variable reference from it.
+#
+# This role has no role-specific variables. It is configured entirely through the
+# shared elasticstack_* variables, which are documented centrally with the
+# elasticstack role.
+
+argument_specs:
+  main:
+    short_description: Configure the Elastic package repositories
+    description:
+      - >-
+        Adds the Elastic package repositories (apt, yum or zypper) to the target
+        host so the other roles can install Elastic Stack packages.
+      - Supports the standard Elastic and the OSS variant.
+    author:
+      - NETWAYS GmbH

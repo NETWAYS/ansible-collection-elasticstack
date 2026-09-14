@@ -47,17 +47,17 @@ Or refer to the role with the FQCN of the role.
 Roles
 -------
 
-* [Beats](role-beats.md)
-* [Elasticsearch](role-elasticsearch.md)
-* [Kibana](role-kibana.md)
-* [Logstash](role-logstash.md)
-* [Repos](role-repos.md)
+* [Beats](../roles/beats/README.md)
+* [Elasticsearch](../roles/elasticsearch/README.md)
+* [Kibana](../roles/kibana/README.md)
+* [Logstash](../roles/logstash/README.md)
+* [Repos](../roles/repos/README.md)
 
 
 Variables
 -----------
 
-Every role got its own set of variables, in addition a few variables are useable on any role. Below are all general collection vars.
+Every role got its own set of variables, in addition a few variables are useable on any role. The collection-wide `elasticstack_*` variables are documented centrally with the [elasticstack role](../roles/elasticstack/README.md). Two common ones:
 
 * *elasticstack_release*: Major release version of Elastic stack to configure. (default: `7`)
 * *elasticstack_variant*: Variant of the stack to install. Valid values: `elastic` or `oss`. (default: `elastic`)

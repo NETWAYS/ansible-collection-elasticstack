@@ -1,51 +1,43 @@
 ---
-# This is an example playbook to execute Ansible tests.
-
 - name: Check if Logstash configuration does what it should
   hosts: all
   vars:
     elasticstack_beats_port: 5044
   tasks:
-  - name: Run syntax check
-    ansible.builtin.command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
-    changed_when: false
+    - name: Run syntax check
+      ansible.builtin.command: "/usr/share/logstash/bin/logstash --path.settings=/etc/logstash -t"
+      changed_when: false
 
-  - name: Check for open port tcp {{ elasticstack_beats_port }}
-    ansible.builtin.wait_for:
-      port: "{{ elasticstack_beats_port }}"
+    - name: Check for open port tcp {{ elasticstack_beats_port }}
+      ansible.builtin.wait_for:
+        port: "{{ elasticstack_beats_port }}"
 
-  - name: Create Syslog input
-    ansible.builtin.copy:
-      dest: /etc/logstash/conf.d/syslog/input.conf
-      content: |
-        input {
-          redis {
-            key => "input"
-            host => "localhost"
-            data_type => "list"
-          }
-        }
-      mode: preserve
-      owner: root
-      group: root
+    - name: Check syslog pipeline directory exists
+      ansible.builtin.stat:
+        path: /etc/logstash/conf.d/syslog
+      register: syslog_pipeline_dir
 
-  - name: Create Syslog output
-    ansible.builtin.copy:
-      dest: /etc/logstash/conf.d/syslog/output.conf
-      content: |
-        output {
-          redis {
-            key => "input"
-            host => "localhost"
-            data_type => "list"
-          }
-        }
-      mode: preserve
-      owner: root
-      group: root
+    - name: Assert syslog pipeline directory exists
+      ansible.builtin.assert:
+        that: syslog_pipeline_dir.stat.isdir
+        fail_msg: "Syslog pipeline directory not found"
 
-  - name: Update Pipeline code
-    ansible.builtin.git:
-      repo: https://github.com/widhalmt/syslog-logstash-pipeline.git
-      dest: /etc/logstash/conf.d/syslog/
-      version: master
+    - name: Check filebeat pipeline directory exists
+      ansible.builtin.stat:
+        path: /etc/logstash/conf.d/filebeat
+      register: filebeat_pipeline_dir
+
+    - name: Assert filebeat pipeline directory exists
+      ansible.builtin.assert:
+        that: filebeat_pipeline_dir.stat.isdir
+        fail_msg: "Filebeat pipeline directory not found"
+
+    - name: Check icinga pipeline directory exists
+      ansible.builtin.stat:
+        path: /etc/logstash/conf.d/icinga
+      register: icinga_pipeline_dir
+
+    - name: Assert icinga pipeline directory exists
+      ansible.builtin.assert:
+        that: icinga_pipeline_dir.stat.isdir
+        fail_msg: "Icinga pipeline directory not found"

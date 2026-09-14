@@ -1,0 +1,34 @@
+---
+# The workaround for arbitrarily named role directory is important because the
+# git repo has one name and the role within it another
+# Found at:
+# https://github.com/ansible-community/molecule/issues/1567#issuecomment-436876722
+- name: Converge
+  hosts: all
+  collections:
+    - netways.elasticstack
+  vars:
+    elasticstack_ci: true
+    logstash_manage_logging: true
+    logstash_logging_console: false
+    logstash_logging_slow_file: false
+    logstash_pipeline_identifier: false
+    logstash_pipeline_unsafe_shutdown: true
+    elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
+    elasticstack_full_stack: false
+    elasticstack_no_log: false
+  tasks:
+
+    - name: Set Filebeat version for 8.x
+      ansible.builtin.set_fact:
+        elasticstack_version: "8.4.1"
+      when:
+        - elasticstack_release == 8
+
+    - name: "Include Elastics repos role"
+      ansible.builtin.include_role:
+        name: repos
+
+    - name: "Include Logstash"
+      ansible.builtin.include_role:
+        name: logstash

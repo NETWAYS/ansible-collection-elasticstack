@@ -1,9 +1,11 @@
 ---
 # defaults file for logstash
 logstash_enable: true
-logstash_config_backup: no
+logstash_config_backup: false
 logstash_manage_yaml: true
 logstash_manage_logging: false
+
+logstash_heap: "1"
 
 # config items in yaml file #
 
@@ -16,7 +18,6 @@ logstash_config_path_logs: /var/log/logstash
 
 # pipeline configuration #
 logstash_manage_pipelines: true
-logstash_queue_type: persisted
 
 # this will deactivate all pipeline management
 logstash_no_pipelines: false
@@ -42,6 +43,12 @@ logstash_input_queue_type: memory
 logstash_input_queue_max_bytes: 1gb
 logstash_forwarder_queue_type: memory
 logstash_forwarder_queue_max_bytes: 1gb
+
+# redis connection for simple pipeline inputs/outputs
+logstash_redis_input_host: localhost
+logstash_redis_output_host: localhost
+logstash_redis_tls: false
+
 logstash_sniffing: false
 
 # logstash role / user
@@ -67,7 +74,6 @@ logstash_user_name: logstash_writer
 logstash_user_password: password
 logstash_user_email: ""
 logstash_user_fullname: "Internal Logstash User"
-logstash_reset_writer_role: true
 
 # logstash security
 logstash_tls_key_passphrase: LogstashChangeMe
@@ -81,6 +87,7 @@ logstash_logging_console: true
 logstash_logging_file: true
 logstash_logging_slow_console: true
 logstash_logging_slow_file: true
+logstash_logging_retention: 7D
 
 logstash_ident: true
 logstash_ident_field_name: "[netways][instance]"

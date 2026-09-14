@@ -1,10 +1,42 @@
 name: Documentation
-description: Suggest documentation improvements
+description: Documentation is missing, wrong or unclear
 title: "[Documentation]: "
 labels: ["documentation"]
 body:
-  - type: textarea
-    id: description
+  - type: dropdown
+    id: component
     attributes:
-      label: Describe the improvements you'd like.
-      description: Please provide as much context as possible. You can use markdown.
+      label: Component
+      description: Which part of the collection does this concern? Pick more than one if it applies.
+      multiple: true
+      options:
+        - elasticsearch
+        - kibana
+        - logstash
+        - beats (shared, or several beats at once)
+        - filebeat
+        - metricbeat
+        - auditbeat
+        - repos
+        - elasticstack (meta role, shared variables)
+        - plugins (cert_info, elasticsearch_role, elasticsearch_user)
+        - not sure, or affects the whole collection
+    validations:
+      required: true
+
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: Which file or page - for example the main README, a role README, meta/argument_specs.yml, or an example playbook.
+      placeholder: roles/elasticsearch/README.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: change
+    attributes:
+      label: What should change
+      description: What is wrong or missing, and what should it say instead?
+    validations:
+      required: true

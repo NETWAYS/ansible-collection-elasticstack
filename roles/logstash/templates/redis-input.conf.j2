@@ -1,6 +1,9 @@
 input {
   redis {
-    host => "localhost"
+    host => "{{ logstash_redis_input_host }}"
+{% if logstash_redis_tls | bool %}
+    ssl => true
+{% endif %}
     data_type => "list"
     key => "forwarder"
 {% if logstash_redis_password is defined %}

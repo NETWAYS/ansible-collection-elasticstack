@@ -6,7 +6,7 @@ Set these variables once (in `group_vars`, the play, or via `-e`) and every role
 
 ## Requirements
 
-You do not run this role directly — the component roles import it automatically. It installs the shared Python libraries (`cryptography` and the `elasticsearch` client) and packages (`openssl`, `unzip`) that the collection needs.
+It installs the shared Python libraries (`cryptography` and the `elasticsearch` client) and the packages (`openssl`, `unzip`) that the collection needs.
 
 ## Example
 

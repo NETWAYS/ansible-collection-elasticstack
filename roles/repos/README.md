@@ -7,7 +7,6 @@ Its main use is together with the other roles of this collection, which expect t
 ## Requirements
 
 * The `community.general` collection — only needed on SUSE hosts, where the role uses the `zypper` modules.
-* Network access from the target host to the Elastic repository URL.
 
 The role installs the required signing tools (`gpg`/`gnupg`) itself.
 

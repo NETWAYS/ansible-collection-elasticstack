@@ -2,7 +2,7 @@
 
 ## Keeping an overview
 
-It can be quite difficult to stay on top of your pipeline configuration because they tend to become very complex.
+It can be quite difficult to stay on top of your pipeline configuration, because pipelines tend to become very complex.
 
 This collection will leave some comments about how pipelines are interconnected within the `/etc/logstash/pipelines.yml` configuration file.
 
@@ -28,7 +28,7 @@ You can also determine where Logstash stores the data of each pipeline while pro
 
 ### Basic configuration
 
-To have a single Redis input and output to your files, use this.
+To give a pipeline one Redis input and one Redis output, use this.
 
 ```yaml
 logstash_pipelines:
@@ -45,7 +45,7 @@ logstash_pipelines:
         key: syslog-output
 ```
 
-This will result in your pipeline checking out the configuration on GitHub and adding these two extras. In extra files, just shown in one place to safe space.
+This will result in your pipeline checking out the configuration on GitHub and adding these two extras. The role writes them into separate files, `input.conf` and `output.conf`, they are only shown together here to save space.
 
 ```
 input {
@@ -72,7 +72,7 @@ Just give more inputs with `name` and `key`. Every key will be read.
 
 If you want a bit more control over which outputs are used, the role offers more sophisticated configuration.
 
-If you have several outputs that all have conditions, like just send some messages to a development system or only alerts to a monitoring system.
+This helps when several outputs each have their own condition, for example to send some messages to a development system and only alerts to a monitoring system.
 
 ```yaml
 logstash_pipelines:
@@ -97,7 +97,7 @@ This will give you the following configuration:
 ```
 input {
 
-# default output
+# default input
   redis {
     host => "localhost"
     data_type => "list"
@@ -136,7 +136,7 @@ if [program] == "special2"{
 }
 ```
 
-Note that the `default` output get's **every** event, the other two outputs only get those where the condition is met.
+The `default` output gets **every** event, the other two outputs only get those where the condition is met.
 
 You can combine several outputs with `else`. That's helpful when you want to split events. Like syslog messages depending on which program logged an event. Just change `exclusive` to `true`.
 
@@ -164,7 +164,7 @@ This will give you the following Logstash configuration.
 ```
 input {
 
-# default output
+# default input
   redis {
     host => "localhost"
     data_type => "list"
@@ -193,7 +193,7 @@ else if [program] == "special2" {
 }
 
 # default output
-else  {
+else {
   redis {
     host => "localhost"
     data_type => "list"

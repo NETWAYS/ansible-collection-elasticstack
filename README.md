@@ -10,7 +10,7 @@ The minimum required version is declared in [meta/runtime.yml](meta/runtime.yml)
 
 | | |
 |---|---|
-| ansible-core | `>= 2.18`, tested with 2.19 and 2.20 |
+| ansible-core | `>= 2.18` |
 | Python on the control node | `>= 3.11` |
 | Python on the target hosts | `>= 3.9` |
 | Elastic Stack | release 8 |

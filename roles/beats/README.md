@@ -1,6 +1,6 @@
 # Ansible Role: Beats
 
-Installs and configures the Elastic [Beats](https://www.elastic.co/beats) — Filebeat, Auditbeat and Metricbeat — on Linux systems. The role can run standalone or together with the other Elastic Stack roles. Beats can ship to Logstash or directly to Elasticsearch.
+Installs and configures the Elastic [Beats](https://www.elastic.co/beats) on Linux systems: Filebeat, Auditbeat and Metricbeat. The role can run standalone or together with the other Elastic Stack roles. Beats can ship to Logstash or directly to Elasticsearch.
 
 ## Requirements
 
@@ -27,9 +27,9 @@ Filebeat can read from several sources (log files, syslog, journald, Docker, mod
 
 Run only parts of the role with `--tags`:
 
-* `configuration` (alias `beats_configuration`) — (re)write the Filebeat and Auditbeat configuration without installing. Use `beats_filebeat_configuration` or `beats_auditbeat_configuration` to limit it to one of them.
-* `certificates` — only generate and distribute the TLS certificates.
-* `renew_beats_cert` / `renew_ca` — force renewal of the Beats certificate.
+* `configuration` (alias `beats_configuration`): (re)write the Filebeat and Auditbeat configuration without installing. Use `beats_filebeat_configuration` or `beats_auditbeat_configuration` to limit it to one of them.
+* `certificates`: only generate and distribute the TLS certificates.
+* `renew_beats_cert` / `renew_ca`: force renewal of the Beats certificate.
 
 <!-- ANSIBLE DOCSMITH MAIN START -->
 ## Role variables<a id="variables"></a>
@@ -40,7 +40,7 @@ Run only parts of the role with `--tags`:
 | `beats_auditbeat`<br>**Type**: `bool`<br>**Default**: `false` | Install and manage Auditbeat. |
 | `beats_metricbeat`<br>**Type**: `bool`<br>**Default**: `false` | Install and manage Metricbeat. |
 | `beats_target_hosts`<br>**Type**: `list` of `str`<br>**Default**: `['localhost']` | Hosts the Beats ship to. Only used when the role runs standalone; with the other Elastic Stack roles the targets are determined automatically. |
-| `beats_fields`<br>**Type**: `list` of `str` | Global fields added to the log and syslog (tcp/udp) inputs (not to the mysql, journald or docker inputs), given as a list of "key: value" strings — the global counterpart to the per-input fields. Unset by default. See the Filebeat inputs documentation. |
+| `beats_fields`<br>**Type**: `list` of `str` | Global fields added to the log and syslog (tcp/udp) inputs (not to the mysql, journald or docker inputs), given as a list of "key: value" strings. This is the global counterpart to the per-input fields. Unset by default. See the Filebeat inputs documentation. |
 | `beats_logging`<br>**Type**: `str`<br>**Default**: `"file"` | Where the Beats log. Set to "file" to log into beats_logpath; any other value leaves the Beats built-in logging. |
 | `beats_loglevel`<br>**Type**: `str`<br>**Default**: `"info"` | Log level for all Beats. |
 | `beats_logpath`<br>**Type**: `str`<br>**Default**: `"/var/log/beats"` | Directory for the log files when beats_logging is "file". |

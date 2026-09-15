@@ -55,7 +55,7 @@ argument_specs:
         description: >-
           Global fields added to the log and syslog (tcp/udp) inputs (not to the
           mysql, journald or docker inputs), given as a list of "key: value"
-          strings — the global counterpart to the per-input fields. Unset by
+          strings. This is the global counterpart to the per-input fields. Unset by
           default. See the Filebeat inputs documentation.
 
       # ----- Logging -----

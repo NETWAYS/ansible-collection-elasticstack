@@ -6,7 +6,7 @@ Its main use is together with the other roles of this collection, which expect t
 
 ## Requirements
 
-* The `community.general` collection — only needed on SUSE hosts, where the role uses the `zypper` modules.
+* The `community.general` collection, only needed on SUSE hosts where the role uses the `zypper` modules.
 
 The role installs the required signing tools (`gpg`/`gnupg`) itself.
 
@@ -30,4 +30,4 @@ No variables are defined for this role.
 
 ## Shared variables
 
-This role is configured through the collection-wide `elasticstack_*` variables — mainly `elasticstack_release`, `elasticstack_variant`, `elasticstack_enable_repos`, `elasticstack_repo_url`, `elasticstack_repo_key` and `elasticstack_rpm_workaround`. They are documented centrally with the [elasticstack role](../elasticstack/README.md).
+This role is configured through the collection-wide `elasticstack_*` variables, mainly `elasticstack_release`, `elasticstack_variant`, `elasticstack_enable_repos`, `elasticstack_repo_url`, `elasticstack_repo_key` and `elasticstack_rpm_workaround`. They are documented centrally with the [elasticstack role](../elasticstack/README.md).

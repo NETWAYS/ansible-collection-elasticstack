@@ -1,6 +1,6 @@
 # Ansible Role: elasticstack
 
-The shared base role of the collection. Every component role (elasticsearch,logstash, kibana, beats, repos) imports it automatically on first use, so you normally do not call it directly. It installs the common dependencies and, above all, defines the collection-wide `elasticstack_*` variables — the settings shared across all roles: release and variant, the inventory host groups, ports, the package repositories, and the stack CA.
+The shared base role of the collection. Every component role (elasticsearch, logstash, kibana, beats, repos) imports it automatically on first use, so you normally do not call it directly. It installs the common dependencies and, above all, defines the collection-wide `elasticstack_*` variables, the settings shared across all roles: release and variant, the inventory host groups, ports, the package repositories, and the stack CA.
 
 Set these variables once (in `group_vars`, the play, or via `-e`) and every role picks them up. This page is the central reference for them.
 

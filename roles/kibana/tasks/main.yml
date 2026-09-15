@@ -139,7 +139,7 @@
     # ready yet") until it is fully up, so downstream consumers (e.g. Beats
     # dashboard setup) must not race it. Poll unauthenticated: a ready Kibana
     # answers 200 (anonymous status allowed) or 401 (auth required but server up)
-    # depending on status.allowAnonymous / the version — treat both as ready.
+    # depending on status.allowAnonymous and the version. Treat both as ready.
     - name: Wait for Kibana API to be ready
       ansible.builtin.uri:
         url: "{{ 'https' if kibana_tls | bool else 'http' }}://localhost:{{ elasticstack_kibana_port }}/api/status"

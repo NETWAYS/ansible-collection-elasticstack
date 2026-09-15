@@ -1,6 +1,6 @@
 # Ansible Role: Kibana
 
-Installs and configures [Kibana](https://www.elastic.co/kibana) on Linux systems. The role manages `kibana.yml` and can enable TLS for the Kibana web interface, using a certificate you provide. In a full stack setup together with the elasticsearch role, it also configures the connection to Elasticsearch — the TLS trust and the `kibana_system` credentials — using the Elasticsearch CA.
+Installs and configures [Kibana](https://www.elastic.co/kibana) on Linux systems. The role manages `kibana.yml` and can enable TLS for the Kibana web interface, using a certificate you provide. In a full stack setup together with the elasticsearch role, it also configures the connection to Elasticsearch, both the TLS trust and the `kibana_system` credentials, using the Elasticsearch CA.
 
 ## Requirements
 
@@ -43,8 +43,8 @@ This writes `/var/log/kibana/kibana.log` in a human readable layout and keeps te
 
 Run only parts of the role with `--tags`:
 
-* `certificates` — only generate and distribute the TLS certificates.
-* `renew_kibana_cert` / `renew_ca` — force renewal of the Kibana certificate.
+* `certificates`: only generate and distribute the TLS certificates.
+* `renew_kibana_cert` / `renew_ca`: force renewal of the Kibana certificate.
 
 <!-- ANSIBLE DOCSMITH MAIN START -->
 ## Role variables<a id="variables"></a>

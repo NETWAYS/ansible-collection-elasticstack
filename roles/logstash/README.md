@@ -11,8 +11,7 @@ It works with the standard Elastic Stack packages and with Elastic's OSS variant
 * `curl` on the target host.
 * `git` on the target host if you use git-based pipelines.
 * Redis if you use the default pipeline or other pipelines that talk to Redis (e.g. via the [`geerlingguy.redis`](https://galaxy.ansible.com/geerlingguy/redis) role).
-
-You also need the Elastic repositories configured — use the [`repos`](../repos) role.
+* The Elastic repositories configured: use the [`repos`](../repos/README.md) role or provide them yourself.
 
 ## Example
 

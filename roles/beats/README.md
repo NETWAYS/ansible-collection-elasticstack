@@ -5,7 +5,7 @@ Installs and configures the Elastic [Beats](https://www.elastic.co/beats) — Fi
 ## Requirements
 
 * The `community.crypto` collection (used to check certificate expiration).
-* The Beats you want to install must be available in your software repositories — use the [`repos`](../repos) role or provide them yourself.
+* The Elastic repositories configured: use the [`repos`](../repos/README.md) role or provide them yourself.
 
 ## Example
 

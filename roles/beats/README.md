@@ -45,7 +45,7 @@ Run only parts of the role with `--tags`:
 | `beats_loglevel`<br>**Type**: `str`<br>**Default**: `"info"` | Log level for all Beats. |
 | `beats_logpath`<br>**Type**: `str`<br>**Default**: `"/var/log/beats"` | Directory for the log files when beats_logging is "file". |
 | `beats_filebeat_enable`<br>**Type**: `bool`<br>**Default**: `true` | Start and enable the Filebeat service. |
-| `beats_filebeat_output`<br>**Type**: `str`<br>**Default**: `"logstash"`<br>**Choices**: `logstash`, `elasticsearch` | Where Filebeat sends its events. |
+| `beats_filebeat_output`<br>**Type**: `str`<br>**Default**: `"logstash"`<br>**Choices**: `logstash`, `elasticsearch` | Where Filebeat sends its events. With "logstash" they pass through the Logstash pipelines and can be filtered and enriched there, which is what log lines usually need. With "elasticsearch" they go straight into the cluster. |
 | `beats_filebeat_elastic_monitoring`<br>**Type**: `bool`<br>**Default**: `false` | Report Filebeat monitoring data through the Elastic Stack monitoring features. |
 | `beats_filebeat_loadbalance`<br>**Type**: `bool`<br>**Default**: `true` | Enable load balancing for the Filebeat Logstash output. |
 | `beats_filebeat_log_input`<br>**Type**: `bool`<br>**Default**: `true` | Read log files with the inputs from beats_filebeat_log_inputs. |
@@ -61,11 +61,11 @@ Run only parts of the role with `--tags`:
 | `beats_filebeat_mysql_slowlog_input`<br>**Type**: `bool`<br>**Default**: `false` | Collect the MySQL/MariaDB slow query log, including multiline handling. |
 | `beats_filebeat_modules`<br>**Type**: `list` of `str` | List of Filebeat modules to enable (experimental). Unset by default. |
 | `beats_auditbeat_enable`<br>**Type**: `bool`<br>**Default**: `true` | Start and enable the Auditbeat service. |
-| `beats_auditbeat_output`<br>**Type**: `str`<br>**Default**: `"elasticsearch"`<br>**Choices**: `logstash`, `elasticsearch` | Where Auditbeat sends its events. |
+| `beats_auditbeat_output`<br>**Type**: `str`<br>**Default**: `"elasticsearch"`<br>**Choices**: `logstash`, `elasticsearch` | Where Auditbeat sends its events. Defaults to "elasticsearch" because audit events already arrive structured and gain nothing from passing through Logstash. Set it to "logstash" to route them through the pipelines anyway. |
 | `beats_auditbeat_setup`<br>**Type**: `bool`<br>**Default**: `true` | Run the Auditbeat setup (index management, ingest pipelines and Kibana dashboards). Only effective with the elasticsearch output; loading the dashboards additionally requires Kibana to be reachable. |
 | `beats_auditbeat_loadbalance`<br>**Type**: `bool`<br>**Default**: `true` | Enable load balancing for the Auditbeat Logstash output. |
 | `beats_metricbeat_enable`<br>**Type**: `bool`<br>**Default**: `true` | Start and enable the Metricbeat service. |
-| `beats_metricbeat_output`<br>**Type**: `str`<br>**Default**: `"elasticsearch"`<br>**Choices**: `logstash`, `elasticsearch` | Where Metricbeat sends its events. |
+| `beats_metricbeat_output`<br>**Type**: `str`<br>**Default**: `"elasticsearch"`<br>**Choices**: `logstash`, `elasticsearch` | Where Metricbeat sends its events. Defaults to "elasticsearch" because metrics already arrive structured and gain nothing from passing through Logstash. Set it to "logstash" to route them through the pipelines anyway. |
 | `beats_metricbeat_modules`<br>**Type**: `list` of `str`<br>**Default**: `['system']` | Metricbeat modules to enable. |
 | `beats_metricbeat_loadbalance`<br>**Type**: `bool`<br>**Default**: `true` | Enable load balancing for the Metricbeat Logstash output. |
 | `beats_security`<br>**Type**: `bool`<br>**Default**: `false` | Activate TLS for the connections to the targets. Works with the other roles and elasticstack_full_stack to create certificates automatically, or with the beats_tls_* variables for custom certificates. |

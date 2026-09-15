@@ -88,7 +88,10 @@ argument_specs:
           - logstash
           - elasticsearch
         default: logstash
-        description: Where Filebeat sends its events.
+        description: >-
+          Where Filebeat sends its events. With "logstash" they pass through the Logstash
+          pipelines and can be filtered and enriched there, which is what log lines usually
+          need. With "elasticsearch" they go straight into the cluster.
 
       beats_filebeat_elastic_monitoring:
         type: bool
@@ -183,7 +186,10 @@ argument_specs:
           - logstash
           - elasticsearch
         default: elasticsearch
-        description: Where Auditbeat sends its events.
+        description: >-
+          Where Auditbeat sends its events. Defaults to "elasticsearch" because audit events
+          already arrive structured and gain nothing from passing through Logstash. Set it to
+          "logstash" to route them through the pipelines anyway.
 
       beats_auditbeat_setup:
         type: bool
@@ -210,7 +216,10 @@ argument_specs:
           - logstash
           - elasticsearch
         default: elasticsearch
-        description: Where Metricbeat sends its events.
+        description: >-
+          Where Metricbeat sends its events. Defaults to "elasticsearch" because metrics
+          already arrive structured and gain nothing from passing through Logstash. Set it to
+          "logstash" to route them through the pipelines anyway.
 
       beats_metricbeat_modules:
         type: list

@@ -6,3 +6,5 @@ trivial:
   - "The three ``beats_<beat>_output`` descriptions now say what choosing each value changes
     instead of repeating the variable name, the README no longer names the tested ansible-core
     versions, and the stale variable renaming notice is removed."
+  - The two check jobs are named after what they verify, ``argument_specs_and_readme`` and
+    ``changelog_fragment``, so the status check on a pull request says which condition failed.

@@ -221,7 +221,7 @@ If you need unsafe Logstash shutdowns, e.g. for testing, you can set `logstash_p
 
 There are still some minor issues you need to keep in mind:
 
-* The default output in an `exclusive: true` setup must be the last in the YAML configuration. There's no sorting, the role simply expects the default to be the last one.
+* The default output in an `exclusive: true` setup must be the last in the YAML configuration. There's no sorting, the role expects the default to be the last one.
 * The configuration *should* work but will make no sense if you have `exclusive: true` but two or more outputs without `condition`.
 
 ## Custom pipelines

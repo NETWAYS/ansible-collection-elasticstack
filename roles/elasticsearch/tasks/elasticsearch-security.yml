@@ -231,7 +231,7 @@
     # Pass passphrases via argv (a list), not a folded shell string. A string command is
     # tokenized by shlex.split() (shell-like word splitting and quote parsing), which mangles
     # passphrases containing spaces or quotes. With argv every element is handed to the binary
-    # literally — no shell, no shlex — so arbitrary special characters work.
+    # literally, with no shell and no shlex, so arbitrary special characters work.
     - name: Configure ca on elasticstack_ca_host
       ansible.builtin.command:
         argv:

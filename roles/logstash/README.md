@@ -1,6 +1,6 @@
 # Ansible Role: Logstash
 
-Installs and configures [Logstash](https://www.elastic.co/products/logstash) on Linux systems. The role can manage `logstash.yml`, the log4j2 logging, the JVM heap, TLS, and the Elasticsearch writer role/user. For pipelines it can create two default pipelines — a Beats input and an Elasticsearch forwarder, both using Redis — and manage your own pipelines, whose configuration can be checked out from external git repositories.
+Installs and configures [Logstash](https://www.elastic.co/products/logstash) on Linux systems. The role can manage `logstash.yml`, the log4j2 logging, the JVM heap, TLS, and the Elasticsearch writer role/user. For pipelines it can create two default pipelines, a Beats input and an Elasticsearch forwarder both using Redis, and manage your own pipelines, whose configuration can be checked out from external git repositories.
 
 It works with the standard Elastic Stack packages and with Elastic's OSS variant.
 
@@ -11,8 +11,7 @@ It works with the standard Elastic Stack packages and with Elastic's OSS variant
 * `curl` on the target host.
 * `git` on the target host if you use git-based pipelines.
 * Redis if you use the default pipeline or other pipelines that talk to Redis (e.g. via the [`geerlingguy.redis`](https://galaxy.ansible.com/geerlingguy/redis) role).
-
-You also need the Elastic repositories configured — use the [`repos`](../repos) role.
+* The Elastic repositories configured: use the [`repos`](../repos/README.md) role or provide them yourself.
 
 ## Example
 
@@ -34,10 +33,10 @@ For how to configure pipelines (built-in Redis/Beats and external git repositori
 
 Run only parts of the role with `--tags`:
 
-* `configuration` (alias `logstash_configuration`) — only (re)write the configuration, skip installation.
-* `certificates` — only generate and distribute the TLS certificates.
-* `renew_logstash_cert` / `renew_ca` — force renewal of the Logstash certificate.
-* `mermaid` — only regenerate the pipeline overview (`pipelines.mermaid`).
+* `configuration` (alias `logstash_configuration`): only (re)write the configuration, skip installation.
+* `certificates`: only generate and distribute the TLS certificates.
+* `renew_logstash_cert` / `renew_ca`: force renewal of the Logstash certificate.
+* `mermaid`: only regenerate the pipeline overview (`pipelines.mermaid`).
 
 <!-- ANSIBLE DOCSMITH MAIN START -->
 ## Role variables<a id="variables"></a>

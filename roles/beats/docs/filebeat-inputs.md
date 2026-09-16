@@ -6,7 +6,7 @@ Filebeat can read from several sources. Each source is turned into a Filebeat in
 
 Set with `beats_filebeat_log_input` (default `true`) and `beats_filebeat_log_inputs`.
 
-`beats_filebeat_log_inputs` is a **dictionary keyed by a free name**. That key becomes the id of the generated [`filestream`](https://www.elastic.co/docs/reference/beats/filebeat/filebeat-input-filestream) input (`<key>-filestream`) — there is no separate `name` field. Each entry needs `paths`; `fields` and `multiline` are optional.
+`beats_filebeat_log_inputs` is a **dictionary keyed by a free name**. That key becomes the id of the generated [`filestream`](https://www.elastic.co/docs/reference/beats/filebeat/filebeat-input-filestream) input (`<key>-filestream`). There is no separate `name` field. Each entry needs `paths`; `fields` and `multiline` are optional.
 
 The default reads the system log:
 
@@ -40,7 +40,7 @@ beats_filebeat_log_inputs:
 
 There are two ways to add fields, and they use **different shapes**:
 
-* **Per input** — the optional `fields` inside a log input is a **dictionary** (`key: value`), added only to that input:
+* **Per input**: the optional `fields` inside a log input is a **dictionary** (`key: value`), added only to that input:
 
   ```yaml
   beats_filebeat_log_inputs:
@@ -51,7 +51,7 @@ There are two ways to add fields, and they use **different shapes**:
         environment: production
   ```
 
-* **Globally** — `beats_fields` is a **list of `"key: value"` strings**. In the current templates it is added to the log, TCP and UDP inputs; the journald, Docker and MySQL slow-log inputs do not receive it:
+* **Globally**: `beats_fields` is a **list of `"key: value"` strings**. In the current templates it is added to the log, TCP and UDP inputs; the journald, Docker and MySQL slow-log inputs do not receive it:
 
   ```yaml
   beats_fields:
@@ -72,7 +72,7 @@ beats_filebeat_syslog_tcp_port: 514
 
 Enable with `beats_filebeat_journald` (default `false`, available since Filebeat 7.16) and configure inputs with `beats_filebeat_journald_inputs`.
 
-This is a **dictionary keyed by a free name**. Unlike the log inputs, here the key is only a label — the input's id comes from the `id` field, which each entry needs. `include_matches` is optional and is itself a dictionary whose values are the match expressions.
+This is a **dictionary keyed by a free name**. Unlike the log inputs, here the key is only a label. The input's id comes from the `id` field, which each entry needs. `include_matches` is optional and is itself a dictionary whose values are the match expressions.
 
 ```yaml
 beats_filebeat_journald_inputs:

@@ -10,7 +10,7 @@ The minimum required version is declared in [meta/runtime.yml](meta/runtime.yml)
 
 | | |
 |---|---|
-| ansible-core | `>= 2.18`, tested with 2.19 and 2.20 |
+| ansible-core | `>= 2.18` |
 | Python on the control node | `>= 3.11` |
 | Python on the target hosts | `>= 3.9` |
 | Elastic Stack | release 8 |
@@ -119,10 +119,6 @@ The execution order of the roles matters, and the roles interact with hosts from
 
 ## Caveats and information for long time users
 
-### Variable renaming
-
-If you have been using this collection before version `1.0.0`, note that a significant number of variables had to be renamed because of naming schema changes made by Ansible. Please review the variables you set in your playbooks and variable files.
-
 ### Ulimit management for Elasticsearch
 
 The role no longer configures `ulimit`. Make sure the system's open file limit is set correctly, packages usually handle this. Verify with `ulimit -n` or by checking `/proc/<pid>/limits`. If your version does not, please [open an issue](https://github.com/NETWAYS/ansible-collection-elasticstack/issues).
@@ -131,7 +127,7 @@ The role no longer configures `ulimit`. Make sure the system's open file limit i
 
 Every kind of contribution is welcome. Open [issues](https://github.com/NETWAYS/ansible-collection-elasticstack/issues) or provide [pull requests](https://github.com/NETWAYS/ansible-collection-elasticstack/pulls).
 
-Pull requests go against `main`. If you need a stable state, pin a release tag.
+Pull requests go against `main`.
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) first. It describes what a pull request needs, including the changelog fragment that every pull request has to bring along, how role variables are documented and how to run the tests.
 

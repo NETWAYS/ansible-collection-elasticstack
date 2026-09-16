@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  docs:
+  argument_specs_and_readme:
     # For non-PR events (workflow_dispatch, etc.), github.event.pull_request.draft is null.
     # GitHub Actions coerces null == false to true, so the job runs for all non-draft events.
     if: github.event.pull_request.draft == false

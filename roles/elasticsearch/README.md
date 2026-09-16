@@ -6,7 +6,7 @@ The OSS variant is only available up to Elastic Stack 7; from release 8 on only 
 
 ## Requirements
 
-* The Elastic repositories configured — use the [`repos`](../repos) role.
+* The Elastic repositories configured: use the [`repos`](../repos/README.md) role or provide them yourself.
 * For the default security setup the role generates certificates with the bundled `elasticsearch-certutil` and `openssl`. The required Python libraries (`cryptography`, `elasticsearch`) are installed for you by the shared `elasticstack` role.
 
 ## Example
@@ -25,9 +25,9 @@ The OSS variant is only available up to Elastic Stack 7; from release 8 on only 
 
 Run only parts of the role with `--tags`:
 
-* `certificates` — only generate and distribute the TLS certificates.
-* `renew_es_cert` — force renewal of the Elasticsearch node certificate.
-* `renew_ca` — force renewal of the stack CA and all component certificates.
+* `certificates`: only generate and distribute the TLS certificates.
+* `renew_es_cert`: force renewal of the Elasticsearch node certificate.
+* `renew_ca`: force renewal of the stack CA and all component certificates.
 
 <!-- ANSIBLE DOCSMITH MAIN START -->
 ## Role variables<a id="variables"></a>

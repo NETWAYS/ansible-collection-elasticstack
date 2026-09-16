@@ -21,7 +21,7 @@ permissions:
   contents: read
 
 jobs:
-  fragment:
+  changelog_fragment:
     # Dependabot only bumps action and dependency versions, which needs no fragment.
     if: >-
       github.event.pull_request.draft == false

@@ -1,0 +1,40 @@
+ancestor: null
+releases:
+  0.1.0:
+    changes:
+      minor_changes:
+      - The collection declares ``community.crypto`` as a dependency now, so installing
+        it with ``ansible-galaxy`` pulls in what the beats role needs to check certificate
+        expiration.
+      - The documentation was restructured along the collection template. ``docs/01-requirements.md``
+        became ``docs/requirements.md``, version pinning and upgrading moved to ``docs/upgrades.md``,
+        and the role pages under ``docs/`` that only linked to the role READMEs were
+        removed. Module documentation is read with ``ansible-doc`` instead of from
+        copies under ``docs/``.
+      - '``elasticstack_kibana_host`` is a declared and documented variable now, defaulting
+        to the fully qualified domain name of the Kibana host. The Kibana template
+        referenced it ad hoc before, without a default of its own.'
+      release_summary: 'First release of this collection. It installs and manages
+        the Elastic Stack
+
+        on Linux, with a role for every component and a self-signed stack CA that
+        wires TLS between
+
+        them.
+
+        '
+    fragments:
+    - docs_wording_cleanup.yml
+    - prepare_galaxy_release.yml
+    - release_summary.yml
+    modules:
+    - description: Retrieve information from a PKCS12 certificate
+      name: cert_info
+      namespace: ''
+    - description: Manage Elasticsearch roles
+      name: elasticsearch_role
+      namespace: ''
+    - description: Manage Elasticsearch users
+      name: elasticsearch_user
+      namespace: ''
+    release_date: '2026-09-17'

@@ -42,6 +42,8 @@ antsibull-changelog release --version <VERSION>
 
 Steps 1 to 3 change files in the repository. `main` requires an approving review, so open a pull request with the version bump and the generated changelog. Do not push this directly, even though repository admins are technically able to.
 
+The `changelog_fragment` check would normally reject that pull request, because a release consumes the fragments instead of adding one. It recognises a release by its shape, a folded `changelogs/changelog.yaml` together with deleted fragments and nothing else, and skips itself. Keep the release pull request to exactly those files, anything else makes the check ask for a fragment again.
+
 ## 4. Tag the version
 
 Tag the merge commit on `main`. No `v` prefix, semantic versioning.

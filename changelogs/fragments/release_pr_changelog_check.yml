@@ -1,0 +1,4 @@
+trivial:
+  - The ``changelog_fragment`` check no longer rejects a release pull request. A release folds
+    the fragments into ``changelogs/changelog.yaml`` and deletes them instead of adding one, so
+    the check recognises that shape and skips itself.

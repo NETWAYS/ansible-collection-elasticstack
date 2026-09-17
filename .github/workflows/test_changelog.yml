@@ -50,6 +50,24 @@ jobs:
             exit 0
           fi
           git fetch --no-tags origin "$BASE_REF"
+
+          # A release pull request consumes the fragments instead of adding one:
+          # antsibull-changelog folds them into changelogs/changelog.yaml, writes
+          # CHANGELOG.md and deletes them. Recognise that shape, otherwise a release
+          # could never be merged. See RELEASE.md.
+          outside=$(git diff --name-only "origin/$BASE_REF...HEAD" \
+            | grep -vE '^(CHANGELOG\.md|changelogs/changelog\.yaml|galaxy\.yml|changelogs/fragments/)' \
+            || true)
+          folded=$(git diff --name-only --diff-filter=AM \
+            "origin/$BASE_REF...HEAD" -- changelogs/changelog.yaml)
+          consumed=$(git diff --name-only --diff-filter=D \
+            "origin/$BASE_REF...HEAD" -- changelogs/fragments/ \
+            | grep -v '^changelogs/fragments/\.keep$' || true)
+          if [ -z "$outside" ] && [ -n "$folded" ] && [ -n "$consumed" ]; then
+            echo "Release pull request, the fragments are folded into changelogs/changelog.yaml."
+            exit 0
+          fi
+
           added=$(git diff --name-only --diff-filter=A \
             "origin/$BASE_REF...HEAD" -- changelogs/fragments/ \
             | grep -v '^changelogs/fragments/\.keep$' || true)

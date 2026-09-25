@@ -56,7 +56,7 @@
           - python3-elasticsearch
           - python3-cryptography
       when:
-        - not elasticstack_pip_installation | bool
+        - elasticstack_pip_installation is failed
 
 - name: Install Python Modules via pip  - forced
   ansible.builtin.pip:

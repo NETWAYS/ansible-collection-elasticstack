@@ -419,6 +419,6 @@
     host: "https://{{ hostvars[elasticstack_ca_host].ansible_default_ipv4.address }}:{{ elasticstack_elasticsearch_http_port }}"
     auth_user: elastic
     auth_pass: "{{ logstash_elasticstack_password.stdout }}"
-    verify_certs: false
+    verify_certs: true
     ca_certs: "{{ logstash_certs_dir }}/ca.crt"
   when: logstash_create_user | bool

@@ -1,0 +1,16 @@
+bugfixes:
+  - The ``elasticsearch_role`` and ``elasticsearch_user`` modules stop with a readable message
+    when the ``elasticsearch`` Python library on the target host is version 7. That version
+    accepts the credentials without sending them, so the modules failed with an unexplained
+    HTTP 401 instead.
+  - The ``elasticstack`` role only falls back to the ``python3-elasticsearch`` distribution
+    package when the pip install before it actually failed. The condition it used could never
+    be true, so the package was installed on every host, and on EL 9 and Ubuntu 22.04 that
+    package is still version 7 of the library.
+  - The ``elasticsearch_role`` and ``elasticsearch_user`` modules no longer build an SSL context
+    with both certificate checks switched off. They hand the TLS settings to the client
+    directly, and only for an ``https`` host, so ``ca_certs`` reaches the connection and a plain
+    ``http`` host no longer fails while the client is being built.
+  - The ``logstash`` role creates the logstash user over a verified connection, like the
+    logstash role it creates right before it. Both talk to the same host, but the user was
+    created with ``verify_certs`` set to false.

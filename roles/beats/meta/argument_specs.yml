@@ -46,8 +46,24 @@ argument_specs:
         default:
           - localhost
         description: >-
-          Hosts the Beats ship to. Only used when the role runs standalone; with
-          the other Elastic Stack roles the targets are determined automatically.
+          Hosts the Beats ship to when the role runs standalone; with the other Elastic
+          Stack roles the targets come from the inventory. Applies to whichever output a
+          Beat uses, so set beats_elasticsearch_hosts or beats_logstash_hosts instead when
+          the two outputs need different hosts.
+
+      beats_elasticsearch_hosts:
+        type: list
+        elements: str
+        description: >-
+          Elasticsearch hosts the Beats ship to. Defaults to the nodes from the
+          elasticsearch group, or to beats_target_hosts when the role runs standalone.
+
+      beats_logstash_hosts:
+        type: list
+        elements: str
+        description: >-
+          Logstash hosts the Beats ship to. Defaults to the nodes from the logstash
+          group, or to beats_target_hosts when the role runs standalone.
 
       beats_fields:
         type: list

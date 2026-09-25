@@ -1,0 +1,10 @@
+minor_changes:
+  - The beats role takes ``beats_elasticsearch_hosts`` and ``beats_logstash_hosts``, so the two
+    output types can point at different hosts, and so the hosts can be set in a full stack at all,
+    where ``beats_target_hosts`` has no effect. Left unset they resolve the way the templates did
+    before, from the inventory group in a full stack and from ``beats_target_hosts`` standalone.
+
+trivial:
+  - The three Beats templates read the resolved host lists instead of working the hosts out
+    themselves, which removes nine inventory lookups and the ``elasticstack_full_stack`` branch
+    around each of them.

@@ -39,7 +39,9 @@ Run only parts of the role with `--tags`:
 | `beats_filebeat`<br>**Type**: `bool`<br>**Default**: `true` | Install and manage Filebeat. |
 | `beats_auditbeat`<br>**Type**: `bool`<br>**Default**: `false` | Install and manage Auditbeat. |
 | `beats_metricbeat`<br>**Type**: `bool`<br>**Default**: `false` | Install and manage Metricbeat. |
-| `beats_target_hosts`<br>**Type**: `list` of `str`<br>**Default**: `['localhost']` | Hosts the Beats ship to. Only used when the role runs standalone; with the other Elastic Stack roles the targets are determined automatically. |
+| `beats_target_hosts`<br>**Type**: `list` of `str`<br>**Default**: `['localhost']` | Hosts the Beats ship to when the role runs standalone; with the other Elastic Stack roles the targets come from the inventory. Applies to whichever output a Beat uses, so set beats_elasticsearch_hosts or beats_logstash_hosts instead when the two outputs need different hosts. |
+| `beats_elasticsearch_hosts`<br>**Type**: `list` of `str` | Elasticsearch hosts the Beats ship to. Defaults to the nodes from the elasticsearch group, or to beats_target_hosts when the role runs standalone. |
+| `beats_logstash_hosts`<br>**Type**: `list` of `str` | Logstash hosts the Beats ship to. Defaults to the nodes from the logstash group, or to beats_target_hosts when the role runs standalone. |
 | `beats_fields`<br>**Type**: `list` of `str` | Global fields added to the log and syslog (tcp/udp) inputs (not to the mysql, journald or docker inputs), given as a list of "key: value" strings. This is the global counterpart to the per-input fields. Unset by default. See the Filebeat inputs documentation. |
 | `beats_logging`<br>**Type**: `str`<br>**Default**: `"file"` | Where the Beats log. Set to "file" to log into beats_logpath; any other value leaves the Beats built-in logging. |
 | `beats_loglevel`<br>**Type**: `str`<br>**Default**: `"info"` | Log level for all Beats. |

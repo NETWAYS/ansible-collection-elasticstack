@@ -50,11 +50,15 @@ A broken or unreadable extension does not fail the module. It is skipped with `m
 
 ## `api`<a id="api"></a>
 
-Builds the Elasticsearch client for the two Elasticsearch modules. Requires the `elasticsearch` Python library, currently a version below 9.
+Builds the Elasticsearch client for the two Elasticsearch modules. Requires the `elasticsearch` Python library, version 8. Version 9 is untested and version 7 does not work: it accepts the `basic_auth` argument without sending the credentials, so every request arrives unauthenticated, and it returns plain dictionaries instead of the response objects whose `.raw` attribute the two objects below read.
 
 ### `HAS_ELASTICSEARCH` and `ELASTICSEARCH_IMPORT_ERROR`
 
 Set while the file is imported. `HAS_ELASTICSEARCH` is a __bool__, `ELASTICSEARCH_IMPORT_ERROR` holds the formatted traceback as a __string__ or `None`. A module checks the flag and reports the traceback, so a missing library produces a readable message instead of an import error.
+
+### `HAS_SUPPORTED_ELASTICSEARCH` and `unsupported_elasticsearch_message()`
+
+The same pattern for the version. `HAS_SUPPORTED_ELASTICSEARCH` is a __bool__, true when the installed library is at least `ELASTICSEARCH_MIN_VERSION`, and false when the library is missing entirely. `unsupported_elasticsearch_message()` returns the failure text as a __string__, naming the version that is installed and how to get a newer one. A module checks the flag right after `HAS_ELASTICSEARCH` and fails with that message, so an old library is reported as such instead of as an HTTP 401.
 
 ### `Api.new_client_basic_auth()` static method
 
@@ -64,7 +68,7 @@ Returns a connected `Elasticsearch` client authenticated with username and passw
 
 **Return:** An `Elasticsearch` __object__. Raises `ImportError` when the library is missing.
 
-The SSL context it builds sets `check_hostname` and `verify_mode` to false before `verify_certs` is handed to the client, so the hostname in the certificate is not checked.
+The TLS arguments are only passed for an `https://` host, because the client rejects any TLS option on a plain `http://` host with a `ValueError` while it is being constructed. `ca_certs` is passed only when `verify_certs` is true, since it has no meaning without verification. With verification on, the client checks the certificate chain and the hostname.
 
 ## `elasticsearch_role`<a id="elasticsearch_role"></a>
 

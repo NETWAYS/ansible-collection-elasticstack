@@ -18,7 +18,15 @@ version_added: "0.1.0"
 author:
   - Tobias Bauriedel (@tbauriedel)
 requirements:
-  - elasticsearch < 9
+  - elasticsearch >= 8, < 9
+notes:
+  - Version 7 of the C(elasticsearch) library accepts the credentials without sending them, which
+    Elasticsearch answers with HTTP 401. The module refuses to run on it and says so. The
+    distribution package C(python3-elasticsearch) is still version 7 on EL 9 and Ubuntu 22.04,
+    where the library has to come from pip instead.
+  - With O(verify_certs=true) the certificate chain and the hostname are both checked. O(ca_certs)
+    is added to the trust store the library already carries, it does not replace it, so a
+    certificate from a publicly trusted CA is accepted as well.
 options:
   name:
     description: Name of the Elasticsearch role.
@@ -104,7 +112,8 @@ msg:
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
 from ansible_collections.netways.elasticstack.plugins.module_utils.api import (
-    HAS_ELASTICSEARCH, ELASTICSEARCH_IMPORT_ERROR
+    HAS_ELASTICSEARCH, ELASTICSEARCH_IMPORT_ERROR,
+    HAS_SUPPORTED_ELASTICSEARCH, unsupported_elasticsearch_message
 )
 from ansible_collections.netways.elasticstack.plugins.module_utils.elasticsearch_role import (
     Role
@@ -145,6 +154,9 @@ def run_module():
             msg=missing_required_lib('elasticsearch'),
             exception=ELASTICSEARCH_IMPORT_ERROR
         )
+
+    if not HAS_SUPPORTED_ELASTICSEARCH:
+        module.fail_json(msg=unsupported_elasticsearch_message())
 
     role = Role(
         result=result,

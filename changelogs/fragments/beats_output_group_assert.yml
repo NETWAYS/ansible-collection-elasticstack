@@ -1,0 +1,6 @@
+bugfixes:
+  - The beats role checks the inventory before it configures anything. A Beat whose output is
+    ``logstash`` or ``elasticsearch`` takes its hosts from the matching inventory group, and a
+    missing group used to end the run while the template was being rendered, with a message that
+    named neither the variable nor the group. The run now stops beforehand and says which
+    variable is set to what and which group is missing.

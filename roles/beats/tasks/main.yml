@@ -65,6 +65,33 @@
     - renew_ca
     - renew_beats_cert
 
+- name: Check that the inventory has the groups the Beats outputs need
+  ansible.builtin.assert:
+    that: groups[beats_output_group] | default([]) | length > 0
+    fail_msg: >-
+      {{ item.variable }} is set to "{{ item.output }}", so the hosts come from the inventory
+      group "{{ beats_output_group }}", which does not exist or is empty. Add that group to
+      your inventory.
+    quiet: true
+  vars:
+    beats_output_group: "{{ elasticstack_logstash_group_name if item.output == 'logstash' else elasticstack_elasticsearch_group_name }}"
+  loop:
+    - variable: beats_filebeat_output
+      enabled: "{{ beats_filebeat }}"
+      output: "{{ beats_filebeat_output.type | default(beats_filebeat_output) }}"
+    - variable: beats_auditbeat_output
+      enabled: "{{ beats_auditbeat }}"
+      output: "{{ beats_auditbeat_output.type | default(beats_auditbeat_output) }}"
+    - variable: beats_metricbeat_output
+      enabled: "{{ beats_metricbeat }}"
+      output: "{{ beats_metricbeat_output.type | default(beats_metricbeat_output) }}"
+  loop_control:
+    label: "{{ item.variable }}"
+  when:
+    - elasticstack_full_stack | bool
+    - item.enabled | bool
+    - item.output in ['logstash', 'elasticsearch']
+
 - name: Import Filebeat tasks
   ansible.builtin.import_tasks: filebeat.yml
   when: beats_filebeat | bool

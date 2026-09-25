@@ -50,9 +50,6 @@
       ignore_errors: true
       register: elasticstack_pip_installation
 
-    # "is failed" and not "| bool": a registered result is a dict, and the bool
-    # filter coerces any dict to false, so the negated form ran this task on
-    # every host no matter how the pip install above went.
     - name: Install Python Module via package manager
       ansible.builtin.package:
         name:

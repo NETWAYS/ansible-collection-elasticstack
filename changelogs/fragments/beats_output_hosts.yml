@@ -14,3 +14,5 @@ trivial:
   - The three Beats templates read the resolved host lists instead of working the hosts out
     themselves, which removes nine inventory lookups and the ``elasticstack_full_stack`` branch
     around each of them.
+  - CONTRIBUTING.md describes which tags a task gets, so that every tag listed in a role README
+    works on its own.

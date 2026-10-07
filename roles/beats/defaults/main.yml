@@ -4,8 +4,6 @@ beats_security: false
 beats_filebeat: true
 beats_auditbeat: false
 beats_metricbeat: false
-beats_target_hosts:
-  - localhost
 beats_logging: file
 beats_logpath: /var/log/beats
 beats_loglevel: info

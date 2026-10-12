@@ -1,0 +1,18 @@
+breaking_changes:
+  - The beats role no longer takes ``beats_target_hosts``. When ``elasticstack_full_stack`` is
+    false, set ``beats_elasticsearch_hosts`` or ``beats_logstash_hosts`` instead, depending on the
+    output the Beats use. Without them the run stops with a message instead of shipping to
+    ``localhost``.
+
+minor_changes:
+  - The beats role takes ``beats_elasticsearch_hosts`` and ``beats_logstash_hosts``, so the two
+    output types can point at different hosts. When ``elasticstack_full_stack`` is true they can be
+    set as well, and otherwise get the hosts of the inventory groups named in
+    ``elasticstack_elasticsearch_group_name`` and ``elasticstack_logstash_group_name``.
+
+trivial:
+  - The three Beats templates read the resolved host lists instead of working the hosts out
+    themselves, which removes nine inventory lookups and the ``elasticstack_full_stack`` branch
+    around each of them.
+  - CONTRIBUTING.md describes which tags a task gets, so that every tag listed in a role README
+    works on its own.

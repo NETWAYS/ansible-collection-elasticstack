@@ -65,16 +65,38 @@
     - renew_ca
     - renew_beats_cert
 
-- name: Check that the inventory has the groups the Beats outputs need
+- name: Set the Elasticsearch hosts the Beats ship to
+  ansible.builtin.set_fact:
+    beats_elasticsearch_hosts: >-
+      {{ groups[elasticstack_elasticsearch_group_name] | default([])
+         if elasticstack_full_stack | bool else [] }}
+  when: beats_elasticsearch_hosts is undefined
+  tags: always
+
+- name: Set the Logstash hosts the Beats ship to
+  ansible.builtin.set_fact:
+    beats_logstash_hosts: >-
+      {{ groups[elasticstack_logstash_group_name] | default([])
+         if elasticstack_full_stack | bool else [] }}
+  when: beats_logstash_hosts is undefined
+  tags: always
+
+- name: Check that every enabled Beat has hosts to ship to
   ansible.builtin.assert:
-    that: groups[beats_output_group] | default([]) | length > 0
+    that: __beats_output_hosts | length > 0
     fail_msg: >-
-      {{ item.variable }} is set to "{{ item.output }}", so the hosts come from the inventory
-      group "{{ beats_output_group }}", which does not exist or is empty. Add that group to
-      your inventory.
+      {{ item.variable }} is set to "{{ item.output }}", but {{ __beats_output_hosts_variable }} is
+      empty. {{ __beats_output_source }}
     quiet: true
   vars:
-    beats_output_group: "{{ elasticstack_logstash_group_name if item.output == 'logstash' else elasticstack_elasticsearch_group_name }}"
+    __beats_output_hosts: "{{ beats_logstash_hosts if item.output == 'logstash' else beats_elasticsearch_hosts }}"
+    __beats_output_hosts_variable: "{{ 'beats_logstash_hosts' if item.output == 'logstash' else 'beats_elasticsearch_hosts' }}"
+    __beats_output_group: "{{ elasticstack_logstash_group_name if item.output == 'logstash' else elasticstack_elasticsearch_group_name }}"
+    __beats_output_source: >-
+      {{ 'elasticstack_full_stack is true, so it is filled from the inventory group "'
+         ~ __beats_output_group ~ '" unless you set it.'
+         if elasticstack_full_stack | bool
+         else 'elasticstack_full_stack is false, so you have to set it.' }}
   loop:
     - variable: beats_filebeat_output
       enabled: "{{ beats_filebeat }}"
@@ -88,9 +110,13 @@
   loop_control:
     label: "{{ item.variable }}"
   when:
-    - elasticstack_full_stack | bool
     - item.enabled | bool
     - item.output in ['logstash', 'elasticsearch']
+  tags:
+    - configuration
+    - beats_configuration
+    - beats_filebeat_configuration
+    - beats_auditbeat_configuration
 
 - name: Import Filebeat tasks
   ansible.builtin.import_tasks: filebeat.yml

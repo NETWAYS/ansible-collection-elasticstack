@@ -40,14 +40,25 @@ argument_specs:
         description: Install and manage Metricbeat.
 
       # ----- General -----
-      beats_target_hosts:
+      beats_elasticsearch_hosts:
         type: list
         elements: str
-        default:
-          - localhost
         description: >-
-          Hosts the Beats ship to. Only used when the role runs standalone; with
-          the other Elastic Stack roles the targets are determined automatically.
+          Elasticsearch hosts the Beats ship to. When elasticstack_full_stack is true and
+          this variable is not set, the role fills it with the hosts of the inventory group
+          named in elasticstack_elasticsearch_group_name. When elasticstack_full_stack is
+          false, set it yourself as soon as a Beat uses the elasticsearch output, otherwise
+          the run stops.
+
+      beats_logstash_hosts:
+        type: list
+        elements: str
+        description: >-
+          Logstash hosts the Beats ship to. When elasticstack_full_stack is true and this
+          variable is not set, the role fills it with the hosts of the inventory group
+          named in elasticstack_logstash_group_name. When elasticstack_full_stack is false,
+          set it yourself as soon as a Beat uses the logstash output, otherwise the run
+          stops.
 
       beats_fields:
         type: list

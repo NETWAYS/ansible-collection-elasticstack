@@ -89,6 +89,14 @@ Modules document themselves through the `DOCUMENTATION`, `EXAMPLES` and `RETURN`
 
 Shared code under `plugins/module_utils/` has no such block, because `ansible-doc` does not read it. Those functions are described in [plugins/module_utils/README.md](plugins/module_utils/README.md), please keep it current when you change them.
 
+## Tags
+
+Every tag listed in a role README has to work on its own. `--tags <tag>` must not fail because a task it depends on was skipped.
+
+* A `set_fact` task that only builds variables and cannot fail gets `tags: always`. The variables then exist in every run, and the task does not need to be touched when other tasks that read them get new tags.
+* A task that can stop the run, such as `assert` or `fail`, gets the same tags as the tasks it protects.
+* A task that changes the host and registers a result other tasks read gets the tags of those tasks.
+
 ## Testing
 
 Besides testing your change against a real setup, the repository has Molecule scenarios that exercise the whole stack, and it checks for ansible-lint and yamllint errors. To run the linters locally there is a `makefile`:

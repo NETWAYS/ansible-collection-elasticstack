@@ -4,3 +4,7 @@ minor_changes:
     inventory as before, ``fqdn``, ``hostname`` and ``ip`` take the address from the facts of
     that host. It can be set per host in its host_vars. Facts of those hosts that are missing,
     for example in a run limited with ``--limit``, are gathered first.
+
+trivial:
+  - The full stack Molecule scenario sets ``elasticstack_address_mode`` to ``ip`` and no longer
+    writes the container addresses into /etc/hosts.

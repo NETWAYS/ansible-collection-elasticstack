@@ -311,8 +311,11 @@ argument_specs:
         type: list
         elements: str
         description: >-
-          Elasticsearch hosts for the default output. Defaults to the nodes from
-          the elasticsearch group, or localhost when used standalone.
+          Elasticsearch hosts for the default output. When it is not set and
+          elasticstack_full_stack is true, the role fills it with the addresses of the hosts
+          in the inventory group named in elasticstack_elasticsearch_group_name, picked by
+          elasticstack_address_mode and elasticstack_node_address. Without that group it
+          defaults to localhost.
 
       logstash_validate_after_inactivity:
         type: str

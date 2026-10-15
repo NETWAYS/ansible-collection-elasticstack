@@ -54,7 +54,7 @@ Run only parts of the role with `--tags`:
 | `kibana_enable`<br>**Type**: `bool`<br>**Default**: `true` | Start and enable the Kibana service. |
 | `kibana_config_backup`<br>**Type**: `bool`<br>**Default**: `true` | Keep a backup of kibana.yml whenever the role changes it. |
 | `kibana_manage_yaml`<br>**Type**: `bool`<br>**Default**: `true` | Manage and overwrite kibana.yml. |
-| `kibana_elasticsearch_hosts`<br>**Type**: `list` of `str` | Elasticsearch hosts Kibana connects to. Defaults to the nodes from the elasticsearch group, or localhost when used standalone. |
+| `kibana_elasticsearch_hosts`<br>**Type**: `list` of `str` | Elasticsearch hosts Kibana connects to. When it is not set, the role fills it with the addresses of the hosts in the inventory group named in elasticstack_elasticsearch_group_name, picked by elasticstack_address_mode and elasticstack_node_address, or with localhost if that group does not exist. |
 | `kibana_security`<br>**Type**: `bool`<br>**Default**: `true` | Enable X-Pack security: connect to Elasticsearch over HTTPS with authentication and set up the encryption keys. Only effective in a full stack setup with the elastic variant. |
 | `kibana_sniff_on_start`<br>**Type**: `bool`<br>**Default**: `false` | Ask Elasticsearch for the list of nodes at startup (elasticsearch.sniffOnStart). |
 | `kibana_sniff_on_connection_fault`<br>**Type**: `bool`<br>**Default**: `false` | Update the list of Elasticsearch nodes on connection fault (elasticsearch.sniffOnConnectionFault). |

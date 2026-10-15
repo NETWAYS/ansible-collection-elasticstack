@@ -10,7 +10,7 @@ Hosts in these groups get the respective services. Restricting your plays to onl
 
 Make sure every host that should be configured is part of your playbook, including hosts that only run Beats. The collection first gathers facts from all hosts and then uses facts such as host names and IP addresses to connect the tools to each other.
 
-By default the tools reach each other by the host names from your inventory, so these names have to resolve on every host, through DNS or the hosts files. Without that, set `elasticstack_address_mode` to `ip`, described with the [elasticstack role](../roles/elasticstack/README.md).
+By default Beats, Kibana and Logstash reach the other hosts by their names from your inventory, so these names have to resolve on those hosts, through DNS or the hosts files. Without that, set `elasticstack_address_mode` to `ip`, described with the [elasticstack role](../roles/elasticstack/README.md).
 
 ## Before the first run
 

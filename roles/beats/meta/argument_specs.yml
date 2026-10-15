@@ -45,20 +45,22 @@ argument_specs:
         elements: str
         description: >-
           Elasticsearch hosts the Beats ship to. When elasticstack_full_stack is true and
-          this variable is not set, the role fills it with the hosts of the inventory group
-          named in elasticstack_elasticsearch_group_name. When elasticstack_full_stack is
-          false, set it yourself as soon as a Beat uses the elasticsearch output, otherwise
-          the run stops.
+          this variable is not set, the role fills it with the addresses of the hosts in the
+          inventory group named in elasticstack_elasticsearch_group_name, picked by
+          elasticstack_address_mode and elasticstack_node_address. When
+          elasticstack_full_stack is false, set it yourself as soon as a Beat uses the
+          elasticsearch output, otherwise the run stops.
 
       beats_logstash_hosts:
         type: list
         elements: str
         description: >-
           Logstash hosts the Beats ship to. When elasticstack_full_stack is true and this
-          variable is not set, the role fills it with the hosts of the inventory group
-          named in elasticstack_logstash_group_name. When elasticstack_full_stack is false,
-          set it yourself as soon as a Beat uses the logstash output, otherwise the run
-          stops.
+          variable is not set, the role fills it with the addresses of the hosts in the
+          inventory group named in elasticstack_logstash_group_name, picked by
+          elasticstack_address_mode and elasticstack_node_address. When
+          elasticstack_full_stack is false, set it yourself as soon as a Beat uses the
+          logstash output, otherwise the run stops.
 
       beats_fields:
         type: list

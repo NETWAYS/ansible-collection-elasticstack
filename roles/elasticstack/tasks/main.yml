@@ -22,6 +22,9 @@
     - name: Install common packages and dependencies
       ansible.builtin.import_tasks: packages.yml
 
+    - name: Build the addresses of the Elastic Stack hosts
+      ansible.builtin.import_tasks: node_address.yml
+
     - name: Register elasticstack role has run for that host
       ansible.builtin.set_fact:
         _elasticstack_role_imported: true

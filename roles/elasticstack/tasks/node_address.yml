@@ -1,0 +1,33 @@
+---
+- name: Build the address of every Elastic Stack host
+  vars:
+    __elasticstack_peer_hosts: >-
+      {{ (groups[elasticstack_elasticsearch_group_name] | default([])
+          + groups[elasticstack_logstash_group_name] | default([])
+          + groups[elasticstack_kibana_group_name] | default([])) | unique }}
+  tags: always
+  block:
+    - name: Gather the facts of Elastic Stack hosts that are still missing
+      ansible.builtin.setup:
+        gather_subset:
+          - min
+          - network
+      delegate_to: "{{ item }}"
+      delegate_facts: true
+      loop: "{{ __elasticstack_peer_hosts }}"
+      when:
+        - (hostvars[item].elasticstack_address_mode | default(elasticstack_address_mode)) != 'inventory'
+        - hostvars[item].ansible_fqdn is undefined
+
+    - name: Pick the address of every Elastic Stack host
+      ansible.builtin.set_fact:
+        __elasticstack_node_address: >-
+          {{ __elasticstack_node_address | default({}) | combine({item: (
+               item if __elasticstack_peer_mode == 'inventory' else
+               hostvars[item].ansible_fqdn if __elasticstack_peer_mode == 'fqdn' else
+               hostvars[item].ansible_hostname if __elasticstack_peer_mode == 'hostname' else
+               hostvars[item].ansible_default_ipv4.address
+                 | default(hostvars[item].ansible_all_ipv4_addresses[0]))}) }}
+      vars:
+        __elasticstack_peer_mode: "{{ hostvars[item].elasticstack_address_mode | default(elasticstack_address_mode) }}"
+      loop: "{{ __elasticstack_peer_hosts }}"

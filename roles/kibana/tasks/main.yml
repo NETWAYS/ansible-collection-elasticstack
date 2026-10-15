@@ -27,7 +27,7 @@
 
 - name: Set Elasticsearch hosts if used with other roles
   ansible.builtin.set_fact:
-    kibana_elasticsearch_hosts: "{{ groups[elasticstack_elasticsearch_group_name] }}"
+    kibana_elasticsearch_hosts: "{{ groups[elasticstack_elasticsearch_group_name] | map('extract', __elasticstack_node_address) | list }}"
   when:
     - kibana_elasticsearch_hosts is undefined
     - groups[elasticstack_elasticsearch_group_name] is defined

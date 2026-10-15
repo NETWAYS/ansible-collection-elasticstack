@@ -1,0 +1,6 @@
+minor_changes:
+  - The new ``elasticstack_address_mode`` selects how the roles address the hosts they take from
+    the elasticsearch, logstash and kibana inventory groups. ``inventory`` keeps the name from the
+    inventory as before, ``fqdn``, ``hostname`` and ``ip`` take the address from the facts of
+    that host. It can be set per host in its host_vars. Facts of those hosts that are missing,
+    for example in a run limited with ``--limit``, are gathered first.

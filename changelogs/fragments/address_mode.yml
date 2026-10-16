@@ -1,0 +1,16 @@
+minor_changes:
+  - The new ``elasticstack_address_mode`` selects how the roles on a host address the hosts they
+    take from the elasticsearch, logstash and kibana inventory groups. ``inventory`` keeps the
+    name from the inventory as before, ``fqdn``, ``hostname`` and ``ip`` take the address from the
+    facts of the host that is addressed. Set for a single host, it changes only how the roles on
+    that host address the others. Facts of those hosts that are missing, for example in a run
+    limited with ``--limit``, are gathered first.
+  - Setting ``elasticstack_node_address`` in the host_vars of a host makes the roles reach that
+    host at this address, whatever ``elasticstack_address_mode`` says, for example through the
+    IP of a particular network card. The address is also added to the certificate of an
+    Elasticsearch host and to the certificate a Logstash host presents to the Beats. Existing
+    certificates get it when they are renewed.
+
+trivial:
+  - The full stack Molecule scenario sets ``elasticstack_address_mode`` to ``ip`` and no longer
+    writes the container addresses into /etc/hosts.

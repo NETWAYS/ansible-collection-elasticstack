@@ -69,6 +69,7 @@
   ansible.builtin.set_fact:
     beats_elasticsearch_hosts: >-
       {{ groups[elasticstack_elasticsearch_group_name] | default([])
+         | map('extract', __elasticstack_node_address) | list
          if elasticstack_full_stack | bool else [] }}
   when: beats_elasticsearch_hosts is undefined
   tags: always
@@ -77,6 +78,7 @@
   ansible.builtin.set_fact:
     beats_logstash_hosts: >-
       {{ groups[elasticstack_logstash_group_name] | default([])
+         | map('extract', __elasticstack_node_address) | list
          if elasticstack_full_stack | bool else [] }}
   when: beats_logstash_hosts is undefined
   tags: always

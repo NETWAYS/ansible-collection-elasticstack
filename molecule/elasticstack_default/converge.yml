@@ -17,6 +17,8 @@
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticsearch_heap: "1"
     elasticstack_full_stack: true
+    # The containers cannot resolve each other's names on the GitHub runner.
+    elasticstack_address_mode: ip
     elasticstack_no_log: false
     # Passphrases with arbitrary special characters (space, single quote, $, backtick) to test
     # that they reach certutil/openssl/keystore without shell or shlex mangling. ca_pass and

@@ -94,7 +94,7 @@ Run only parts of the role with `--tags`:
 | `logstash_redis_ssl_certificate_authorities`<br>**Type**: `list` of `str` | List of CA certificate paths used to verify the Redis server on the Redis outputs. Rendered only when logstash_redis_tls is true. |
 | `logstash_redis_ssl_supported_protocols`<br>**Type**: `str` | TLS protocol version accepted on the Redis outputs (for example "TLSv1.3"). Rendered only when logstash_redis_tls is true. |
 | `logstash_redis_ssl_verification_mode`<br>**Type**: `str` | Certificate verification mode for the Redis outputs ("full" or "none"). Rendered only when logstash_redis_tls is true. |
-| `logstash_elasticsearch`<br>**Type**: `list` of `str` | Elasticsearch hosts for the default output. Defaults to the nodes from the elasticsearch group, or localhost when used standalone. |
+| `logstash_elasticsearch`<br>**Type**: `list` of `str` | Elasticsearch hosts for the default output. When it is not set and elasticstack_full_stack is true, the role fills it with the addresses of the hosts in the inventory group named in elasticstack_elasticsearch_group_name, picked by elasticstack_address_mode and elasticstack_node_address. Without that group it defaults to localhost. |
 | `logstash_validate_after_inactivity`<br>**Type**: `str`<br>**Default**: `"300"` | Seconds Logstash waits before validating a previously idle connection to Elasticsearch. |
 | `logstash_sniffing`<br>**Type**: `bool`<br>**Default**: `false` | Enable sniffing for additional Elasticsearch nodes. |
 | `logstash_sniffing_delay`<br>**Type**: `str` | Seconds to wait between sniffing attempts. Unset by default. |

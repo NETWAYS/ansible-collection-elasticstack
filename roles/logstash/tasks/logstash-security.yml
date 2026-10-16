@@ -250,13 +250,13 @@
       - --ip
       - >-
         {{ ([ansible_default_ipv4.address]
-            + ([elasticstack_node_address | default('')] | select('match', '^[0-9.]+$|:') | list))
+            + ([elasticstack_node_address | default('')] | select('match', '^[0-9.]+$') | list))
            | join(',') }}
       - --dns
       - >-
         {{ ([ansible_hostname, ansible_fqdn, inventory_hostname]
             + ([elasticstack_node_address | default('')]
-               | reject('match', '^[0-9.]+$|:') | reject('equalto', '') | list))
+               | reject('match', '^[0-9.]+$') | reject('equalto', '') | list))
            | join(',') }}
       - --pass
       - "{{ logstash_tls_key_passphrase }}"

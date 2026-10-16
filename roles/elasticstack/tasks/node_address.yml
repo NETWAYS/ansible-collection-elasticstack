@@ -17,7 +17,7 @@
       loop: "{{ __elasticstack_peer_hosts }}"
       when:
         - hostvars[item].elasticstack_node_address is undefined
-        - (hostvars[item].elasticstack_address_mode | default(elasticstack_address_mode)) != 'inventory'
+        - elasticstack_address_mode != 'inventory'
         - hostvars[item].ansible_fqdn is undefined
 
     - name: Pick the address of every Elastic Stack host
@@ -26,11 +26,9 @@
           {{ __elasticstack_node_address | default({}) | combine({item: (
                hostvars[item].elasticstack_node_address
                  if hostvars[item].elasticstack_node_address is defined else
-               item if __elasticstack_peer_mode == 'inventory' else
-               hostvars[item].ansible_fqdn if __elasticstack_peer_mode == 'fqdn' else
-               hostvars[item].ansible_hostname if __elasticstack_peer_mode == 'hostname' else
+               item if elasticstack_address_mode == 'inventory' else
+               hostvars[item].ansible_fqdn if elasticstack_address_mode == 'fqdn' else
+               hostvars[item].ansible_hostname if elasticstack_address_mode == 'hostname' else
                hostvars[item].ansible_default_ipv4.address
                  | default(hostvars[item].ansible_all_ipv4_addresses[0]))}) }}
-      vars:
-        __elasticstack_peer_mode: "{{ hostvars[item].elasticstack_address_mode | default(elasticstack_address_mode) }}"
       loop: "{{ __elasticstack_peer_hosts }}"

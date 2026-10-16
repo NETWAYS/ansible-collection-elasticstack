@@ -90,14 +90,16 @@ argument_specs:
           - hostname
           - ip
         description: >-
-          How the roles address the hosts they take from the elasticsearch, logstash and
-          kibana inventory groups. "inventory" uses the name from the inventory, "fqdn" the
-          fully qualified domain name, "hostname" the short host name and "ip" the IPv4
-          address of the network card with the default route. The last three come from the
-          facts of that host. Set it in the host_vars of a single host to address only that
-          host differently. Host lists you set yourself, such as beats_elasticsearch_hosts,
-          are used as they are. The setting does not change discovery.seed_hosts, through
-          which the Elasticsearch nodes find each other.
+          How the roles on a host address the hosts they take from the elasticsearch,
+          logstash and kibana inventory groups. "inventory" uses the name from the
+          inventory, "fqdn" the fully qualified domain name, "hostname" the short host name
+          and "ip" the IPv4 address of the network card with the default route. The last
+          three come from the facts of the host that is addressed. Set for a single host,
+          it changes only how the roles on that host address the others. To reach a single
+          host at another address, set elasticstack_node_address for that host. Host lists
+          you set yourself, such as beats_elasticsearch_hosts, are used as they are. The
+          setting does not change discovery.seed_hosts, through which the Elasticsearch
+          nodes find each other.
 
       elasticstack_node_address:
         type: str

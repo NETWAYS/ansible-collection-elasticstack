@@ -36,6 +36,16 @@ beats_filebeat_log_inputs:
 
 `multiline` maps directly to the Filebeat multiline parser (`type`, `pattern`, `negate`, `match`). See [Manage multiline messages](https://www.elastic.co/docs/reference/beats/filebeat/multiline-examples).
 
+### Upgrading from `log` inputs
+
+Older versions of this role generated `log` inputs for `beats_filebeat_log_inputs` and for the MySQL slow log. The `filestream` inputs that replace them do not use the read positions of the `log` inputs, so without further steps Filebeat reads every configured file again from the beginning and ships its content a second time.
+
+Set `beats_filebeat_take_over: true` for the run that upgrades such hosts. The role then adds `take_over: true` to these inputs, and Filebeat continues each file where the old `log` input stopped. Take over mode requires that the new inputs have the same `paths` as the old ones and that the `log` inputs are gone. The role generates both kinds of input from the same variables and no longer generates `log` inputs, so this holds as long as `paths` is not changed in the same run.
+
+In Filebeat 8.19 take over mode is beta, and Filebeat keeps a backup of the registry in `registry.path/filebeat`, which makes it reversible. Filebeat 9.1 added `take_over.enabled` as the new syntax and still accepts `take_over: true` for migrating from `log` inputs. The migration guide describes a `take_over` tag on the events read this way, which can be used to check the result. Once all hosts are migrated, `beats_filebeat_take_over` can be set back to `false`.
+
+See [Migrate `log` input configurations to `filestream`](https://www.elastic.co/docs/reference/beats/filebeat/migrate-to-filestream) and the `take_over` option in the [filestream input reference](https://www.elastic.co/docs/reference/beats/filebeat/filebeat-input-filestream).
+
 ## Fields
 
 There are two ways to add fields, and they use **different shapes**:

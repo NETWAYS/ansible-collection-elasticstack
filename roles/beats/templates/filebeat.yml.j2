@@ -4,6 +4,9 @@ filebeat.inputs:
 {% for input in beats_filebeat_log_inputs %}
 - type: filestream
   id: {{ input }}-filestream
+{% if beats_filebeat_take_over | bool %}
+  take_over: true
+{% endif %}
   enabled: true
   paths:
 {% for path in beats_filebeat_log_inputs[input].paths %}
@@ -44,6 +47,9 @@ filebeat.inputs:
 {% if beats_filebeat_mysql_slowlog_input | bool %}
 - type: filestream
   id: mysql-slowlog-filestream
+{% if beats_filebeat_take_over | bool %}
+  take_over: true
+{% endif %}
   enabled: true
   paths:
     - /var/log/mysql/*-slow.log

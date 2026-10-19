@@ -131,6 +131,16 @@ argument_specs:
           Each entry has paths and optional fields and multiline settings. See the
           Filebeat inputs documentation.
 
+      beats_filebeat_take_over:
+        type: bool
+        default: false
+        description: >-
+          Set take_over on the filestream inputs from beats_filebeat_log_inputs and on
+          the MySQL slow log input, so they continue at the read positions of the log
+          inputs that older versions of this role generated instead of reading the
+          files again. Only needed once when upgrading hosts that still have log inputs.
+          See the Filebeat inputs documentation.
+
       beats_filebeat_syslog_tcp:
         type: bool
         default: false

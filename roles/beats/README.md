@@ -51,6 +51,7 @@ Run only parts of the role with `--tags`:
 | `beats_filebeat_loadbalance`<br>**Type**: `bool`<br>**Default**: `true` | Enable load balancing for the Filebeat Logstash output. |
 | `beats_filebeat_log_input`<br>**Type**: `bool`<br>**Default**: `true` | Read log files with the inputs from beats_filebeat_log_inputs. |
 | `beats_filebeat_log_inputs`<br>**Type**: `dict`<br>**Default**: `{'messages': {'paths': ['/var/log/messages', '/var/log/syslog']}}` | Log files to read, keyed by a free name that becomes the filestream id. Each entry has paths and optional fields and multiline settings. See the Filebeat inputs documentation. |
+| `beats_filebeat_take_over`<br>**Type**: `bool`<br>**Default**: `false` | Set take_over on the filestream inputs from beats_filebeat_log_inputs and on the MySQL slow log input, so they continue at the read positions of the log inputs that older versions of this role generated instead of reading the files again. Only needed once when upgrading hosts that still have log inputs. See the Filebeat inputs documentation. |
 | `beats_filebeat_syslog_tcp`<br>**Type**: `bool`<br>**Default**: `false` | Enable a TCP syslog input. |
 | `beats_filebeat_syslog_tcp_port`<br>**Type**: `int`<br>**Default**: `514` | Port of the TCP syslog input. |
 | `beats_filebeat_syslog_udp`<br>**Type**: `bool`<br>**Default**: `false` | Enable a UDP syslog input. |

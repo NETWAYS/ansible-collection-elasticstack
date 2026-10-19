@@ -1,0 +1,6 @@
+minor_changes:
+  - The beats role takes ``beats_filebeat_take_over``. When it is true, the filestream inputs
+    from ``beats_filebeat_log_inputs`` and the MySQL slow log input get ``take_over`` set to true,
+    so hosts that still have the ``log`` inputs of older versions of this role continue at the
+    previous read positions instead of reading all files again
+    (https://www.elastic.co/docs/reference/beats/filebeat/migrate-to-filestream).

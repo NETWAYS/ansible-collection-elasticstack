@@ -29,6 +29,7 @@ beats_filebeat_log_inputs:
     paths:
       - /var/log/messages
       - /var/log/syslog
+beats_filebeat_take_over: false
 beats_filebeat_enable: true
 beats_filebeat_journald: false
 beats_filebeat_journald_inputs:

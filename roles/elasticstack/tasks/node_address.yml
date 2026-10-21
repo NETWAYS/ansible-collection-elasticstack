@@ -5,8 +5,22 @@
       {{ (groups[elasticstack_elasticsearch_group_name] | default([])
           + groups[elasticstack_logstash_group_name] | default([])
           + groups[elasticstack_kibana_group_name] | default([])) | unique }}
+    # The mode set for the host that is addressed (item), not for the host running the task.
+    # hostvars has no role defaults, so 'inventory' repeats the default from defaults/main.yml.
+    __elasticstack_peer_mode: "{{ hostvars[item].elasticstack_address_mode | default('inventory') }}"
   tags: always
   block:
+    # The argument specs check the mode only on the hosts of this run. Hosts left out with --limit
+    # are checked here; a misspelled mode such as "fdqn" would otherwise reach the last branch of
+    # "Pick the address" below and be used like "ip".
+    - name: Check the elasticstack_address_mode of every Elastic Stack host
+      ansible.builtin.assert:
+        that:
+          - __elasticstack_peer_mode in ['inventory', 'fqdn', 'hostname', 'ip']
+        fail_msg: "elasticstack_address_mode of {{ item }} must be inventory, fqdn, hostname or ip."
+        quiet: true
+      loop: "{{ __elasticstack_peer_hosts }}"
+
     - name: Gather the facts of Elastic Stack hosts that are still missing
       ansible.builtin.setup:
         gather_subset:
@@ -17,7 +31,7 @@
       loop: "{{ __elasticstack_peer_hosts }}"
       when:
         - hostvars[item].elasticstack_node_address is undefined
-        - elasticstack_address_mode != 'inventory'
+        - __elasticstack_peer_mode != 'inventory'
         - hostvars[item].ansible_fqdn is undefined
 
     - name: Pick the address of every Elastic Stack host
@@ -26,9 +40,9 @@
           {{ __elasticstack_node_address | default({}) | combine({item: (
                hostvars[item].elasticstack_node_address
                  if hostvars[item].elasticstack_node_address is defined else
-               item if elasticstack_address_mode == 'inventory' else
-               hostvars[item].ansible_fqdn if elasticstack_address_mode == 'fqdn' else
-               hostvars[item].ansible_hostname if elasticstack_address_mode == 'hostname' else
+               item if __elasticstack_peer_mode == 'inventory' else
+               hostvars[item].ansible_fqdn if __elasticstack_peer_mode == 'fqdn' else
+               hostvars[item].ansible_hostname if __elasticstack_peer_mode == 'hostname' else
                hostvars[item].ansible_default_ipv4.address
                  | default(hostvars[item].ansible_all_ipv4_addresses[0]))}) }}
       loop: "{{ __elasticstack_peer_hosts }}"

@@ -40,6 +40,11 @@ provisioner:
   env:
     ANSIBLE_ROLES_PATH: $MOLECULE_EPHEMERAL_DIRECTORY/roles:${HOME}/.ansible/roles:$MOLECULE_PROJECT_DIRECTORY/roles
   inventory:
+    group_vars:
+      all:
+        # The containers cannot resolve each other's names on the GitHub runner. The roles read
+        # elasticstack_address_mode from the inventory, the vars of a play would stop the run.
+        elasticstack_address_mode: ip
     host_vars:
       elasticstack${ELASTIC_RELEASE}-cluster2-${MOLECULE_DISTRO}:
         elasticsearch_tls_key_passphrase: UniqueHostPassword

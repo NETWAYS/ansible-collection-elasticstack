@@ -3,7 +3,6 @@
 - name: Include global role
   ansible.builtin.import_role:
     name: netways.elasticstack.elasticstack
-  when: not hostvars[inventory_hostname]._elasticstack_role_imported | default(false)
 
 - name: Update apt cache.
   ansible.builtin.apt:
@@ -19,7 +18,7 @@
 
     - name: Set Elasticsearch hosts if used with other roles
       ansible.builtin.set_fact:
-        logstash_elasticsearch: "{{ groups[elasticstack_elasticsearch_group_name] }}"
+        logstash_elasticsearch: "{{ groups[elasticstack_elasticsearch_group_name] | map('extract', __elasticstack_node_address) | list }}"
       when:
         - logstash_elasticsearch is undefined
         - groups[elasticstack_elasticsearch_group_name] is defined

@@ -1,4 +1,20 @@
 ---
+# The other hosts read this host's elasticstack_address_mode through hostvars, which holds neither
+# play vars nor role parameters. Stop instead of silently ignoring a value set there. Outside the
+# block below, so it runs on every start of a role and not only once per host; the roles therefore
+# import this role without a when.
+- name: Check that elasticstack_address_mode comes from the inventory
+  ansible.builtin.assert:
+    that:
+      # 'inventory' is the default from defaults/main.yml, hostvars does not see role defaults
+      - elasticstack_address_mode == (hostvars[inventory_hostname].elasticstack_address_mode | default('inventory'))
+    fail_msg: >-
+      elasticstack_address_mode has to be set in the inventory (group_vars, host_vars) or with -e.
+      The other hosts read it through hostvars, which does not contain the vars of a play or role
+      parameters, so a value set there would be ignored.
+    quiet: true
+  tags: always
+
 - name: Include elasticstack role
   when: not hostvars[inventory_hostname]._elasticstack_role_imported | default(false) # Ensure the global meta role is only called once for each host
   block:
@@ -21,6 +37,9 @@
 
     - name: Install common packages and dependencies
       ansible.builtin.import_tasks: packages.yml
+
+    - name: Build the addresses of the Elastic Stack hosts
+      ansible.builtin.import_tasks: node_address.yml
 
     - name: Register elasticstack role has run for that host
       ansible.builtin.set_fact:

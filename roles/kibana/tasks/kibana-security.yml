@@ -21,6 +21,7 @@
   ansible.builtin.set_fact:
     kibana_cert_will_expire_soon: true
   when: kibana_cert_expiration_days is defined and kibana_cert_expiration_days | int <= kibana_cert_expiration_buffer | int
+  tags: always
 
 - name: Print the kibana certificate renew message
   ansible.builtin.debug:
@@ -88,6 +89,9 @@
 
 - name: Backup kibana cert on localhost then remove
   delegate_to: localhost
+  # The file lies in the temporary directory of the user who runs Ansible, so these tasks run as
+  # that user and not as root through the become of the play.
+  become: false
   when: "'renew_kibana_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or kibana_cert_will_expire_soon | bool"
   tags:
     - renew_ca
@@ -103,8 +107,6 @@
         src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-kibana.p12"
         dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-kibana.p12_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
-        owner: root
-        group: root
       when: kibana_check_temporary_cert.stat.exists
       register: kibana_move_cert_file
 

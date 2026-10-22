@@ -31,7 +31,10 @@ Ansible collections, both are declared as dependencies and installed for you whe
 Python libraries on the control node:
 
 * `passlib`, unless you disable password hashing for the Logstash user and you want to use the logstash role. Install it with `pip`.
-* `elasticsearch`. Current versions are compatible either with Elasticsearch 9 or with versions lower than 9, there seems to be no version that serves both. For now we install a client older than 9, and this needs revisiting when the collection becomes compatible with Elastic Stack 9.
+
+Python libraries on the target hosts:
+
+* `elasticsearch`, version 8, for the `elasticsearch_role` and `elasticsearch_user` modules. Version 8 works with Elasticsearch 8 and 9. The logstash role installs it into its own virtual environment on the Logstash host, `/opt/netways-elasticstack/venv`, so that host needs access to PyPI or to a pip mirror, for example set in `/etc/pip.conf`. If you call the modules in your own playbooks, install version 8 on the host they run on.
 
 Ansible roles:
 

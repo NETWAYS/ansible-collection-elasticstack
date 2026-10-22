@@ -8,6 +8,7 @@ It works with the standard Elastic Stack packages and with Elastic's OSS variant
 
 * The `community.general` collection.
 * `passlib` (Python, on the controller) unless you disable password hashing for the Logstash user.
+* Access to PyPI, or to a pip mirror set for example in `/etc/pip.conf`, if the role creates the Logstash writer role or user in Elasticsearch (`logstash_create_role`, `logstash_create_user`, full stack with security only). It installs version 8 of the `elasticsearch` Python library for that into `/opt/netways-elasticstack/venv`.
 * `curl` on the target host.
 * `git` on the target host if you use git-based pipelines.
 * Redis if you use the default pipeline or other pipelines that talk to Redis (e.g. via the [`geerlingguy.redis`](https://galaxy.ansible.com/geerlingguy/redis) role).

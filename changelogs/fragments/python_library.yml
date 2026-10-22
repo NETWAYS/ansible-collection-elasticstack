@@ -1,0 +1,17 @@
+breaking_changes:
+  - The ``elasticstack`` role no longer installs the ``elasticsearch`` Python library on every host,
+    neither with pip nor from the ``python3-elasticsearch`` distribution package, and the variables
+    ``elasticstack_manage_pip`` and ``elasticstack_force_pip`` are removed. Setting them has no
+    effect anymore, so remove them from your inventory.
+
+bugfixes:
+  - The ``logstash`` role installs version 8 of the ``elasticsearch`` Python library into its own
+    virtual environment, ``/opt/netways-elasticstack/venv``, on the Logstash host and runs the
+    ``elasticsearch_role`` and ``elasticsearch_user`` modules with it. On fresh Ubuntu 22.04 and
+    EL 9 hosts the library was missing or version 7 before, and creating the Logstash writer role
+    failed. The Logstash host needs access to PyPI or to a pip mirror.
+
+trivial:
+  - The full stack Molecule scenario removes pip, packaging and setuptools from its containers, so
+    it runs like a fresh host. ``requirements-test.txt`` no longer lists ``elasticsearch``, the
+    modules run in the containers and not on the runner.

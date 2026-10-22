@@ -222,19 +222,6 @@ argument_specs:
         default: true
         description: Hide the output of tasks that could reveal passwords. Set to false for debugging.
 
-      # ----- Python dependencies -----
-      elasticstack_manage_pip:
-        type: bool
-        default: false
-        description: Install pip on the target host.
-
-      elasticstack_force_pip:
-        type: bool
-        default: false
-        description: >-
-          Force installation of the required Python modules via pip (useful when
-          the distribution packages are too old). See PEP 668.
-
       # ----- Testing -----
       elasticstack_ci:
         type: bool

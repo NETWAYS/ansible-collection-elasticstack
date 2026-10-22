@@ -37,8 +37,8 @@ def unsupported_elasticsearch_message():
         "without sending the credentials, so every request reaches Elasticsearch "
         "unauthenticated and is answered with HTTP 401. The distribution package "
         "python3-elasticsearch is still version 7 on EL 9 and Ubuntu 22.04. Install "
-        "the library with pip instead, for example by setting elasticstack_force_pip "
-        "to true."
+        "version 8 with pip instead, for example into a virtual environment, and run "
+        "the module with its Python interpreter."
         % (
             ".".join(str(part) for part in ELASTICSEARCH_VERSION),
             ".".join(str(part) for part in ELASTICSEARCH_MIN_VERSION),

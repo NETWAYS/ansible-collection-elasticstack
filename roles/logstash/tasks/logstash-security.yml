@@ -398,6 +398,23 @@
     - configuration
     - logstash_configuration
 
+- name: Install the elasticsearch Python library for the two tasks below
+  when: logstash_create_role | bool or logstash_create_user | bool
+  block:
+    # The pip module needs packaging in the system Python, and python3 -m venv needs
+    # python3-venv on Debian and Ubuntu
+    - name: Install the packages its virtual environment needs
+      ansible.builtin.package:
+        name: "{{ ['python3-packaging'] + (['python3-venv'] if ansible_os_family == 'Debian' else []) }}"
+
+    # The two modules need version 8 of the library. The distribution packages are version 7
+    # on Ubuntu 22.04 and EL 9 and version 9 on newer releases.
+    - name: Install the elasticsearch Python library into its own virtual environment
+      ansible.builtin.pip:
+        name: "elasticsearch>=8,<9"
+        virtualenv: "{{ _logstash_python_venv_dir }}"
+        virtualenv_command: "{{ ansible_python.executable }} -m venv"
+
 - name: Create logstash role {{ logstash_role_name }}
   netways.elasticstack.elasticsearch_role:
     name: "{{ logstash_role_name }}"
@@ -411,6 +428,8 @@
     auth_pass: "{{ logstash_elasticstack_password.stdout }}"
     verify_certs: true
     ca_certs: "{{ logstash_certs_dir }}/ca.crt"
+  vars:
+    ansible_python_interpreter: "{{ _logstash_python_venv_dir }}/bin/python"
   when: logstash_create_role | bool
 
 - name: Create logstash user {{ logstash_user_name }}
@@ -428,4 +447,6 @@
     auth_pass: "{{ logstash_elasticstack_password.stdout }}"
     verify_certs: true
     ca_certs: "{{ logstash_certs_dir }}/ca.crt"
+  vars:
+    ansible_python_interpreter: "{{ _logstash_python_venv_dir }}/bin/python"
   when: logstash_create_user | bool

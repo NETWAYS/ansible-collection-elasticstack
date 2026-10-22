@@ -1,7 +1,8 @@
 breaking_changes:
   - The ``elasticstack`` role no longer installs the ``elasticsearch`` Python library on every host,
-    and the variables ``elasticstack_manage_pip`` and ``elasticstack_force_pip`` are removed. Setting
-    them has no effect anymore, so remove them from your inventory.
+    neither with pip nor from the ``python3-elasticsearch`` distribution package, and the variables
+    ``elasticstack_manage_pip`` and ``elasticstack_force_pip`` are removed. Setting them has no
+    effect anymore, so remove them from your inventory.
 
 bugfixes:
   - The ``logstash`` role installs version 8 of the ``elasticsearch`` Python library into its own

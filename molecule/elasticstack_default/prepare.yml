@@ -59,3 +59,43 @@
         state: latest
         update_cache: yes
       when: ansible_os_family == "Debian"
+
+    # A fresh host has no pip, packaging or setuptools, but the images bring them along. Remove
+    # them, so the roles have to install what they need themselves.
+    - name: Remove pip, packaging and setuptools that were installed with pip
+      ansible.builtin.command: "python3 -m pip uninstall -y {{ item }}"
+      register: prepare_pip_uninstall
+      changed_when: "'Successfully uninstalled' in prepare_pip_uninstall.stdout"
+      failed_when: false
+      # One at a time, pip stops at the first package it cannot remove. pip itself goes last.
+      loop:
+        - packaging
+        - setuptools
+        - pip
+
+    - name: Remove pip, packaging and setuptools that came as distribution packages
+      ansible.builtin.package:
+        name: "{{ prepare_python_packages[ansible_os_family] }}"
+        state: absent
+      vars:
+        prepare_python_packages:
+          Debian:
+            - python3-pip
+            - python3-setuptools
+            - python3-pkg-resources
+            - python3-packaging
+            - python3-wheel
+          RedHat:
+            - python3-pip
+            - python3-setuptools
+            - python3-packaging
+
+    - name: Check that pip, packaging and setuptools are gone
+      ansible.builtin.command: "python3 -c 'import {{ item }}'"
+      register: prepare_python_import
+      changed_when: false
+      failed_when: prepare_python_import.rc == 0
+      loop:
+        - pip
+        - packaging
+        - pkg_resources

@@ -6,7 +6,7 @@ Set these variables once (in `group_vars`, the play, or via `-e`) and every role
 
 ## Requirements
 
-It installs the shared Python libraries (`cryptography` and the `elasticsearch` client) and the packages (`openssl`, `unzip`) that the collection needs.
+It installs the Python library `cryptography` and the packages `openssl` and `unzip` that the collection needs.
 
 ## Example
 
@@ -55,8 +55,6 @@ The role runs automatically the first time any component role is applied to a ho
 | `elasticstack_cert_pass`<br>**Type**: `str` | Common passphrase for all component certificates. Unset by default; when set, it overrides each role's individual certificate passphrase. |
 | `elasticstack_initial_passwords`<br>**Type**: `str`<br>**Default**: `"/usr/share/elasticsearch/initial_passwords"` | Path on the CA host where the generated initial passwords are stored. |
 | `elasticstack_no_log`<br>**Type**: `bool`<br>**Default**: `true` | Hide the output of tasks that could reveal passwords. Set to false for debugging. |
-| `elasticstack_manage_pip`<br>**Type**: `bool`<br>**Default**: `false` | Install pip on the target host. |
-| `elasticstack_force_pip`<br>**Type**: `bool`<br>**Default**: `false` | Force installation of the required Python modules via pip (useful when the distribution packages are too old). See PEP 668. |
 | `elasticstack_ci`<br>**Type**: `bool`<br>**Default**: `false` | Internal test flag. Set to true only by the collection's molecule scenarios to enable resource workarounds needed on constrained test runners (cache cleanup, relaxed Elasticsearch disk watermarks). Never set this on a real installation. |
 
 <!-- ANSIBLE DOCSMITH MAIN END -->

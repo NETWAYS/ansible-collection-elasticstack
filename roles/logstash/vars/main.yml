@@ -1,0 +1,3 @@
+---
+# Virtual environment with the elasticsearch Python library for elasticsearch_role and elasticsearch_user
+_logstash_python_venv_dir: /opt/netways-elasticstack/venv

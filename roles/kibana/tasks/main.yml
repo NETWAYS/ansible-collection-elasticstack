@@ -23,6 +23,7 @@
     kibana_tls_key_passphrase: "{{ elasticstack_cert_pass }}"
   when:
     - elasticstack_cert_pass is defined
+  tags: always
 
 - name: Set Elasticsearch hosts if used with other roles
   ansible.builtin.set_fact:
@@ -30,6 +31,7 @@
   when:
     - kibana_elasticsearch_hosts is undefined
     - groups[elasticstack_elasticsearch_group_name] is defined
+  tags: always
 
 - name: Set Elasticsearch hosts to localhost if no other info is available
   ansible.builtin.set_fact:
@@ -38,7 +40,12 @@
   when:
     - kibana_elasticsearch_hosts is undefined
     - groups[elasticstack_elasticsearch_group_name] is undefined
+  tags: always
 
+# No "tags: always" here, unlike the set_fact tasks above (CONTRIBUTING.md, Tags):
+# elasticstack_versionseparator ("=" for apt, "-" for dnf) is only set by the untagged task
+# "Include OS specific vars" of the elasticstack role. A run with --tags skips that task, so with
+# "always" this task would stop such a run whenever elasticstack_version is set.
 - name: Construct exact name of Kibana package
   ansible.builtin.set_fact:
     kibana_package: >-
@@ -122,10 +129,22 @@
   when: kibana_enable | bool
   register: kibana_freshstart
 
-# the following is useful when running tests or extra tasks that need to
-# have Kibana running. Escape it on Rocky8, because it gets time out with Elastic 8
+# A task above notified "Restart Kibana". Run the notified handlers now and not at the end of
+# the play, so that the waits below see the restarted Kibana and a later play, such as the
+# beats role, does not find it down. After a fresh start the handler skips the restart.
+- name: Run the handlers notified so far, before waiting for Kibana
+  ansible.builtin.meta: flush_handlers
+  tags:
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
 
 - name: Wait for Kibana to start (with debug)
+  when: kibana_enable | bool
+  tags:
+    - certificates
+    - renew_ca
+    - renew_kibana_cert
   block:
     - name: Wait for Kibana to start
       ansible.builtin.wait_for:

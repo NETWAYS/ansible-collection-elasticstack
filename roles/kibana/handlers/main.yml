@@ -5,4 +5,5 @@
     name: kibana
     state: restarted
   when:
+    - kibana_enable | bool
     - not kibana_freshstart.changed | bool

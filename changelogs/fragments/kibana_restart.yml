@@ -1,0 +1,17 @@
+bugfixes:
+  - The ``kibana`` role restarts Kibana before it waits for it, when a task changed its
+    configuration, package or certificates. Before, it waited for the process that was still
+    running and restarted Kibana only at the end of the play, so a following play, such as the
+    beats role loading its dashboards, could find Kibana down. A run with
+    ``--tags renew_kibana_cert`` now waits for the restarted Kibana as well
+    (https://github.com/NETWAYS/ansible-collection-elasticstack/issues/563).
+  - The ``kibana`` role no longer restarts Kibana and no longer waits for it when
+    ``kibana_enable`` is false
+    (https://github.com/NETWAYS/ansible-collection-elasticstack/issues/484).
+  - A run of the ``kibana`` role with ``--tags renew_kibana_cert``, ``renew_ca`` or
+    ``certificates`` no longer fails with ``Invalid password or PKCS12 data`` when
+    ``elasticstack_cert_pass`` is set. The task that takes the passphrase from it was skipped in
+    such a run, so the certificate was opened with the default passphrase.
+  - Renewing the Kibana certificate no longer fails on a macOS control node, where the group
+    ``root`` does not exist. The backup of the temporary certificate on the control node is now
+    made as the user who runs Ansible, without sudo and without the owner and group ``root``.

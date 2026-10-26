@@ -49,7 +49,7 @@
     - groups[elasticstack_logstash_group_name] | default([]) | length > 0
 
 - name: Backup ca directory on elasticsearch ca host then remove
-  when: (inventory_hostname == elasticstack_ca_host) and ('renew_ca' in "ansible_run_tags" or elasticstack_ca_will_expire_soon | bool)
+  when: (inventory_hostname == elasticstack_ca_host) and ('renew_ca' in ansible_run_tags or elasticstack_ca_will_expire_soon | bool)
   tags:
     - renew_ca
   block:
@@ -67,11 +67,25 @@
       when: elasticsearch_check_ca_path.stat.exists
       register: elasticsearch_move_ca_directory
 
-    - name: Remove ca directory on elasticsearch ca host
-      ansible.builtin.file:
-        path: "{{ elasticstack_ca_dir }}"
-        state: absent
+    # Only the certificates are removed, not the directory. It also holds the encryption keys of
+    # Kibana, and with new keys Kibana cannot decrypt the saved objects it encrypted before.
+    - name: Find the certificates in the ca directory on elasticsearch ca host
+      ansible.builtin.find:
+        paths: "{{ elasticstack_ca_dir }}"
+        patterns:
+          - "*.p12"
+          - "*.crt"
+          - "*.zip"
+      register: elasticsearch_ca_dir_certificates
       when: elasticsearch_move_ca_directory.changed
+
+    - name: Remove the certificates from the ca directory on elasticsearch ca host
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ elasticsearch_ca_dir_certificates.files | default([]) }}"
+      loop_control:
+        label: "{{ item.path }}"
 
     - name: Check the existance of ca on Ansible controller
       ansible.builtin.stat:
@@ -342,7 +356,6 @@
     mode: 0640
   notify:
     - Restart Elasticsearch
-    - Restart kibana if available for elasticsearch certificates
   tags:
     - certificates
     - renew_ca
@@ -358,7 +371,6 @@
     mode: 0640
   notify:
     - Restart Elasticsearch
-    - Restart kibana if available for elasticsearch certificates
   tags:
     - certificates
     - renew_ca

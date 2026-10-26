@@ -9,6 +9,7 @@
       elasticstack_version |
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '') }}
+  tags: always
 
 - name: Install Filebeat - rpm - full stack
   ansible.builtin.package:

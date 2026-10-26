@@ -27,7 +27,7 @@ Filebeat can read from several sources (log files, syslog, journald, Docker, mod
 
 Run only parts of the role with `--tags`:
 
-* `configuration` (alias `beats_configuration`): (re)write the Filebeat and Auditbeat configuration without installing. Use `beats_filebeat_configuration` or `beats_auditbeat_configuration` to limit it to one of them.
+* `configuration` (alias `beats_configuration`): (re)write the Filebeat, Auditbeat and Metricbeat configuration without installing. Use `beats_filebeat_configuration`, `beats_auditbeat_configuration` or `beats_metricbeat_configuration` to limit it to one of them.
 * `certificates`: only generate and distribute the TLS certificates.
 * `renew_beats_cert` / `renew_ca`: force renewal of the Beats certificate.
 

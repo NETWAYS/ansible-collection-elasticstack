@@ -13,6 +13,9 @@
 - name: Provide Logstash pipelines in Mermaid syntax on control node
   when:
     - logstash_mermaid_local | bool
+  # The file is created for the user who runs Ansible, so these tasks run as that user and not as
+  # root through the become of the play.
+  become: false
   block:
 
     - name: Create temporary directory on control node
@@ -25,8 +28,6 @@
       ansible.builtin.template:
         src: pipelines.mermaid.j2
         dest: "{{ mermaid_path.path }}"
-        owner: root
-        group: root
         mode: 0655
       delegate_to: localhost
 

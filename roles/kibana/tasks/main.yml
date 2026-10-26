@@ -42,10 +42,6 @@
     - groups[elasticstack_elasticsearch_group_name] is undefined
   tags: always
 
-# No "tags: always" here, unlike the set_fact tasks above (CONTRIBUTING.md, Tags):
-# elasticstack_versionseparator ("=" for apt, "-" for dnf) is only set by the untagged task
-# "Include OS specific vars" of the elasticstack role. A run with --tags skips that task, so with
-# "always" this task would stop such a run whenever elasticstack_version is set.
 - name: Construct exact name of Kibana package
   ansible.builtin.set_fact:
     kibana_package: >-
@@ -56,6 +52,7 @@
       elasticstack_version |
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '') }}
+  tags: always
 
 - name: Install Kibana - rpm - full stack
   ansible.builtin.package:

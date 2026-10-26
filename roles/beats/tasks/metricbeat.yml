@@ -10,6 +10,7 @@
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '')
       }}
+  tags: always
 
 - name: Install Metricbeat - rpm - full stack
   ansible.builtin.package:
@@ -51,6 +52,10 @@
     mode: 0644
   notify:
     - Restart Metricbeat
+  tags:
+    - configuration
+    - beats_metricbeat_configuration
+    - beats_configuration
 
 - name: Enable modules
   ansible.builtin.command: "metricbeat modules enable {{ item }}"

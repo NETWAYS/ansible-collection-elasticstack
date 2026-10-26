@@ -32,16 +32,14 @@
     elasticsearch_nodename: "{{ ansible_hostname }}"
   when:
     - elasticsearch_nodename is undefined
+  tags: always
 
 - name: Set common password for common certificates
   ansible.builtin.set_fact:
     elasticsearch_tls_key_passphrase: "{{ elasticstack_cert_pass }}"
   when:
     - elasticstack_cert_pass is defined
-  tags:
-    - certificates
-    - renew_ca
-    - renew_es_cert
+  tags: always
 
 - name: Check if cluster is already set up
   ansible.builtin.stat:
@@ -126,6 +124,7 @@
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '')
       }}
+  tags: always
 
 - name: Update Elasticsearch if needed
   ansible.builtin.include_tasks: elasticsearch-rolling-upgrade.yml

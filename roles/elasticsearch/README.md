@@ -27,7 +27,7 @@ Run only parts of the role with `--tags`:
 
 * `certificates`: only generate and distribute the TLS certificates.
 * `renew_es_cert`: force renewal of the Elasticsearch node certificate.
-* `renew_ca`: force renewal of the stack CA and all component certificates.
+* `renew_ca`: force renewal of the stack CA and all component certificates. Run it with all roles of the stack at once, a role that is not part of the run keeps its old certificate and CA.
 
 <!-- ANSIBLE DOCSMITH MAIN START -->
 ## Role variables<a id="variables"></a>

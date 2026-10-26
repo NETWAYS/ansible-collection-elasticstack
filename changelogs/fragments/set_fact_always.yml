@@ -24,3 +24,5 @@ bugfixes:
 trivial:
   - The ``set_fact`` tasks that only build variables and cannot fail, and ``Include OS specific
     vars`` of the ``elasticstack`` role, are tagged ``always`` as CONTRIBUTING.md asks.
+  - The role READMEs say that the certificate tags only act in a full stack setup and that
+    ``renew_ca`` needs all roles in the same run.

@@ -22,6 +22,7 @@
         - elasticstack_security | bool
         - elasticstack_variant != "oss"
         - not elasticstack_override_beats_tls | bool
+      tags: always
 
     - name: Set beats_ca_dir if whole stack is used
       ansible.builtin.set_fact:
@@ -29,6 +30,7 @@
       when:
         - elasticstack_security | bool
         - beats_ca_dir is undefined
+      tags: always
 
 # We need it for templating even when security is disabled
 # This default corresponds with the default in Elastic-
@@ -39,10 +41,7 @@
     beats_ca_dir: "/opt/ca"
   when:
     - beats_ca_dir is undefined
-  tags:
-    - certificates
-    - renew_ca
-    - renew_beats_cert
+  tags: always
 
 - name: Create directory for logging if file logging is activated
   ansible.builtin.file:

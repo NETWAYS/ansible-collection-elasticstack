@@ -84,6 +84,9 @@
 - name: Backup beats zip file on localhost then remove
   when: "'renew_beats_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags or beats_cert_will_expire_soon | bool"
   delegate_to: localhost
+  # The file lies in the temporary directory of the user who runs Ansible, so these tasks run as
+  # that user and not as root through the become of the play.
+  become: false
   tags:
     - renew_ca
     - renew_beats_cert
@@ -98,8 +101,6 @@
         src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip"
         dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
-        owner: root
-        group: root
       when: beats_check_temporary_cert.stat.exists
       register: beats_move_cert_file
 
@@ -245,3 +246,10 @@
   changed_when: false
   no_log: "{{ elasticstack_no_log }}"
   delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
+  # The Beats configuration reads the password, so the task also runs with its tags
+  tags:
+    - configuration
+    - beats_configuration
+    - beats_filebeat_configuration
+    - beats_auditbeat_configuration
+    - beats_metricbeat_configuration

@@ -1,0 +1,28 @@
+bugfixes:
+  - A run of the ``beats`` role with ``--tags configuration`` no longer writes the Filebeat and
+    Auditbeat configuration without TLS and credentials in a full stack setup. The task that sets
+    ``beats_security`` was skipped in such a run, and so was the task that reads the password
+    (https://github.com/NETWAYS/ansible-collection-elasticstack/issues/567).
+  - A run of the ``beats`` role with ``--tags certificates``, ``renew_beats_cert`` or ``renew_ca``
+    no longer skips all certificate tasks in a full stack setup, for the same reason
+    (https://github.com/NETWAYS/ansible-collection-elasticstack/issues/567).
+  - A run of the ``beats`` role with ``--tags configuration`` or ``beats_configuration`` now
+    rewrites the Metricbeat configuration as well, and ``beats_metricbeat_configuration`` limits
+    it to Metricbeat (https://github.com/NETWAYS/ansible-collection-elasticstack/issues/476).
+  - A run of the ``logstash`` role with ``--tags configuration`` no longer writes the default
+    pipelines without TLS, because ``logstash_security`` and ``logstash_beats_tls`` were not set
+    in such a run (https://github.com/NETWAYS/ansible-collection-elasticstack/issues/567).
+  - Renewing the Logstash certificate makes the backup of the temporary certificate on the control
+    node as the user who runs Ansible and no longer as root
+    (https://github.com/NETWAYS/ansible-collection-elasticstack/issues/566).
+  - Renewing the Beats certificate no longer fails on a macOS control node, where the group
+    ``root`` does not exist. The backup of the temporary zip file on the control node is made as
+    the user who runs Ansible, without sudo and without the owner and group ``root``.
+  - With ``logstash_mermaid_local`` set, the pipeline overview on the control node no longer fails
+    on macOS because of the group ``root``. The file is created as the user who runs Ansible.
+
+trivial:
+  - The ``set_fact`` tasks that only build variables and cannot fail, and ``Include OS specific
+    vars`` of the ``elasticstack`` role, are tagged ``always`` as CONTRIBUTING.md asks.
+  - The role READMEs say that the certificate tags only act in a full stack setup and that
+    ``renew_ca`` needs all roles in the same run.

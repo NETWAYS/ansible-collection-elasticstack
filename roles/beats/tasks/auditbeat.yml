@@ -10,6 +10,7 @@
       string ) if (elasticstack_version is defined and elasticstack_version | length > 0)) |
       replace(' ', '')
       }}
+  tags: always
 
 - name: Install Auditbeat - rpm - full stack
   ansible.builtin.package:

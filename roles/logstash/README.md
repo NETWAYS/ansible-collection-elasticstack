@@ -39,6 +39,8 @@ Run only parts of the role with `--tags`:
 * `renew_logstash_cert` / `renew_ca`: force renewal of the Logstash certificate.
 * `mermaid`: only regenerate the pipeline overview (`pipelines.mermaid`).
 
+The certificate tags only act in a full stack setup, where the collection creates the certificates from its own CA. `renew_ca` also needs the elasticsearch role in the same run, which renews the CA.
+
 <!-- ANSIBLE DOCSMITH MAIN START -->
 ## Role variables<a id="variables"></a>
 

@@ -21,6 +21,7 @@
   ansible.builtin.set_fact:
     logstash_cert_will_expire_soon: true
   when: logstash_cert_expiration_days is defined and logstash_cert_expiration_days | int <= logstash_cert_expiration_buffer | int
+  tags: always
 
 - name: Print the logstash certificate renew message
   ansible.builtin.debug:
@@ -111,6 +112,9 @@
 - name: Backup logstash cert on Ansible controller then remove
   when: "'renew_logstash_cert' in ansible_run_tags or 'renew_ca' in ansible_run_tags"
   delegate_to: localhost
+  # The file lies in the temporary directory of the user who runs Ansible, so these tasks run as
+  # that user and not as root through the become of the play.
+  become: false
   tags:
     - renew_ca
     - renew_logstash_cert

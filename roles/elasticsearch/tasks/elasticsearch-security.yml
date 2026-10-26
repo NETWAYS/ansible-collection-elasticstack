@@ -25,6 +25,7 @@
     inventory_hostname == elasticstack_ca_host and
     elasticstack_ca_expiration_days is defined and
     elasticstack_ca_expiration_days | int <= elasticstack_ca_expiration_buffer | int
+  tags: always
 
 - name: Print the ca renew message
   ansible.builtin.debug:
@@ -118,6 +119,7 @@
   ansible.builtin.set_fact:
     elasticsearch_cert_will_expire_soon: true
   when: elasticsearch_cert_expiration_days is defined and elasticsearch_cert_expiration_days | int <= elasticsearch_cert_expiration_buffer | int
+  tags: always
 
 - name: Print the elasticsearch certificate renew message
   ansible.builtin.debug:
@@ -404,6 +406,7 @@
   ansible.builtin.set_fact:
     elasticsearch_http_protocol: "https"
   when: elasticsearch_http_security
+  tags: always
 
 - name: Check for API with bootstrap password
   ansible.builtin.uri:

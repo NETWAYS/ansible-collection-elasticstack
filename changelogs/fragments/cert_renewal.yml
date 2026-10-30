@@ -1,0 +1,31 @@
+bugfixes:
+  - The ``elasticsearch`` role no longer has the handler that should restart Kibana after new
+    Elasticsearch certificates. It looked for the Kibana package on the Elasticsearch host, so it
+    never restarted a Kibana on another host. Kibana trusts the CA and not the certificates of the
+    nodes, and connects again by itself when Elasticsearch is back
+    (https://github.com/NETWAYS/ansible-collection-elasticstack/issues/534).
+  - A run with ``--tags renew_ca`` now renews the CA itself. Before, only the certificates were
+    created again, signed by the old CA, because the condition checked the text
+    ``ansible_run_tags`` and not the variable.
+  - Renewing the CA no longer replaces the Kibana encryption keys. The renewal removed the whole
+    CA directory, which also holds ``encryption_key`` and ``savedobjects_encryption_key``, and the
+    ``kibana`` role created new keys. Kibana cannot decrypt the saved objects it encrypted with the
+    old key. This also happened when the CA was renewed because it was about to expire. The
+    renewal now removes only the certificates in the directory.
+  - The ``beats``, ``logstash`` and ``kibana`` roles no longer fail now and then with
+    ``checksum mismatch`` when they fetch the CA certificate. All hosts wrote it to the same file
+    on the controller at the same time, now they fetch it one after the other.
+
+trivial:
+  - A new workflow renews the certificates in the molecule scenario ``elasticstack_default`` and
+    checks the stack after each step. It runs on pull requests that change certificate files and
+    every Monday on main (https://github.com/NETWAYS/ansible-collection-elasticstack/issues/165).
+  - The roles in the converge playbook of ``elasticstack_default`` are tagged ``always``, so a run
+    with ``--tags`` reaches the tagged tasks in them.
+  - The ``verify.yml`` of ``elasticstack_default`` counts the Logstash events in the data stream
+    ``logs-generic-default``. It looked for an index with ``logstash`` in its name, which Logstash
+    8 does not create, and it never failed.
+  - The molecule scenarios use ``geerlingguy.redis`` 2.0.0. With 1.6.0 Redis on Rocky Linux 9 ran
+    without the password the scenarios set, so Logstash could not write to it.
+  - On RHEL the scenario ``elasticstack_default`` sets ``redis_conf_mode`` to ``0640``, the mode
+    the redis package sets for ``/etc/redis/redis.conf`` whenever ``systemd-tmpfiles`` runs.

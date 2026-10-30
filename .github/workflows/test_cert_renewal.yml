@@ -1,22 +1,14 @@
 ---
-# Test for renewing the certificates (#165)
+# Tests the renewal of the certificates. The other molecule tests only install the stack.
 #
-# The other molecule tests install a new cluster, none of them renews a certificate. In a real
-# setup this happens when the certificates expire (1095 days by default) or when someone runs the
-# playbook with --tags renew_ca or renew_es_cert. Bugs in these tasks show up only then, e.g.
-# #534 (the handler for the Kibana restart looked for the Kibana package on the Elasticsearch
-# host) and #567 (--tags renew_ca skipped all certificate tasks of the beats role, because the
-# set_fact for beats_security had no tags). The first run of this test showed that since 2023
-# --tags renew_ca had not renewed the CA itself, only the certificates, signed by the old CA.
+# The job installs the stack, renews the Elasticsearch certificates with --tags renew_es_cert and
+# then the CA and all certificates with --tags renew_ca. After each renewal the playbook
+# molecule/elasticstack_default/cert_renewal.yml checks that the expected certificates are new,
+# that Kibana is available and that Logstash still writes events to Elasticsearch.
 #
-# The job installs the stack, renews the Elasticsearch certificates and then the CA with all
-# certificates. After each step it checks which certificates changed, that Kibana is available
-# and that Logstash still writes events to Elasticsearch.
-#
-# Pull requests run it only when they change certificate files, the other pull requests do not
-# wait for it. Changes in other files can break the renewal too (#567 was in tasks/main.yml), so
-# it also runs every Monday on main. Nobody watches the scheduled runs, so a failed one opens an
-# issue, or comments on the one that is still open.
+# It runs on pull requests that change files used by the renewal, and every Monday on main,
+# because changes in other files can break the renewal as well. A failed weekly run opens an
+# issue.
 name: Test certificate renewal
 on:
   workflow_dispatch:
@@ -32,7 +24,6 @@ on:
       - '!roles/**/meta/argument_specs.yml'
       - 'plugins/modules/cert_info.py'
       - 'molecule/elasticstack_default/**'
-      - '.github/scripts/cert_renewal_check.sh'
       - '.github/workflows/test_cert_renewal.yml'
 
 # Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
@@ -57,7 +48,6 @@ jobs:
       ELASTIC_RELEASE: 8
       PY_COLORS: '1'
       ANSIBLE_FORCE_COLOR: '1'
-      CHECK: .github/scripts/cert_renewal_check.sh
 
     steps:
       - name: Check out code
@@ -113,32 +103,22 @@ jobs:
           molecule converge -s elasticstack_default
 
       - name: Record the certificates
-        run: $CHECK record
+        run: ansible-playbook molecule/elasticstack_default/cert_renewal.yml -e cert_renewal_step=record
 
       - name: Renew the Elasticsearch certificates
         run: molecule converge -s elasticstack_default -- --tags renew_es_cert
 
-      # Kibana trusts the CA and not the certificates of the nodes, it connects again without a
-      # restart (#534)
       - name: Check the stack after renewing the Elasticsearch certificates
-        run: |
-          $CHECK changed elasticsearch
-          $CHECK unchanged ca kibana logstash beats
-          $CHECK kibana_not_restarted
-          $CHECK kibana_available
-          $CHECK new_events
+        run: ansible-playbook molecule/elasticstack_default/cert_renewal.yml -e cert_renewal_step=renew_es_cert
 
       - name: Record the certificates again
-        run: $CHECK record
+        run: ansible-playbook molecule/elasticstack_default/cert_renewal.yml -e cert_renewal_step=record
 
       - name: Renew the CA and all certificates
         run: molecule converge -s elasticstack_default -- --tags renew_ca
 
       - name: Check the stack after renewing the CA
-        run: |
-          $CHECK changed ca elasticsearch kibana logstash beats
-          $CHECK kibana_available
-          $CHECK new_events
+        run: ansible-playbook molecule/elasticstack_default/cert_renewal.yml -e cert_renewal_step=renew_ca
 
       - name: Verify the stack
         run: molecule verify -s elasticstack_default

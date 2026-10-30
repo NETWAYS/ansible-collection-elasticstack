@@ -1,0 +1,174 @@
+---
+# Checks for the certificate renewal workflow (.github/workflows/test_cert_renewal.yml). It runs
+# against the containers of this scenario after "molecule converge", the step is passed as
+# cert_renewal_step:
+#   record         remembers the certificates and the start time of Kibana
+#   renew_es_cert  after --tags renew_es_cert: only the Elasticsearch certificates are new
+#   renew_ca       after --tags renew_ca: the CA and all certificates are new
+# After a renewal it also checks that Kibana is available and that Logstash writes events.
+
+- name: Add the containers of the scenario
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    # Same names as the platforms in molecule.yml
+    - name: Add the containers of the scenario
+      ansible.builtin.add_host:
+        name: "elasticstack{{ lookup('env', 'ELASTIC_RELEASE') }}-cluster{{ item }}-{{ lookup('env', 'MOLECULE_DISTRO') }}"
+        groups: cluster
+        ansible_connection: community.docker.docker
+      loop: [1, 2]
+
+- name: Check the certificate renewal
+  hosts: cluster
+  gather_facts: false
+  vars:
+    # The first host is the CA host, the elastic password is stored there
+    cert_renewal_ca_host: "{{ groups['cluster'] | first }}"
+    cert_renewal_password: >-
+      {{ (hostvars[cert_renewal_ca_host].cert_renewal_passwords.content | b64decode).splitlines()
+      | select('match', 'PASSWORD elastic ') | first | split | last }}
+    cert_renewal_state_file: /var/tmp/cert_renewal_state.json
+    cert_renewal_files:
+      ca: /etc/elasticsearch/certs/ca.crt
+      elasticsearch: "/etc/elasticsearch/certs/{{ inventory_hostname }}.p12"
+      kibana: "/etc/kibana/certs/{{ inventory_hostname }}-kibana.p12"
+      logstash: "/etc/logstash/certs/{{ inventory_hostname }}-server.crt"
+      beats: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
+    # The certificates each step expects to be new, all others must be unchanged
+    cert_renewal_renewed:
+      record: []
+      renew_es_cert: [elasticsearch]
+      renew_ca: [ca, elasticsearch, kibana, logstash, beats]
+  tasks:
+    - name: Fail on an unknown step
+      ansible.builtin.assert:
+        that: cert_renewal_step | default('') in cert_renewal_renewed
+        fail_msg: "Set cert_renewal_step to one of {{ cert_renewal_renewed.keys() | list }}"
+        quiet: true
+
+    - name: Read the certificates
+      ansible.builtin.stat:
+        path: "{{ item.value }}"
+        checksum_algorithm: sha256
+      loop: "{{ cert_renewal_files | dict2items }}"
+      loop_control:
+        label: "{{ item.value }}"
+      register: cert_renewal_stat
+
+    - name: Fail when a certificate is missing
+      ansible.builtin.assert:
+        that: item.stat.exists
+        fail_msg: "{{ item.item.value }} is missing"
+        quiet: true
+      loop: "{{ cert_renewal_stat.results }}"
+      loop_control:
+        label: "{{ item.item.value }}"
+
+    # A new file alone does not show that Elasticsearch was restarted and uses it
+    - name: Read the certificate Elasticsearch serves
+      community.crypto.get_certificate:
+        host: localhost
+        port: 9200
+        asn1_base64: true
+      register: cert_renewal_served
+
+    - name: Read the start time of Kibana
+      ansible.builtin.systemd_service:
+        name: kibana
+      register: cert_renewal_kibana
+
+    - name: Collect the current state
+      ansible.builtin.set_fact:
+        cert_renewal_now:
+          files: "{{ dict(cert_renewal_stat.results | map(attribute='item.key') | zip(cert_renewal_stat.results | map(attribute='stat.checksum'))) }}"
+          served: "{{ cert_renewal_served.serial_number }}"
+          kibana_start: "{{ cert_renewal_kibana.status.ActiveEnterTimestampMonotonic }}"
+
+    - name: Record the state
+      ansible.builtin.copy:
+        content: "{{ cert_renewal_now | to_nice_json }}"
+        dest: "{{ cert_renewal_state_file }}"
+        mode: "0600"
+      when: cert_renewal_step == 'record'
+
+    - name: Compare with the recorded state
+      when: cert_renewal_step != 'record'
+      block:
+        - name: Read the recorded state
+          ansible.builtin.slurp:
+            src: "{{ cert_renewal_state_file }}"
+          register: cert_renewal_recorded
+
+        - name: Set the recorded state
+          ansible.builtin.set_fact:
+            cert_renewal_before: "{{ cert_renewal_recorded.content | b64decode | from_json }}"
+
+        - name: Check which certificates are new
+          ansible.builtin.assert:
+            that: (cert_renewal_now.files[item] != cert_renewal_before.files[item]) == (item in cert_renewal_renewed[cert_renewal_step])
+            fail_msg: >-
+              {{ cert_renewal_files[item] }} is
+              {{ 'new' if cert_renewal_now.files[item] != cert_renewal_before.files[item] else 'unchanged' }},
+              expected {{ 'new' if item in cert_renewal_renewed[cert_renewal_step] else 'unchanged' }}
+            success_msg: "{{ cert_renewal_files[item] }} is {{ 'new' if item in cert_renewal_renewed[cert_renewal_step] else 'unchanged' }}"
+          loop: "{{ cert_renewal_files.keys() | list }}"
+
+        - name: Check that Elasticsearch serves its new certificate
+          ansible.builtin.assert:
+            that: cert_renewal_now.served != cert_renewal_before.served
+            fail_msg: Elasticsearch still serves the old certificate
+          when: "'elasticsearch' in cert_renewal_renewed[cert_renewal_step]"
+
+        # Kibana trusts the CA and not the certificates of the Elasticsearch nodes. New node
+        # certificates from the same CA need no restart, Kibana connects again by itself.
+        - name: Check that Kibana was not restarted
+          ansible.builtin.assert:
+            that: cert_renewal_now.kibana_start == cert_renewal_before.kibana_start
+            fail_msg: Kibana was restarted
+          when: cert_renewal_step == 'renew_es_cert'
+
+        - name: Read the elastic password
+          ansible.builtin.slurp:
+            src: /usr/share/elasticsearch/initial_passwords
+          register: cert_renewal_passwords
+          when: inventory_hostname == cert_renewal_ca_host
+          no_log: true
+
+        - name: Wait until Kibana is available
+          ansible.builtin.uri:
+            url: "http://{{ inventory_hostname }}:5601/api/status"
+            user: elastic
+            password: "{{ cert_renewal_password }}"
+            force_basic_auth: true
+            status_code: [200, 503]
+          register: cert_renewal_kibana_status
+          until: cert_renewal_kibana_status.json.status.overall.level | default('') == 'available'
+          retries: 60
+          delay: 5
+
+        # The default pipelines set no index, so Logstash 8 writes to the data stream logs-generic-default
+        # https://www.elastic.co/docs/reference/logstash/plugins/plugins-outputs-elasticsearch#plugins-outputs-elasticsearch-data_stream
+        - name: Count the events from Logstash
+          ansible.builtin.uri:
+            url: https://localhost:9200/logs-generic-default/_count
+            user: elastic
+            password: "{{ cert_renewal_password }}"
+            force_basic_auth: true
+            validate_certs: false
+          register: cert_renewal_count_before
+          when: inventory_hostname == cert_renewal_ca_host
+
+        # Only events that arrive after the renewal count
+        - name: Wait for new events from Logstash
+          ansible.builtin.uri:
+            url: https://localhost:9200/logs-generic-default/_count
+            user: elastic
+            password: "{{ cert_renewal_password }}"
+            force_basic_auth: true
+            validate_certs: false
+          register: cert_renewal_count
+          until: cert_renewal_count.json.count > cert_renewal_count_before.json.count
+          retries: 60
+          delay: 5
+          when: inventory_hostname == cert_renewal_ca_host

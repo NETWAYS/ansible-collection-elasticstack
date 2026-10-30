@@ -22,3 +22,5 @@ trivial:
   - The ``verify.yml`` of ``elasticstack_default`` counts the Logstash events in the data stream
     ``logs-generic-default``. It looked for an index with ``logstash`` in its name, which Logstash
     8 does not create, and it never failed.
+  - The molecule scenarios use ``geerlingguy.redis`` 2.0.0. With 1.6.0 Redis on Rocky Linux 9 ran
+    without the password the scenarios set, so Logstash could not write to it.

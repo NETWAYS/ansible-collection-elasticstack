@@ -365,6 +365,8 @@
     dest: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
     flat: yes
   delegate_to: "{{ elasticstack_ca_host | default(omit, true) }}"
+  # All hosts write the same file on the controller, so they fetch it one after the other
+  throttle: 1
   tags:
     - certificates
     - renew_ca

@@ -12,6 +12,9 @@ bugfixes:
     ``kibana`` role created new keys. Kibana cannot decrypt the saved objects it encrypted with the
     old key. This also happened when the CA was renewed because it was about to expire. The
     renewal now removes only the certificates in the directory.
+  - The ``beats``, ``logstash`` and ``kibana`` roles no longer fail now and then with
+    ``checksum mismatch`` when they fetch the CA certificate. All hosts wrote it to the same file
+    on the controller at the same time, now they fetch it one after the other.
 
 trivial:
   - A new workflow renews the certificates in the molecule scenario ``elasticstack_default`` and

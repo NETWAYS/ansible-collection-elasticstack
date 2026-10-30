@@ -44,6 +44,14 @@
         elasticstack_rpm_workaround: true
       when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= "9"
       tags: always
+    # The redis package of RHEL sets /etc/redis/redis.conf to 0640 whenever systemd-tmpfiles runs.
+    # geerlingguy.redis uses 0644 on RHEL, so the next run changes the file again and the
+    # idempotence check fails.
+    - name: Use the mode the Redis package sets for its configuration
+      ansible.builtin.set_fact:
+        redis_conf_mode: "0640"
+      when: ansible_os_family == 'RedHat'
+      tags: always
     - name: Include Redis
       ansible.builtin.include_role:
         name: geerlingguy.redis

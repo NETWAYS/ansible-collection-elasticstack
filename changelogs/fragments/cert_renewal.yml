@@ -27,3 +27,5 @@ trivial:
     8 does not create, and it never failed.
   - The molecule scenarios use ``geerlingguy.redis`` 2.0.0. With 1.6.0 Redis on Rocky Linux 9 ran
     without the password the scenarios set, so Logstash could not write to it.
+  - On RHEL the scenario ``elasticstack_default`` sets ``redis_conf_mode`` to ``0640``, the mode
+    the redis package sets for ``/etc/redis/redis.conf`` whenever ``systemd-tmpfiles`` runs.

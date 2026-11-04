@@ -1,0 +1,150 @@
+---
+# Tests the renewal of the certificates. The other molecule tests only install the stack.
+#
+# The job installs the stack, renews the Elasticsearch certificates with --tags renew_es_cert and
+# then the CA and all certificates with --tags renew_ca. After each renewal the playbook
+# molecule/elasticstack_default/cert_renewal.yml checks that the expected certificates are new,
+# that Kibana is available and that Logstash still writes events to Elasticsearch.
+#
+# It runs on pull requests that change files used by the renewal, and every Monday on main,
+# because changes in other files can break the renewal as well. A failed weekly run opens an
+# issue.
+name: Test certificate renewal
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 5 * * 1'
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'roles/*/tasks/*security*.yml'
+      - 'roles/*/handlers/**'
+      - 'roles/elasticstack/**'
+      - '!roles/**/*.md'
+      - '!roles/**/meta/argument_specs.yml'
+      - 'plugins/modules/cert_info.py'
+      - 'molecule/elasticstack_default/**'
+      - '.github/workflows/test_cert_renewal.yml'
+
+# Cancel outdated pipeline runs when a new push occurs in the pull request and a new pipeline starts.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cert_renewal:
+    # For non-PR events (workflow_dispatch, merge_group, schedule, push, etc.), github.event.pull_request.draft is null.
+    # GitHub Actions coerces null == false to true (null → 0, false → 0), so the job runs for all non-draft events.
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    env:
+      COLLECTION_NAMESPACE: netways
+      COLLECTION_NAME: elasticstack
+      MOLECULE_DISTRO: ubuntu2204
+      ELASTIC_RELEASE: 8
+      PY_COLORS: '1'
+      ANSIBLE_FORCE_COLOR: '1'
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+          cache: 'pip'
+          cache-dependency-path: requirements-test.txt
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "ansible-core>=2.20,<2.21"
+          python3 -m pip install -r requirements-test.txt
+
+      - name: Get latest Elasticsearch release
+        id: elastic-version
+        run: |
+          curl -fsSL \
+            "https://artifacts.elastic.co/packages/${ELASTIC_RELEASE}.x/apt/dists/stable/main/binary-amd64/Packages.gz" \
+            -o /tmp/Packages.gz
+
+          VERSION=$(zcat /tmp/Packages.gz \
+            | awk '$1=="Package:" && $2=="elasticsearch"{p=1} p && $1=="Version:"{print $2; p=0}' \
+            | sort -V \
+            | tail -n 1)
+          rm -f /tmp/Packages.gz
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Restore Elastic apt cache
+        uses: actions/cache/restore@v6
+        with:
+          path: /tmp/elastic-apt-cache
+          key: ${{ runner.os }}-apt-elastic-${{ steps.elastic-version.outputs.version }}
+          restore-keys: |
+            ${{ runner.os }}-apt-elastic-${{ env.ELASTIC_RELEASE }}.
+
+      - name: Ensure apt cache directory exists
+        run: mkdir -p /tmp/elastic-apt-cache
+
+      - name: Install collection
+        run: |
+          mkdir -p ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE
+          cp -a ../ansible-collection-$COLLECTION_NAME ~/.ansible/collections/ansible_collections/$COLLECTION_NAMESPACE/$COLLECTION_NAME
+
+      - name: Install the stack
+        run: |
+          ansible --version
+          molecule --version
+          molecule converge -s elasticstack_default
+
+      - name: Record the certificates
+        run: ansible-playbook molecule/elasticstack_default/cert_renewal.yml -e cert_renewal_step=record
+
+      - name: Renew the Elasticsearch certificates
+        run: molecule converge -s elasticstack_default -- --tags renew_es_cert
+
+      - name: Check the stack after renewing the Elasticsearch certificates
+        run: ansible-playbook molecule/elasticstack_default/cert_renewal.yml -e cert_renewal_step=renew_es_cert
+
+      - name: Record the certificates again
+        run: ansible-playbook molecule/elasticstack_default/cert_renewal.yml -e cert_renewal_step=record
+
+      - name: Renew the CA and all certificates
+        run: molecule converge -s elasticstack_default -- --tags renew_ca
+
+      - name: Check the stack after renewing the CA
+        run: ansible-playbook molecule/elasticstack_default/cert_renewal.yml -e cert_renewal_step=renew_ca
+
+      - name: Verify the stack
+        run: molecule verify -s elasticstack_default
+
+      - name: Run the playbook again without tags, nothing may change
+        run: molecule idempotence -s elasticstack_default
+
+      - name: Remove the containers
+        if: always()
+        run: molecule destroy -s elasticstack_default
+
+      - name: Open an issue for a failed weekly run
+        if: failure() && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Weekly certificate renewal test fails"
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          number=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/issues?state=open&per_page=100" \
+            --jq ".[] | select(.pull_request == null and .title == \"${title}\") | .number" | head -n 1)
+          if [ -n "$number" ]; then
+            gh api "repos/${GITHUB_REPOSITORY}/issues/${number}/comments" -f body="Failed again: ${run_url}"
+          else
+            gh api "repos/${GITHUB_REPOSITORY}/issues" \
+              -f title="$title" \
+              -f body="The weekly run of the certificate renewal test on main failed: ${run_url}" \
+              -f "labels[]=bug" \
+              -f "labels[]=component:all"
+          fi

@@ -36,26 +36,42 @@
       - "testbed: molecule"
     kibana_extra_config: |-
       ops.interval: 5000
+  # The tags of an include_role only apply to the include itself. Without always, a run with
+  # --tags (the certificate renewal workflow uses renew_es_cert and renew_ca) skips the roles.
   tasks:
     - name: Enable Elastic installation on RHEL 9
       ansible.builtin.set_fact:
         elasticstack_rpm_workaround: true
       when: ansible_os_family == 'RedHat' and ansible_distribution_major_version >= "9"
+      tags: always
+    # The redis package of RHEL sets /etc/redis/redis.conf to 0640 whenever systemd-tmpfiles runs.
+    # geerlingguy.redis uses 0644 on RHEL, so the next run changes the file again and the
+    # idempotence check fails.
+    - name: Use the mode the Redis package sets for its configuration
+      ansible.builtin.set_fact:
+        redis_conf_mode: "0640"
+      when: ansible_os_family == 'RedHat'
+      tags: always
     - name: Include Redis
       ansible.builtin.include_role:
         name: geerlingguy.redis
     - name: Include Elastic Repos
       ansible.builtin.include_role:
         name: repos
+      tags: always
     - name: Include Elasticsearch role
       ansible.builtin.include_role:
         name: elasticsearch
+      tags: always
     - name: Include logstash
       ansible.builtin.include_role:
         name: logstash
+      tags: always
     - name: Include kibana
       ansible.builtin.include_role:
         name: kibana
+      tags: always
     - name: Include Beats
       ansible.builtin.include_role:
         name: beats
+      tags: always

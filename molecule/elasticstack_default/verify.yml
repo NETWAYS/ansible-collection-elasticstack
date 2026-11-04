@@ -30,30 +30,28 @@
       changed_when: false
       delegate_to: "{{ elasticsearch_ca }}"
 
-    - name: Query for Logstash indices
-      ansible.builtin.shell: >
-        curl -ks -uelastic:{{ elastic_pass.stdout }}
-        https://localhost:{{ elasticstack_elasticsearch_http_port }}/_cat/indices |
-        grep logstash |
-        awk {' print $7 '} |
-        sort -n |
-        tail -1
+    # The default pipelines set no index, so Logstash 8 writes to the data stream logs-generic-default
+    # https://www.elastic.co/docs/reference/logstash/plugins/plugins-outputs-elasticsearch#plugins-outputs-elasticsearch-data_stream
+    - name: Count the events from Logstash
+      ansible.builtin.uri:
+        url: https://localhost:{{ elasticstack_elasticsearch_http_port }}/logs-generic-default/_count
+        method: GET
+        force_basic_auth: yes
+        user: elastic
+        password: "{{ elastic_pass.stdout }}"
+        status_code: [200, 404]
+        validate_certs: false
       register: logstash_count
       when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names"
 
-    - name: Show full output
-      ansible.builtin.debug:
-        var: logstash_count
-      when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names"
-
-    - name: Fail when logstash index is empty
+    - name: Fail when Logstash wrote no events
       ansible.builtin.fail:
-        msg: "Logstash Index is empty"
-      when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names and logstash_count.stdout == 0"
+        msg: "Logstash wrote no events to logs-generic-default"
+      when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names and logstash_count.json.count | default(0) == 0"
 
     - name: Show number of received events
       ansible.builtin.debug:
-        msg: "Elasticsearch received {{ logstash_count.stdout }} events so far"
+        msg: "Elasticsearch received {{ logstash_count.json.count }} events so far"
       when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names"
 
     - name: Run Kibana checks

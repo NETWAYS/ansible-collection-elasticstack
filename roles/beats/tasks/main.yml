@@ -117,6 +117,41 @@
     - beats_configuration
     - beats_filebeat_configuration
     - beats_auditbeat_configuration
+    - beats_metricbeat_configuration
+
+- name: Check that the Beats have credentials for Elasticsearch
+  ansible.builtin.assert:
+    that: >-
+      beats_elasticsearch_api_key | length > 0
+      or (beats_elasticsearch_username | length > 0 and beats_elasticsearch_password | length > 0)
+    fail_msg: >-
+      {{ item.variable }} is set to "elasticsearch" and beats_security is true, but no credentials
+      are set. elasticstack_full_stack is false, so set beats_elasticsearch_api_key or
+      beats_elasticsearch_username and beats_elasticsearch_password.
+    quiet: true
+  loop:
+    - variable: beats_filebeat_output
+      enabled: "{{ beats_filebeat }}"
+      output: "{{ beats_filebeat_output.type | default(beats_filebeat_output) }}"
+    - variable: beats_auditbeat_output
+      enabled: "{{ beats_auditbeat }}"
+      output: "{{ beats_auditbeat_output.type | default(beats_auditbeat_output) }}"
+    - variable: beats_metricbeat_output
+      enabled: "{{ beats_metricbeat }}"
+      output: "{{ beats_metricbeat_output.type | default(beats_metricbeat_output) }}"
+  loop_control:
+    label: "{{ item.variable }}"
+  when:
+    - beats_security | bool
+    - not elasticstack_full_stack | bool
+    - item.enabled | bool
+    - item.output == 'elasticsearch'
+  tags:
+    - configuration
+    - beats_configuration
+    - beats_filebeat_configuration
+    - beats_auditbeat_configuration
+    - beats_metricbeat_configuration
 
 - name: Import Filebeat tasks
   ansible.builtin.import_tasks: filebeat.yml

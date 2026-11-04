@@ -1,0 +1,28 @@
+bugfixes:
+  - The Elasticsearch output of Filebeat, Metricbeat and Auditbeat no longer turns off the check of
+    the Elasticsearch certificate. ``ssl.verification_mode`` was fixed to ``none`` and now comes from
+    ``beats_ssl_verification_mode`` (default ``full``). A Beat that connects to Elasticsearch by a
+    name or IP that is not in the certificate now fails to connect; set
+    ``beats_ssl_verification_mode`` to ``certificate`` for such a setup.
+  - The Elasticsearch output of the Beats uses ``beats_tls_cacert`` in a full stack instead of the
+    fixed path ``/etc/beats/certs/ca.crt``.
+  - With ``elasticstack_full_stack`` false and ``beats_security`` true, the Elasticsearch output of
+    the Beats no longer fails with ``'beats_writer_password' is undefined``. Without credentials the
+    run stops with a message.
+  - In a full stack the beats role writes the generated certificate, key and CA to ``beats_ca_dir``.
+    They always went to ``/etc/beats/certs``, so a different ``beats_ca_dir`` left the Beats
+    configuration pointing at files that did not exist.
+  - The check that every enabled Beat has hosts to ship to also runs with
+    ``--tags beats_metricbeat_configuration``.
+
+minor_changes:
+  - The beats role takes ``beats_ssl_certificate_authorities`` for the CAs the Beats trust for
+    Elasticsearch. When it is empty and ``elasticstack_full_stack`` is false, the Beats use the
+    system trust store, for example for Elastic Cloud.
+  - The beats role takes ``beats_elasticsearch_username`` and ``beats_elasticsearch_password``, or
+    ``beats_elasticsearch_api_key``, for the login to Elasticsearch. In a full stack the Beats keep
+    using the ``elastic`` user when they are not set.
+
+trivial:
+  - The ``elasticstack_default`` scenario runs Metricbeat with the Elasticsearch output and checks
+    that its events arrive.

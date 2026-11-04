@@ -1,12 +1,12 @@
 ---
 - name: Ensure beats certificate exists
   ansible.builtin.stat:
-    path: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
+    path: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.crt"
   register: beats_cert_exists
 
 - name: Get the beats certificate expiration date
   community.crypto.x509_certificate_info:
-    path: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
+    path: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.crt"
     valid_at:
       check_period: "{{ beats_cert_expiration_buffer }}"
   register: beats_cert_expiration_date
@@ -32,13 +32,13 @@
   block:
     - name: Check if cert directory exists
       ansible.builtin.stat:
-        path: /etc/beats/certs
+        path: "{{ beats_ca_dir }}"
       register: beats_check_cert_path
 
     - name: Move cert directory
       ansible.builtin.copy:
-        src: /etc/beats/certs
-        dest: "/etc/beats/certs_{{ ansible_date_time.iso8601_micro }}"
+        src: "{{ beats_ca_dir }}"
+        dest: "{{ beats_ca_dir }}_{{ ansible_date_time.iso8601_micro }}"
         mode: preserve
         owner: root
         group: root
@@ -48,7 +48,7 @@
 
     - name: Remove cert directory
       ansible.builtin.file:
-        path: /etc/beats/certs
+        path: "{{ beats_ca_dir }}"
         state: absent
       when: beats_move_cert_directory.changed
 
@@ -112,7 +112,7 @@
 
 - name: Create certificate directory
   ansible.builtin.file:
-    path: /etc/beats/certs
+    path: "{{ beats_ca_dir }}"
     state: directory
     owner: root
     group: root
@@ -167,7 +167,7 @@
 - name: Copy the certificate to actual node
   ansible.builtin.unarchive:
     src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/{{ ansible_hostname }}-beats.zip"
-    dest: "/etc/beats/certs/"
+    dest: "{{ beats_ca_dir }}/"
     owner: root
     group: root
     mode: 0640
@@ -178,8 +178,8 @@
 
 - name: Copy certificate locally
   ansible.builtin.copy:
-    src: "/etc/beats/certs/{{ ansible_hostname }}/{{ ansible_hostname }}.crt"
-    dest: "/etc/beats/certs/{{ inventory_hostname }}-beats.crt"
+    src: "{{ beats_ca_dir }}/{{ ansible_hostname }}/{{ ansible_hostname }}.crt"
+    dest: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.crt"
     owner: root
     group: root
     mode: 0640
@@ -195,8 +195,8 @@
 
 - name: Copy key locally
   ansible.builtin.copy:
-    src: "/etc/beats/certs/{{ ansible_hostname }}/{{ ansible_hostname }}.key"
-    dest: "/etc/beats/certs/{{ inventory_hostname }}-beats.key"
+    src: "{{ beats_ca_dir }}/{{ ansible_hostname }}/{{ ansible_hostname }}.key"
+    dest: "{{ beats_ca_dir }}/{{ inventory_hostname }}-beats.key"
     owner: root
     group: root
     mode: 0640
@@ -226,7 +226,7 @@
 - name: Copy the ca certificate to actual node
   ansible.builtin.copy:
     src: "{{ lookup('config', 'DEFAULT_LOCAL_TMP') | dirname }}/ca.crt"
-    dest: /etc/beats/certs
+    dest: "{{ beats_ca_dir }}"
     owner: root
     group: root
     mode: 0640

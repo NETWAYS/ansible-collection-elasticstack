@@ -1,0 +1,14 @@
+---
+# CAs the Beats trust for Elasticsearch: the configured list, otherwise the stack CA in a full
+# stack, otherwise none, so that the Beats use the system trust store
+_beats_ssl_certificate_authorities: >-
+  {{ beats_ssl_certificate_authorities
+     | default([beats_tls_cacert] if elasticstack_full_stack | bool else [], true) }}
+
+# Credentials for Elasticsearch: the configured ones, otherwise the elastic user in a full stack
+_beats_elasticsearch_username: >-
+  {{ beats_elasticsearch_username
+     | default('elastic' if elasticstack_full_stack | bool else '', true) }}
+_beats_elasticsearch_password: >-
+  {{ beats_elasticsearch_password
+     | default(beats_writer_password.stdout if elasticstack_full_stack | bool else '', true) }}

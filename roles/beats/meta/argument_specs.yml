@@ -270,7 +270,10 @@ argument_specs:
         description: >-
           Base directory for the Beats certificate, key and CA file. The role
           fills it per variant (/opt/ca standalone, /etc/beats/certs in a full
-          stack) if you did not set it.
+          stack) if you did not set it. In a full stack the role writes the
+          generated certificate, key and CA there, and a certificate renewal
+          copies the directory to a backup and deletes it. Point it at a
+          directory that holds nothing else.
 
       beats_tls_key:
         type: str
@@ -291,6 +294,54 @@ argument_specs:
         type: str
         default: BeatsChangeMe
         description: Passphrase of the Beats private key.
+
+      beats_ssl_verification_mode:
+        type: str
+        default: full
+        choices:
+          - full
+          - strict
+          - certificate
+          - none
+        description: >-
+          How the Beats verify the certificate of Elasticsearch when they ship to it over TLS
+          (ssl.verification_mode). full checks the CA and that the host name or IP is in the
+          certificate. certificate checks only the CA, for certificates without the address the
+          Beats connect to. none turns the check off.
+
+      beats_ssl_certificate_authorities:
+        type: list
+        elements: str
+        default: []
+        description: >-
+          CA certificates the Beats check the certificate of Elasticsearch against, as paths on the
+          Beats hosts. Leave it empty to let the role decide. With elasticstack_full_stack true it
+          uses the CA the collection created (beats_tls_cacert). With elasticstack_full_stack false
+          it sets no CA, and the Beats trust the CAs installed in the operating system. That is
+          enough when Elasticsearch has a certificate from a public CA, for example on Elastic
+          Cloud.
+
+      beats_elasticsearch_username:
+        type: str
+        default: ""
+        description: >-
+          User the Beats log in to Elasticsearch with. When empty, a full stack uses the elastic
+          user. Required with beats_elasticsearch_password when elasticstack_full_stack is false,
+          beats_security is true and no beats_elasticsearch_api_key is set.
+
+      beats_elasticsearch_password:
+        type: str
+        default: ""
+        description: >-
+          Password of beats_elasticsearch_username. When empty, a full stack uses the generated
+          password of the elastic user.
+
+      beats_elasticsearch_api_key:
+        type: str
+        default: ""
+        description: >-
+          API key the Beats log in to Elasticsearch with, as id:api_key. When set, the Beats use it
+          instead of beats_elasticsearch_username and beats_elasticsearch_password.
 
       beats_cert_validity_period:
         type: int

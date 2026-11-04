@@ -54,6 +54,22 @@
         msg: "Elasticsearch received {{ logstash_count.json.count }} events so far"
       when: "elasticstack_elasticsearch_group_name is defined and elasticstack_elasticsearch_group_name in group_names"
 
+    # Metricbeat only gets its events into Elasticsearch when it accepts the certificate of
+    # Elasticsearch, see beats_ssl_verification_mode
+    - name: Wait for events from Metricbeat
+      ansible.builtin.uri:
+        url: https://localhost:{{ elasticstack_elasticsearch_http_port }}/metricbeat-*/_count
+        method: GET
+        force_basic_auth: yes
+        user: elastic
+        password: "{{ elastic_pass.stdout }}"
+        validate_certs: false
+      register: metricbeat_count
+      until: metricbeat_count.json.count | default(0) > 0
+      retries: 30
+      delay: 5
+      when: "elasticstack_elasticsearch_group_name in group_names"
+
     - name: Run Kibana checks
       when: "'kibana' in group_names"
       block:

@@ -42,11 +42,17 @@ setup.kibana:
 output.elasticsearch:
 {% if beats_security | bool %}
   hosts: [ {% for host in beats_elasticsearch_hosts %}"https://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
-  username: "elastic"
-  password: "{{ beats_writer_password.stdout }}"
+{% if beats_elasticsearch_api_key | length > 0 %}
+  api_key: {{ beats_elasticsearch_api_key | to_json }}
+{% else %}
+  username: {{ _beats_elasticsearch_username | to_json }}
+  password: {{ _beats_elasticsearch_password | to_json }}
+{% endif %}
   ssl.enabled: true
-  ssl.verification_mode: none
-  ssl.certificate_authorities: ["/etc/beats/certs/ca.crt"]
+  ssl.verification_mode: {{ beats_ssl_verification_mode }}
+{% if _beats_ssl_certificate_authorities | length > 0 %}
+  ssl.certificate_authorities: {{ _beats_ssl_certificate_authorities | to_json }}
+{% endif %}
 {% else %}
   hosts: [ {% for host in beats_elasticsearch_hosts %}"http://{{ host }}:{{ elasticstack_elasticsearch_http_port }}"{% if not loop.last %},{% endif %}{% endfor %}]
 {% endif %}

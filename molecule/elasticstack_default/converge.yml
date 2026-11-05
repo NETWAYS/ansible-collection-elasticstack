@@ -34,6 +34,9 @@
       - system
     beats_fields:
       - "testbed: molecule"
+    # Metricbeat ships straight to Elasticsearch, which tests the verification of the Elasticsearch
+    # certificate (beats_ssl_verification_mode)
+    beats_metricbeat: true
     kibana_extra_config: |-
       ops.interval: 5000
   # The tags of an include_role only apply to the include itself. Without always, a run with

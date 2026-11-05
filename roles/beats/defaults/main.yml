@@ -15,6 +15,14 @@ beats_tls_cert: "{{ beats_ca_dir | default('') }}/{{ inventory_hostname }}-beats
 beats_tls_cacert: "{{ beats_ca_dir | default('') }}/ca.crt"
 beats_tls_key_passphrase: BeatsChangeMe
 
+# Elasticsearch output #
+
+beats_ssl_verification_mode: full
+beats_ssl_certificate_authorities: []
+beats_elasticsearch_username: ""
+beats_elasticsearch_password: ""
+beats_elasticsearch_api_key: ""
+
 # Filebeat specific #
 
 beats_filebeat_elastic_monitoring: false

@@ -72,24 +72,33 @@ argument_specs:
       kibana_tls:
         type: bool
         default: false
-        description: Enable TLS on the Kibana server itself (server.ssl).
+        description: >-
+          Enable TLS on the Kibana server itself (server.ssl), for browsers and API clients
+          such as the Beats. When elasticstack_full_stack and kibana_security are true and
+          kibana_tls_cert and kibana_tls_key are empty, Kibana uses the certificate the role
+          creates from the stack CA (<hostname>-kibana.p12). Otherwise set kibana_tls_cert and
+          kibana_tls_key.
 
       kibana_tls_cert:
         type: str
-        default: /etc/kibana/certs/cert.pem
-        description: Path to the certificate for the Kibana server TLS.
+        default: ""
+        description: >-
+          Path to an own PEM certificate for the Kibana server TLS, instead of the certificate
+          the role creates. Set it together with kibana_tls_key.
 
       kibana_tls_key:
         type: str
-        default: /etc/kibana/certs/key.pem
-        description: Path to the private key for the Kibana server TLS.
+        default: ""
+        description: >-
+          Path to the private key of kibana_tls_cert. The key must not be encrypted.
 
       kibana_tls_key_passphrase:
         type: str
         default: PleaseChangeMe
         description: >-
-          Passphrase for the generated Kibana security certificate (X-Pack, full
-          stack). Overridden by elasticstack_cert_pass when that is set.
+          Passphrase of the certificate the role creates (<hostname>-kibana.p12, full stack).
+          With kibana_tls it is also the keystore password in kibana.yml. Overridden by
+          elasticstack_cert_pass when that is set.
 
       # ----- Security certificates (X-Pack, full stack) -----
       kibana_cert_validity_period:

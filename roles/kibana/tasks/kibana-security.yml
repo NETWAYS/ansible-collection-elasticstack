@@ -52,10 +52,15 @@
       when: kibana_check_cert_path.stat.exists
       register: kibana_move_cert_directory
 
-    - name: Remove cert directory
+    # Only the files the role created are removed, not the directory. It can also hold the own
+    # certificate set with kibana_tls_cert and kibana_tls_key.
+    - name: Remove the certificates the role created
       ansible.builtin.file:
-        path: /etc/kibana/certs
+        path: "{{ item }}"
         state: absent
+      loop:
+        - "/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12"
+        - /etc/kibana/certs/ca.crt
       when: kibana_move_cert_directory.changed
 
 - name: Backup kibana certs on elasticstack_ca_host then remove
@@ -181,9 +186,16 @@
       - --name
       - "{{ ansible_hostname }}"
       - --ip
-      - "{{ ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0]) }}"
+      - >-
+        {{ ([ansible_default_ipv4.address | default(ansible_all_ipv4_addresses[0])]
+            + ([elasticstack_node_address | default('')] | select('match', '^[0-9.]+$') | list))
+           | join(',') }}
       - --dns
-      - "{{ ansible_hostname }},{{ ansible_fqdn }},{{ inventory_hostname }}"
+      - >-
+        {{ ([ansible_hostname, ansible_fqdn, inventory_hostname]
+            + ([elasticstack_node_address | default('')]
+               | reject('match', '^[0-9.]+$') | reject('equalto', '') | list))
+           | join(',') }}
       - --pass
       - "{{ kibana_tls_key_passphrase }}"
       - --out

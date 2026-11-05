@@ -106,13 +106,28 @@
     mode: 0750
   when: kibana_manage_logging | bool
 
+- name: Check that Kibana has a certificate for TLS
+  ansible.builtin.assert:
+    that:
+      - kibana_tls_cert | length > 0
+      - kibana_tls_key | length > 0
+    fail_msg: >-
+      kibana_tls is true, so Kibana needs a certificate and a key. The role creates them only when
+      elasticstack_full_stack and kibana_security are true and neither kibana_tls_cert nor
+      kibana_tls_key is set. Otherwise set both kibana_tls_cert and kibana_tls_key.
+    quiet: true
+  when:
+    - kibana_tls | bool
+    - not _kibana_tls_generated | bool
+
+# Owner, group and mode as the Kibana package sets them on every install and update
 - name: Configure Kibana
   ansible.builtin.template:
     src: kibana.yml.j2
     dest: /etc/kibana/kibana.yml
     owner: root
-    group: root
-    mode: 0644
+    group: kibana
+    mode: "0660"
     backup: "{{ kibana_config_backup }}"
   notify:
     - Restart Kibana

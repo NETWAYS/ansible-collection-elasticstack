@@ -112,9 +112,10 @@ argument_specs:
           Set it in the host_vars of that host. It takes precedence over
           elasticstack_address_mode, for example to reach a host with several network cards
           through the IP of a particular one. It is also added to the certificate of an
-          Elasticsearch host and to the certificate a Logstash host presents to the Beats. A
-          certificate that already exists gets it only when it is renewed, with the tag
-          renew_es_cert or renew_logstash_cert. It does not change discovery.seed_hosts.
+          Elasticsearch host, to the certificate a Logstash host presents to the Beats and to
+          the certificate of a Kibana host. A certificate that already exists gets it only when
+          it is renewed, with the tag renew_es_cert, renew_logstash_cert or renew_kibana_cert.
+          It does not change discovery.seed_hosts.
 
       # ----- Ports -----
       elasticstack_elasticsearch_http_port:

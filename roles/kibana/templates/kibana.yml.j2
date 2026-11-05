@@ -27,8 +27,13 @@ elasticsearch.hosts: [{% for host in kibana_elasticsearch_hosts %}"http://{{ hos
 
 {% if kibana_tls | bool %}
 server.ssl.enabled: true
+{% if _kibana_tls_generated | bool %}
+server.ssl.keystore.path: "/etc/kibana/certs/{{ ansible_hostname }}-kibana.p12"
+server.ssl.keystore.password: {{ kibana_tls_key_passphrase | to_json }}
+{% else %}
 server.ssl.certificate: "{{ kibana_tls_cert }}"
 server.ssl.key: "{{ kibana_tls_key }}"
+{% endif %}
 {% endif %}
 
 {% if kibana_manage_logging | bool %}

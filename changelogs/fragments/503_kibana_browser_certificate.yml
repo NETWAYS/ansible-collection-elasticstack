@@ -1,0 +1,22 @@
+breaking_changes:
+  - The defaults of ``kibana_tls_cert`` and ``kibana_tls_key`` are now empty instead of
+    ``/etc/kibana/certs/cert.pem`` and ``/etc/kibana/certs/key.pem``. A setup that put its own
+    certificate there without setting the two variables has to set them now. In a full stack it
+    otherwise gets the certificate the role creates from the stack CA.
+
+minor_changes:
+  - With ``kibana_tls`` in a full stack, Kibana serves the certificate the role creates from the
+    stack CA (``<hostname>-kibana.p12``, through ``server.ssl.keystore.path``), so browser TLS works
+    without an own certificate. An own certificate is still used when ``kibana_tls_cert`` and
+    ``kibana_tls_key`` are set. Without a full stack and without them, the run stops with a
+    message.
+
+bugfixes:
+  - Renewing the Kibana certificate removed the whole directory ``/etc/kibana/certs``, including
+    an own certificate kept there, and Kibana did not start again with ``kibana_tls``. The renewal
+    now removes only ``<hostname>-kibana.p12`` and ``ca.crt``.
+  - The certificate of a Kibana host contains ``elasticstack_node_address`` when it is set, like
+    the certificates of Elasticsearch and Logstash.
+  - The kibana role writes ``/etc/kibana/kibana.yml`` as ``root:kibana`` with mode ``0660``, like
+    the Kibana package does on every install and update. It used ``root:root`` and ``0644``, so
+    the next run after a package update changed the file back and restarted Kibana.

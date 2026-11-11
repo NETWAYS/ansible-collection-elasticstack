@@ -137,7 +137,8 @@
 
         - name: Wait until Kibana is available
           ansible.builtin.uri:
-            url: "http://{{ inventory_hostname }}:5601/api/status"
+            url: "https://{{ inventory_hostname }}:5601/api/status"
+            ca_path: /etc/kibana/certs/ca.crt
             user: elastic
             password: "{{ cert_renewal_password }}"
             force_basic_auth: true

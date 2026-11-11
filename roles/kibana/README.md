@@ -1,11 +1,11 @@
 # Ansible Role: Kibana
 
-Installs and configures [Kibana](https://www.elastic.co/kibana) on Linux systems. The role manages `kibana.yml` and can enable TLS for the Kibana web interface, using a certificate you provide. In a full stack setup together with the elasticsearch role, it also configures the connection to Elasticsearch, both the TLS trust and the `kibana_system` credentials, using the Elasticsearch CA.
+Installs and configures [Kibana](https://www.elastic.co/kibana) on Linux systems. The role manages `kibana.yml` and serves the Kibana web interface over TLS by default. In a full stack setup together with the elasticsearch role, it also configures the connection to Elasticsearch, both the TLS trust and the `kibana_system` credentials, using the Elasticsearch CA, and creates the certificate for the Kibana web interface from that CA.
 
 ## Requirements
 
 * The Elastic repositories configured: use the [`repos`](../repos/README.md) role or provide them yourself.
-* For browser-facing TLS (`kibana_tls: true`): a certificate and key from a CA your users trust (corporate PKI or a public CA), provided via `kibana_tls_cert` and `kibana_tls_key`. The role does **not** generate a browser certificate.
+* Without a full stack setup: a certificate and key for the Kibana web interface, set with `kibana_tls_cert` and `kibana_tls_key`, or `kibana_tls: false` to serve plain http. In a full stack setup the role uses a certificate from the Elasticsearch CA, which browsers do not trust. For browser access set a certificate from a CA your users trust (corporate PKI or a public CA), and that CA in `beats_kibana_ssl_certificate_authorities` so that the Beats can load their dashboards.
 
 ## Example
 
@@ -61,10 +61,10 @@ The certificate tags only act in a full stack setup, where the collection create
 | `kibana_sniff_on_start`<br>**Type**: `bool`<br>**Default**: `false` | Ask Elasticsearch for the list of nodes at startup (elasticsearch.sniffOnStart). |
 | `kibana_sniff_on_connection_fault`<br>**Type**: `bool`<br>**Default**: `false` | Update the list of Elasticsearch nodes on connection fault (elasticsearch.sniffOnConnectionFault). |
 | `kibana_sniff_interval`<br>**Type**: `str` | Interval between sniffing attempts (elasticsearch.sniffInterval, in milliseconds). Unset by default. |
-| `kibana_tls`<br>**Type**: `bool`<br>**Default**: `false` | Enable TLS on the Kibana server itself (server.ssl), for browsers and API clients such as the Beats. When elasticstack_full_stack and kibana_security are true and kibana_tls_cert and kibana_tls_key are empty, Kibana uses the certificate the role creates from the stack CA (-kibana.p12). Otherwise set kibana_tls_cert and kibana_tls_key. |
-| `kibana_tls_cert`<br>**Type**: `str`<br>**Default**: `""` | Path to an own PEM certificate for the Kibana server TLS, instead of the certificate the role creates. Set it together with kibana_tls_key. |
+| `kibana_tls`<br>**Type**: `bool`<br>**Default**: `true` | Enable TLS on the Kibana server itself (server.ssl), for browsers and API clients such as the Beats. When elasticstack_full_stack and kibana_security are true and kibana_tls_cert and kibana_tls_key are empty, Kibana uses the certificate the role creates from the stack CA (ansible_hostname-kibana.p12). Otherwise set kibana_tls_cert and kibana_tls_key, or set kibana_tls to false to serve plain http. In a full stack the Beats load their dashboards over https; when kibana_tls is false there, set beats_kibana_host to the http URL of Kibana. |
+| `kibana_tls_cert`<br>**Type**: `str`<br>**Default**: `""` | Path to an own PEM certificate for the Kibana server TLS, instead of the certificate the role creates. Set it together with kibana_tls_key. In a full stack the Beats check the Kibana certificate against the stack CA by default; for an own certificate from another CA, set beats_kibana_ssl_certificate_authorities to that CA. |
 | `kibana_tls_key`<br>**Type**: `str`<br>**Default**: `""` | Path to the private key of kibana_tls_cert. The key must not be encrypted. |
-| `kibana_tls_key_passphrase`<br>**Type**: `str`<br>**Default**: `"PleaseChangeMe"` | Passphrase of the certificate the role creates (-kibana.p12, full stack). With kibana_tls it is also the keystore password in kibana.yml. Overridden by elasticstack_cert_pass when that is set. |
+| `kibana_tls_key_passphrase`<br>**Type**: `str`<br>**Default**: `"PleaseChangeMe"` | Passphrase of the certificate the role creates (ansible_hostname-kibana.p12, full stack). With kibana_tls it is also the keystore password in kibana.yml. Overridden by elasticstack_cert_pass when that is set. |
 | `kibana_cert_validity_period`<br>**Type**: `int`<br>**Default**: `1095` | Number of days the generated certificates are valid. |
 | `kibana_cert_expiration_buffer`<br>**Type**: `int`<br>**Default**: `30` | Renew the certificate when its remaining validity (in days) drops below this value. |
 | `kibana_cert_will_expire_soon`<br>**Type**: `bool`<br>**Default**: `false` | Set to true to force renewal of the Kibana certificate. Alternatively run the playbook with the renew_kibana_cert tag. |

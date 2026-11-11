@@ -304,30 +304,31 @@ argument_specs:
           - certificate
           - none
         description: >-
-          How the Beats verify the certificate of Elasticsearch when they ship to it over TLS
-          (ssl.verification_mode). full checks the CA and that the host name or IP is in the
-          certificate. certificate checks only the CA, for certificates without the address the
-          Beats connect to. none turns the check off.
+          How the Beats verify the certificate of Elasticsearch when they ship to it over TLS, and
+          of Kibana when they load their dashboards over https (ssl.verification_mode). full checks
+          the CA and that the host name or IP is in the certificate. certificate checks only the
+          CA, for certificates without the address the Beats connect to. none turns the check off.
 
       beats_ssl_certificate_authorities:
         type: list
         elements: str
         default: []
         description: >-
-          CA certificates the Beats check the certificate of Elasticsearch against, as paths on the
-          Beats hosts. Leave it empty to let the role decide. With elasticstack_full_stack true it
-          uses the CA the collection created (beats_tls_cacert). With elasticstack_full_stack false
-          it sets no CA, and the Beats trust the CAs installed in the operating system. That is
-          enough when Elasticsearch has a certificate from a public CA, for example on Elastic
-          Cloud.
+          CA certificates the Beats check the certificate of Elasticsearch against, as paths on
+          the Beats hosts, and the certificate of Kibana unless
+          beats_kibana_ssl_certificate_authorities is set. Leave it empty to let the role decide.
+          With elasticstack_full_stack true it uses the CA the collection created
+          (beats_tls_cacert). With elasticstack_full_stack false it sets no CA, and the Beats trust
+          the CAs installed in the operating system. That is enough when Elasticsearch and Kibana
+          have certificates from a public CA, for example on Elastic Cloud.
 
       beats_elasticsearch_username:
         type: str
         default: ""
         description: >-
-          User the Beats log in to Elasticsearch with. When empty, a full stack uses the elastic
-          user. Required with beats_elasticsearch_password when elasticstack_full_stack is false,
-          beats_security is true and no beats_elasticsearch_api_key is set.
+          User the Beats log in to Elasticsearch and Kibana with. When empty, a full stack uses the
+          elastic user. Required with beats_elasticsearch_password when elasticstack_full_stack is
+          false, beats_security is true and no beats_elasticsearch_api_key is set.
 
       beats_elasticsearch_password:
         type: str
@@ -340,8 +341,34 @@ argument_specs:
         type: str
         default: ""
         description: >-
-          API key the Beats log in to Elasticsearch with, as id:api_key. When set, the Beats use it
-          instead of beats_elasticsearch_username and beats_elasticsearch_password.
+          API key the Beats log in to Elasticsearch and Kibana with, as id:api_key. When set, the
+          Beats use it instead of beats_elasticsearch_username and beats_elasticsearch_password.
+
+      beats_kibana_host:
+        type: str
+        default: ""
+        description: >-
+          URL of the Kibana the Beats load their dashboards into (setup.kibana.host), with http://
+          or https://, for example https://kibana.example.com:5601. When empty, a full stack uses
+          https with the first host of the inventory group named in elasticstack_kibana_group_name,
+          picked by elasticstack_address_mode and elasticstack_node_address, and
+          elasticstack_kibana_port, as Kibana uses TLS there by default. Set it to the http URL
+          when kibana_tls is false in a full stack. Without a full stack the role writes no
+          setup.kibana then, and a Beat that loads dashboards uses its default 127.0.0.1:5601. With
+          beats_security true the Beats log in with the credentials they use for Elasticsearch.
+          Over https they check the certificate of Kibana with beats_ssl_verification_mode and
+          beats_kibana_ssl_certificate_authorities.
+
+      beats_kibana_ssl_certificate_authorities:
+        type: list
+        elements: str
+        default: []
+        description: >-
+          CA certificates the Beats check the certificate of Kibana against, as paths on the Beats
+          hosts. When empty, the Beats use the same CAs as for Elasticsearch, see
+          beats_ssl_certificate_authorities. Set it when Kibana has a certificate from another CA
+          than Elasticsearch, for example an own certificate set with kibana_tls_cert in a full
+          stack.
 
       beats_cert_validity_period:
         type: int

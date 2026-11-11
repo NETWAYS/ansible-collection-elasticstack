@@ -114,7 +114,8 @@
     fail_msg: >-
       kibana_tls is true, so Kibana needs a certificate and a key. The role creates them only when
       elasticstack_full_stack and kibana_security are true and neither kibana_tls_cert nor
-      kibana_tls_key is set. Otherwise set both kibana_tls_cert and kibana_tls_key.
+      kibana_tls_key is set. Otherwise set both kibana_tls_cert and kibana_tls_key, or set
+      kibana_tls to false.
     quiet: true
   when:
     - kibana_tls | bool

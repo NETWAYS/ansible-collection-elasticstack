@@ -1,0 +1,29 @@
+breaking_changes:
+  - Kibana serves https by default, ``kibana_tls`` is now true. In a full stack it uses the certificate
+    the role creates from the stack CA, which browsers do not trust; set ``kibana_tls_cert`` and
+    ``kibana_tls_key`` for a certificate from a trusted CA, and
+    ``beats_kibana_ssl_certificate_authorities`` to its CA for the Beats. Without a full stack, and
+    in a full stack with ``kibana_security`` false or the oss variant, the run stops until
+    ``kibana_tls_cert`` and ``kibana_tls_key`` are set or ``kibana_tls`` is false. With
+    ``kibana_tls`` false in a full stack, set ``beats_kibana_host`` to the http URL of Kibana.
+
+minor_changes:
+  - The beats role takes ``beats_kibana_host`` for the Kibana the Beats load their dashboards into,
+    for example a Kibana on Elastic Cloud. In a full stack it replaces the first Kibana host.
+  - The beats role takes ``beats_kibana_ssl_certificate_authorities`` for the CAs the Beats check
+    the Kibana certificate against, when Kibana has a certificate from another CA than
+    Elasticsearch. When it is empty, the Beats use the same CAs as for Elasticsearch.
+
+bugfixes:
+  - In a full stack the Beats reached Kibana only over http, so loading the dashboards failed with
+    ``kibana_tls``. They now use https and check the Kibana certificate with
+    ``beats_ssl_verification_mode`` and ``beats_kibana_ssl_certificate_authorities``.
+  - Without a full stack the Beats configurations contained an empty ``setup.kibana``. The block is
+    left out unless ``beats_kibana_host`` is set.
+  - The Beats log in to Kibana with the credentials they use for Elasticsearch, including
+    ``beats_elasticsearch_api_key``. With an API key in a full stack they got the API key and the
+    ``elastic`` user at the same time, which the Beats do not accept for Kibana.
+
+trivial:
+  - The ``elasticstack_default`` scenario checks Kibana over https. The ``kibana_default`` scenario
+    runs Kibana with an own certificate.

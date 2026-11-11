@@ -20,4 +20,20 @@
           - gpg-agent
           - git
           - iproute2
+          - openssl
         update_cache: yes
+
+    # Without a full stack the role creates no certificate, and kibana_tls is on by default
+    - name: Create a self-signed certificate for Kibana
+      ansible.builtin.command:
+        cmd: >-
+          openssl req -x509 -newkey rsa:2048 -nodes -days 30
+          -subj /CN=localhost -addext subjectAltName=DNS:localhost
+          -keyout /etc/ssl/kibana-test.key -out /etc/ssl/kibana-test.crt
+        creates: /etc/ssl/kibana-test.crt
+
+    # Kibana runs as the user kibana, which the package creates only later
+    - name: Let Kibana read the key of the test certificate
+      ansible.builtin.file:
+        path: /etc/ssl/kibana-test.key
+        mode: "0644"

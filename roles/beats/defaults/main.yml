@@ -23,6 +23,11 @@ beats_elasticsearch_username: ""
 beats_elasticsearch_password: ""
 beats_elasticsearch_api_key: ""
 
+# Kibana #
+
+beats_kibana_host: ""
+beats_kibana_ssl_certificate_authorities: []
+
 # Filebeat specific #
 
 beats_filebeat_elastic_monitoring: false

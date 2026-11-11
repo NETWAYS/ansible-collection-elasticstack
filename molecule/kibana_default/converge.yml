@@ -10,6 +10,9 @@
     elasticstack_full_stack: false
     elasticstack_release: "{{ lookup('env', 'ELASTIC_RELEASE') | int}}"
     elasticstack_no_log: false
+    # Created in prepare.yml
+    kibana_tls_cert: /etc/ssl/kibana-test.crt
+    kibana_tls_key: /etc/ssl/kibana-test.key
   collections:
     - netways.elasticstack
   tasks:

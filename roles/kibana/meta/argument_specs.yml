@@ -71,20 +71,24 @@ argument_specs:
       # ----- Kibana server TLS -----
       kibana_tls:
         type: bool
-        default: false
+        default: true
         description: >-
           Enable TLS on the Kibana server itself (server.ssl), for browsers and API clients
           such as the Beats. When elasticstack_full_stack and kibana_security are true and
           kibana_tls_cert and kibana_tls_key are empty, Kibana uses the certificate the role
-          creates from the stack CA (<hostname>-kibana.p12). Otherwise set kibana_tls_cert and
-          kibana_tls_key.
+          creates from the stack CA (ansible_hostname-kibana.p12). Otherwise set kibana_tls_cert
+          and kibana_tls_key, or set kibana_tls to false to serve plain http. In a full stack the
+          Beats load their dashboards over https; when kibana_tls is false there, set
+          beats_kibana_host to the http URL of Kibana.
 
       kibana_tls_cert:
         type: str
         default: ""
         description: >-
           Path to an own PEM certificate for the Kibana server TLS, instead of the certificate
-          the role creates. Set it together with kibana_tls_key.
+          the role creates. Set it together with kibana_tls_key. In a full stack the Beats check
+          the Kibana certificate against the stack CA by default; for an own certificate from
+          another CA, set beats_kibana_ssl_certificate_authorities to that CA.
 
       kibana_tls_key:
         type: str
@@ -96,7 +100,7 @@ argument_specs:
         type: str
         default: PleaseChangeMe
         description: >-
-          Passphrase of the certificate the role creates (<hostname>-kibana.p12, full stack).
+          Passphrase of the certificate the role creates (ansible_hostname-kibana.p12, full stack).
           With kibana_tls it is also the keystore password in kibana.yml. Overridden by
           elasticstack_cert_pass when that is set.
 

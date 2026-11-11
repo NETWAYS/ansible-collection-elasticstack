@@ -12,3 +12,20 @@ _beats_elasticsearch_username: >-
 _beats_elasticsearch_password: >-
   {{ beats_elasticsearch_password
      | default(beats_writer_password.stdout if elasticstack_full_stack | bool else '', true) }}
+
+# First host of the Kibana group in a full stack, otherwise none
+_beats_kibana_inventory_host: >-
+  {{ groups[elasticstack_kibana_group_name] | default([]) | first | default('')
+     if elasticstack_full_stack | bool else '' }}
+
+# Kibana the Beats load the dashboards into: the configured URL, otherwise the first Kibana host
+# in a full stack over https, as Kibana uses TLS there by default, otherwise none
+_beats_kibana_host: >-
+  {{ beats_kibana_host | default(
+       'https://' ~ __elasticstack_node_address[_beats_kibana_inventory_host] ~ ':' ~ elasticstack_kibana_port
+       if _beats_kibana_inventory_host | length > 0 else '', true) }}
+
+# CAs the Beats trust for Kibana: the configured list, otherwise the same as for Elasticsearch
+_beats_kibana_ssl_certificate_authorities: >-
+  {{ beats_kibana_ssl_certificate_authorities
+     | default(_beats_ssl_certificate_authorities, true) }}

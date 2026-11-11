@@ -14,3 +14,11 @@
       ansible.builtin.wait_for:
         port: 5601
         timeout: 120
+
+    # curl checks the served certificate against the test certificate from prepare.yml and fails
+    # on any TLS error. The HTTP status does not matter, Kibana runs without Elasticsearch here.
+    - name: Check that Kibana serves its own certificate over https
+      ansible.builtin.command: >-
+        curl -s -o /dev/null -w '%{http_code}'
+        --cacert /etc/ssl/kibana-test.crt https://localhost:5601/api/status
+      changed_when: false

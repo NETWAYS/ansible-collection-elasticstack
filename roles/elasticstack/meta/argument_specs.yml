@@ -134,7 +134,10 @@ argument_specs:
       elasticstack_kibana_port:
         type: int
         default: 5601
-        description: Kibana HTTP port (also used to build the public base URL).
+        description: >-
+          Port Kibana listens on (server.port). The roles also use it for the public base URL of
+          Kibana, to wait for Kibana and for the Kibana URL of the Beats. Kibana runs as the user
+          kibana, which cannot open ports below 1024 without extra rights.
 
       elasticstack_beats_port:
         type: int

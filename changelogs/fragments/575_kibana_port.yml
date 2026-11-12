@@ -1,0 +1,11 @@
+breaking_changes:
+  - If ``kibana_extra_config`` sets ``server.port``, remove it there. The kibana role now writes
+    ``server.port`` itself, and Kibana does not accept the key twice in ``kibana.yml``.
+
+bugfixes:
+  - The kibana role sets ``server.port`` from ``elasticstack_kibana_port`` and waits for Kibana on that
+    port. Before, Kibana always listened on 5601, while the API check, ``server.publicBaseUrl`` and the
+    Beats used the configured port.
+
+trivial:
+  - The ``kibana_default`` scenario runs Kibana on port 5602.

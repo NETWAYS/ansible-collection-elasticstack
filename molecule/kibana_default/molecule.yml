@@ -17,5 +17,10 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  inventory:
+    group_vars:
+      all:
+        # Not the default 5601, so the run shows that Kibana listens on the configured port
+        elasticstack_kibana_port: 5602
 verifier:
   name: ansible

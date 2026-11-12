@@ -12,7 +12,7 @@
 
     - name: Wait for Kibana port to be available
       ansible.builtin.wait_for:
-        port: 5601
+        port: "{{ elasticstack_kibana_port }}"
         timeout: 120
 
     # curl checks the served certificate against the test certificate from prepare.yml and fails
@@ -20,5 +20,5 @@
     - name: Check that Kibana serves its own certificate over https
       ansible.builtin.command: >-
         curl -s -o /dev/null -w '%{http_code}'
-        --cacert /etc/ssl/kibana-test.crt https://localhost:5601/api/status
+        --cacert /etc/ssl/kibana-test.crt https://localhost:{{ elasticstack_kibana_port }}/api/status
       changed_when: false

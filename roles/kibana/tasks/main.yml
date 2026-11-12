@@ -162,7 +162,7 @@
     - name: Wait for Kibana to start
       ansible.builtin.wait_for:
         host: localhost
-        port: 5601
+        port: "{{ elasticstack_kibana_port }}"
         timeout: 300
       register: kibana_wait
 
